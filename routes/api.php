@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::post('login', 'api\AuthApi@login');
+Route::middleware('checkAuthApi')->group(function(){
+    // Absensi
+    Route::get('siswa', 'api\AuthApi@siswa');
+});
