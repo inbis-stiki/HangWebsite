@@ -16,3 +16,10 @@ use Firebase\JWT\JWT;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Login
+Route::get('/login', 'DashboardController@login');
+
+
+// Dashboard
+Route::get('/dashboard', 'DashboardController@index');
