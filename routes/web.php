@@ -19,3 +19,7 @@ Route::get('/', function () {
 
 // Login
 Route::get('/login', 'DashboardController@login');
+
+
+// Dashboard
+Route::get('/dashboard', 'DashboardController@index');
