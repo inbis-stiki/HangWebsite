@@ -23,3 +23,8 @@ Route::get('/login', 'DashboardController@login');
 
 // Dashboard
 Route::get('/dashboard', 'DashboardController@index');
+Route::get('/dashboard/lokasi/region', 'DashboardController@lokasi_region');
+Route::get('/dashboard/lokasi/lokasi', 'DashboardController@lokasi_lokasi');
+Route::get('/dashboard/lokasi/area', 'DashboardController@lokasi_area');
+Route::get('/dashboard/lokasi/kecamatan', 'DashboardController@lokasi_kecamatan');
+Route::get('/dashboard/lokasi/pasar', 'DashboardController@lokasi_pasar');
