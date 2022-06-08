@@ -3,9 +3,9 @@
 @section('content')
 <div class="flex flex-row justify-between items-center">
     <span class="font-bold text-lg">Kecamatan</span>
-    <button class="p-3 bg-orange-400 text-white flex flex-row items-center space-x-3 rounded-lg ">
-        <img src="../img/plus-dashboard.svg" alt="">
-        <span class="text-sm">Tambah Lokasi</span>
+    <button onclick="modal('modalTambah')" class="p-3 bg-orange-400 text-white flex flex-row items-center space-x-3 rounded-lg ">
+        <img src="{{asset('img/plus-dashboard.svg')}}" alt="">
+        <span class="text-sm">Tambah Kecamatan</span>
     </button>
 </div>
 <table class="w-full mt-7">
@@ -167,4 +167,58 @@
     </tbody>
 </table>
 </div>
+@endsection
+@section('footer')
+<div class="fixed hidden inset-0 z-40 bg-gray-600 bg-opacity-50 overflow-y-auto h-screen w-screen" id="modalTambah" onclick="modal('modalTambah')">
+</div>
+<div class="fixed hidden z-50 inset-0 top-20 mx-auto border w-fit h-fit shadow-lg rounded-md bg-white" id="modalTambah-content">
+    <div class="p-10">
+        <div class="grid grid-cols-1 space-y-8">
+            <div class="col-span-1">
+                <span class="text-2xl font-semibold">Tambah Kecamatan</span>
+            </div>
+            <div class="col-span-1 grid grid-cols-2">
+                <div class="col-span-1 my-auto">
+                    <span class="font-medium">Area</span>
+                </div>
+                <div class="col-span-1 my-auto">
+                    <select name="area" id="area" class="form-select text-gray-400 box-border w-full h-9 text-sm border-solid border border-gray-200 rounded focus:outline-orange-500 focus:ring-0 focus:outline-2 focus:border-gray-200 focus:outline-offset-2">
+                        <option value="" selected>Pilih Area</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-span-1 grid grid-cols-2">
+                <div class="col-span-1 my-auto">
+                    <span class="font-medium">Nama Kecamatan</span>
+                </div>
+                <div class="col-span-1 my-auto">
+                    <input type="text" name="kecamatan" id="kecamatan" value="" class="box-border text-gray-400 text-sm h-9 border-solid border border-gray-200 rounded  focus:outline-orange-500 focus:ring-0 focus:outline-2 focus:border-gray-200 focus:outline-offset-2" placeholder="Input Nama">
+                </div>
+            </div>
+            <div class="col-span-1 grid grid-cols-2">
+                <div class="col-span-1 my-auto">
+                    <span class="font-medium">Status</span>
+                </div>
+                <div class="col-span-1 my-auto">
+                    <form action="#" class="flex flex-row space-x-3 items-center">
+                        <div class="flex space-x-2 items-center">
+                            <input type="radio" class="form-radio text-orange-500 focus:ring-0" name="status_lokasi" id="enable_status_lokasi" value="enable">
+                            <label for="enable_status_lokasi">Enable</label>
+                        </div>
+                        <div class="flex space-x-2 items-center">
+                            <input type="radio" class="form-radio text-orange-500 focus:ring-0" name="status_lokasi" id="disable_status_lokasi" value="disable">
+                            <label for="disable_status_lokasi">Disable</label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="px-10 py-6 flex flex-row justify-end bg-orange-50 space-x-3">
+        <button onclick="modal('modalTambah')" class="text-orange-500 border border-orange-500 py-1 px-2 rounded-lg">Batal</button>
+        <button class="text-white bg-orange-500 py-1 px-2 rounded-lg">Simpan</button>
+    </div>
+</div>
+
 @endsection
