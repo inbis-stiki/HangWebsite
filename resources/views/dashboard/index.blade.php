@@ -48,7 +48,7 @@
             <div class="flex flex-row space-x-8 items-center">
                 <span class="font-bold">Rapor</span>
                 <div>
-                    <select name="penjualan" id="" class="py-1.5 px-3 border-gray-200 bg-white border rounded-lg text-xs text-gray-400">
+                    <select name="penjualan" id="" class="py-1.5 px-3 border-gray-200 bg-white border rounded-lg text-xs text-gray-400 ring-0 form-select`">
                         <option selected>Pilih salah satu</option>
                         <option>Penjualan</option>
                     </select>
@@ -95,14 +95,14 @@
         <div class="flex flex-row space-x-2">
             <div class="py-1.5 px-3 border-gray-200 bg-white border rounded-lg text-xs text-gray-400 flex flex-row items-center ">
                 <img src="{{asset('img/locate_kota-dashboard.svg')}}" class="w-4 h-4" alt="">
-                <select name="penjualan" id="" class="bg-white text-xs focus:outline-none font-medium">
+                <select name="penjualan" id="" class="bg-white text-xs focus:outline-none font-medium border-none focus:ring-0">
                     <option selected>Depok</option>
                     <option>Malang</option>
                 </select>
             </div>
             <div class="py-1.5 px-3 border-gray-200 bg-white border rounded-lg text-xs text-gray-400 flex flex-row items-center ">
                 <img src="{{asset('img/tanggal-dashboard.svg')}}" class="w-4 h-4" alt="">
-                <select name="penjualan" id="" class="bg-white text-xs focus:outline-none font-medium">
+                <select name="penjualan" id="" class="bg-white text-xs focus:outline-none font-medium border-none focus:ring-0">
                     <option selected>20 Januari 2022</option>
                     <option>21 Januari 2022</option>
                 </select>
