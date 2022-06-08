@@ -17,8 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Login
-Route::get('/login', 'DashboardController@login');
+// Auth
+Route::get('login', 'AuthController@login');
+Route::post('auth', 'AuthController@auth');
+Route::get('logout', 'AuthController@logout');
 
 
 // Dashboard
