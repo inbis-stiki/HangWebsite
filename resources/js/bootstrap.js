@@ -10,6 +10,19 @@ window.axios = require('axios');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+function modal(modalID, id, callback) {
+    if (typeof id !== 'undefined') {
+        // id nya untuk id item dari data
+        // masukin function nya pakai callback ini biar bisa flexibel
+        callback(id);
+    }
+    let modalid = document.getElementById(modalID)
+    modalid.classList.toggle('hidden');
+    let modalcontent = document.getElementById(modalID + '-content')
+    modalcontent.classList.toggle('hidden');
+}
+
+window.modal = modal;
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting

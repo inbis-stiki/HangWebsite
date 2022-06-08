@@ -19380,6 +19380,21 @@ module.exports = function(module) {
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
+function modal(modalID, id, callback) {
+  if (typeof id !== 'undefined') {
+    // id nya untuk id item dari data
+    // masukin function nya pakai callback ini biar bisa flexibel
+    callback(id);
+  }
+
+  var modalid = document.getElementById(modalID);
+  modalid.classList.toggle('hidden');
+  var modalcontent = document.getElementById(modalID + '-content');
+  modalcontent.classList.toggle('hidden');
+}
+
+window.modal = modal;
+
 /***/ }),
 
 /***/ "./resources/js/bootstrap.js":
@@ -19398,6 +19413,21 @@ window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 
 window.axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+function modal(modalID, id, callback) {
+  if (typeof id !== 'undefined') {
+    // id nya untuk id item dari data
+    // masukin function nya pakai callback ini biar bisa flexibel
+    callback(id);
+  }
+
+  var modalid = document.getElementById(modalID);
+  modalid.classList.toggle('hidden');
+  var modalcontent = document.getElementById(modalID + '-content');
+  modalcontent.classList.toggle('hidden');
+}
+
+window.modal = modal;
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
