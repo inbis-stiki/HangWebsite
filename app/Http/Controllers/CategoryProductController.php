@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\CategoryProduct;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryProductController extends Controller
 {
@@ -12,6 +13,71 @@ class CategoryProductController extends Controller
         $data['sidebar']    = "master";
         $data['sidebar2']   = "category-product";
         $data['category_product']      = CategoryProduct::all();
-        return view('master.category_product', $data);
+        return view('master.product.category_product', $data);
     }
+
+    public function store(Request $req){
+        $validator = Validator::make($req->all(), [
+            'category_product'      => 'required',
+            'percentage_product'    => 'required',
+            'status'                => 'required',
+        ], [
+            'required' => 'Data tidak boleh kosong!',
+        ]);
+
+        if($validator->fails()){
+            return redirect('master/category-product')->withErrors($validator);
+        }
+
+
+        date_default_timezone_set("Asia/Bangkok");
+        $category_product                   = new CategoryProduct();
+        $category_product->NAME_PC          = $req->input('category_product');
+        $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
+        $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+        $category_product->save();
+
+        return redirect('master/category-product')->with('succ_msg', 'Berhasil menambah data kategori produk!');
+    }
+
+    public function update(Request $req){
+        $validator = Validator::make($req->all(), [
+            'category_product'      => 'required',
+            'percentage_product'    => 'required',
+            'status'                => 'required',
+        ], [
+            'required' => 'Data tidak boleh kosong!',
+        ]);
+
+        if($validator->fails()){
+            return redirect('master/category-product')->withErrors($validator);
+        }
+
+        date_default_timezone_set("Asia/Bangkok");
+        $category_product = CategoryProduct::find($req->input('id'));
+        $category_product->NAME_PC          = $req->input('category_product');
+        $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
+        $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+        $category_product->save();
+
+        return redirect('master/category-product')->with('succ_msg', 'Berhasil mengubah data kategori produk!');
+    }
+
+    public function destroy(Request $req){
+        $validator = Validator::make($req->all(), [
+            'id'        => 'required',
+        ], [
+            'required' => 'Data tidak boleh kosong!',
+        ]);
+
+        if($validator->fails()){
+            return redirect('master/location/national')->withErrors($validator);
+        }
+
+        $category_product = CategoryProduct::find($req->input('id'));
+        $category_product->delete();
+
+        return redirect('master/category-product')->with('succ_msg', 'Berhasil menghapus data kategori produk!');
+    }
+
 }
