@@ -28,3 +28,6 @@ Route::get('master/location/national/destroy', 'LocationController@destroy');
 
 //MASTER KATEGORI PRODUK
 Route::get('master/category-product', 'CategoryProductController@index');
+Route::get('master/category-product/store', 'CategoryProductController@store');
+Route::get('master/category-product/update', 'CategoryProductController@update');
+Route::get('master/category-product/destroy', 'CategoryProductController@destroy');
