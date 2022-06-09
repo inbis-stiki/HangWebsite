@@ -21,7 +21,7 @@
 
 <body style="margin: 0; height: 100%; overflow: hidden" class="bg-white">
     <div class="row">
-        <div class="col-sm">
+        <div class="col-8">
             <img src="{{ asset('images/img-login.png') }}" alt="Image Sidebar" height="100%" width="100%" class="m-0" />
         </div>
         <div class="col-sm ">
@@ -34,15 +34,15 @@
                 <form action="{{ url('auth') }}" method="post">
                     @csrf
                     <div class="form-row">
-                        <div class="col-md-10 mb-2">
+                        <div class="col-md-9 mb-4">
                             <label class="mb-1 ">Username</label>
-                            <input type="text" name="username" id="input_username" class="form-control" placeholder="Username" required>
+                            <input type="text" name="username" id="input_username" class="form-control border border-primary" placeholder="Username" required>
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="col-md-10 mb-2">
+                        <div class="col-md-9 mb-4">
                             <label class="mb-1">Password</label>
-                            <input type="password" name="password" id="input_password" class="form-control" placeholder="Password" required>
+                            <input type="password" name="password" id="input_password" class="form-control border border-primary" placeholder="Password" required>
                         </div>
                     </div>
                     {{-- <div class="text-left mt-3">
@@ -52,7 +52,7 @@
                     <br>
                     <div class="alert alert-danger mr-5">{!! session('err_msg') !!}</div>
                     @endif
-                    <button type="submit" class="btn btn-md btn-primary">Masuk</button>
+                    <button type="submit" class="btn btn-md btn-primary mt-4">Masuk</button>
                 </form>
             </div>
         </div>
