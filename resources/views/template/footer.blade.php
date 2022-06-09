@@ -1,10 +1,9 @@
-
-        <!--**********************************
+ <!--**********************************
             Footer start
         ***********************************-->
         <div class="footer">
             <div class="copyright">
-                <p>Copyright © Designed &amp; Developed by <a href="http://dexignzone.com/" target="_blank">DexignZone</a> 2021</p>
+                {{-- <p>Copyright © Designed &amp; Developed by <a href="http://dexignzone.com/" target="_blank">DexignZone</a> 2021</p> --}}
             </div>
         </div>
         <!--**********************************
@@ -40,10 +39,11 @@
     <script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
 	
 	<!-- Apex Chart -->
-	<script src="{{ asset('vendor/apexchart/apexchart.js') }}"></script>
+	{{-- <script src="{{ asset('vendor/apexchart/apexchart.js') }}"></script> --}}
 	
 	<!-- Dashboard 1 -->
-	<script src="{{ asset('js/dashboard/dashboard-1.js') }}"></script>
+	{{-- <script src="{{ asset('js/dashboard/dashboard-1.js') }}"></script> --}}
+    <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
 	
 	<script>
 		function carouselReview(){
