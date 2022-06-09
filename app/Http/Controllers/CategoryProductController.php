@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\CategoryProduct;
 use Illuminate\Http\Request;
 
 class CategoryProductController extends Controller
@@ -10,6 +11,7 @@ class CategoryProductController extends Controller
         $data['title']      = "Kategori Produk";
         $data['sidebar']    = "master";
         $data['sidebar2']   = "category-product";
+        $data['category_product']      = CategoryProduct::all();
         return view('master.category_product', $data);
     }
 }
