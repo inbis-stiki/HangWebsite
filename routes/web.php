@@ -49,3 +49,11 @@ Route::get('master/product', 'ProductController@index');
 Route::get('master/product/store', 'ProductController@store');
 Route::get('master/product/update', 'ProductController@update');
 Route::get('master/product/destroy', 'ProductController@destroy');
+
+// MASTER USER
+Route::get('master/user', 'UserController@index');
+Route::get('master/user/store', 'UserController@store');
+Route::get('master/user/update', 'UserController@update');
+Route::get('master/user/destroy', 'UserController@destroy');
+Route::post('/getRegional', 'UserController@getRegional');
+Route::post('/getArea', 'UserController@getArea');
