@@ -37,3 +37,9 @@ Route::get('master/category-product', 'CategoryProductController@index');
 Route::get('master/category-product/store', 'CategoryProductController@store');
 Route::get('master/category-product/update', 'CategoryProductController@update');
 Route::get('master/category-product/destroy', 'CategoryProductController@destroy');
+
+// MASTER ROLE
+Route::get('master/role', 'RoleController@index');
+Route::get('master/role/store', 'RoleController@store');
+Route::get('master/role/update', 'RoleController@update');
+Route::get('master/role/destroy', 'RoleController@destroy');
