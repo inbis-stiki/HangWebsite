@@ -1954,7 +1954,7 @@ pre {
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(254, 99, 78, 0.25); }
   .form-control::placeholder {
-    color: #6c757d;
+    color: #b1b1b1;
     opacity: 1; }
   .form-control:disabled, .form-control[readonly] {
     background-color: #e9ecef;
@@ -22263,7 +22263,7 @@ svg text {
   border-radius: 1.25rem;
   background: #fff;
   border: 1px solid #f0f1f5;
-  color: #B1B1B1;
+  color: #495057;
   height: 56px; }
   @media only screen and (max-width: 1400px) {
     .form-control {
@@ -22271,7 +22271,7 @@ svg text {
   .form-control:hover, .form-control:focus, .form-control.active {
     box-shadow: none;
     background: #fff;
-    color: #B1B1B1; }
+    color: #3d4465; }
 
 .input-rounded {
   border-radius: 100px; }

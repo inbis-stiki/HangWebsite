@@ -46,9 +46,10 @@
                                             <td>{{ $national->NAME_LOCATION }}</td>
                                             <td>
                                                 @if ($national->deleted_at == NULL)
-                                                    <i class="bi-circle-fill"></i>
+                                                    <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
                                                     Enable
                                                 @else
+                                                <i class="fa-solid fa-circle mr-2" style="color:#C13B3B;"></i>
                                                     Disable
                                                 @endif
                                             </td>
