@@ -71,7 +71,7 @@ class CategoryProductController extends Controller
         ]);
 
         if($validator->fails()){
-            return redirect('master/location/national')->withErrors($validator);
+            return redirect('master/category-product')->withErrors($validator);
         }
 
         $category_product = CategoryProduct::find($req->input('id'));

@@ -15,7 +15,7 @@
                     </a>
                     <ul aria-expanded="false">
                         <li><a href="{{ url('master/category-product') }}">Kategori Produk</a></li>
-                        <li><a href="#">Produk</a></li>
+                        <li><a href="{{ url('master/product') }}">Produk</a></li>
                         <li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Lokasi</a>
                             <ul aria-expanded="false">
                                 <li><a href="{{ url('master/location/national') }}">Nasional</a></li>
