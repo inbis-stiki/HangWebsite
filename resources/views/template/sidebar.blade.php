@@ -28,7 +28,7 @@
                         <li><a href="#">Harga Regional</a></li>
                         <li><a href="#">Target Regional</a></li>
                         <li><a href="#">Konversi</a></li>
-                        <li><a href="#">User</a></li>
+                        <li><a href="{{ url('master/user') }}">User</a></li>
                         <li><a href="{{ url('master/role') }}">Role</a></li>
                     </ul>
                     <li class="active"><a href="widget-basic.html" class="ai-icon" aria-expanded="false">
