@@ -21,10 +21,16 @@ Route::get('/', 'DashboardController@index');
 Route::get('dashboard', 'DashboardController@index');
 
 // MASTER LOCATION
+// nasional
 Route::get('master/location/national', 'LocationController@index');
 Route::get('master/location/national/store', 'LocationController@store');
 Route::get('master/location/national/update', 'LocationController@update');
 Route::get('master/location/national/destroy', 'LocationController@destroy');
+// regional
+Route::get('master/location/regional', 'RegionalController@index');
+Route::get('master/location/regional/store', 'RegionalController@store');
+Route::get('master/location/regional/update', 'RegionalController@update');
+Route::get('master/location/regional/destroy', 'RegionalController@destroy');
 
 //MASTER KATEGORI PRODUK
 Route::get('master/category-product', 'CategoryProductController@index');

@@ -44,8 +44,12 @@
 	<!-- Dashboard 1 -->
 	{{-- <script src="{{ asset('js/dashboard/dashboard-1.js') }}"></script> --}}
     <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ asset('vendor/select2/js/select2.full.min.js') }}"></script>
 	
 	<script>
+		$(document).ready(function(){
+			$('.select2').select2();
+		})
 		function carouselReview(){
 			/*  event-bx one function by = owl.carousel.js */
 			jQuery('.event-bx').owlCarousel({
