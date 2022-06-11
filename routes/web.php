@@ -65,5 +65,3 @@ Route::get('master/user', 'UserController@index');
 Route::get('master/user/store', 'UserController@store');
 Route::get('master/user/update', 'UserController@update');
 Route::get('master/user/destroy', 'UserController@destroy');
-Route::post('/getRegional', 'UserController@getRegional');
-Route::post('/getArea', 'UserController@getArea');
