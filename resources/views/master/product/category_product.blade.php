@@ -25,7 +25,9 @@
             <div class="alert alert-danger">{{ session('err_msg') }}</div>
         @endif
 
-        <div class="alert alert-warning" style="margin-top: 1rem;">Persentase total: {{ $total_persen }}%</div>
+        @if ($total_persen != 100)
+            <div class="alert alert-warning" style="margin-top: 1rem;">Persentase total: {{ $total_persen }}%</div> 
+        @endif
         <!-- Add Order -->
         <div class="row">
             <div class="col-12">

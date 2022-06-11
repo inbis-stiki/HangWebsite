@@ -13,8 +13,8 @@ class CategoryProductController extends Controller
         $data['sidebar']    = "master";
         $data['sidebar2']   = "category-product";
         $data['category_product']      = CategoryProduct::all();
-        $data['total_persen']   =   CategoryProduct::all()->sum('PERCENTAGE_PC');
-        
+        $data['total_persen']   =   CategoryProduct::where('deleted_at', null)->sum('PERCENTAGE_PC');
+
         return view('master.product.category_product', $data);
     }
 
@@ -31,15 +31,26 @@ class CategoryProductController extends Controller
             return redirect('master/category-product')->withErrors($validator);
         }
 
-
         date_default_timezone_set("Asia/Bangkok");
-        $category_product                   = new CategoryProduct();
-        $category_product->NAME_PC          = $req->input('category_product');
-        $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
-        $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
-        $category_product->save();
 
-        return redirect('master/category-product')->with('succ_msg', 'Berhasil menambah data kategori produk!');
+        $data['total_persen']   =   CategoryProduct::where('deleted_at', null)->sum('PERCENTAGE_PC');
+        $total  = $data['total_persen']+$req->input('percentage_product');
+
+        if ($data['total_persen'] == 100) {
+            return redirect('master/category-product')->with('err_msg', 'Persentase kategori produk sudah 100%!');
+        }else{
+            if ($total > 100) {
+                return redirect('master/category-product')->with('err_msg', 'Persentase kategori produk melebihi persentase, mohon kurangi persentase saat input!');
+            }else{
+                $category_product                   = new CategoryProduct();
+                $category_product->NAME_PC          = $req->input('category_product');
+                $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
+                $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');    
+                $category_product->save();
+
+                return redirect('master/category-product')->with('succ_msg', 'Berhasil menambah data kategori produk!');
+            }    
+        }
     }
 
     public function update(Request $req){
@@ -56,13 +67,25 @@ class CategoryProductController extends Controller
         }
 
         date_default_timezone_set("Asia/Bangkok");
-        $category_product = CategoryProduct::find($req->input('id'));
-        $category_product->NAME_PC          = $req->input('category_product');
-        $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
-        $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
-        $category_product->save();
 
-        return redirect('master/category-product')->with('succ_msg', 'Berhasil mengubah data kategori produk!');
+        $data['total_persen']   =   CategoryProduct::where('deleted_at', null)->sum('PERCENTAGE_PC');
+        $total  = $data['total_persen']+$req->input('percentage_product');
+
+        if ($data['total_persen'] == 100) {
+            return redirect('master/category-product')->with('err_msg', 'Persentase kategori produk sudah 100%!');
+        }else{
+            if ($total > 100) {
+                return redirect('master/category-product')->with('err_msg', 'Persentase kategori produk melebihi persentase, mohon kurangi persentase saat input!');
+            }else{
+                $category_product = CategoryProduct::find($req->input('id'));
+                $category_product->NAME_PC          = $req->input('category_product');
+                $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
+                $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+                $category_product->save();
+
+                return redirect('master/category-product')->with('succ_msg', 'Berhasil mengubah data kategori produk!');
+            }    
+        }
     }
 
     public function destroy(Request $req){
