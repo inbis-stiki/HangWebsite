@@ -20,7 +20,7 @@
                             <ul aria-expanded="false">
                                 <li><a href="{{ url('master/location/national') }}">Nasional</a></li>
                                 <li><a href="{{ url('master/location/regional') }}">Regional</a></li>
-                                <li><a href="#">Area</a></li>
+                                <li><a href="{{ url('master/location/area') }}">Area</a></li>
                                 <li><a href="#">Kecamatan</a></li>
                                 <li><a href="#">Pasar</a></li>
                             </ul>

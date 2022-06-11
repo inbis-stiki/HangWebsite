@@ -31,6 +31,11 @@ Route::get('master/location/regional', 'RegionalController@index');
 Route::get('master/location/regional/store', 'RegionalController@store');
 Route::get('master/location/regional/update', 'RegionalController@update');
 Route::get('master/location/regional/destroy', 'RegionalController@destroy');
+// area
+Route::get('master/location/area', 'AreaController@index');
+Route::get('master/location/area/store', 'AreaController@store');
+Route::get('master/location/area/update', 'AreaController@update');
+Route::get('master/location/area/destroy', 'AreaController@destroy');
 
 //MASTER KATEGORI PRODUK
 Route::get('master/category-product', 'CategoryProductController@index');
