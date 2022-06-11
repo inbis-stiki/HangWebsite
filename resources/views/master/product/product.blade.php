@@ -10,7 +10,7 @@
             <div class="col">
                 <button style="float: right;" data-toggle="modal" data-target="#mdlAdd"  class="btn btn-sm btn-primary">
                     <i class="flaticon-381-add-2"></i>
-                    Tambah Category Product
+                    Tambah Produk
                 </button>
             </div>
         </div>
@@ -87,7 +87,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Product</h5>
+                <h5 class="modal-title">Tambah Produk</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
@@ -98,7 +98,7 @@
                     <input type="text" name="name_product" class="form-control" placeholder="Input Nama Produk" required>
                 </div>
                 <div class="form-group">
-                    <label>Kategori Product</label>
+                    <label>Kategori Produk</label>
                     <select name="category_product" class="form-control default-select" id="select1" required>
                         @foreach ($dropdown_category_product as $item)
                         <option value="{{ $item->ID_PC }}">{{ $item->NAME_PC }}</option>
@@ -134,11 +134,11 @@
             <div class="modal-body">
                 <form action="{{ url('master/product/update') }}">
                 <div class="form-group">
-                    <label for="">Product</label>
+                    <label for="">Nama Produk</label>
                     <input type="text" name="name_product" id="mdlEdit_name" class="form-control" placeholder="Input nama produk" required>
                 </div>
                 <div class="form-group">
-                    <label>Kategori Product</label>
+                    <label>Kategori Produk</label>
                     <select name="category_product" class="form-control default-select" id="mdlEdit_category" required>
                         @foreach ($dropdown_category_product as $item)
                         <option value="{{ $item->ID_PC }}">{{ $item->NAME_PC }}</option>
@@ -168,7 +168,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Hapus Product</h5>
+                <h5 class="modal-title">Hapus Produk</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>

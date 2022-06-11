@@ -10,7 +10,7 @@
             <div class="col">
                 <button style="float: right;" data-toggle="modal" data-target="#mdlAdd"  class="btn btn-sm btn-primary">
                     <i class="flaticon-381-add-2"></i>
-                    Tambah Category Product
+                    Tambah Kategori Produk
                 </button>
             </div>
         </div>
@@ -38,8 +38,8 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Category Product</th>
-                                        <th>Percentage</th>
+                                        <th>Kategori Produk</th>
+                                        <th>Persentase</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -87,7 +87,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Category Product</h5>
+                <h5 class="modal-title">Tambah Kategori Produk</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
@@ -98,7 +98,7 @@
                     <input type="text" name="category_product" class="form-control" placeholder="Input Kategori Produk" required>
                 </div>
                 <div class="form-group">
-                    <label for="">Percentage Produk</label>
+                    <label for="">Percentase Produk</label>
                     <input type="text" name="percentage_product" class="form-control" placeholder="Input Persentase Produk" required>
                 </div>
                 <div class="form-group">
@@ -123,18 +123,18 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Ubah Nasional</h5>
+                <h5 class="modal-title">Ubah Kategori Produk</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <form action="{{ url('master/category-product/update') }}">
                 <div class="form-group">
-                    <label for="">Category Product</label>
+                    <label for="">Kategori Produk</label>
                     <input type="text" name="category_product" id="mdlEdit_name" class="form-control" placeholder="Input nama kategori" required>
                 </div>
                 <div class="form-group">
-                    <label for="">Persentage Product</label>
+                    <label for="">Persentase Produk</label>
                     <input type="text" name="percentage_product" id="mdlEdit_percentage" class="form-control" placeholder="Input persentase" required>
                 </div>
                 <div class="form-group">
@@ -160,7 +160,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Hapus Category Product</h5>
+                <h5 class="modal-title">Hapus Kategori Produk</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
