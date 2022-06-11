@@ -71,18 +71,6 @@
                                     </tr>
                                     @endforeach
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Username</th>
-                                        <th>Role</th>
-                                        <th>Nasional</th>
-                                        <th>Regional</th>
-                                        <th>Area</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>

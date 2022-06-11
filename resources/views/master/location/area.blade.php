@@ -37,6 +37,7 @@
                                     <tr>
                                         <th>Area</th>
                                         <th>Regional</th>
+                                        <th>Nasional</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -46,6 +47,7 @@
                                         <tr>
                                             <td>{{ $area->NAME_AREA }}</td>
                                             <td>{{ $area->NAME_REGIONAL }}</td>
+                                            <td>{{ $area->NAME_LOCATION }}</td>
                                             <td>
                                                 @if ($area->deleted_at == NULL)
                                                     <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>

@@ -17,8 +17,10 @@ class AreaController extends Controller
         
         $data['areas']      = DB::table('md_area')
         ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
-        ->select('md_area.*', 'md_regional.NAME_REGIONAL')
+        ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
+        ->select('md_area.*', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
         ->get();
+        
         $data['regionals']  = Regional::whereNull('deleted_at')->get();
 
         return view('master.location.area', $data);
