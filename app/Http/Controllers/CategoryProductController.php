@@ -13,6 +13,8 @@ class CategoryProductController extends Controller
         $data['sidebar']    = "master";
         $data['sidebar2']   = "category-product";
         $data['category_product']      = CategoryProduct::all();
+        $data['total_persen']   =   CategoryProduct::all()->sum('PERCENTAGE_PC');
+        
         return view('master.product.category_product', $data);
     }
 
