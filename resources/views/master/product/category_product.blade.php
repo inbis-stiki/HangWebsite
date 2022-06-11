@@ -25,6 +25,7 @@
             <div class="alert alert-danger">{{ session('err_msg') }}</div>
         @endif
 
+        <div class="alert alert-warning" style="margin-top: 1rem;">Persentase total: {{ $total_persen }}%</div>
         <!-- Add Order -->
         <div class="row">
             <div class="col-12">
@@ -52,7 +53,7 @@
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $item->NAME_PC }}</td>
-                                        <td>{{ $item->PERCENTAGE_PC }}</td>
+                                        <td>{{ $item->PERCENTAGE_PC }}%</td>
                                         <td>
                                             @if ($item->deleted_at == NULL)
                                                 <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
