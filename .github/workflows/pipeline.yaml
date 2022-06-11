@@ -17,4 +17,4 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd ${{ secrets.DIR }}
-          git pull origin main && composer install && composer update && php artisan optimize
+          git pull origin development && composer install && composer update && php artisan optimize
