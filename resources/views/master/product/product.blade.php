@@ -55,9 +55,10 @@
                                         <td>{{ $item->NAME_PC }}</td>
                                         <td>
                                             @if ($item->deleted_at == NULL)
-                                                <i class="bi-circle-fill"></i>
+                                                <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
                                                 Enable
                                             @else
+                                                <i class="fa-solid fa-circle mr-2" style="color:#C13B3B;"></i>
                                                 Disable
                                             @endif
                                         </td>
@@ -72,15 +73,6 @@
                                     </tr>
                                     @endforeach
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama Produk</th>
-                                        <th>Kategori Produk</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>
