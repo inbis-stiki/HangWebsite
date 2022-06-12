@@ -114,7 +114,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="this.form.reset();">Batalkan</button>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
             </form>
