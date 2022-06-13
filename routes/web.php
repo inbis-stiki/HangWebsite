@@ -14,12 +14,11 @@ use App\Http\Middleware\CheckRole;
 |
 */
 //Login
-Route::get('login', 'AuthController@login');
+Route::get('/', 'AuthController@login');
 Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 
 Route::middleware(['checkRole:1'])->group(function(){
-    Route::get('/', 'DashboardController@index');
     Route::get('dashboard', 'DashboardController@index');
 
     // MASTER LOCATION
