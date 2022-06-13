@@ -21,7 +21,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('auth/login', 'api\AuthApi@login');
 
 Route::middleware(['checkAuthApi'])->group(function(){
-    Route::post('tes', function(){
-        dump("wef");
-    });
+    // API TES
+    Route::get("tes", 'api\TesApi@index');
+    Route::get("tes/{any}", 'api\TesApi@detail');
+    Route::post("tes", 'api\TesApi@store');
+    Route::put("tes", 'api\TesApi@update');
+    Route::delete("tes", 'api\TesApi@delete');
 });
