@@ -22,7 +22,7 @@ class AuthApi extends Controller
             return response([
                 "status_code"       => 400,
                 "status_message"    => $validator->errors()->first()
-            ]);
+            ], 400);
         }
 
         $user = Users::where([
@@ -36,7 +36,7 @@ class AuthApi extends Controller
             return response([
                 'status_code'       => 200,
                 'status_message'    => 'Username atau password salah!',
-            ]);
+            ], 200);
         }
         
         $user->sess_key = md5(rand(100, 999));
@@ -48,7 +48,7 @@ class AuthApi extends Controller
             'status_code'       => 200,
             'status_message'    => 'Selamat anda berhasil login!',
             'data'              => ['jwt' => $jwt],
-        ]);
+        ], 200);
         
     }
 }

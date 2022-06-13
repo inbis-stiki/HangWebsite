@@ -26,7 +26,7 @@ class UserController extends Controller
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
             'username'      => 'required',
-            'name'          => 'required',
+            'name'          => 'required:alpha',
             'email'         => 'required',
             'phone'         => 'required',
             'ktp'           => 'required',
@@ -51,7 +51,7 @@ class UserController extends Controller
 
         date_default_timezone_set("Asia/Bangkok");
         $user                   = new Users();
-        $user->ID_USER          = substr(md5(time()), 0, 8);
+        $user->ID_USER          = substr(md5(time().rand(10, 99)), 0, 8);
         $user->USERNAME_USER    = $req->input('username');
         $user->ID_ROLE          = $req->input('role');
         $user->ID_AREA          = $req->input('area');
