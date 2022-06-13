@@ -8,6 +8,7 @@ class Users extends Model
 {
     protected $table = 'user';
     protected $primaryKey = 'ID_USER';
+    protected $hidden = array('PASS_USER');
     public $incrementing = false;
     public $timestamps = false;
 }

@@ -19,7 +19,7 @@ class AuthController extends Controller
             $time_left =  ($_COOKIE["expire"]);
             $time_left = $this->penalty_remaining(date("Y-m-d H:i:s", $time_left));
             
-            return redirect('login')->with('err_msg', 'Terlalu banyak permintaan login<br>Coba lagi dalam '.$time_left.'!!');
+            return redirect('/')->with('err_msg', 'Terlalu banyak permintaan login<br>Coba lagi dalam '.$time_left.'!!');
         }else{
             $user = Auth::where([
                 'USERNAME_USER' => $req->input('username'),
@@ -43,9 +43,9 @@ class AuthController extends Controller
                         setcookie("penalty", true, time() + 300);
                         setcookie("expire", time() + 300, time() + 300);
 
-                        return redirect('login')->with('err_msg', 'Terlalu banyak permintaan login<br>Harap tunggu selama 5 menit !!');            
+                        return redirect('/')->with('err_msg', 'Terlalu banyak permintaan login<br>Harap tunggu selama 5 menit !!');            
                     } else {
-                        return redirect('login')->with('err_msg', 'Anda tidak memiliki hak akses!<br><b>Kesempatan login - '.(3-$attempt).'</b>');
+                        return redirect('/')->with('err_msg', 'Anda tidak memiliki hak akses!<br><b>Kesempatan login - '.(3-$attempt).'</b>');
                     }                    
                 }
             }
@@ -60,9 +60,9 @@ class AuthController extends Controller
                 setcookie("penalty", true, time() + 300);
                 setcookie("expire", time() + 300, time() + 300);
     
-                return redirect('login')->with('err_msg', 'Terlalu banyak permintaan login<br>Harap tunggu selama 5 menit !!');      
+                return redirect('/')->with('err_msg', 'Terlalu banyak permintaan login<br>Harap tunggu selama 5 menit !!');      
             } else {
-                return redirect('login')->with('err_msg', 'Username/Password tidak cocok!<br><b>Kesempatan login - '.(3-$attempt).'</b>');
+                return redirect('/')->with('err_msg', 'Username/Password tidak cocok!<br><b>Kesempatan login - '.(3-$attempt).'</b>');
             }
         }        
     }
@@ -101,6 +101,6 @@ class AuthController extends Controller
     
     public function logout(Request $req){
         $req->session()->flush();
-        return redirect('login');
+        return redirect('/');
     }
 }
