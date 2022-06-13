@@ -18,10 +18,10 @@ Route::get('login', 'AuthController@login');
 Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 
-Route::get('/', 'DashboardController@index');
-Route::get('dashboard', 'DashboardController@index');
-
 Route::middleware(['checkRole:1'])->group(function(){
+    Route::get('/', 'DashboardController@index');
+    Route::get('dashboard', 'DashboardController@index');
+
     // MASTER LOCATION
     // nasional
     Route::get('master/location/national', 'LocationController@index');
