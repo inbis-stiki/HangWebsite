@@ -13,6 +13,12 @@ use App\Http\Middleware\CheckRole;
 | contains the "web" middleware group. Now create something great!
 |
 */
+// TES IMAGE S3
+Route::get('testimage', 'ImageController@create');
+Route::post('testimage', 'ImageController@store');
+Route::get('testimage/{image}', 'ImageController@show');
+
+
 //Login
 Route::get('/', 'AuthController@login');
 Route::post('auth', 'AuthController@auth');
