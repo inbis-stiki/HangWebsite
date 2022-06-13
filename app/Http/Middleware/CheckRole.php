@@ -18,6 +18,6 @@ class CheckRole
         if($request->session()->get('role') == $role){
             return $next($request);
         }
-        return redirect('/');
+        return redirect('/login');
     }
 }
