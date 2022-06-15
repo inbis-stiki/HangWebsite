@@ -39,6 +39,7 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Nama Produk</th>
+                                        <th>Kode Produk</th>
                                         <th>Kategori Produk</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
@@ -52,6 +53,7 @@
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $item->NAME_PRODUCT }}</td>
+                                        <td>{{ $item->CODE_PRODUCT }}</td>
                                         <td>{{ $item->NAME_PC }}</td>
                                         <td>
                                             @if ($item->deleted_at == NULL)
@@ -63,7 +65,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlEdit('{{ $item->ID_PRODUCT }}', '{{ $item->NAME_PRODUCT }}', '{{ $item->ID_PC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $item->ID_PRODUCT }}', '{{ $item->NAME_PRODUCT }}', '{{ $item->CODE_PRODUCT }}', '{{ $item->ID_PC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                             <button onclick="showMdlDelete('{{ $item->ID_PRODUCT }}')" class="btn btn-primary btn-sm">
@@ -96,6 +98,10 @@
                 <div class="form-group">
                     <label for="">Nama Produk</label>
                     <input type="text" name="name_product" class="form-control" placeholder="Input Nama Produk" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Kode Produk</label>
+                    <input type="text" name="code_product" maxlength="20" style="text-transform:uppercase" class="form-control" placeholder="Input Kode Produk" required>
                 </div>
                 <div class="form-group">
                     <label>Kategori Produk</label>
@@ -136,6 +142,10 @@
                 <div class="form-group">
                     <label for="">Nama Produk</label>
                     <input type="text" name="name_product" id="mdlEdit_name" class="form-control" placeholder="Input nama produk" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Kode Produk</label>
+                    <input type="text" name="code_product" id="mdlEdit_code" maxlength="20" style="text-transform:uppercase" class="form-control" placeholder="Input Kode Produk" required>
                 </div>
                 <div class="form-group">
                     <label>Kategori Produk</label>
@@ -194,9 +204,10 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, name, category, status){
+    function showMdlEdit(id, name, code, category, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
+        $('#mdlEdit_code').val(code)
         console.log(category)
         $('#mdlEdit_category').val(category).change()
         if (status == null || status == '') {

@@ -22,6 +22,7 @@ class ProductController extends Controller
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
             'name_product'      => 'required',
+            'code_product'      => 'required',
             'category_product'    => 'required',
             'status'                => 'required',
         ], [
@@ -33,18 +34,26 @@ class ProductController extends Controller
         }
 
         date_default_timezone_set("Asia/Bangkok");
-        $product                   = new Product();
-        $product->NAME_PRODUCT          = $req->input('name_product');
-        $product->ID_PC                 = $req->input('category_product');
-        $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
-        $product->save();
 
-        return redirect('master/product')->with('succ_msg', 'Berhasil menambah data produk!');
+        $cek = Product::where('CODE_PRODUCT', '=', $req->input('code_product'))->exists();
+        if ($cek == true) {
+            return redirect('master/product')->with('err_msg', 'Kode produk sudah ada!');
+        }else{
+            $product                        = new Product();
+            $product->NAME_PRODUCT          = $req->input('name_product');
+            $product->CODE_PRODUCT          = $req->input('code_product');
+            $product->ID_PC                 = $req->input('category_product');
+            $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+            $product->save();
+
+            return redirect('master/product')->with('succ_msg', 'Berhasil menambah data produk!');
+        }
     }
 
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
             'name_product'      => 'required',
+            'code_product'      => 'required',
             'category_product'    => 'required',
             'status'                => 'required',
         ], [
@@ -58,6 +67,7 @@ class ProductController extends Controller
         date_default_timezone_set("Asia/Bangkok");
         $product = Product::find($req->input('id'));
         $product->NAME_PRODUCT          = $req->input('name_product');
+        $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
         $product->ID_PC                 = $req->input('category_product');
         $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $product->save();
