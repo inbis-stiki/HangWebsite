@@ -73,18 +73,30 @@ class PresenceApi extends Controller
             date_default_timezone_set("Asia/Bangkok");
             $path = $req->file('image')->store('images', 's3');
 
-            $presence = new Presence();
-            $presence->ID_USER              = $req->input('id_user');
-            $presence->ID_TYPE              = $req->input('id_type');
-            $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
-            $presence->DATE_PRESENCE        = date('Y-m-d H:i:s');
-            $presence->save();
+            $cek = Presence::where('ID_USER', '=', ''.$req->input('id_user').'')
+            ->where('ID_TYPE', '=', $req->input('id_type'))
+            ->whereDate('DATE_PRESENCE', '=', date('Y-m-d'))
+            ->exists();
 
-            return response([
-                "status_code"       => 200,
-                "status_message"    => 'Data berhasil disimpan!',
-                "data"              => ['ID_PRESENCE' => $presence->ID_PRESENCE]
-            ], 200);
+            if ($cek == true) {
+                return response([
+                    "status_code"       => 200,
+                    "status_message"    => 'Anda sudah absen'
+                ], 200);
+            }else{
+                $presence = new Presence();
+                $presence->ID_USER              = $req->input('id_user');
+                $presence->ID_TYPE              = $req->input('id_type');
+                $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
+                $presence->DATE_PRESENCE        = date('Y-m-d H:i:s');
+                $presence->save();
+
+                return response([
+                    "status_code"       => 200,
+                    "status_message"    => 'Data berhasil disimpan!',
+                    "data"              => ['ID_PRESENCE' => $presence->ID_PRESENCE]
+                ], 200);
+            }
         } catch (HttpResponseException $exp) {
             return response([
                 'status_code'       => $exp->getCode(),
