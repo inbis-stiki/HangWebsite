@@ -12,8 +12,8 @@
                     <i class="flaticon-381-add-2"></i>
                     Tambah Harga Regional
                 </button>
-                <a href="{{ url('master/regionalprice/download_template') }}" style="float: right;" class="btn btn-sm btn-primary mr-3">
-                    <i class="flaticon-381-add-2"></i>
+                <a href="{{ url('master/regional-price/download_template') }}" style="float: right;" class="btn btn-sm btn-outline-primary mr-3">
+                    <i class="flaticon-381-download"></i>
                     Download Template
                 </a>
             </div>
@@ -100,8 +100,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" action="{{ url('master/regionalprice/store') }}" enctype="multipart/form-data">
-                    <div class="rounded bg-secondary w-100 h-75 d-inline-block p-10 d-flex justify-content-center p-5 flex-column text-white">
+                <form method="post" action="{{ url('master/regional-price/store') }}" enctype="multipart/form-data">
+                    <div class="rounded border border-primary w-100 h-75 d-inline-block p-10 d-flex justify-content-center p-5 flex-column">
                         <div class="mx-auto">
                             Upload Harga Regional dari Template yang sudah tersedia
                         </div>
@@ -127,7 +127,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/regionalprice/update') }}">
+                <form action="{{ url('master/regional-price/update') }}">
                     <div class="row form-group">
                         <div class="col-md-6 ">
                             <label for="">Produk</label>
@@ -186,7 +186,7 @@
             <div class="modal-body">
                 <p>Apakah anda yakin untuk menghapus harga regional ini?</p>
             </div>
-            <form action="{{ url('master/regionalprice/destroy') }}">
+            <form action="{{ url('master/regional-price/destroy') }}">
                 <div class="modal-footer">
                     <input type="hidden" name="id" id="mdlDelete_id">
                     <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>

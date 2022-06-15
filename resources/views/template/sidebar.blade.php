@@ -25,7 +25,7 @@
                             <li><a href="#">Pasar</a></li>
                         </ul>
                     </li>
-                    <li><a href="{{ url('master/regionalprice') }}">Harga Regional</a></li>
+                    <li><a href="{{ url('master/regional-price') }}">Harga Regional</a></li>
                     <li><a href="#">Target Regional</a></li>
                     <li><a href="#">Konversi</a></li>
                     <li><a href="{{ url('master/user') }}">User</a></li>
