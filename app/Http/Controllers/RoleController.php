@@ -19,9 +19,10 @@ class RoleController extends Controller
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
             'nama_role'             => 'required',
-            'status'                => 'required',
+            'status'                => 'required | exists:md_role,NAME_ROLE',
         ], [
             'required' => 'Data tidak boleh kosong!',
+            'exists' => 'Nama role telah digunakan!',
         ]);
 
         if($validator->fails()){

@@ -24,18 +24,19 @@ class UserController extends Controller
     }
 
     public function store(Request $req){
-        $validator = Validator::make($req->all(), [
-            'username'      => 'required',
-            'name'          => 'required:alpha',
-            'email'         => 'required',
-            'phone'         => 'required',
+        $validator = Validator::make($req->all(), [            
             'ktp'           => 'required',
+            'email'         => 'required',
+            'username'      => 'required | exists:user,USERNAME_USER',
+            'name'          => 'required ',
+            'phone'         => 'required',
             'password'      => 'required',
             'area'          => 'required',
             'role'          => 'required',
             'status'        => 'required',
         ], [
             'required' => 'Data tidak boleh kosong!',
+            'exists' => 'Data :attribute telah digunakan!',
         ]);
 
         if($validator->fails()){

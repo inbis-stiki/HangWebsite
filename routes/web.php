@@ -82,7 +82,7 @@ Route::middleware(['checkRole:1'])->group(function () {
 
     // MASTER USER
     Route::get('master/user', 'UserController@index');
-    Route::get('master/user/store', 'UserController@store');
+    Route::post('master/user/store', 'UserController@store');
     Route::get('master/user/update', 'UserController@update');
     Route::get('master/user/destroy', 'UserController@destroy');
 });
