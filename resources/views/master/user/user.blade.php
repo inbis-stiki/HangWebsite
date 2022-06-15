@@ -92,7 +92,8 @@
                 </button>
             </div>
             <div class="modal-body">
-            <form action="{{ url('master/user/store') }}">
+            <form action="{{ url('master/user/store') }}" method="POST">
+                @csrf
                 <div class="row form-group">
                     <div class="col-md-6">
                         <label for="">Username</label>
