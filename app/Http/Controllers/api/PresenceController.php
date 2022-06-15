@@ -56,7 +56,7 @@ class PresenceController extends Controller
             $validator = Validator::make($req->all(), [
                 'id_user'          => 'required|string|exists:user,ID_USER',
                 'id_type'          => 'required|numeric|exists:md_type,ID_TYPE',
-                'image'             => 'required|image'
+                'image'            => 'required|image'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
                 'string'    => 'Parameter :attribute harus bertipe string!',
