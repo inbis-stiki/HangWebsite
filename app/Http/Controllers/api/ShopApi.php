@@ -59,7 +59,7 @@ class ShopApi extends Controller
                 'owner_shop'            => 'required|string',
                 'isinside_market'       => 'required|numeric',
                 'type_shop'             => 'required|string',
-                'det_loc'               => 'required|string',
+                'detloc_shop'               => 'required|string',
                 'telp_shop'             => 'required|string',
                 'long_shop'             => 'required|string',
                 'lat_shop'              => 'required|string',
