@@ -24,7 +24,7 @@ Route::get('/', 'AuthController@login');
 Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 
-Route::middleware(['checkRole:1'])->group(function(){
+Route::middleware(['checkRole:1'])->group(function () {
     Route::get('dashboard', 'DashboardController@index');
 
     // MASTER LOCATION
@@ -48,6 +48,19 @@ Route::middleware(['checkRole:1'])->group(function(){
     Route::get('master/location/district/store', 'DistrictController@store');
     Route::get('master/location/district/update', 'DistrictController@update');
     Route::get('master/location/district/destroy', 'DistrictController@destroy');
+
+    // MASTER HARGA REGIONAL
+    Route::get('master/regionalprice', 'RegionalPriceController@index');
+    Route::post('master/regionalprice/store', 'RegionalPriceController@store');
+    Route::get('master/regionalprice/update', 'RegionalPriceController@update');
+    Route::get('master/regionalprice/destroy', 'RegionalPriceController@destroy');
+    Route::get('master/regionalprice/download_template', 'RegionalPriceController@download_template');
+
+    // MASTER  REGIONAL
+    Route::get('master/targetregional', 'TargetRegionalController@index');
+    Route::get('master/targetregional/store', 'TargetRegionalController@store');
+    Route::get('master/targetregional/update', 'TargetRegionalController@update');
+    Route::get('master/targetregional/destroy', 'TargetRegionalController@destroy');
 
     //MASTER KATEGORI PRODUK
     Route::get('master/category-product', 'CategoryProductController@index');
