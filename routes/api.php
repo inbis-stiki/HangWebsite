@@ -32,4 +32,7 @@ Route::middleware(['checkAuthApi'])->group(function(){
     Route::get("presence", 'api\PresenceController@index');
     Route::get("presence/{any}", 'api\PresenceController@detail');
     Route::post("presence", 'api\PresenceController@store');
+
+    // API PRODUCT
+    Route::get("product", 'api\ProductApi@index');
 });
