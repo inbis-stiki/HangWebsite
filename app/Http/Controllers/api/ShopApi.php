@@ -96,7 +96,7 @@ class ShopApi extends Controller
                 $shop->OWNER_SHOP           = $req->input('owner_shop');
                 $shop->ISINSIDEMARKET_SHOP  = $req->input('isinside_market');
                 $shop->TYPE_SHOP            = $req->input('type_shop');
-                $shop->DETLOC_SHOP          = $req->input('detoc_shop');
+                $shop->DETLOC_SHOP          = $req->input('detloc_shop');
                 $shop->TELP_SHOP            = $req->input('telp_shop');
                 $shop->LONG_SHOP            = $req->input('long_shop');
                 $shop->LAT_SHOP             = $req->input('lat_shop');
