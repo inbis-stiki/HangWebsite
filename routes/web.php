@@ -50,11 +50,11 @@ Route::middleware(['checkRole:1'])->group(function () {
     Route::get('master/location/district/destroy', 'DistrictController@destroy');
 
     // MASTER HARGA REGIONAL
-    Route::get('master/regionalprice', 'RegionalPriceController@index');
-    Route::post('master/regionalprice/store', 'RegionalPriceController@store');
-    Route::get('master/regionalprice/update', 'RegionalPriceController@update');
-    Route::get('master/regionalprice/destroy', 'RegionalPriceController@destroy');
-    Route::get('master/regionalprice/download_template', 'RegionalPriceController@download_template');
+    Route::get('master/regional-price', 'RegionalPriceController@index');
+    Route::post('master/regional-price/store', 'RegionalPriceController@store');
+    Route::get('master/regional-price/update', 'RegionalPriceController@update');
+    Route::get('master/regional-price/destroy', 'RegionalPriceController@destroy');
+    Route::get('master/regional-price/download_template', 'RegionalPriceController@download_template');
 
     // MASTER  REGIONAL
     Route::get('master/targetregional', 'TargetRegionalController@index');

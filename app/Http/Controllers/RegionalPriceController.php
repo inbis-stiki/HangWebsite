@@ -48,7 +48,7 @@ class RegionalPriceController extends Controller
             'required' => 'Data tidak boleh kosong!',
         ]);
         if ($validator->fails()) {
-            return redirect('master/regionalprice')->withErrors($validator);
+            return redirect('master/regional-price')->withErrors($validator);
         }
         $file = $request->file('file_excel_template');
         // dd($file);
@@ -79,7 +79,7 @@ class RegionalPriceController extends Controller
         }
         // Excel::import(new RegionalPriceImport, $file->getRealPath());
 
-        return redirect('master/regionalprice')->with('succ_msg', 'Berhasil menambahkan data harga regional!');
+        return redirect('master/regional-price')->with('succ_msg', 'Berhasil menambahkan data harga regional!');
 
         //
     }
@@ -104,7 +104,7 @@ class RegionalPriceController extends Controller
             'required' => 'Data tidak boleh kosong!',
         ]);
         if ($validator->fails()) {
-            return redirect('master/regionalprice')->withErrors($validator);
+            return redirect('master/regional-price')->withErrors($validator);
         }
         date_default_timezone_set("Asia/Bangkok");
         $regional_price = RegionalPrice::find($request->input('id'));
@@ -114,7 +114,7 @@ class RegionalPriceController extends Controller
         $regional_price->DELETED_AT         = $request->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $regional_price->save();
         // dd($regional_price);
-        return redirect('master/regionalprice')->with('succ_msg', 'Berhasil mengubah data harga regional!');
+        return redirect('master/regional-price')->with('succ_msg', 'Berhasil mengubah data harga regional!');
         //
     }
 
@@ -132,13 +132,13 @@ class RegionalPriceController extends Controller
             'required' => 'Data tidak boleh kosong!',
         ]);
         if ($validator->fails()) {
-            return redirect('master/regionalprice')->withErrors($validator);
+            return redirect('master/regional-price')->withErrors($validator);
         }
         date_default_timezone_set("Asia/Bangkok");
         $regional_price = RegionalPrice::find($request->input('id'));
         $regional_price->delete();
         // dd($regional_price);
-        return redirect('master/regionalprice')->with('succ_msg', 'Berhasil menghapus data harga regional!');
+        return redirect('master/regional-price')->with('succ_msg', 'Berhasil menghapus data harga regional!');
         //
     }
     public function download_template()
