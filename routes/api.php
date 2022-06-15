@@ -37,8 +37,12 @@ Route::middleware(['checkAuthApi'])->group(function(){
     Route::get("product", 'api\ProductApi@index');
     
     // API DISTRICT
+    Route::get("district", 'api\DistrictApi@index');
     Route::get("districtPickup/{any}", 'api\DistrictApi@districtPickup');
     
     // API PICKUP
     Route::post("pickup", 'api\PickupApi@store');
+
+    //API SHOP
+    Route::post("shop", 'api\ShopApi@store');
 });
