@@ -29,9 +29,9 @@ Route::middleware(['checkAuthApi'])->group(function(){
     Route::delete("tes", 'api\TesApi@delete');
 
     // API PRESENCE
-    Route::get("presence", 'api\PresenceController@index');
-    Route::get("presence/{any}", 'api\PresenceController@detail');
-    Route::post("presence", 'api\PresenceController@store');
+    Route::get("presence", 'api\PresenceApi@index');
+    Route::get("presence/{any}", 'api\PresenceApi@detail');
+    Route::post("presence", 'api\PresenceApi@store');
 
     // API PRODUCT
     Route::get("product", 'api\ProductApi@index');
