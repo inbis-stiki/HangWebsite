@@ -53,7 +53,7 @@ class ProductController extends Controller
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
             'name_product'      => 'required',
-            'code_product'      => 'required|unique:md_product,CODE_PRODUCT',
+            'code_product'      => 'required',
             'category_product'    => 'required',
             'status'                => 'required',
         ], [
@@ -66,13 +66,29 @@ class ProductController extends Controller
 
         date_default_timezone_set("Asia/Bangkok");
         $product = Product::find($req->input('id'));
-        $product->NAME_PRODUCT          = $req->input('name_product');
-        $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
-        $product->ID_PC                 = $req->input('category_product');
-        $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
-        $product->save();
+        $cek = $product->CODE_PRODUCT == strtoupper($req->input('code_product')); 
+        if ($cek == true) {
+            $product->NAME_PRODUCT          = $req->input('name_product');
+            $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
+            $product->ID_PC                 = $req->input('category_product');
+            $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+            $product->save();
 
-        return redirect('master/product')->with('succ_msg', 'Berhasil mengubah data produk!');
+            return redirect('master/product')->with('succ_msg', 'Berhasil mengubah data produk!');
+        }else{
+            $cek_code = Product::where('CODE_PRODUCT', '=', $req->input('code_product'))->exists();
+            if ($cek_code == true) {
+                return redirect('master/product')->with('err_msg', 'Kode produk sudah ada!');
+            }else{
+                $product->NAME_PRODUCT          = $req->input('name_product');
+                $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
+                $product->ID_PC                 = $req->input('category_product');
+                $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+                $product->save();
+
+                return redirect('master/product')->with('succ_msg', 'Berhasil mengubah data produk!');
+            }
+        }
     }
 
     public function destroy(Request $req){
