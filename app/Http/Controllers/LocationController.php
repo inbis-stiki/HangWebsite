@@ -17,10 +17,11 @@ class LocationController extends Controller
     }
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
-            'name'      => 'required',
+            'name'      => 'required|unique:md_location,NAME_LOCATION',
             'status'    => 'required',
         ], [
-            'required' => 'Data tidak boleh kosong!',
+            'required'  => 'Data :attribute tidak boleh kosong!',
+            'unique'    => 'Data :attribute telah terdaftar!'
         ]);
 
         if($validator->fails()){
@@ -39,10 +40,11 @@ class LocationController extends Controller
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
             'id'        => 'required',
-            'name'      => 'required',
+            'name'      => 'required|unique:md_location,NAME_LOCATION',
             'status'    => 'required',
         ], [
             'required' => 'Data tidak boleh kosong!',
+            'unique'   => 'Data :attribute telah terdaftar!'
         ]);
 
         if($validator->fails()){

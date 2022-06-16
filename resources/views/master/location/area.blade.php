@@ -86,7 +86,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/location/area/store') }}" method="POST">
+                <form id="formAdd" action="{{ url('master/location/area/store') }}" method="POST">
                     @csrf
                 <div class="form-group">
                     <label for="">Area</label>
@@ -94,7 +94,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Regional</label>
-                    <select name="regional" class="select2" required>
+                    <select id="mdlAdd_select" name="regional" class="select2" required>
                         <option selected disabled value="">Pilih Regional</option>
                         @foreach ($regionals as $regional)
                             <option value="{{ $regional->ID_REGIONAL }}">{{ $regional->NAME_REGIONAL }}</option>                            
@@ -127,7 +127,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/location/area/update') }}" method="POST">
+                <form  action="{{ url('master/location/area/update') }}" method="POST">
                     @csrf
                 <div class="form-group">
                     <label for="">Area</label>
@@ -188,6 +188,10 @@
 @include('template/footer')
 <script>
     $('#datatable').DataTable()
+    $('#mdlAdd').on('hidden.bs.modal', function () {
+        $('#formAdd').trigger('reset')
+        $('#mdlAdd_select').val("").change()
+    })
     function showMdlEdit(id, name, location, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)

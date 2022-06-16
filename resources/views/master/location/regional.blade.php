@@ -83,15 +83,15 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/location/regional/store') }}" method="POST">
+                <form id="formAdd" action="{{ url('master/location/regional/store') }}" method="POST">
                     @csrf
                 <div class="form-group">
                     <label for="">Regional</label>
-                    <input type="text" name="regional" class="form-control" placeholder="Input nama Nasional" required>
+                    <input type="text" name="regional" class="form-control" placeholder="Input nama Regional" required>
                 </div>
                 <div class="form-group">
                     <label for="">Nasional</label>
-                    <select name="location" class="select2" required>
+                    <select id="mdlAdd_select" name="location" class="select2" required>
                         <option selected disabled value="">Pilih Nasional</option>
                         @foreach ($locations as $location)
                             <option value="{{ $location->ID_LOCATION }}">{{ $location->NAME_LOCATION }}</option>                            
@@ -128,7 +128,7 @@
                     @csrf
                 <div class="form-group">
                     <label for="">Regional</label>
-                    <input type="text" name="regional" id="mdlEdit_name" class="form-control" placeholder="Input nama Nasional" required>
+                    <input type="text" name="regional" id="mdlEdit_name" class="form-control" placeholder="Input nama Regional" required>
                 </div>
                 <div class="form-group">
                     <label for="">Nasional</label>
@@ -185,6 +185,10 @@
 @include('template/footer')
 <script>
     $('#datatable').DataTable()
+    $('#mdlAdd').on('hidden.bs.modal', function () {
+        $('#formAdd').trigger('reset')
+        $('#mdlAdd_select').val("").change()
+    })
     function showMdlEdit(id, name, location, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)

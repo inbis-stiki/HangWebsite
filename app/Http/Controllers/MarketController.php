@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Area;
 use App\District;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class MarketController extends Controller
@@ -14,7 +15,11 @@ class MarketController extends Controller
         $data['sidebar']        = "master";
         $data['sidebar2']       = "pasar";
         
-        $data['markets']    = District::where('ISMARKET_DISTRICT', 1)->get();
+        $data['markets']    = DB::table('md_district')
+        ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
+        ->select('md_district.*', 'md_area.NAME_AREA')
+        ->where('ISMARKET_DISTRICT', '1')
+        ->get();
         $data['areas']      = Area::whereNull('deleted_at')->get();
 
         return view('master.location.market', $data);
@@ -32,6 +37,14 @@ class MarketController extends Controller
             return redirect('master/location/market')->withErrors($validator);
         }
 
+        $dist = District::where([
+            ['NAME_DISTRICT', '=', $req->input('district')],
+            ['ISMARKET_DISTRICT', '=', '1']
+        ])->exists();
+
+        if($dist == true){
+            return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
+        }
 
         date_default_timezone_set("Asia/Bangkok");
         $district = new District();
@@ -57,6 +70,15 @@ class MarketController extends Controller
 
         if($validator->fails()){
             return redirect('master/location/market')->withErrors($validator);
+        }
+
+        $dist = District::where([
+            ['NAME_DISTRICT', '=', $req->input('district')],
+            ['ISMARKET_DISTRICT', '=', '1']
+        ])->exists();
+
+        if($dist == true){
+            return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
         }
 
         date_default_timezone_set("Asia/Bangkok");

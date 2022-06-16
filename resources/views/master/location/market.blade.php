@@ -45,7 +45,7 @@
                                     @foreach ($markets as $market)
                                         <tr>
                                             <td>{{ $market->NAME_DISTRICT }}</td>
-                                            <td>{{ $market->area->NAME_AREA }}</td>
+                                            <td>{{ $market->NAME_AREA }}</td>
                                             <td>
                                                 @if ($market->ISFOCUS_DISTRICT == '1')
                                                     <i class="fa-solid fa-circle mr-2" style="color:#0000FF;"></i>
@@ -88,7 +88,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/location/market/store') }}" method="POST">
+                <form id="formAdd" action="{{ url('master/location/market/store') }}" method="POST">
                     @csrf
                 <div class="form-group">
                     <label for="">Pasar</label>
@@ -96,7 +96,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Area</label>
-                    <select name="area" class="select2" required>
+                    <select id="mdlAdd_select" name="area" class="select2" required>
                         <option selected disabled value="">Pilih Area</option>
                         @foreach ($areas as $area)
                             <option value="{{ $area->ID_AREA }}">{{ $area->NAME_AREA }}</option>                            
@@ -208,6 +208,10 @@
 @include('template/footer')
 <script>
     $('#datatable').DataTable()
+    $('#mdlAdd').on('hidden.bs.modal', function () {
+        $('#formAdd').trigger('reset')
+        $('#mdlAdd_select').val("").change()
+    })
     function showMdlEdit(id, name, location, statusMarket, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)

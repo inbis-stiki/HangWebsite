@@ -10,7 +10,7 @@
             <div class="col">
                 <button style="float: right;" data-toggle="modal" data-target="#mdlAdd"  class="btn btn-sm btn-primary">
                     <i class="flaticon-381-add-2"></i>
-                    Tambah Lokasi
+                    Tambah Nasional
                 </button>
             </div>
         </div>
@@ -77,12 +77,12 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Ubah Nasional</h5>
+                <h5 class="modal-title">Tambah Nasional</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/location/national/store') }}" method="POST">
+                <form id="formAdd"  action="{{ url('master/location/national/store') }}" method="POST">
                     @csrf
                 <div class="form-group">
                     <label for="">Nasional</label>
@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
+                <button type="button" onclick="resetForm()" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
             </form>
@@ -114,7 +114,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/location/national/update') }}" method="POST">
+                <form  action="{{ url('master/location/national/update') }}" method="POST">
                     @csrf
                 <div class="form-group">
                     <label for="">Nasional</label>
@@ -166,6 +166,9 @@
 @include('template/footer')
 <script>
     $('#datatable').DataTable()
+    $('#mdlAdd').on('hidden.bs.modal', function () {
+        $('#formAdd').trigger('reset')
+    })
     function showMdlEdit(id, name, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)

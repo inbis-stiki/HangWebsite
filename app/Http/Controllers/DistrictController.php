@@ -37,6 +37,14 @@ class DistrictController extends Controller
             return redirect('master/location/district')->withErrors($validator);
         }
 
+        $dist = District::where([
+            ['NAME_DISTRICT', '=', $req->input('district')],
+            ['ISMARKET_DISTRICT', '=', '0']
+        ])->exists();
+
+        if($dist == true){
+            return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
+        }
 
         date_default_timezone_set("Asia/Bangkok");
         $district = new District();
@@ -61,6 +69,15 @@ class DistrictController extends Controller
 
         if($validator->fails()){
             return redirect('master/location/district')->withErrors($validator);
+        }
+
+        $dist = District::where([
+            ['NAME_DISTRICT', '=', $req->input('district')],
+            ['ISMARKET_DISTRICT', '=', '0']
+        ])->exists();
+
+        if($dist == true){
+            return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
         }
 
         date_default_timezone_set("Asia/Bangkok");
