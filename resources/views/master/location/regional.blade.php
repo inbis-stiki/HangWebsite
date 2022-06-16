@@ -83,7 +83,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/location/regional/store') }}">
+                <form action="{{ url('master/location/regional/store') }}" method="POST">
+                    @csrf
                 <div class="form-group">
                     <label for="">Regional</label>
                     <input type="text" name="regional" class="form-control" placeholder="Input nama Nasional" required>
@@ -123,7 +124,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/location/regional/update') }}">
+                <form action="{{ url('master/location/regional/update') }}" method="POST">
+                    @csrf
                 <div class="form-group">
                     <label for="">Regional</label>
                     <input type="text" name="regional" id="mdlEdit_name" class="form-control" placeholder="Input nama Nasional" required>
@@ -166,7 +168,8 @@
             <div class="modal-body">
                 <p>Apakah anda yakin untuk menghapus data nasional?</p>
             </div>
-            <form action="{{ url('master/location/regional/destroy') }}">
+            <form action="{{ url('master/location/regional/destroy') }}" method="POST">
+                @csrf
             <div class="modal-footer">
                 <input type="hidden" name="id" id="mdlDelete_id">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
