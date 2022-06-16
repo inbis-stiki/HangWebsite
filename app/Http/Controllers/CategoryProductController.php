@@ -67,14 +67,22 @@ class CategoryProductController extends Controller
         }
 
         date_default_timezone_set("Asia/Bangkok");
+        $total   =   CategoryProduct::where('deleted_at', null)
+        ->whereNotIn('ID_PC', [$req->input('id')])
+        ->sum('PERCENTAGE_PC');
         
-        $category_product = CategoryProduct::find($req->input('id'));
-        $category_product->NAME_PC          = $req->input('category_product');
-        $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
-        $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
-        $category_product->save();
+        $cek = $total+$req->input('percentage_product');
+        if ($cek > 100) {
+            return redirect('master/category-product')->with('err_msg', 'Persentase kategori produk melebihi persentase, mohon kurangi persentase saat input!');
+        }else{
+            $category_product = CategoryProduct::find($req->input('id'));
+            $category_product->NAME_PC          = $req->input('category_product');
+            $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
+            $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+            $category_product->save();
 
-        return redirect('master/category-product')->with('succ_msg', 'Berhasil mengubah data kategori produk!');
+            return redirect('master/category-product')->with('succ_msg', 'Berhasil mengubah data kategori produk!');
+        }
     }
 
     public function destroy(Request $req){
