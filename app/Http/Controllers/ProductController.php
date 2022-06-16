@@ -22,7 +22,7 @@ class ProductController extends Controller
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
             'name_product'      => 'required',
-            'code_product'      => 'required',
+            'code_product'      => 'required|unique:md_product,CODE_PRODUCT',
             'category_product'    => 'required',
             'status'                => 'required',
         ], [
@@ -53,7 +53,7 @@ class ProductController extends Controller
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
             'name_product'      => 'required',
-            'code_product'      => 'required',
+            'code_product'      => 'required|unique:md_product,CODE_PRODUCT',
             'category_product'    => 'required',
             'status'                => 'required',
         ], [
