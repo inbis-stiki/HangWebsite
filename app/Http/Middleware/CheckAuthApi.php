@@ -18,6 +18,8 @@ class CheckAuthApi
      */
     public function handle($request, Closure $next)
     {
+        // dump($request->input());
+        // dump("tes");
         try {
             $jwt = JWT::decode($request->header('Authorization'), new Key(env('JWT_SECRET_KEY'), env('JWT_ALGO')));
             if($jwt->ID_ROLE != '5' && $jwt->ID_ROLE != '6'){
@@ -26,6 +28,7 @@ class CheckAuthApi
                     'status_message'    => 'Anda tidak memiliki hak akses!',
                 ], 200);
             }
+            $request->request->add(['id_user' => $jwt->ID_USER]); 
             return $next($request);
         } catch (Exception $exp) {
             return response([
