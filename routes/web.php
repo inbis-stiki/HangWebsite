@@ -30,24 +30,29 @@ Route::middleware(['checkRole:1'])->group(function () {
     // MASTER LOCATION
     // nasional
     Route::get('master/location/national', 'LocationController@index');
-    Route::get('master/location/national/store', 'LocationController@store');
-    Route::get('master/location/national/update', 'LocationController@update');
-    Route::get('master/location/national/destroy', 'LocationController@destroy');
+    Route::post('master/location/national/store', 'LocationController@store');
+    Route::post('master/location/national/update', 'LocationController@update');
+    Route::post('master/location/national/destroy', 'LocationController@destroy');
     // regional
     Route::get('master/location/regional', 'RegionalController@index');
-    Route::get('master/location/regional/store', 'RegionalController@store');
-    Route::get('master/location/regional/update', 'RegionalController@update');
-    Route::get('master/location/regional/destroy', 'RegionalController@destroy');
+    Route::post('master/location/regional/store', 'RegionalController@store');
+    Route::post('master/location/regional/update', 'RegionalController@update');
+    Route::post('master/location/regional/destroy', 'RegionalController@destroy');
     // area
     Route::get('master/location/area', 'AreaController@index');
-    Route::get('master/location/area/store', 'AreaController@store');
-    Route::get('master/location/area/update', 'AreaController@update');
-    Route::get('master/location/area/destroy', 'AreaController@destroy');
+    Route::post('master/location/area/store', 'AreaController@store');
+    Route::post('master/location/area/update', 'AreaController@update');
+    Route::post('master/location/area/destroy', 'AreaController@destroy');
     // area
     Route::get('master/location/district', 'DistrictController@index');
-    Route::get('master/location/district/store', 'DistrictController@store');
-    Route::get('master/location/district/update', 'DistrictController@update');
-    Route::get('master/location/district/destroy', 'DistrictController@destroy');
+    Route::post('master/location/district/store', 'DistrictController@store');
+    Route::post('master/location/district/update', 'DistrictController@update');
+    Route::post('master/location/district/destroy', 'DistrictController@destroy');
+    // market
+    Route::get('master/location/market', 'MarketController@index');
+    Route::post('master/location/market/store', 'MarketController@store');
+    Route::post('master/location/market/update', 'MarketController@update');
+    Route::post('master/location/market/destroy', 'MarketController@destroy');
 
     // MASTER HARGA REGIONAL
     Route::get('master/regional-price', 'RegionalPriceController@index');

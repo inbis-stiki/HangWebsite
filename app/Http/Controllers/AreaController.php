@@ -27,11 +27,12 @@ class AreaController extends Controller
     }
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
-            'area'      => 'required',
+            'area'      => 'required|unique:md_area,NAME_AREA',
             'regional'  => 'required',
             'status'    => 'required',
         ], [
-            'required' => 'Data tidak boleh kosong!',
+            'required' => 'Data :attribute tidak boleh kosong!',
+            'unique'   => 'Data :attribute telah terdaftar!'
         ]);
 
         if($validator->fails()){
@@ -51,11 +52,12 @@ class AreaController extends Controller
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
             'id'        => 'required',
-            'area'  => 'required',
+            'area'      => 'required|unique:md_area,NAME_AREA',
             'regional'  => 'required',
             'status'    => 'required',
         ], [
             'required' => 'Data tidak boleh kosong!',
+            'unique'   => 'Data :attribute telah terdaftar!'
         ]);
 
         if($validator->fails()){

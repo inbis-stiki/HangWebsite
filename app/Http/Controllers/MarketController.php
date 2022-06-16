@@ -8,21 +8,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class DistrictController extends Controller
+class MarketController extends Controller
 {
     public function index(){
-        $data['title']          = "Kecamatan";
+        $data['title']          = "Pasar";
         $data['sidebar']        = "master";
-        $data['sidebar2']       = "kecamatan";
+        $data['sidebar2']       = "pasar";
         
-        $data['districts']      = DB::table('md_district')
+        $data['markets']    = DB::table('md_district')
         ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
         ->select('md_district.*', 'md_area.NAME_AREA')
-        ->where('ISMARKET_DISTRICT', '0')
+        ->where('ISMARKET_DISTRICT', '1')
         ->get();
-        $data['areas']  = Area::whereNull('deleted_at')->get();
+        $data['areas']      = Area::whereNull('deleted_at')->get();
 
-        return view('master.location.district', $data);
+        return view('master.location.market', $data);
     }
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
@@ -34,12 +34,12 @@ class DistrictController extends Controller
         ]);
 
         if($validator->fails()){
-            return redirect('master/location/district')->withErrors($validator);
+            return redirect('master/location/market')->withErrors($validator);
         }
 
         $dist = District::where([
             ['NAME_DISTRICT', '=', $req->input('district')],
-            ['ISMARKET_DISTRICT', '=', '0']
+            ['ISMARKET_DISTRICT', '=', '1']
         ])->exists();
 
         if($dist == true){
@@ -50,12 +50,13 @@ class DistrictController extends Controller
         $district = new District();
         $district->ID_AREA              = $req->input('area');
         $district->NAME_DISTRICT        = $req->input('district');
-        $district->ISMARKET_DISTRICT    = '0';
-        $district->ISFOCUS_DISTRICT     = '0';
+        $district->NAME_DISTRICT        = $req->input('district');
+        $district->ISMARKET_DISTRICT    = '1';
+        $district->ISFOCUS_DISTRICT     = !empty($req->input('statusMarket')) ? '1' : '0';
         $district->deleted_at           = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $district->save();
 
-        return redirect('master/location/district')->with('succ_msg', 'Berhasil menambah data kecamatan!');
+        return redirect('master/location/market')->with('succ_msg', 'Berhasil menambah data pasar!');
     }
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
@@ -68,12 +69,12 @@ class DistrictController extends Controller
         ]);
 
         if($validator->fails()){
-            return redirect('master/location/district')->withErrors($validator);
+            return redirect('master/location/market')->withErrors($validator);
         }
 
         $dist = District::where([
             ['NAME_DISTRICT', '=', $req->input('district')],
-            ['ISMARKET_DISTRICT', '=', '0']
+            ['ISMARKET_DISTRICT', '=', '1']
         ])->exists();
 
         if($dist == true){
@@ -84,10 +85,11 @@ class DistrictController extends Controller
         $district = District::find($req->input('id'));
         $district->ID_AREA          = $req->input('area');
         $district->NAME_DISTRICT    = $req->input('district');
+        $district->ISFOCUS_DISTRICT = !empty($req->input('statusMarket')) ? '1' : '0';
         $district->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $district->save();
 
-        return redirect('master/location/district')->with('succ_msg', 'Berhasil mengubah data kecamatan!');
+        return redirect('master/location/market')->with('succ_msg', 'Berhasil mengubah data pasar!');
     }
     public function destroy(Request $req){
         $validator = Validator::make($req->all(), [
@@ -97,12 +99,12 @@ class DistrictController extends Controller
         ]);
 
         if($validator->fails()){
-            return redirect('master/location/district')->withErrors($validator);
+            return redirect('master/location/market')->withErrors($validator);
         }
 
         $district = District::find($req->input('id'));
         $district->delete();
 
-        return redirect('master/location/district')->with('succ_msg', 'Berhasil menghapus data kecamatan!');
+        return redirect('master/location/market')->with('succ_msg', 'Berhasil menghapus data pasar!');
     }
 }

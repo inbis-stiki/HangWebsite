@@ -10,7 +10,7 @@
             <div class="col">
                 <button style="float: right;" data-toggle="modal" data-target="#mdlAdd"  class="btn btn-sm btn-primary">
                     <i class="flaticon-381-add-2"></i>
-                    Tambah Area
+                    Tambah Pasar
                 </button>
             </div>
         </div>
@@ -35,21 +35,23 @@
                             <table id="datatable" class="display min-w850">
                                 <thead>
                                     <tr>
+                                        <th>Pasar</th>
                                         <th>Area</th>
-                                        <th>Regional</th>
-                                        <th>Nasional</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($areas as $area)
+                                    @foreach ($markets as $market)
                                         <tr>
-                                            <td>{{ $area->NAME_AREA }}</td>
-                                            <td>{{ $area->NAME_REGIONAL }}</td>
-                                            <td>{{ $area->NAME_LOCATION }}</td>
+                                            <td>{{ $market->NAME_DISTRICT }}</td>
+                                            <td>{{ $market->NAME_AREA }}</td>
                                             <td>
-                                                @if ($area->deleted_at == NULL)
+                                                @if ($market->ISFOCUS_DISTRICT == '1')
+                                                    <i class="fa-solid fa-circle mr-2" style="color:#0000FF;"></i>
+                                                    Pasar Fokus
+                                                @endif
+                                                @if ($market->deleted_at == NULL)
                                                     <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
                                                     Enable
                                                 @else
@@ -58,10 +60,10 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <button onclick="showMdlEdit('{{ $area->ID_AREA }}', '{{ $area->NAME_AREA }}', '{{ $area->ID_REGIONAL }}', '{{ $area->deleted_at }}')" class="btn btn-primary btn-sm">
+                                                <button onclick="showMdlEdit('{{ $market->ID_DISTRICT }}', '{{ $market->NAME_DISTRICT }}', '{{ $market->ID_AREA }}', '{{ $market->ISFOCUS_DISTRICT }}', '{{ $market->deleted_at }}')" class="btn btn-primary btn-sm">
                                                     <i class="flaticon-381-edit-1"></i>
                                                 </button>
-                                                <button onclick="showMdlDelete('{{ $area->ID_AREA }}')" class="btn btn-primary btn-sm">
+                                                <button onclick="showMdlDelete('{{ $market->ID_DISTRICT }}')" class="btn btn-primary btn-sm">
                                                     <i class="flaticon-381-trash-1"></i>
                                                 </button>
                                             </td>
@@ -81,25 +83,34 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Area</h5>
+                <h5 class="modal-title">Tambah Pasar</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="formAdd" action="{{ url('master/location/area/store') }}" method="POST">
+                <form id="formAdd" action="{{ url('master/location/market/store') }}" method="POST">
                     @csrf
                 <div class="form-group">
-                    <label for="">Area</label>
-                    <input type="text" name="area" class="form-control" placeholder="Input nama Area" required>
+                    <label for="">Pasar</label>
+                    <input type="text" name="district" class="form-control" placeholder="Input nama Pasar" required>
                 </div>
                 <div class="form-group">
-                    <label for="">Regional</label>
-                    <select id="mdlAdd_select" name="regional" class="select2" required>
-                        <option selected disabled value="">Pilih Regional</option>
-                        @foreach ($regionals as $regional)
-                            <option value="{{ $regional->ID_REGIONAL }}">{{ $regional->NAME_REGIONAL }}</option>                            
+                    <label for="">Area</label>
+                    <select id="mdlAdd_select" name="area" class="select2" required>
+                        <option selected disabled value="">Pilih Area</option>
+                        @foreach ($areas as $area)
+                            <option value="{{ $area->ID_AREA }}">{{ $area->NAME_AREA }}</option>                            
                         @endforeach
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="">Status Pasar</label>
+                    <div class="form-group mb-0">
+                        <div class="custom-control custom-checkbox mb-3">
+                            <input type="checkbox" name="statusMarket" class="custom-control-input" id="customCheckBox1">
+                            <label class="custom-control-label" for="customCheckBox1">Pasar Fokus</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="">Status</label>
@@ -122,25 +133,34 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Ubah Area</h5>
+                <h5 class="modal-title">Ubah Pasar</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form  action="{{ url('master/location/area/update') }}" method="POST">
+                <form action="{{ url('master/location/market/update') }}" method="POST">
                     @csrf
                 <div class="form-group">
-                    <label for="">Area</label>
-                    <input type="text" name="area" id="mdlEdit_name" class="form-control" placeholder="Input nama Regional" required>
+                    <label for="">Pasar</label>
+                    <input type="text" name="district" id="mdlEdit_name" class="form-control" placeholder="Input nama Pasar" required>
                 </div>
                 <div class="form-group">
-                    <label for="">Regional</label>
-                    <select name="regional" class="select2" id="mdlEdit_regional" required>
-                        <option selected disabled value="">Pilih Regional</option>
-                        @foreach ($regionals as $regional)
-                            <option value="{{ $regional->ID_REGIONAL }}">{{ $regional->NAME_REGIONAL }}</option>                            
+                    <label for="">Area</label>
+                    <select name="area" class="select2" id="mdlEdit_area" required>
+                        <option selected disabled value="">Pilih Area</option>
+                        @foreach ($areas as $area)
+                            <option value="{{ $area->ID_AREA }}">{{ $area->NAME_AREA }}</option>                            
                         @endforeach
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="">Status Pasar</label>
+                    <div class="form-group mb-0">
+                        <div class="custom-control custom-checkbox mb-3">
+                            <input type="checkbox" id="status_market" name="statusMarket" class="custom-control-input">
+                            <label class="custom-control-label" for="status_market">Pasar Fokus</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="">Status</label>
@@ -164,14 +184,14 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Hapus Area</h5>
+                <h5 class="modal-title">Hapus Pasar</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Apakah anda yakin untuk menghapus data area?</p>
+                <p>Apakah anda yakin untuk menghapus data pasar?</p>
             </div>
-            <form action="{{ url('master/location/area/destroy') }}" method="POST">
+            <form action="{{ url('master/location/market/destroy') }}" method="POST">
                 @csrf
             <div class="modal-footer">
                 <input type="hidden" name="id" id="mdlDelete_id">
@@ -192,15 +212,22 @@
         $('#formAdd').trigger('reset')
         $('#mdlAdd_select').val("").change()
     })
-    function showMdlEdit(id, name, location, status){
+    function showMdlEdit(id, name, location, statusMarket, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
-        $('#mdlEdit_regional').val(location).change()
+        $('#mdlEdit_area').val(location).change()
         if (status == null || status == '') {
             $('#status_enable').prop('checked', true)
         } else {
             $('#status_disable').prop('checked', true)
         }
+
+        if (statusMarket == '1') {
+            $('#status_market').prop('checked', true)
+        } else {
+            $('#status_market').prop('checked', false)
+        }
+
         $('#mdlEdit').modal('show');
     }
     function showMdlDelete(id){

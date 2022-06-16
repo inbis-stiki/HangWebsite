@@ -25,11 +25,12 @@ class RegionalController extends Controller
     }
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
-            'regional'  => 'required',
+            'regional'  => 'required|unique:md_regional,NAME_REGIONAL',
             'location'  => 'required',
             'status'    => 'required',
         ], [
-            'required' => 'Data tidak boleh kosong!',
+            'required' => 'Data :attribute tidak boleh kosong!',
+            'unique'   => 'Data :attribute telah terdaftar!'
         ]);
 
         if($validator->fails()){
@@ -49,11 +50,12 @@ class RegionalController extends Controller
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
             'id'        => 'required',
-            'regional'  => 'required',
+            'regional'  => 'required|unique:md_regional,NAME_REGIONAL',
             'location'  => 'required',
             'status'    => 'required',
         ], [
             'required' => 'Data tidak boleh kosong!',
+            'unique'   => 'Data :attribute telah terdaftar!'
         ]);
 
         if($validator->fails()){
