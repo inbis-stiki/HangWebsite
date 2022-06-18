@@ -8,6 +8,7 @@ use App\Area;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -24,19 +25,19 @@ class UserController extends Controller
     }
 
     public function store(Request $req){
-        $validator = Validator::make($req->all(), [            
-            'ktp'           => 'required',
-            'email'         => 'required',
-            'username'      => 'required | exists:user,USERNAME_USER',
+        $validator = Validator::make($req->all(), [        
+            'username'      => 'required | unique:user,USERNAME_USER',  
+            'email'         => 'required | unique:user,EMAIL_USER',  
+            'phone'         => 'required | unique:user,TELP_USER',
+            'ktp'           => 'required | unique:user,KTP_USER',
             'name'          => 'required ',
-            'phone'         => 'required',
             'password'      => 'required',
             'area'          => 'required',
             'role'          => 'required',
             'status'        => 'required',
         ], [
             'required' => 'Data tidak boleh kosong!',
-            'exists' => 'Data :attribute telah digunakan!',
+            'unique' => 'Data :attribute telah digunakan!',
         ]);
 
         if($validator->fails()){
@@ -72,16 +73,29 @@ class UserController extends Controller
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
             'id'            => 'required',
-            'username'      => 'required',
+            'username'      => [
+                'required',
+                Rule::unique('user', 'USERNAME_USER')->ignore($req->input('id'), 'ID_USER'),
+            ],
             'name'          => 'required',
-            'email'         => 'required',
-            'phone'         => 'required',
-            'ktp'           => 'required',
+            'email'         => [
+                'required',
+                Rule::unique('user', 'EMAIL_USER')->ignore($req->input('id'), 'ID_USER'),
+            ],
+            'phone'         => [
+                'required',
+                Rule::unique('user', 'TELP_USER')->ignore($req->input('id'), 'ID_USER'),
+            ],
+            'ktp'           => [
+                'required',
+                Rule::unique('user', 'KTP_USER')->ignore($req->input('id'), 'ID_USER'),
+            ],
             'area'          => 'required',
             'role'          => 'required',
             'status'        => 'required',
         ], [
             'required' => 'Data tidak boleh kosong!',
+            'unique' => 'Data :attribute telah digunakan!',
         ]);
 
         if($validator->fails()){

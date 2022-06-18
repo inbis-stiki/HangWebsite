@@ -97,11 +97,11 @@
                 <div class="row form-group">
                     <div class="col-md-6">
                         <label for="">Username</label>
-                        <input type="text" name="username" class="form-control" placeholder="Username" required>
+                        <input type="text" name="username" class="form-control" onkeypress="return alphaNum(event)" placeholder="Username" required>
                     </div>
                     <div class="col-md-6">
                         <label for="">Nama User</label>
-                        <input type="text" name="name" class="form-control" placeholder="Nama User" required>
+                        <input type="text" name="name" class="form-control" onkeypress="return alpha(event)" placeholder="Nama User" required>
                     </div>
                 </div>
                 <div class="row form-group">
@@ -111,13 +111,13 @@
                     </div>
                     <div class="col-md-6">
                         <label for="">Telepon</label>
-                        <input type="text" name="phone" class="form-control" placeholder="Telepon" required>
+                        <input type="text" name="phone" class="form-control" placeholder="Telepon" onkeypress="return num(event)" required>
                     </div>
                 </div>                 
                 <div class="row form-group">
                     <div class="col-md-6 ">                        
                         <label for="">No. KTP</label>
-                        <input type="number" name="ktp" class="form-control" placeholder="No.KTP" required>
+                        <input type="text" name="ktp" class="form-control" onkeypress="return num(event)" placeholder="No.KTP" required>
                     </div>
                     <div class="col-md-6">    
                         <label for="">Password</label>
@@ -155,7 +155,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="this.form.reset();">Batalkan</button>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </form>
@@ -177,11 +177,11 @@
                 <div class="row form-group">
                     <div class="col-md-6">
                         <label for="">Username</label>
-                        <input type="text" id="username_edit" name="username" class="form-control" placeholder="Username" required>
+                        <input type="text" id="username_edit" name="username" class="form-control" onkeypress="return alphaNum(event)" placeholder="Username" required>
                     </div>
                     <div class="col-md-6">
                         <label for="">Nama User</label>
-                        <input type="text" id="name_edit" name="name" class="form-control" placeholder="Nama User" required>
+                        <input type="text" id="name_edit" name="name" class="form-control" onkeypress="return alpha(event)" placeholder="Nama User" required>
                     </div>
                 </div>
                 <div class="row form-group">
@@ -191,13 +191,13 @@
                     </div>
                     <div class="col-md-6">
                         <label for="">Telepon</label>
-                        <input type="text" id="telepon_edit" name="phone" class="form-control" placeholder="Telepon" required>
+                        <input type="text" id="telepon_edit" name="phone" class="form-control" onkeypress="return num(event)" placeholder="Telepon" required>
                     </div>
                 </div>                 
                 <div class="row form-group">
                     <div class="col-md-6 ">                        
                         <label for="">No. KTP</label>
-                        <input type="number" id="ktp_edit" name="ktp" class="form-control" placeholder="No.KTP" required>
+                        <input type="text" id="ktp_edit" name="ktp" class="form-control" onkeypress="return num(event)" placeholder="No.KTP" required>
                     </div>
                     <div class="col-md-6">    
                     </div>
