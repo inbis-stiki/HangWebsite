@@ -28,7 +28,10 @@ class CheckAuthApi
                     'status_message'    => 'Anda tidak memiliki hak akses!',
                 ], 200);
             }
-            $request->request->add(['id_user' => $jwt->ID_USER]); 
+            $request->request->add([
+                'id_user' => $jwt->ID_USER,
+                'id_area' => $jwt->ID_AREA
+            ]); 
             return $next($request);
         } catch (Exception $exp) {
             return response([
