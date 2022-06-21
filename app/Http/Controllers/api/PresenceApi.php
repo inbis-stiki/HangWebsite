@@ -28,9 +28,12 @@ class PresenceApi extends Controller
         }
     }
 
-    public function detail($id){
+    public function detail(Request $req){
+        date_default_timezone_set("Asia/Bangkok");
         try {
-            $presence = Presence::find($id);
+            $idUser = $req->input("id_user");
+            $presence = Presence::whereDate('DATE_PRESENCE', date('Y-m-d'))->where('ID_USER',  $idUser)->get();
+
             if($presence == null){
                 return response([
                     'status_code'       => 200,
