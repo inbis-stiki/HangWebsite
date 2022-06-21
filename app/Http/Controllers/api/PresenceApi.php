@@ -55,6 +55,10 @@ class PresenceApi extends Controller
         try {
             $validator = Validator::make($req->all(), [
                 'id_user'          => 'required|string|exists:user,ID_USER',
+                'id_district'      => 'required|string|exists:md_district,ID_DISTRICT',
+                'longitude'        => 'required|string',
+                'latitude'         => 'required|string',
+                'id_district'      => 'required|string|exists:md_district,ID_DISTRICT',
                 'id_type'          => 'required|numeric|exists:md_type,ID_TYPE',
                 'image'            => 'required|image'
             ], [
@@ -87,6 +91,9 @@ class PresenceApi extends Controller
                 $presence = new Presence();
                 $presence->ID_USER              = $req->input('id_user');
                 $presence->ID_TYPE              = $req->input('id_type');
+                $presence->ID_DISTRICT          = $req->input('id_district');
+                $presence->LONG_PRESENCE        = $req->input('longitude');
+                $presence->LAT_PRESENCE         = $req->input('latitude');
                 $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
                 $presence->DATE_PRESENCE        = date('Y-m-d H:i:s');
                 $presence->save();
