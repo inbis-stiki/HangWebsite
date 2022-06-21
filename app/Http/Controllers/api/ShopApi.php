@@ -55,14 +55,14 @@ class ShopApi extends Controller
         try {
             $validator = Validator::make($req->all(), [
                 'id_district'           => 'required|numeric|exists:md_district,ID_DISTRICT',
-                'name_shop'             => 'required|string',
-                'owner_shop'            => 'required|string',
+                'name_shop'             => 'required',
+                'owner_shop'            => 'required',
                 'isinside_market'       => 'required|numeric',
-                'type_shop'             => 'required|string',
-                'detloc_shop'               => 'required|string',
-                'telp_shop'             => 'required|string',
-                'long_shop'             => 'required|string',
-                'lat_shop'              => 'required|string',
+                'type_shop'             => 'required',
+                'detloc_shop'           => 'required',
+                'telp_shop'             => 'required',
+                'long_shop'             => 'required',
+                'lat_shop'              => 'required',
                 'photo_shop'            => 'required|image'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
