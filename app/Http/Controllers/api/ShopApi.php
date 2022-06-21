@@ -106,7 +106,7 @@ class ShopApi extends Controller
                 return response([
                     "status_code"       => 200,
                     "status_message"    => 'Data berhasil disimpan!',
-                    "data"              => ['ID_PRESENCE' => $shop->ID_SHOP]
+                    "data"              => ['ID_SHOP' => $shop->ID_SHOP]
                 ], 200);
             }
         } catch (HttpResponseException $exp) {
