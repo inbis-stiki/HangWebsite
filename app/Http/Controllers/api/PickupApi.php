@@ -15,8 +15,8 @@ class PickupApi extends Controller
         try {
             $validator = Validator::make($req->all(), [
                 'id_user'                   => 'required',
-                'id_district'               => 'required',
-                'id_type'                   => 'required',
+                // 'id_district'               => 'required',
+                // 'id_type'                   => 'required',
                 'time'                      => 'required',
                 'product.*.id_product'      => 'required',
                 'product.*.name_product'    => 'required',
@@ -33,9 +33,9 @@ class PickupApi extends Controller
 
             $pickup = new Pickup();
             $pickup->ID_USER                = $req->input('id_user');
-            $pickup->ID_DISTRICT            = $req->input('id_district');
-            $pickup->DETAILLOKASI_PICKUP    = $req->input('detail_lokasi');
-            $pickup->ID_TYPE                = $req->input('id_type');
+            // $pickup->ID_DISTRICT            = $req->input('id_district');
+            // $pickup->DETAILLOKASI_PICKUP    = $req->input('detail_lokasi');
+            // $pickup->ID_TYPE                = $req->input('id_type');
             $pickup->TIME_PICKUP            = $req->input('time');
 
             $idproduct = array();
