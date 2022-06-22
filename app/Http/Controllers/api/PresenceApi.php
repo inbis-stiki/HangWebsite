@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Presence;
+use App\TransactionDaily;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
@@ -100,6 +101,11 @@ class PresenceApi extends Controller
                 $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
                 $presence->DATE_PRESENCE        = date('Y-m-d H:i:s');
                 $presence->save();
+
+                $transDaily = new TransactionDaily();
+                $transDaily->ID_USER = $req->input('id_user');
+                $transDaily->DATE_TD = date("Y-m-d H:i:s");
+                $transDaily->save();
 
                 return response([
                     "status_code"       => 200,

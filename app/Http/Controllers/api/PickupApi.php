@@ -18,7 +18,7 @@ class PickupApi extends Controller
                 // 'id_district'               => 'required',
                 // 'id_type'                   => 'required',
                 'time'                      => 'required',
-                'product.*.id_product'      => 'required',
+                'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
                 'product.*.name_product'    => 'required',
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
