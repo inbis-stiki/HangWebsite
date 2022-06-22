@@ -30,7 +30,9 @@ class CheckAuthApi
             }
             $request->request->add([
                 'id_user' => $jwt->ID_USER,
-                'id_area' => $jwt->ID_AREA
+                'id_area' => $jwt->ID_AREA,
+                'id_regional' => $jwt->ID_REGIONAL,
+                'id_location' => $jwt->ID_LOCATION
             ]); 
             return $next($request);
         } catch (Exception $exp) {
