@@ -7,6 +7,7 @@ use App\Shop;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
@@ -55,14 +56,14 @@ class ShopApi extends Controller
         try {
             $validator = Validator::make($req->all(), [
                 'id_district'           => 'required|numeric|exists:md_district,ID_DISTRICT',
-                'name_shop'             => 'required|string',
-                'owner_shop'            => 'required|string',
+                'name_shop'             => 'required',
+                'owner_shop'            => 'required',
                 'isinside_market'       => 'required|numeric',
-                'type_shop'             => 'required|string',
-                'detloc_shop'               => 'required|string',
-                'telp_shop'             => 'required|string',
-                'long_shop'             => 'required|string',
-                'lat_shop'              => 'required|string',
+                'type_shop'             => 'required',
+                'detloc_shop'           => 'required',
+                'telp_shop'             => 'required',
+                'long_shop'             => 'required',
+                'lat_shop'              => 'required',
                 'photo_shop'            => 'required|image'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
@@ -106,7 +107,7 @@ class ShopApi extends Controller
                 return response([
                     "status_code"       => 200,
                     "status_message"    => 'Data berhasil disimpan!',
-                    "data"              => ['ID_PRESENCE' => $shop->ID_SHOP]
+                    "data"              => ['ID_SHOP' => $shop->ID_SHOP]
                 ], 200);
             }
         } catch (HttpResponseException $exp) {
@@ -122,8 +123,7 @@ class ShopApi extends Controller
         try {
             $validator = Validator::make($req->all(), [
                 'lat_user'           => 'required|numeric',
-                'lng_user'             => 'required|numeric',
-                'district_user'            => 'required|numeric'
+                'lng_user'             => 'required|numeric'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
                 'string'    => 'Parameter :attribute harus bertipe string!',
@@ -132,7 +132,14 @@ class ShopApi extends Controller
             
             $latitude = $req->get('lat_user'); // "-7.965769846888459"
             $longitude = $req->get('lng_user'); // "112.60750389398623"
-            $id_district = $req->get('district_user');
+
+            $getIdDsitrict = DB::table("presence")
+                ->select("presence.*")
+                ->whereDate('presence.DATE_PRESENCE', '=', date('Y-m-d'))
+                ->where('presence.ID_USER', '=', $req->input("id_user"))
+                ->get();
+
+            $id_district = $getIdDsitrict[0]->ID_DISTRICT;
 
             if ($validator->fails()) {
                 return response([
@@ -165,13 +172,15 @@ class ShopApi extends Controller
                 );
             }
            
-
+            // var_dump($shop);
+            
             $dataPagination = array();
             array_push(
                 $dataPagination,
                 array(
-                    "TOTAL_PAGE" => $shop->total(),
-                    "PAGE" => $shop->currentPage()
+                    "TOTAL_DATA" => $shop->total(),
+                    "PAGE" => $shop->currentPage(),
+                    "TOTAL_PAGE" => $shop->lastPage()
                 )
             );
 
