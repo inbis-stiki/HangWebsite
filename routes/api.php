@@ -51,5 +51,6 @@ Route::middleware(['checkAuthApi'])->group(function(){
   
     //API TRANSACTION
     Route::post("transaction", "api\TransactionApi@store");
+    Route::post("transactionimage", "api\TransactionImageApi@store");
 
 });
