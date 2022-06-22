@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', 'api\AuthApi@login');
 
+//Faktur
+Route::get('invoice', 'api\InvoiceApi@listproduct');
+
 Route::middleware(['checkAuthApi'])->group(function(){
     // API TES
     Route::get("tes", 'api\TesApi@index');
@@ -44,7 +47,9 @@ Route::middleware(['checkAuthApi'])->group(function(){
 
     //API SHOP
     Route::post("shop", 'api\ShopApi@store');
-
+    Route::get("shop", 'api\ShopApi@list_store');
+  
     //API TRANSACTION
     Route::post("transaction", "api\TransactionApi@store");
+
 });

@@ -52,7 +52,7 @@ class PresenceApi extends Controller
                 'status_message'    => $exp->getMessage(),
             ], 500);
         }
-    }
+    }   
 
     public function store(Request $req){
         try {
