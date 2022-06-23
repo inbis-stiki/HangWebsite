@@ -9,6 +9,7 @@ use App\TransactionDetail;
 use App\Location;
 use App\Regional;
 use App\Area;
+use App\Pickup;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
@@ -36,10 +37,25 @@ class TransactionApi extends Controller
             }
 
             $transaction        = new Transaction();
-            $transactionDetail  = new TransactionDetail();
             $location           = new Location();
             $regional           = new Regional();
             $area               = new Area();
+
+            $cekData    = Pickup::select('ID_PRODUCT','REMAININGSTOCK_PICKUP')
+            ->where([
+                ['ID_USER', '=', $req->input('id_user')],
+                ['ISFINISHED_PICKUP', '=', 0]
+            ])->first();
+            
+            $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
+            $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
+            
+            $idproduct = array();
+            $qtyproduct = array();
+            foreach ($req->input('product') as $item) {
+                array_push($idproduct, $item['id_product']);                
+                array_push($qtyproduct, $item['qty_product']);
+            }
 
             $unik                           = md5($req->input('id_user')."_".date('Y-m-d H:i:s'));
             $transaction->ID_TRANS          = "TRANS_".$unik;
