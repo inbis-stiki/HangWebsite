@@ -49,12 +49,27 @@ class TransactionApi extends Controller
             
             $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
             $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
-            
-            $idproduct = array();
-            $qtyproduct = array();
+
+            $i = 0;
+            $tdkLolos = 0;
+            $totalpickup = array();
             foreach ($req->input('product') as $item) {
-                array_push($idproduct, $item['id_product']);                
-                array_push($qtyproduct, $item['qty_product']);
+                array_push($totalpickup, $item['qty_product']);
+                if ($pecahRemainproduk[$i] >= $item['qty_product']) {
+                    echo "Stok Aman";
+                }else{
+                    echo "Qty Melebihi";
+                    $tdkLolos++;
+                }
+                $i++;
+            }
+            
+            if ($tdkLolos == 0) {
+                echo "<br>Lolos dan masuk transaksi";
+                $sisa = array_diff($pecahRemainproduk, $totalpickup);
+                dd($sisa);
+            }else {
+                echo "<br>Cek qty anda";
             }
 
             $unik                           = md5($req->input('id_user')."_".date('Y-m-d H:i:s'));
