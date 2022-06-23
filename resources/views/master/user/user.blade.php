@@ -40,6 +40,7 @@
                                         <th>No</th>
                                         <th>Nama User</th>
                                         <th>Username</th>
+                                        <th>Role</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -53,6 +54,7 @@
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $item->NAME_USER }}</td>
                                         <td>{{ $item->USERNAME_USER }}</td>
+                                        <td>{{ $item->NAME_ROLE }}</td>
                                         <td>
                                             @if ($item->deleted_at == NULL)
                                                 <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>

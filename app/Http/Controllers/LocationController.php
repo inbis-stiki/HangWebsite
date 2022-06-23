@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Session;
 
 class LocationController extends Controller
 {

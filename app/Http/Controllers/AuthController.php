@@ -26,9 +26,7 @@ class AuthController extends Controller
                 'PASS_USER' => hash('sha256', md5($req->input('password')))
             ])->first();
             if ($user != null) {
-                if ($user->ID_ROLE == 1) {
-
-                    $this->setSession($req->input('username'), $user->NAME_USER, $user->ID_ROLE);
+                    $this->setSession($req->input('username'), $user->NAME_USER, $user->ID_ROLE, $user->ID_LOCATION, $user->ID_REGIONAL, $user->ID_AREA);
 
                     return redirect('dashboard');  
                 } else {
@@ -48,7 +46,6 @@ class AuthController extends Controller
                         return redirect('/')->with('err_msg', 'Anda tidak memiliki hak akses!<br><b>Kesempatan login - '.(3-$attempt).'</b>');
                     }                    
                 }
-            }
             $attempt = session('attempt');
             $attempt++;
             Session::put('attempt', $attempt);
@@ -91,11 +88,14 @@ class AuthController extends Controller
 		return $a;
 	}
 
-    public function setSession($username, $nama, $role){
+    public function setSession($username, $nama, $role, $location, $regional, $area){
         session([
             'username' => $username,
             'nama'     => $nama,
-            'role'     => $role
+            'role'     => $role,
+            'location' => $location,
+            'regional' => $regional,
+            'area'     => $area,
         ]);
     }
     

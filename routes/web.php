@@ -24,7 +24,7 @@ Route::get('/', 'AuthController@login');
 Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 
-Route::middleware(['checkRole:1'])->group(function () {
+// Route::group(['middleware' => ['checkRole:1']], function() {
     Route::get('dashboard', 'DashboardController@index');
 
     // MASTER LOCATION
@@ -74,10 +74,12 @@ Route::middleware(['checkRole:1'])->group(function () {
     Route::get('master/category-product/destroy', 'CategoryProductController@destroy');
 
     // MASTER ROLE
-    Route::get('master/role', 'RoleController@index');
-    Route::get('master/role/store', 'RoleController@store');
-    Route::get('master/role/update', 'RoleController@update');
-    Route::get('master/role/destroy', 'RoleController@destroy');
+    Route::group(['middleware' => ['checkRole:1']], function() {
+        Route::get('master/role', 'RoleController@index');
+        Route::get('master/role/store', 'RoleController@store');
+        Route::get('master/role/update', 'RoleController@update');
+        Route::get('master/role/destroy', 'RoleController@destroy');
+    });
 
     //MASTER PRODUK
     Route::get('master/product', 'ProductController@index');
@@ -85,9 +87,14 @@ Route::middleware(['checkRole:1'])->group(function () {
     Route::get('master/product/update', 'ProductController@update');
     Route::get('master/product/destroy', 'ProductController@destroy');
 
+    //MASTER SHOP
+    Route::get('master/shop', 'ShopController@index');
+    Route::get('master/shop/store', 'ShopController@store');
+    Route::get('master/shop/update', 'ShopController@update');
+    Route::get('master/shop/destroy', 'ShopController@destroy');
+
     // MASTER USER
     Route::get('master/user', 'UserController@index');
     Route::post('master/user/store', 'UserController@store');
     Route::get('master/user/update', 'UserController@update');
     Route::get('master/user/destroy', 'UserController@destroy');
-});
