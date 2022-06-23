@@ -7,21 +7,43 @@ use App\Regional;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Session;
 
 class AreaController extends Controller
 {
     public function index(){
+        $role = SESSION::get('role');
+        if($role == 3){
+            $location = SESSION::get('location');
+            $data['areas']  = DB::table('md_area')
+            ->where('md_regional.ID_LOCATION', '=' , $location)
+            ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+            ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
+            ->select('md_area.*', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
+            ->get();
+            $data['regionals']  = Regional::where('ID_LOCATION', '=' , $location)
+            ->whereNull('deleted_at')->get();
+        }else if($role == 4){
+            $regional = SESSION::get('regional');
+            $data['areas']  = DB::table('md_area')
+            ->where('md_regional.ID_REGIONAL', '=' , $regional)
+            ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+            ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
+            ->select('md_area.*', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
+            ->get();
+            $data['regionals']  = Regional::where('ID_REGIONAL', '=' , $regional)
+            ->whereNull('deleted_at')->get();
+        }else{
+            $data['areas']  = DB::table('md_area')
+            ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+            ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
+            ->select('md_area.*', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
+            ->get();
+            $data['regionals']  = Regional::whereNull('deleted_at')->get();
+        }
         $data['title']          = "Area";
         $data['sidebar']        = "master";
         $data['sidebar2']       = "area";
-        
-        $data['areas']      = DB::table('md_area')
-        ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
-        ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
-        ->select('md_area.*', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
-        ->get();
-        
-        $data['regionals']  = Regional::whereNull('deleted_at')->get();
 
         return view('master.location.area', $data);
     }

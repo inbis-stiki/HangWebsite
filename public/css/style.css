@@ -9944,7 +9944,8 @@ svg.pulse-svg {
 .header-left {
   height: 100%;
   display: flex;
-  align-items: center; }
+  align-items: center;
+  justify-content: space-between;}
   .header-left .dashboard_bar {
     font-size: 28px;
     font-weight: 600;

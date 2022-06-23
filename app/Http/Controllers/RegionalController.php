@@ -7,19 +7,31 @@ use App\Regional;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Session;
 
 class RegionalController extends Controller
 {
     public function index(){
+        $role = SESSION::get('role');
+        if($role == 3){
+            $location = SESSION::get('location');
+            $data['regionals']  = DB::table('md_regional')
+            ->where('md_regional.ID_LOCATION', '=' , $location)
+            ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
+            ->select('md_regional.*', 'md_location.NAME_LOCATION')
+            ->get();
+            $data['locations']  = Location::where('ID_LOCATION', '=' , $location)
+            ->whereNull('deleted_at')->get();
+        }else{
+            $data['regionals']  = DB::table('md_regional')
+            ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
+            ->select('md_regional.*', 'md_location.NAME_LOCATION')
+            ->get();
+            $data['locations']  = Location::whereNull('deleted_at')->get();
+        }
         $data['title']          = "Regional";
         $data['sidebar']        = "master";
         $data['sidebar2']       = "location";
-        
-        $data['regionals']      = DB::table('md_regional')
-        ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
-        ->select('md_regional.*', 'md_location.NAME_LOCATION')
-        ->get();
-        $data['locations']  = Location::whereNull('deleted_at')->get();
 
         return view('master.location.regional', $data);
     }

@@ -9,17 +9,39 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Session;
 
 class UserController extends Controller
 {
+    
     public function index(){
+        $role = SESSION::get('role');
+        if($role == 4){
+            $location = SESSION::get('location');
+            $data['users']  = DB::table('user')
+            ->where('user.ID_LOCATION', '=' , $location)
+            ->where('user.ID_ROLE', '>' , $role)
+            ->join('md_role', 'user.ID_ROLE', '=', 'md_role.ID_ROLE')
+            ->get();
+
+            $data['roles']      = DB::table('md_role')
+            ->where('ID_ROLE', '>' , $role)
+            ->whereNull('deleted_at')->get('*');
+
+            $data['areas']      = DB::table('md_area')
+            ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+            ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
+            ->where('md_location.ID_LOCATION', '=' , $location)
+            ->whereNull('md_area.deleted_at')->get();
+        }else{
+            $data['users']      = DB::table('user')->join('md_role', 'user.ID_ROLE', '=', 'md_role.ID_ROLE')->select('*')->get();
+            $data['roles']      = Role::whereNull('deleted_at')->get();
+            $data['areas']      = Area::whereNull('deleted_at')->get();
+        }
+        
         $data['title']      = "User";
         $data['sidebar']    = "master";
         $data['sidebar2']   = "user";
-        
-        $data['users']      = DB::table('user')->select('*')->get();
-        $data['roles']      = Role::whereNull('deleted_at')->get();
-        $data['areas']      = Area::whereNull('deleted_at')->get();
 
         return view('master.user.user', $data);
     }
