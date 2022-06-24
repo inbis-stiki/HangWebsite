@@ -30,7 +30,7 @@ Route::middleware(['checkAuthApi'])->group(function(){
 
     // API PRESENCE
     Route::get("presence", 'api\PresenceApi@index');
-    Route::get("presence/{any}", 'api\PresenceApi@detail');
+    Route::get("presence/detail", 'api\PresenceApi@detail');
     Route::post("presence", 'api\PresenceApi@store');
 
     // API PRODUCT
