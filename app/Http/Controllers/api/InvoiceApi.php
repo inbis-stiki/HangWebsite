@@ -160,10 +160,11 @@ class InvoiceApi extends Controller
                 ->first();
 
             $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
+                ->where('ISFINISHED_TD', '=', '0')
                 ->whereDate('DATE_TD', '=', date('Y-m-d'))
                 ->first();
 
-            if ($cek->ISFINISHED_TD == 1) {
+            if ($cek == null) {
                 return response([
                     "status_code"       => 200,
                     "status_message"    => 'Anda sudah mengirimkan faktur'
