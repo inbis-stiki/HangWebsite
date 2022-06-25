@@ -75,11 +75,20 @@ class PickupApi extends Controller
             
             $arrId = explode(";", $pick->ID_PRODUCT);
             $arrRemain =explode(";", $pick->REMAININGSTOCK_PICKUP);
-            
+
+            $products = array();
+            foreach ($arrId as $key => $value) {
+                $product = array('id_product'=>$value, 'qty_product'=>$arrRemain[$key]);
+                array_push($products, $product);
+            }
+
             return response([
                 'status_code'       => 200,
                 'status_message'    => 'Data berhasil diambil!',
-                'data'              => ["id_pickup" => $pick->ID_PICKUP]
+                'data'              => [
+                    "id_pickup" => $pick->ID_PICKUP,
+                    "product"   => $products
+                    ]
             ], 200);
         } catch (Exception $exp) {
             return response([
