@@ -129,17 +129,6 @@ class ShopApi extends Controller
                 'string'    => 'Parameter :attribute harus bertipe string!',
                 'numeric'    => 'Parameter :attribute harus bertipe angka!',
             ]);
-            
-            $latitude = $req->get('lat_user'); // "-7.965769846888459"
-            $longitude = $req->get('lng_user'); // "112.60750389398623"
-
-            $getIdDsitrict = DB::table("presence")
-                ->select("presence.*")
-                // ->whereDate('presence.DATE_PRESENCE', '=', date('Y-m-d'))
-                ->where('presence.ID_USER', '=', $req->input("id_user"))
-                ->get();
-
-            $id_district = $getIdDsitrict[0]->ID_DISTRICT;
 
             if ($validator->fails()) {
                 return response([
@@ -147,6 +136,24 @@ class ShopApi extends Controller
                     "status_message"    => $validator->errors()->first()
                 ], 400);
             }
+            
+            $latitude = $req->get('lat_user'); // "-7.965769846888459"
+            $longitude = $req->get('lng_user'); // "112.60750389398623"
+
+            $CheckPresence = DB::table("presence")
+                ->select("presence.*")
+                ->whereDate('presence.DATE_PRESENCE', '=', date('Y-m-d'))
+                ->where('presence.ID_USER', '=', $req->input("id_user"))
+                ->first();
+
+            if ($CheckPresence == NULL) {
+                return response([
+                    "status_code"       => 403,
+                    "status_message"    => "Silahkan Melakukan Presensi Terlebih Dahulu!"
+                ], 404);
+            }
+
+            $id_district = $CheckPresence->ID_DISTRICT;
 
             $shop = DB::table("md_shop")
                 ->select("md_shop.*")
