@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\District;
 use App\Http\Controllers\Controller;
 use App\Presence;
 use App\TransactionDaily;
@@ -59,10 +60,9 @@ class PresenceApi extends Controller
         try {
             $validator = Validator::make($req->all(), [
                 'id_user'          => 'required|string|exists:user,ID_USER',
-                'id_district'      => 'required|string|exists:md_district,ID_DISTRICT',
+                'kecamatan'        => 'required|string|exists:md_district,NAME_DISTRICT',
                 'longitude'        => 'required|string',
                 'latitude'         => 'required|string',
-                'id_district'      => 'required|string|exists:md_district,ID_DISTRICT',
                 'id_type'          => 'required|numeric|exists:md_type,ID_TYPE',
                 'image'            => 'required|image'
             ], [
@@ -86,6 +86,12 @@ class PresenceApi extends Controller
             ->whereDate('DATE_PRESENCE', '=', date('Y-m-d'))
             ->exists();
 
+            $idDistrik = District::select("ID_DISTRICT")
+            ->where([
+                ['NAME_DISTRICT', '=', $req->input('kecamatan')],
+                ['ISMARKET_DISTRICT', '=', '0']
+            ])->whereNull('deleted_at')->first()->ID_DISTRICT;
+
             if ($cek == true) {
                 return response([
                     "status_code"       => 200,
@@ -95,7 +101,7 @@ class PresenceApi extends Controller
                 $presence = new Presence();
                 $presence->ID_USER              = $req->input('id_user');
                 $presence->ID_TYPE              = $req->input('id_type');
-                $presence->ID_DISTRICT          = $req->input('id_district');
+                $presence->ID_DISTRICT          = $idDistrik;
                 $presence->LONG_PRESENCE        = $req->input('longitude');
                 $presence->LAT_PRESENCE         = $req->input('latitude');
                 $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
