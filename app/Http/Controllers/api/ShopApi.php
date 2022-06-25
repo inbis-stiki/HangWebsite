@@ -121,6 +121,7 @@ class ShopApi extends Controller
     public function list_store(Request $req)
     {
         try {
+            date_default_timezone_set("Asia/Bangkok");
             $validator = Validator::make($req->all(), [
                 'lat_user'           => 'required|numeric',
                 'lng_user'             => 'required|numeric'
