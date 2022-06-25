@@ -156,7 +156,7 @@ class InvoiceApi extends Controller
             $path = $req->file('photo_faktur')->store('images', 's3');
 
             $cekPickup = Pickup::where('ID_USER', '=', ''.$ID_USER.'')
-                ->whereDate('DATE_TD', '=', date('Y-m-d'))
+                ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
                 ->first();
 
             $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
