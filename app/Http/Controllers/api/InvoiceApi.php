@@ -133,10 +133,6 @@ class InvoiceApi extends Controller
 
             $validator = Validator::make($req->all(), [
                 'id_user'          => 'required|string|exists:user,ID_USER',
-                'id_district'      => 'required|numeric',
-                'id_area'          => 'required|numeric',
-                'id_regional'      => 'required|numeric',
-                'id_location'      => 'required|numeric',
                 'id_type'          => 'required|numeric',
                 'photo_faktur'     => 'required|image',
                 'total_qty'        => 'required|numeric',
@@ -145,7 +141,6 @@ class InvoiceApi extends Controller
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
                 'string'    => 'Parameter :attribute harus bertipe string!',
                 'numeric'   => 'Parameter :attribute harus bertipe angka!',
-                'exists'    => 'Parameter :attribute tidak ditemukan!',
                 'image'     => 'Paramater :attribute harus bertipe gambar!'
             ]);
     
