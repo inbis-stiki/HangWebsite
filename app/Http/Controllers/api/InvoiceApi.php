@@ -31,7 +31,7 @@ class InvoiceApi extends Controller
             $ts = DB::table("transaction")
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction.ID_TYPE')
                 ->where('transaction.ID_USER', '=', $ID_USER)
-                ->where('transaction.DATE_TRANS', '=', date('Y-m-d'))
+                ->whereDate('transaction.DATE_TRANS', '=', date('Y-m-d'))
                 ->get();
 
             $dataT = array();
@@ -159,6 +159,10 @@ class InvoiceApi extends Controller
             date_default_timezone_set("Asia/Bangkok");
             $path = $req->file('photo_faktur')->store('images', 's3');
 
+            $cekPickup = Pickup::where('ID_USER', '=', ''.$ID_USER.'')
+                ->whereDate('DATE_TD', '=', date('Y-m-d'))
+                ->first();
+
             $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
                 ->whereDate('DATE_TD', '=', date('Y-m-d'))
                 ->first();
@@ -180,11 +184,15 @@ class InvoiceApi extends Controller
                 $TransactionDaily->REGIONAL_TD     = $ID_LOCATION->NAME_LOCATION;
                 $TransactionDaily->ISFINISHED_TD   = '1';
                 $TransactionDaily->save();
+                
+                $Pickup = Pickup::find($cekPickup->ID_PICKUP);
+                $Pickup->ISFINISHED_PICKUP         = '1';
+                $Pickup->save();
     
                 return response([
                     "status_code"       => 200,
-                    "status_message"    => 'Data berhasil disimpan!',
-                    "data"              => ['ID_TD' => $TransactionDaily->ID_TD]
+                    "status_message"    => 'Data berhasil diupdate!',
+                    "data"              => ['ID_TD' => $TransactionDaily->ID_TD], ['ID_PICKUP' => $Pickup->ID_PICKUP]
                 ], 200);
             }
         } catch (HttpResponseException $exp) {
