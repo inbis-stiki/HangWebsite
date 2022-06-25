@@ -135,7 +135,7 @@ class ShopApi extends Controller
 
             $getIdDsitrict = DB::table("presence")
                 ->select("presence.*")
-                ->whereDate('presence.DATE_PRESENCE', '=', date('Y-m-d'))
+                // ->whereDate('presence.DATE_PRESENCE', '=', date('Y-m-d'))
                 ->where('presence.ID_USER', '=', $req->input("id_user"))
                 ->get();
 
