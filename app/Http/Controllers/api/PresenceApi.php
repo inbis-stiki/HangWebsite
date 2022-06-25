@@ -90,7 +90,14 @@ class PresenceApi extends Controller
             ->where([
                 ['NAME_DISTRICT', '=', $req->input('kecamatan')],
                 ['ISMARKET_DISTRICT', '=', '0']
-            ])->whereNull('deleted_at')->first()->ID_DISTRICT;
+            ])->whereNull('deleted_at')->first();
+            
+            if ($idDistrik == null) {
+                return response([
+                    "status_code"       => 200,
+                    "status_message"    => 'Distrik tidak tersedia'
+                ], 200);
+            }
 
             if ($cek == true) {
                 return response([
@@ -101,7 +108,7 @@ class PresenceApi extends Controller
                 $presence = new Presence();
                 $presence->ID_USER              = $req->input('id_user');
                 $presence->ID_TYPE              = $req->input('id_type');
-                $presence->ID_DISTRICT          = $idDistrik;
+                $presence->ID_DISTRICT          = $idDistrik->ID_DISTRICT;
                 $presence->LONG_PRESENCE        = $req->input('longitude');
                 $presence->LAT_PRESENCE         = $req->input('latitude');
                 $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
