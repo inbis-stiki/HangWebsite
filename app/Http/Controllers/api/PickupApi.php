@@ -64,4 +64,28 @@ class PickupApi extends Controller
             ], $exp->getCode());
         }
     }
+
+    public function pickup(Request $req){
+        try {
+            $pick = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP')
+            ->where([
+                ['ID_USER', '=', $req->input('id_user')],
+                ['ISFINISHED_PICKUP', '=', 0]
+            ])->first();
+            
+            $arrId = explode(";", $pick->ID_PRODUCT);
+            $arrRemain =explode(";", $pick->REMAININGSTOCK_PICKUP);
+            
+            return response([
+                'status_code'       => 200,
+                'status_message'    => 'Data berhasil diambil!',
+                'data'              => ["id_pickup" => $pick->ID_PICKUP]
+            ], 200);
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
+    }
 }

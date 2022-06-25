@@ -50,7 +50,6 @@ class TransactionApi extends Controller
             $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
             $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
 
-            $i = 0;
             $tdkLolos = 0;
             $idproduct = array();
             $totalpickup = array();
@@ -61,22 +60,19 @@ class TransactionApi extends Controller
                 array_push($idproduct, $item['id_product']);
             }
 
-            if ($pecahIdproduk === $idproduct) {
-                foreach ($req->input('product') as $item) {
-                    if ($pecahRemainproduk[$i] >= $item['qty_product']) {
-                        // echo "Stok Aman<br>";
-                        array_push($sisa, $pecahRemainproduk[$i]-$item['qty_product']);
-                    }else{
-                        // echo "Qty Melebihi";
-                        $tdkLolos++;
-                    }
-                    $i++;
+            $tempe = array();
+            $index = 0;
+            foreach ($pecahIdproduk as $item) {
+                $tempe[$item] = $pecahRemainproduk[$index];
+                $index++; 
+            }
+
+            foreach ($req->input('product') as $item) {
+                if ($tempe[$item['id_product']] >= $item['qty_product']) {
+                    array_push($sisa, $tempe[$item['id_product']]-$item['qty_product']);
+                }else{
+                    $tdkLolos++;
                 }
-            }else{
-                return response([
-                    "status_code"       => 200,
-                    "status_message"    => 'Urutkan sesuai pickup!'
-                ], 200);
             }
             
             if ($tdkLolos == 0) {
@@ -122,9 +118,7 @@ class TransactionApi extends Controller
                     "status_code"       => 200,
                     "status_message"    => 'Cek Qty anda dengan stok sisa!'
                 ], 200);
-            }
-
-            
+            }            
         } catch (HttpResponseException $exp) {
             return response([
                 'status_code'       => $exp->getCode(),
