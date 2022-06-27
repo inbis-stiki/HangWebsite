@@ -148,7 +148,8 @@ class InvoiceApi extends Controller
             $validator = Validator::make($req->all(), [
                 'id_user'          => 'required|string|exists:user,ID_USER',
                 'id_type'          => 'required|numeric',
-                'photo_faktur'     => 'required|image',
+                'photo_faktur_1'   => 'required|image',
+                'photo_faktur_2'   => 'required|image',
                 'total_qty'        => 'required|numeric',
                 'total_hrg'        => 'required|numeric'
             ], [
@@ -166,7 +167,16 @@ class InvoiceApi extends Controller
             }
 
             date_default_timezone_set("Asia/Bangkok");
-            $path = $req->file('photo_faktur')->store('images', 's3');
+            $path_faktur1 = $req->file('photo_faktur_1')->store('images', 's3');
+            $path_faktur2 = $req->file('photo_faktur_2')->store('images', 's3');
+
+            $url_faktur1   = Storage::disk('s3')->url($path_faktur1);
+            $url_faktur2   = Storage::disk('s3')->url($path_faktur2);
+            $url_array     = array();
+
+            array_push($url_array, $url_faktur1);
+            array_push($url_array, $url_faktur2);
+            $url = implode(";", $url_array);
 
             $cekPickup = Pickup::where('ID_USER', '=', ''.$ID_USER.'')
                 ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
@@ -174,7 +184,7 @@ class InvoiceApi extends Controller
 
             $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
                 ->where('ISFINISHED_TD', '=', '0')
-                ->whereDate('DATE_TD', '=', date('Y-m-d'))
+                //->whereDate('DATE_TD', '=', date('Y-m-d'))
                 ->first();
 
             if ($cek == null) {
@@ -190,7 +200,7 @@ class InvoiceApi extends Controller
                 $TransactionDaily->TOTQTY_TD       = $req->input('total_qty');
                 $TransactionDaily->TOTAL_TD        = $req->input('total_hrg');
                 $TransactionDaily->DATEFACTUR_TD   = date('Y-m-d H:i:s');
-                $TransactionDaily->FACTUR_TD       = Storage::disk('s3')->url($path);
+                $TransactionDaily->FACTUR_TD       = $url;
                 $TransactionDaily->REGIONAL_TD     = $ID_LOCATION->NAME_LOCATION;
                 $TransactionDaily->ISFINISHED_TD   = '1';
                 $TransactionDaily->save();
@@ -202,7 +212,9 @@ class InvoiceApi extends Controller
                 return response([
                     "status_code"       => 200,
                     "status_message"    => 'Data berhasil diupdate!',
-                    "data"              => ['ID_TD' => $TransactionDaily->ID_TD], ['ID_PICKUP' => $Pickup->ID_PICKUP]
+                    "data"              => [
+                        'ID_TD' => $TransactionDaily->ID_TD, 
+                        'ID_PICKUP' => $Pickup->ID_PICKUP]
                 ], 200);
             }
         } catch (HttpResponseException $exp) {
