@@ -103,6 +103,8 @@ class InvoiceApi extends Controller
                 $THargaFaktur += $Faktur['TOT_HARGA_TRANS'];
                 if ($Faktur['ID_TYPE'] != 1) {
                     $typetr = $Faktur['ID_TYPE'];
+                }else{
+                    $typetr = 1;
                 }
             }
             
