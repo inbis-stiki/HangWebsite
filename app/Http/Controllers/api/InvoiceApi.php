@@ -71,19 +71,30 @@ class InvoiceApi extends Controller
                     )
                 );
             }
-
-            $productQty = array();
+            
+            $TotalQty = array();
             foreach ($dataT as $item) {
                 foreach ($item['TRANSACTION_DETAIL'] as $item2) {
-                    if(array_key_exists($item2['ID_PRODUCT'], $productQty)){
-                        $productQty[$item2['ID_PRODUCT']]['TOT_QTY_PROD'] += $item2['QTY_TD'];
+                    if(array_key_exists($item2['ID_PRODUCT'], $TotalQty)){
+                        $TotalQty[$item2['ID_PRODUCT']]['TOTAL'] += $item2['QTY_TD'];
                     }else{
-                        $productQty[$item2['ID_PRODUCT']] = array(
+                        $TotalQty[$item2['ID_PRODUCT']] = array(
                             "NAME_PRODUCT" => $item2['NAME_PRODUCT'],
-                            "TOT_QTY_PROD" => $item2['QTY_TD']
+                            "TOTAL" => $item2['QTY_TD']
                         );
                     }
                 }
+            }
+
+            $productQty = array();
+            foreach($TotalQty as $Data3){
+                array_push(
+                    $productQty,
+                    array(
+                        "NAME_PRODUCT" => $Data3['NAME_PRODUCT'],
+                        "TOT_QTY_PROD" => $Data3['TOTAL']
+                    )
+                );
             }
 
             $THargaFaktur = 0;
