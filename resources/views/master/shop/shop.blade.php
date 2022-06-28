@@ -38,7 +38,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>District</th>
+                                        <th>Kecamatan</th>
                                         <th>Nama</th>
                                         <th>Pemilik</th>
                                         <th>Tipe</th>
