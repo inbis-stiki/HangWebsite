@@ -101,3 +101,6 @@ Route::get('logout', 'AuthController@logout');
 
     // PRESENCE
     Route::get('presence', 'PresenceController@index');
+
+    // SPREADING
+    Route::get('transaction/spreading', 'SpreadingController@index');

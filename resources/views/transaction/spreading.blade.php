@@ -46,23 +46,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php
-                                        $no = 1;
-                                    @endphp
-                                    @foreach ($presences as $presence)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>    
-                                        <td>{{ $presence->NAME_USER }}</td>
-                                        <td>{{ $presence->NAME_DISTRICT }}</td>
-                                        <td>{{ date_format(date_create($presence->DATE_PRESENCE), 'j F Y H:i') }}</td>
-                                        <td>{{ $presence->NAME_TYPE }}</td>
-                                        <td>
-                                            <button class="btn light btn-success"  onclick="showPresence('{{ $presence->PHOTO_PRESENCE }}')"><i class="fa fa-camera"></i></button>
-                                            {{-- <button class="btn light btn-info" onclick="showLocation({{ $presence->LONG_PRESENCE }}, {{ $presence->LAT_PRESENCE }})"><i class="fa fa-map-location-dot"></i></button> --}}
-                                            <a class="btn light btn-info" href="https://maps.google.com/maps?q={{ $presence->LAT_PRESENCE }},{{ $presence->LONG_PRESENCE }}&hl=es&z=14&amp;" target="_blank"><i class="fa fa-map-location-dot"></i></a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
                                 </tbody>
                             </table>
                         </div>

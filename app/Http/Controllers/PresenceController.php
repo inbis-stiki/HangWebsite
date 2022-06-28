@@ -10,8 +10,6 @@ use Session;
 class PresenceController extends Controller
 {
     public function index(){
-       
-
         $data['title']          = "Presensi";
         $data['sidebar']        = "presence";
         $data['sidebar2']       = "";
