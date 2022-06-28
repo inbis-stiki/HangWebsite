@@ -98,3 +98,6 @@ Route::get('logout', 'AuthController@logout');
     Route::post('master/user/store', 'UserController@store');
     Route::get('master/user/update', 'UserController@update');
     Route::get('master/user/destroy', 'UserController@destroy');
+
+    // PRESENCE
+    Route::get('presence', 'PresenceController@index');

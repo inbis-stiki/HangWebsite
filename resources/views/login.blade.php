@@ -26,7 +26,7 @@
         </div>
         <div class="col-sm ">
             <div class="text-center mb-3 mt-5">
-                <img src="{{ asset('images/finna-logo.png') }}" alt="Finna Logo" width="200"/>
+                <img src="{{ asset('images/logo-full.svg') }}" style="max-width: 150px;" alt="">
             </div>
             <div class="ml-5">
                 <br>

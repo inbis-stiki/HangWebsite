@@ -5,20 +5,20 @@
     <div class="deznav-scroll">
         <ul class="metismenu" id="menu">
             <li><a href="{{ url('dashboard') }}" class="ai-icon" aria-expanded="false">
-                    <i class="flaticon-381-home-2"></i>
+                    <i class="fa fa-gauge"></i>
                     <span class="nav-text">Dashboard</span>
                 </a>
             </li>
             <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
-                    <i class="flaticon-381-menu-2"></i>
+                    <i class="fa fa-list-check"></i>
                     <span class="nav-text">Master</span>
                 </a>
                 <ul aria-expanded="false">
+                    @if (Session::get('role') == 1 || Session::get('role') == 2)
                     <li><a href="{{ url('master/category-product') }}">Kategori Produk</a></li>
                     <li><a href="{{ url('master/product') }}">Produk</a></li>
-                    @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 4)
-                    <li><a href="{{ url('master/shop') }}">Toko</a></li>
                     @endif
+                    
                     <li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Lokasi</a>
                         <ul aria-expanded="false">
                             @if (Session::get('role') == 1 || Session::get('role') == 2 )
@@ -32,9 +32,15 @@
                             <li style="margin-left: 25px"><a href="{{ url('master/location/market') }}">Pasar</a></li>
                         </ul>
                     </li>
+                    @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 4)
+                    <li><a href="{{ url('master/shop') }}">Toko</a></li>
+                    @endif
                     <li><a href="{{ url('master/regional-price') }}">Harga Regional</a></li>
                     <li><a href="#">Target Regional</a></li>
+
+                    @if (Session::get('role') == 1 || Session::get('role') == 2)
                     <li><a href="#">Konversi</a></li>
+                    @endif
                     @if (Session::get('role') < 4)
                     <li><a href="{{ url('master/user') }}">User</a></li>
                     @endif
@@ -42,18 +48,28 @@
                     <li><a href="{{ url('master/role') }}">Role</a></li>
                     @endif
                 </ul>
-            <li class="active"><a href="widget-basic.html" class="ai-icon" aria-expanded="false">
-                    <i class="flaticon-381-newspaper"></i>
+            <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
+                    <i class="fa fa-shuffle"></i>
                     <span class="nav-text">Transaksi</span>
                 </a>
+                <ul aria-expanded="false">
+                    <li><a href="#">Spreading</a></li>
+                    <li><a href="#">UB</a></li>
+                    <li><a href="#">UBLP</a></li>
+                </ul>
             </li>
-            <li class="active"><a href="widget-basic.html" class="ai-icon" aria-expanded="false">
-                    <i class="flaticon-381-newspaper"></i>
+            <li class="active"><a href="{{ url('presence') }}" class="ai-icon" aria-expanded="false">
+                    <i class="fa fa-user-check"></i>
+                    <span class="nav-text">Presensi</span>
+                </a>
+            </li>
+            <li class="active"><a href="#" class="ai-icon" aria-expanded="false">
+                    <i class="fa fa-newspaper"></i>
                     <span class="nav-text">Laporan</span>
                 </a>
             </li>
             <li class="active"><a href="{{ url('logout') }}" class="ai-icon" aria-expanded="false">
-                <i class="flaticon-381-turn-off"></i>
+                <i class="fa fa-power-off"></i>
                     <span class="nav-text">Log Out</span>
                 </a>
             </li>
