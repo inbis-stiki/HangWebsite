@@ -71,7 +71,7 @@ class PickupApi extends Controller
             ->where([
                 ['ID_USER', '=', $req->input('id_user')],
                 ['ISFINISHED_PICKUP', '=', 0]
-            ])->first();
+            ])->latest('ID_PICKUP')->first();
             
             $arrId = explode(";", $pick->ID_PRODUCT);
             $arrRemain =explode(";", $pick->REMAININGSTOCK_PICKUP);
