@@ -184,7 +184,7 @@ class InvoiceApi extends Controller
 
             $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
                 ->where('ISFINISHED_TD', '=', '0')
-                //->whereDate('DATE_TD', '=', date('Y-m-d'))
+                ->whereDate('DATE_TD', '=', date('Y-m-d'))
                 ->first();
 
             if ($cek == null) {
