@@ -55,7 +55,7 @@
                 <ul aria-expanded="false">
                     <li><a href="#">Spreading</a></li>
                     <li><a href="#">UB</a></li>
-                    <li><a href="#">UBLP</a></li>
+                    <li><a href="{{ url('transaction/ublp') }}">UBLP</a></li>
                 </ul>
             </li>
             <li class="active"><a href="{{ url('presence') }}" class="ai-icon" aria-expanded="false">

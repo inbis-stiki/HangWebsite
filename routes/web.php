@@ -104,3 +104,4 @@ Route::get('logout', 'AuthController@logout');
 
     // SPREADING
     Route::get('transaction/spreading', 'SpreadingController@index');
+    Route::get('transaction/ublp', 'UBLPController@index');
