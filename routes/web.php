@@ -111,3 +111,4 @@ Route::get('logout', 'AuthController@logout');
 
     // UBLP
     Route::get('transaction/ublp', 'UBLPController@index');
+    Route::post('transactionUBLPDetail', 'UBLPController@getTransactionDetail');

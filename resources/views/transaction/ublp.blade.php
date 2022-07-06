@@ -42,6 +42,7 @@
                                         <th>Area</th>
                                         <th>Lokasi</th>
                                         <th>Tanggal Transaksi</th>
+                                        <th>Target Aktifitas</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -56,6 +57,10 @@
                                         <td>{{ $ublp->AREA_TRANS }}</td>
                                         <td>{{ $ublp->LOCATION_TRANS }}</td>
                                         <td>{{ date_format(date_create($ublp->DATE_TRANS), 'j F Y H:i') }}</td>
+                                        <td>{{ $ublp->NAME_TYPE }}</td>
+                                        <td>
+                                            <button class="btn light btn-success" onclick="showPresence('{{ $ublp->ID_TRANS }}')"><i class="fa fa-circle-info"></i></button>
+                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -72,12 +77,50 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Foto Presensi</h5>
+                <h5 class="modal-title">Detail Transaksi</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
-            <div class="modal-body" style="text-align: center;">
-                <img src="" style="max-width: 400px;" id="mdlPresence_src" alt="">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="">Foto</label>
+                    <br>
+                    <div style="text-align: center;" id="mdlTrans_Image"></div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">Nama Toko</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">Nama Produk</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="">Quantity Produk</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group" id="mdlDetailTrans_NameShop">
+
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group" id="mdlDetailTrans_NameProduct">
+
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group" id="mdlDetailTrans_QTYProduct">
+
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Tutup</button>
@@ -95,17 +138,8 @@
                 </button>
             </div>
             <div class="modal-body" style="text-align: center;">
-                <iframe 
-                    width="600" 
-                    height="400" 
-                    frameborder="0" 
-                    scrolling="no" 
-                    marginheight="0" 
-                    marginwidth="0" 
-                    id="mdlLocation_src"
-                    src=""
-                    >
-                    </iframe>
+                <iframe width="600" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="mdlLocation_src" src="">
+                </iframe>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Tutup</button>
@@ -119,10 +153,34 @@
 @include('template/footer')
 <script>
     $('#datatable').DataTable()
-    const showPresence = src => {
-        $('#mdlPresence_src').attr('src', src);
-        $('#mdlPresence').modal('show')
+    const showPresence = (id_trans) => {
+        $.ajax({
+            url: "{{ url('transactionUBLPDetail') }}",
+            type: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                "id_trans": id_trans
+            },
+            dataType: 'json',
+            success: function(response) {
+                $('#mdlDetailTrans_NameShop').html('');
+                $('#mdlDetailTrans_NameProduct').html('');
+                $('#mdlDetailTrans_QTYProduct').html('');
+                $('#mdlTrans_Image').html('')
+                
+                for(let j = 0; j < response.image_trans[0].length; j++){
+                    $('#mdlTrans_Image').append('<img src="'+response.image_trans[0][j]+'" style="max-width: 400px; margin-bottom: 10px" alt="">');
+                }
+                for (let i = 0; i < response.data.length; i++) {
+                    $('#mdlDetailTrans_NameShop').append('<p>' + response.data[i].NAME_SHOP + '</p>');
+                    $('#mdlDetailTrans_NameProduct').append('<p>' + response.data[i].NAME_PRODUCT + '</p>');
+                    $('#mdlDetailTrans_QTYProduct').append('<p>' + response.data[i].QTY_TD + '</p>');
+                    $('#mdlPresence').modal('show');
+                }
+            }
+        })
     }
+
     const showLocation = (long, lat) => {
         $('#mdlLocation_src').attr('src', `https://maps.google.com/maps?q=${lat},${long}&hl=es&z=14&amp;output=embed`);
         $('#mdlLocation').modal('show')
