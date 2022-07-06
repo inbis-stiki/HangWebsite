@@ -97,4 +97,44 @@ class PickupApi extends Controller
             ], 500);
         }
     }
+
+    public function cekPickup(Request $req){
+        try {
+            $pick = Pickup::where([
+                ['ID_USER', '=', $req->input('id_user')]
+            ])
+            ->whereDate('TIME_PICKUP', '<', date('Y-m-d'))
+            ->latest('ID_PICKUP')->first();
+            
+            $cekPick = Pickup::where([
+                ['ID_USER', '=', $req->input('id_user')]
+            ])
+            ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
+            ->latest('ID_PICKUP')->first();
+
+            if ($pick->ISFINISHED_PICKUP == 0) {
+                $msg    = 'Data terakhir pickup!';
+                $pickup = $pick;
+            }else{
+                if ($cekPick == null) {
+                    $msg    = 'Anda bisa pickup barang!';
+                    $pickup = [];
+                }else{
+                    $msg    = 'Anda sudah pickup hari ini!';
+                    $pickup = $cekPick;
+                }
+            }
+
+            return response([
+                'status_code'       => 200,
+                'status_message'    => $msg,
+                'data'              => $pickup
+            ], 200);
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
+    }
 }

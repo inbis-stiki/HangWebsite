@@ -43,6 +43,7 @@ Route::middleware(['checkAuthApi'])->group(function(){
     // API PICKUP
     Route::post("pickup", 'api\PickupApi@store');
     Route::get("pickup", 'api\PickupApi@pickup');
+    Route::get("cek/pickup", 'api\PickupApi@cekPickup');
 
     //API SHOP
     Route::post("shop", 'api\ShopApi@store');
