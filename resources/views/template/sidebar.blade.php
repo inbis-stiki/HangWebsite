@@ -48,15 +48,11 @@
                     <li><a href="{{ url('master/role') }}">Role</a></li>
                     @endif
                 </ul>
-            <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
+            <li class="active">
+                <a href="{{ url('transaction') }}" class="ai-icon" aria-expanded="false">
                     <i class="fa fa-shuffle"></i>
                     <span class="nav-text">Transaksi</span>
                 </a>
-                <ul aria-expanded="false">
-                    <li><a href="#">Spreading</a></li>
-                    <li><a href="{{ url('transaction/ub') }}">UB</a></li>
-                    <li><a href="{{ url('transaction/ublp') }}">UBLP</a></li>
-                </ul>
             </li>
             <li class="active"><a href="{{ url('presence') }}" class="ai-icon" aria-expanded="false">
                     <i class="fa fa-user-check"></i>

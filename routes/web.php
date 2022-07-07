@@ -102,13 +102,8 @@ Route::get('logout', 'AuthController@logout');
     // PRESENCE
     Route::get('presence', 'PresenceController@index');
 
-    // SPREADING
-    Route::get('transaction/spreading', 'SpreadingController@index');
-   
-    // UB
-    Route::get('transaction/ub', 'UBController@index');
-    Route::post('transactionDetail', 'UBController@getTransactionDetail');
-
-    // UBLP
-    Route::get('transaction/ublp', 'UBLPController@index');
-    Route::post('transactionUBLPDetail', 'UBLPController@getTransactionDetail');
+    // TRANSAKSI
+    Route::get('transaction', 'TransactionController@index');
+    Route::post('transactionSpreadDetail', 'TransactionController@getTransactionDetailSpreading');
+    Route::post('transactionUBDetail', 'TransactionController@getTransactionDetailUB');
+    Route::post('transactionUBLPDetail', 'TransactionController@getTransactionDetailUBLP');
