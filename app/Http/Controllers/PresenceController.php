@@ -23,6 +23,6 @@ class PresenceController extends Controller
         ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL', 'md_type.NAME_TYPE')
         ->get();
 
-        return view('presence', $data);
+        return view('master.presence.presence', $data);
     }
 }
