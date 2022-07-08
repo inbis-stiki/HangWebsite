@@ -228,4 +228,32 @@ class InvoiceApi extends Controller
             ], $exp->getCode());
         }
     }
+    public function cekFaktur(Request $req){
+        try {
+            $ID_USER = $req->input("id_user");
+
+            $cektd = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
+            ->whereDate('DATE_TD', '=', date('Y-m-d'))
+            ->first();
+
+            if ($cektd->ISFINISHED_TD == 0) {
+                $msg    = 'Anda bisa input faktur!';
+                $td     = [];
+            }else{
+                $msg    = 'Anda sudah Mengirimkan Faktur hari ini!';
+                $td     = $cektd;
+            }
+
+            return response([
+                'status_code'       => 200,
+                'status_message'    => $msg,
+                'data'              => $td
+            ], 200);
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
+    }
 }
