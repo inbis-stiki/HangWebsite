@@ -35,13 +35,12 @@
                     @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 4)
                     <li><a href="{{ url('master/shop') }}">Toko</a></li>
                     @endif
+                    @if (Session::get('role') == 1 || Session::get('role') == 2)
                     <li><a href="{{ url('master/regional-price') }}">Harga Regional</a></li>
                     <li><a href="#">Target Regional</a></li>
-
-                    @if (Session::get('role') == 1 || Session::get('role') == 2)
                     <li><a href="#">Konversi</a></li>
                     @endif
-                    @if (Session::get('role') < 4)
+                    @if (Session::get('role') < 5)
                     <li><a href="{{ url('master/user') }}">User</a></li>
                     @endif
                     @if (Session::get('role') == 1)

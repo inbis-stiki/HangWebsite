@@ -21,10 +21,11 @@ Route::get('testimage/{image}', 'ImageController@show');
 
 //Login
 Route::get('/', 'AuthController@login');
+Route::get('/', 'AuthController@login')->name('login');
 Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 
-// Route::group(['middleware' => ['checkRole:1']], function() {
+// Route::group(['middleware' => ['checkLogin']], function() {
     Route::get('dashboard', 'DashboardController@index');
 
     // MASTER LOCATION
@@ -71,15 +72,7 @@ Route::get('logout', 'AuthController@logout');
     Route::get('master/category-product', 'CategoryProductController@index');
     Route::get('master/category-product/store', 'CategoryProductController@store');
     Route::get('master/category-product/update', 'CategoryProductController@update');
-    Route::get('master/category-product/destroy', 'CategoryProductController@destroy');
-
-    // MASTER ROLE
-    Route::group(['middleware' => ['checkRole:1']], function() {
-        Route::get('master/role', 'RoleController@index');
-        Route::get('master/role/store', 'RoleController@store');
-        Route::get('master/role/update', 'RoleController@update');
-        Route::get('master/role/destroy', 'RoleController@destroy');
-    });
+    Route::get('master/category-product/destroy', 'CategoryProductController@destroy');    
 
     //MASTER PRODUK
     Route::get('master/product', 'ProductController@index');
@@ -99,6 +92,14 @@ Route::get('logout', 'AuthController@logout');
     Route::get('master/user/update', 'UserController@update');
     Route::get('master/user/destroy', 'UserController@destroy');
 
+    // MASTER ROLE
+    Route::group(['middleware' => ['checkRole:1']], function() {
+    Route::get('master/role', 'RoleController@index');
+    Route::get('master/role/store', 'RoleController@store');
+    Route::get('master/role/update', 'RoleController@update');
+    Route::get('master/role/destroy', 'RoleController@destroy');
+    });
+
     // PRESENCE
     Route::get('presence', 'PresenceController@index');
 
@@ -107,3 +108,5 @@ Route::get('logout', 'AuthController@logout');
     Route::post('transactionSpreadDetail', 'TransactionController@getTransactionDetailSpreading');
     Route::post('transactionUBDetail', 'TransactionController@getTransactionDetailUB');
     Route::post('transactionUBLPDetail', 'TransactionController@getTransactionDetailUBLP');
+
+    // });

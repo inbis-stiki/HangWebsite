@@ -39,6 +39,7 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
+                                        <th>Area</th>
                                         <th>Kecamatan</th>
                                         <th>Waktu</th>
                                         <th>Target Aktifitas</th>
@@ -53,6 +54,7 @@
                                     <tr>
                                         <td>{{ $no++ }}</td>    
                                         <td>{{ $presence->NAME_USER }}</td>
+                                        <td>{{ $presence->NAME_AREA }}</td>
                                         <td>{{ $presence->NAME_DISTRICT }}</td>
                                         <td>{{ date_format(date_create($presence->DATE_PRESENCE), 'j F Y H:i') }}</td>
                                         <td>{{ $presence->NAME_TYPE }}</td>
