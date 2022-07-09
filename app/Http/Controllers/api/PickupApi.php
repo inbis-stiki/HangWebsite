@@ -73,6 +73,14 @@ class PickupApi extends Controller
                 ['ISFINISHED_PICKUP', '=', 0]
             ])->latest('ID_PICKUP')->first();
             
+            if($pick == null){
+                return response([
+                    'status_code'       => 200,
+                    'status_message'    => 'User belum pickup!',
+                    'data'              => []
+                ], 200);
+            }
+
             $arrId = explode(";", $pick->ID_PRODUCT);
             $arrRemain =explode(";", $pick->REMAININGSTOCK_PICKUP);
 
@@ -100,36 +108,51 @@ class PickupApi extends Controller
 
     public function cekPickup(Request $req){
         try {
-            $pick = Pickup::where([
-                ['ID_USER', '=', $req->input('id_user')]
-            ])
-            ->whereDate('TIME_PICKUP', '<', date('Y-m-d'))
-            ->latest('ID_PICKUP')->first();
+            $cekData = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP')
+            ->where([
+                ['ID_USER', '=', $req->input('id_user')],
+                ['ISFINISHED_PICKUP', '=', 0]
+            ])->latest('ID_PICKUP')->first();
             
-            $cekPick = Pickup::where([
-                ['ID_USER', '=', $req->input('id_user')]
-            ])
-            ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
-            ->latest('ID_PICKUP')->first();
-
-            if ($pick->ISFINISHED_PICKUP == 0) {
-                $msg    = 'Data terakhir pickup!';
-                $pickup = $pick;
+            if ($cekData == null) {
+                return response([
+                    'status_code'       => 200,
+                    'status_message'    => 'User belum pickup!',
+                    'data'              => []
+                ], 200);
             }else{
-                if ($cekPick == null) {
-                    $msg    = 'Anda bisa pickup barang!';
-                    $pickup = [];
+                $pick = Pickup::where([
+                    ['ID_USER', '=', $req->input('id_user')]
+                ])
+                ->whereDate('TIME_PICKUP', '<', date('Y-m-d'))
+                ->latest('ID_PICKUP')->first();
+                
+                $cekPick = Pickup::where([
+                    ['ID_USER', '=', $req->input('id_user')]
+                ])
+                ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
+                ->latest('ID_PICKUP')->first();
+                dd($cekPick);
+    
+                if ($pick->ISFINISHED_PICKUP == 0) {
+                    $msg    = 'Data terakhir pickup!';
+                    $pickup = $pick;
                 }else{
-                    $msg    = 'Anda sudah pickup hari ini!';
-                    $pickup = $cekPick;
+                    if ($cekPick == null) {
+                        $msg    = 'Anda bisa pickup barang!';
+                        $pickup = [];
+                    }else{
+                        $msg    = 'Anda sudah pickup hari ini!';
+                        $pickup = $cekPick;
+                    }
                 }
+    
+                return response([
+                    'status_code'       => 200,
+                    'status_message'    => $msg,
+                    'data'              => $pickup
+                ], 200);
             }
-
-            return response([
-                'status_code'       => 200,
-                'status_message'    => $msg,
-                'data'              => $pickup
-            ], 200);
         } catch (Exception $exp) {
             return response([
                 'status_code'       => 500,
