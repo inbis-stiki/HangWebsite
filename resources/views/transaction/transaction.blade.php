@@ -26,53 +26,49 @@
         @endif
 
         <div class="row">
-            <div class="col-12" style="margin-bottom: 20px;">
-                <select name="transaksi" class="select2" onchange="getval(this);" required>
-                    <option selected value="Spreading">Spreading</option>
-                    <option value="UB">UB</option>
-                    <option value="UBLP">UBLP</option>
-                </select>
+            <div class="col-6" style="margin-bottom: 5px;">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Tanggal Transaksi</h4>
+                        <input rel="3" class="form-control" id="TglTrans" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="col-6" style="margin-bottom: 5px;">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Jenis Transaksi</h4>
+                        <select rel="4" name="transaksi" id="SelectTrans" class="select2 form-control">
+                            <option selected disabled value="0">Pilih Transaksi</option>
+                            <option value="1">Spreading</option>
+                            <option value="2">UB</option>
+                            <option value="3">UBLP</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Spreading Trans -->
+        <!-- Trans -->
         <div class="row" id="spreading">
             <div class="col-12">
                 <div class="card">
                     {{-- <div class="card-header">
-                        <h4 class="card-title">Daftar Produk</h4>
+                        <h4 class="card-title">Daftar Transaksi</h4>
                     </div> --}}
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="datatable-spread" class="display min-w850">
+                            <table id="datatables" class="display min-w850">
                                 <thead>
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
-                                        <th>Kecamatan</th>
+                                        <th>Area Transaksi</th>
                                         <th>Waktu</th>
                                         <th>Target Aktifitas</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @php
-                                    $no = 1;
-                                    @endphp
-                                    @foreach ($spreadings as $spread_data)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>
-                                        <td>{{ $spread_data->NAME_USER }}</td>
-                                        <td>{{ $spread_data->NAME_DISTRICT }}</td>
-                                        <td>{{ date_format(date_create($spread_data->DATE_TRANS), 'j F Y H:i') }}</td>
-                                        <td>{{ $spread_data->NAME_TYPE }}</td>
-                                        <td>
-                                            <button class="btn light btn-success" onclick="showDetailSpread('{{ $spread_data->ID_TRANS }}')"><i class="fa fa-circle-info"></i></button>
-                                            <a class="btn light btn-info" href="https://maps.google.com/maps?q={{ $spread_data->LAT_SHOP }},{{ $spread_data->LONG_SHOP }}&hl=es&z=14&amp;" target="_blank"><i class="fa fa-map-location-dot"></i></a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -80,97 +76,6 @@
             </div>
         </div>
 
-        <!-- UB Trans -->
-        <div class="row" id="ub">
-            <div class="col-12">
-                <div class="card">
-                    {{-- <div class="card-header">
-                        <h4 class="card-title">Daftar Produk</h4>
-                    </div> --}}
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="datatable-ub" class="display min-w850">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Kecamatan</th>
-                                        <th>Waktu</th>
-                                        <th>Target Aktifitas</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                    $no = 1;
-                                    @endphp
-                                    @foreach ($ub as $ub_data)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>
-                                        <td>{{ $ub_data->NAME_USER }}</td>
-                                        <td>{{ $ub_data->DISTRICT }}</td>
-                                        <td>{{ date_format(date_create($ub_data->DATE_TRANS), 'j F Y H:i') }}</td>
-                                        <td>{{ $ub_data->NAME_TYPE }}</td>
-                                        <td>
-                                            <button class="btn light btn-success" onclick="showDetailUB('{{ $ub_data->ID_TRANS }}')"><i class="fa fa-circle-info"></i></button>
-                                            <a class="btn light btn-info" href="https://maps.google.com/maps?q={{ $ub_data->LAT_TRANS }},{{ $ub_data->LONG_TRANS }}&hl=es&z=14&amp;" target="_blank"><i class="fa fa-map-location-dot"></i></a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- UBLP Trans -->
-        <div class="row" id="ublps">
-            <div class="col-12">
-                <div class="card">
-                    {{-- <div class="card-header">
-                        <h4 class="card-title">Daftar Produk</h4>
-                    </div> --}}
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="datatable-ublps" class="display min-w850">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Area</th>
-                                        <th>Lokasi</th>
-                                        <th>Tanggal Transaksi</th>
-                                        <th>Target Aktifitas</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                    $no = 1;
-                                    @endphp
-                                    @foreach ($ublps as $ublp)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>
-                                        <td>{{ $ublp->NAME_USER }}</td>
-                                        <td>{{ $ublp->AREA_TRANS }}</td>
-                                        <td>{{ $ublp->LOCATION_TRANS }}</td>
-                                        <td>{{ date_format(date_create($ublp->DATE_TRANS), 'j F Y H:i') }}</td>
-                                        <td>{{ $ublp->NAME_TYPE }}</td>
-                                        <td>
-                                            <button class="btn light btn-success" onclick="showDetailUBLP('{{ $ublp->ID_TRANS }}')"><i class="fa fa-circle-info"></i></button>
-                                            <a class="btn light btn-info" href="https://maps.google.com/maps?q={{ $ublp->LAT_TRANS }},{{ $ublp->LONG_TRANS }}&hl=es&z=14&amp;" target="_blank"><i class="fa fa-map-location-dot"></i></a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -327,7 +232,7 @@
                 </button>
             </div>
             <div class="modal-body">
-            <div class="col-md-12 d-flex">
+                <div class="col-md-12 d-flex">
                     <div class="form-group col-md-6">
                         <label for="">Foto Booth</label>
                         <br>
@@ -397,34 +302,70 @@
     Content body end
 ***********************************-->
 @include('template/footer')
+
 <script>
-    $('#datatable-spread').DataTable()
-    $('#datatable-ub').DataTable()
-    $('#datatable-ublps').DataTable()
 
-    $('#spreading').show()
-    $('#ub').hide()
-    $('#ublps').hide()
+    var tgl_trans = "";
+    filterData();
 
-    function getval(sel) {
-        if (sel.value == 'Spreading') {
-            $('#spreading').show()
-            $('#ub').hide()
-            $('#ublps').hide()
-        } else if (sel.value == 'UB') {
-            $('#spreading').hide()
-            $('#ub').show()
-            $('#ublps').hide()
-        } else {
-            $('#spreading').hide()
-            $('#ub').hide()
-            $('#ublps').show()
+    $("#TglTrans").datepicker({
+        dateFormat: "yy-mm-dd",
+        onSelect: function(dateText) {
+            var rel = $(this).attr("rel");
+            $('#datatables').DataTable().destroy()
+            $('#datatables').DataTable().columns(rel).search(dateText).draw();
         }
+    });
+
+    function filterData() {
+        $('#datatables').DataTable({
+            "processing": true,
+            "language": {
+                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                "ZeroRecords": " ",
+                EmptyTable: ''
+            },
+            'serverMethod': 'POST',
+            'ajax': {
+                'url': "{{ url('master/transaction/Alltransaction') }}",
+                'beforeSend': function(request) {
+                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                },
+                'data': function(data) {
+                    data.searchTrans = $('#SelectTrans').val();
+                    data.tgl_trans = tgl_trans;
+                }
+            },
+            'columns': [{
+                    data: 'NO'
+                },
+                {
+                    data: 'NAME_USER'
+                },
+                {
+                    data: 'AREA_TRANS'
+                },
+                {
+                    data: 'DATE_TRANS'
+                },
+                {
+                    data: 'NAME_TYPE'
+                },
+                {
+                    data: 'ACTION_BUTTON'
+                }
+            ],
+        }).draw()
     }
+
+    $('#SelectTrans').change(function() {
+        $('#datatables').DataTable().destroy()
+        filterData();
+    });
 
     const showDetailSpread = (id_trans) => {
         $.ajax({
-            url: "{{ url('transactionSpreadDetail') }}",
+            url: "{{ url('master/transaction/transactionSpreadDetail') }}",
             type: 'POST',
             data: {
                 "_token": "{{ csrf_token() }}",
@@ -453,7 +394,7 @@
 
     const showDetailUB = (id_trans) => {
         $.ajax({
-            url: "{{ url('transactionUBDetail') }}",
+            url: "{{ url('master/transaction/transactionUBDetail') }}",
             type: 'POST',
             data: {
                 "_token": "{{ csrf_token() }}",
@@ -486,7 +427,7 @@
 
     const showDetailUBLP = (id_trans) => {
         $.ajax({
-            url: "{{ url('transactionUBLPDetail') }}",
+            url: "{{ url('master/transaction/transactionUBLPDetail') }}",
             type: 'POST',
             data: {
                 "_token": "{{ csrf_token() }}",
@@ -520,8 +461,8 @@
         })
     }
 
-    const showLocation = (long, lat) => {
-        $('#mdlLocation_src').attr('src', `https://maps.google.com/maps?q=${lat},${long}&hl=es&z=14&amp;output=embed`);
-        $('#mdlLocation').modal('show')
-    }
+    // const showLocation = (long, lat) => {
+    //     $('#mdlLocation_src').attr('src', `https://maps.google.com/maps?q=${lat},${long}&hl=es&z=14&amp;output=embed`);
+    //     $('#mdlLocation').modal('show')
+    // }
 </script>

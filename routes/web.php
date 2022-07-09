@@ -105,8 +105,9 @@ Route::get('logout', 'AuthController@logout');
 
     // TRANSAKSI
     Route::get('transaction', 'TransactionController@index');
-    Route::post('transactionSpreadDetail', 'TransactionController@getTransactionDetailSpreading');
-    Route::post('transactionUBDetail', 'TransactionController@getTransactionDetailUB');
-    Route::post('transactionUBLPDetail', 'TransactionController@getTransactionDetailUBLP');
+    Route::post('master/transaction/Alltransaction', 'TransactionController@getAllTrans');
+    Route::post('master/transaction/transactionSpreadDetail', 'TransactionController@getTransactionDetailSpreading');
+    Route::post('master/transaction/transactionUBDetail', 'TransactionController@getTransactionDetailUB');
+    Route::post('master/transaction/transactionUBLPDetail', 'TransactionController@getTransactionDetailUBLP');
 
     // });
