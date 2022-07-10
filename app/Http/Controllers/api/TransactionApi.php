@@ -43,12 +43,12 @@ class TransactionApi extends Controller
             $regional           = new Regional();
             $area               = new Area();
 
-            $cekData    = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP')
-            ->where([
-                ['ID_USER', '=', $req->input('id_user')],
-                ['ISFINISHED_PICKUP', '=', 0]
-            ])->latest('ID_PICKUP')->first();
-                
+            $cekData    = Pickup::select('ID_PICKUP', 'ID_PRODUCT', 'REMAININGSTOCK_PICKUP')
+                ->where([
+                    ['ID_USER', '=', $req->input('id_user')],
+                    ['ISFINISHED_PICKUP', '=', 0]
+                ])->latest('ID_PICKUP')->first();
+
             $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
             $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
 
@@ -132,7 +132,6 @@ class TransactionApi extends Controller
     {
         date_default_timezone_set("Asia/Bangkok");
         $validator = Validator::make($req->all(), [
-            'id_shop'                   => 'required',
             'id_type'                   => 'required',
             'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
             'qty_trans'                 => 'required',
@@ -149,20 +148,6 @@ class TransactionApi extends Controller
             ], 400);
         }
 
-        $cekData    = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP')
-        ->where([
-            ['ID_USER', '=', $req->input('id_user')],
-            ['ISFINISHED_PICKUP', '=', 0]
-        ])->latest('ID_PICKUP')->first();
-
-        $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
-        $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
-
-        $Stok = array();
-        for ($i = 0; $i < count($pecahIdproduk); $i++) {
-            $Stok[$pecahIdproduk[$i]] = $pecahRemainproduk[$i];
-        }
-
         $cekArea  = area::select('deleted_at')
             ->where([
                 ['NAME_AREA', '=', $req->input('nama_area')],
@@ -170,20 +155,42 @@ class TransactionApi extends Controller
             ])->first();
 
         if ($cekArea != null) {
+
+            $cekData    = Pickup::select('ID_PICKUP', 'ID_PRODUCT', 'REMAININGSTOCK_PICKUP')
+                ->where([
+                    ['ID_USER', '=', $req->input('id_user')],
+                    ['ISFINISHED_PICKUP', '=', 0]
+                ])->latest('ID_PICKUP')->first();
+
+            $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
+            $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
             $tdkLolos = 0;
-            $sisa = array();
+            $Stok = array();
+            $StokSisa = array();
+            $Sisa = array();
+
+            for ($i = 0; $i < count($pecahIdproduk); $i++) {
+                $Stok[$pecahIdproduk[$i]] = $pecahRemainproduk[$i];
+            }
+
             foreach ($req->input('product') as $item) {
                 if ($Stok[$item['id_product']] >= $item['qty_product']) {
-                    array_push(
-                        $sisa,
-                        array(
-                            'ID_PRODUK' => $item['id_product'],
-                            'STOK_SISA' => $Stok[$item['id_product']] - $item['qty_product']
-                        )
-                    );
+                    $Sisa[$item['id_product']] = $Stok[$item['id_product']] - $item['qty_product'];
                 } else {
+                    $Sisa[$item['id_product']] = $Stok[$item['id_product']];
                     $tdkLolos++;
                 }
+            }
+
+            $Stok2 = array();
+            foreach ($Sisa as $stokKey => $itemStok) {
+                array_push(
+                    $Stok2,
+                    array(
+                        "ID_PRODUCT" => $stokKey,
+                        "NEW_STOK" => $itemStok
+                    )
+                );
             }
 
             if ($tdkLolos == 0) {
@@ -193,8 +200,20 @@ class TransactionApi extends Controller
                 $area               = new Area();
 
                 $newStok = array();
-                foreach ($sisa as $itemStok) {
-                    array_push($newStok, $itemStok['STOK_SISA']);
+                for ($i = 0; $i < count($pecahIdproduk); $i++) {
+                    if (count($Stok2) == 1) {
+                        if ($Stok2[0]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
+                            array_push($newStok, $Stok2[0]['NEW_STOK']);
+                        } else {
+                            array_push($newStok, (int)$pecahRemainproduk[$i]);
+                        }
+                    } else {
+                        if ($Stok2[$i]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
+                            array_push($newStok, $Stok2[$i]['NEW_STOK']);
+                        } else {
+                            array_push($newStok, $pecahRemainproduk[$i]);
+                        }
+                    }
                 }
 
                 $remain = implode(";", $newStok);
@@ -272,11 +291,11 @@ class TransactionApi extends Controller
             $area               = new Area();
             $district           = new District();
 
-            $cekData    = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP')
-            ->where([
-                ['ID_USER', '=', $req->input('id_user')],
-                ['ISFINISHED_PICKUP', '=', 0]
-            ])->latest('ID_PICKUP')->first();
+            $cekData    = Pickup::select('ID_PICKUP', 'ID_PRODUCT', 'REMAININGSTOCK_PICKUP')
+                ->where([
+                    ['ID_USER', '=', $req->input('id_user')],
+                    ['ISFINISHED_PICKUP', '=', 0]
+                ])->latest('ID_PICKUP')->first();
 
             $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
             $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);

@@ -30,7 +30,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Tanggal Transaksi</h4>
-                        <input rel="3" class="form-control" id="TglTrans" type="text">
+                        <input rel="3" class="form-control" id="TglTrans" type="text" readonly>
                     </div>
                 </div>
             </div>
