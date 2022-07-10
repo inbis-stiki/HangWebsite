@@ -271,12 +271,14 @@ class TransactionApi extends Controller
         try {
             date_default_timezone_set("Asia/Bangkok");
             $validator = Validator::make($req->all(), [
-                'id_shop'                   => 'required',
                 'id_type'                   => 'required',
                 'id_district'               => 'required',
                 'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
                 'qty_trans'                 => 'required',
                 'total_trans'               => 'required',
+                'lat_trans'                 => 'required',
+                'long_trans'                => 'required'
+
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
             ]);
@@ -338,7 +340,6 @@ class TransactionApi extends Controller
                 $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
                 $transaction->ID_TRANS          = "TRANS_" . $unik;
                 $transaction->ID_USER           = $req->input('id_user');
-                $transaction->ID_SHOP           = $req->input('id_shop');
                 $transaction->ID_TYPE           = $req->input('id_type');
                 $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
                 $transaction->REGIONAL_TRANS    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
@@ -347,13 +348,14 @@ class TransactionApi extends Controller
                 $transaction->DATE_TRANS        = date('Y-m-d H:i:s');
                 $transaction->AREA_TRANS        = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
                 $transaction->DISTRICT          = $district::select('NAME_DISTRICT')->where('ID_DISTRICT', $req->input('id_district'))->first()->NAME_DISTRICT;
+                $transaction->LAT_TRANS         = $req->input('lat_trans');
+                $transaction->LONG_TRANS        = $req->input('long_trans');
                 $transaction->save();
 
                 foreach ($req->input('product') as $item) {
                     TransactionDetail::insert([
                         [
                             'ID_TRANS'      => "TRANS_" . $unik,
-                            'ID_SHOP'       => $req->input('id_shop'),
                             'ID_PRODUCT'    => $item['id_product'],
                             'QTY_TD'        => $item['qty_product'],
                             'DATE_TD'       => date('Y-m-d H:i:s'),
