@@ -136,7 +136,9 @@ class TransactionApi extends Controller
             'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
             'qty_trans'                 => 'required',
             'total_trans'               => 'required',
-            'nama_area'                 => 'required'
+            'nama_area'                 => 'required',
+            'lat_trans'                 => 'required',
+            'long_trans'                 => 'required'
         ], [
             'required'  => 'Parameter :attribute tidak boleh kosong!',
         ]);
@@ -166,7 +168,6 @@ class TransactionApi extends Controller
             $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
             $tdkLolos = 0;
             $Stok = array();
-            $StokSisa = array();
             $Sisa = array();
 
             for ($i = 0; $i < count($pecahIdproduk); $i++) {
@@ -232,6 +233,8 @@ class TransactionApi extends Controller
                 $transaction->TOTAL_TRANS       = $req->input('total_trans');
                 $transaction->DATE_TRANS        = date('Y-m-d H:i:s');
                 $transaction->AREA_TRANS        = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
+                $transaction->LAT_TRANS         = $req->input('lat_trans');
+                $transaction->LONG_TRANS        = $req->input('long_trans');
                 $transaction->save();
 
                 foreach ($req->input('product') as $item) {
