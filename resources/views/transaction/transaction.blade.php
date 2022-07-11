@@ -39,7 +39,7 @@
                     <div class="card-body">
                         <h4 class="card-title">Jenis Transaksi</h4>
                         <select rel="4" name="transaksi" id="SelectTrans" class="select2 form-control">
-                            <option selected disabled value="0">Pilih Transaksi</option>
+                            <option selected value="0">All Transaksi</option>
                             <option value="1">Spreading</option>
                             <option value="2">UB</option>
                             <option value="3">UBLP</option>
@@ -63,7 +63,8 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
-                                        <th>Area Transaksi</th>
+                                        <th>Regional</th>
+                                        <th>Area</th>
                                         <th>Waktu</th>
                                         <th>Target Aktifitas</th>
                                         <th>Aksi</th>
@@ -304,16 +305,27 @@
 @include('template/footer')
 
 <script>
-
     var tgl_trans = "";
+    var rel = $("#TglTrans").attr("rel");
     filterData();
 
     $("#TglTrans").datepicker({
         dateFormat: "yy-mm-dd",
+        showOn: 'focus',
+        showButtonPanel: true,
+        closeText: 'Clear',
         onSelect: function(dateText) {
-            var rel = $(this).attr("rel");
             $('#datatables').DataTable().destroy()
             $('#datatables').DataTable().columns(rel).search(dateText).draw();
+        },
+        onClose: function() {
+            var event = arguments.callee.caller.caller.arguments[0];
+            // If "Clear" gets clicked, then really clear it
+            if ($(event.delegateTarget).hasClass('ui-datepicker-close')) {
+                $(this).val('');
+                $('#datatables').DataTable().destroy()
+                $('#datatables').DataTable().columns(rel).search().draw();
+            }
         }
     });
 
@@ -341,6 +353,9 @@
                 },
                 {
                     data: 'NAME_USER'
+                },
+                {
+                    data: 'REGIONAL_TRANS'
                 },
                 {
                     data: 'AREA_TRANS'
