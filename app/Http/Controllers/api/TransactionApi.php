@@ -130,139 +130,151 @@ class TransactionApi extends Controller
 
     public function ublp(Request $req)
     {
-        date_default_timezone_set("Asia/Bangkok");
-        $validator = Validator::make($req->all(), [
-            'id_type'                   => 'required',
-            'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
-            'qty_trans'                 => 'required',
-            'total_trans'               => 'required',
-            'nama_area'                 => 'required',
-            'lat_trans'                 => 'required',
-            'long_trans'                 => 'required'
-        ], [
-            'required'  => 'Parameter :attribute tidak boleh kosong!',
-        ]);
+        try {
+            date_default_timezone_set("Asia/Bangkok");
+            $validator = Validator::make($req->all(), [
+                'id_type'                   => 'required',
+                'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
+                'qty_trans'                 => 'required',
+                'total_trans'               => 'required',
+                'name_district'             => 'required',
+                'lat_trans'                 => 'required',
+                'long_trans'                => 'required'
+            ], [
+                'required'  => 'Parameter :attribute tidak boleh kosong!',
+            ]);
 
-        if ($validator->fails()) {
-            return response([
-                "status_code"       => 400,
-                "status_message"    => $validator->errors()->first()
-            ], 400);
-        }
-
-        $cekArea  = area::select('deleted_at')
-            ->where([
-                ['NAME_AREA', '=', $req->input('nama_area')],
-                ['ID_AREA', '=', $req->input('id_area')]
-            ])->first();
-
-        if ($cekArea != null) {
-
-            $cekData    = Pickup::select('ID_PICKUP', 'ID_PRODUCT', 'REMAININGSTOCK_PICKUP')
-                ->where([
-                    ['ID_USER', '=', $req->input('id_user')],
-                    ['ISFINISHED_PICKUP', '=', 0]
-                ])->latest('ID_PICKUP')->first();
-
-            $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
-            $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
-            $tdkLolos = 0;
-            $Stok = array();
-            $Sisa = array();
-
-            for ($i = 0; $i < count($pecahIdproduk); $i++) {
-                $Stok[$pecahIdproduk[$i]] = $pecahRemainproduk[$i];
+            if ($validator->fails()) {
+                return response([
+                    "status_code"       => 400,
+                    "status_message"    => $validator->errors()->first()
+                ], 400);
             }
 
-            foreach ($req->input('product') as $item) {
-                if ($Stok[$item['id_product']] >= $item['qty_product']) {
-                    $Sisa[$item['id_product']] = $Stok[$item['id_product']] - $item['qty_product'];
-                } else {
-                    $Sisa[$item['id_product']] = $Stok[$item['id_product']];
-                    $tdkLolos++;
-                }
-            }
+            $cekDistrict = District::select('md_district.*')
+                ->where('NAME_DISTRICT', '=', $req->input('name_district'))
+                ->where('ISMARKET_DISTRICT', '=', 0)
+                ->first();
 
-            $Stok2 = array();
-            foreach ($Sisa as $stokKey => $itemStok) {
-                array_push(
-                    $Stok2,
-                    array(
-                        "ID_PRODUCT" => $stokKey,
-                        "NEW_STOK" => $itemStok
-                    )
-                );
-            }
+            $cekArea  = area::select('md_area.*')
+                ->where('ID_AREA', '=', $req->input('id_area'))
+                ->where('ID_AREA', '=', $cekDistrict['ID_AREA'])
+                ->where('deleted_at', '=', NULL)
+                ->first();
 
-            if ($tdkLolos == 0) {
-                $transaction        = new Transaction();
-                $location           = new Location();
-                $regional           = new Regional();
-                $area               = new Area();
+            if ($cekArea != null) {
 
-                $newStok = array();
+                $cekData    = Pickup::select('ID_PICKUP', 'ID_PRODUCT', 'REMAININGSTOCK_PICKUP')
+                    ->where([
+                        ['ID_USER', '=', $req->input('id_user')],
+                        ['ISFINISHED_PICKUP', '=', 0]
+                    ])->latest('ID_PICKUP')->first();
+
+                $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
+                $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
+                $tdkLolos = 0;
+                $Stok = array();
+                $Sisa = array();
+
                 for ($i = 0; $i < count($pecahIdproduk); $i++) {
-                    if (count($Stok2) == 1) {
-                        if ($Stok2[0]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
-                            array_push($newStok, $Stok2[0]['NEW_STOK']);
-                        } else {
-                            array_push($newStok, (int)$pecahRemainproduk[$i]);
-                        }
+                    $Stok[$pecahIdproduk[$i]] = $pecahRemainproduk[$i];
+                }
+
+                foreach ($req->input('product') as $item) {
+                    if ($Stok[$item['id_product']] >= $item['qty_product']) {
+                        $Sisa[$item['id_product']] = $Stok[$item['id_product']] - $item['qty_product'];
                     } else {
-                        if ($Stok2[$i]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
-                            array_push($newStok, $Stok2[$i]['NEW_STOK']);
-                        } else {
-                            array_push($newStok, $pecahRemainproduk[$i]);
-                        }
+                        $Sisa[$item['id_product']] = $Stok[$item['id_product']];
+                        $tdkLolos++;
                     }
                 }
 
-                $remain = implode(";", $newStok);
-
-                $updatePickup = Pickup::find($cekData->ID_PICKUP);
-                $updatePickup->REMAININGSTOCK_PICKUP = $remain;
-                $updatePickup->save();
-
-                $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
-                $transaction->ID_TRANS          = "TRANS_" . $unik;
-                $transaction->ID_USER           = $req->input('id_user');
-                $transaction->ID_TYPE           = $req->input('id_type');
-                $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
-                $transaction->REGIONAL_TRANS    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
-                $transaction->QTY_TRANS         = $req->input('qty_trans');
-                $transaction->TOTAL_TRANS       = $req->input('total_trans');
-                $transaction->DATE_TRANS        = date('Y-m-d H:i:s');
-                $transaction->AREA_TRANS        = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
-                $transaction->LAT_TRANS         = $req->input('lat_trans');
-                $transaction->LONG_TRANS        = $req->input('long_trans');
-                $transaction->save();
-
-                foreach ($req->input('product') as $item) {
-                    $dataDetailTrans = array(
-                        'ID_TRANS'      => "TRANS_" . $unik,
-                        'ID_PRODUCT'    => $item['id_product'],
-                        'QTY_TD'        => $item['qty_product'],
-                        'DATE_TD'       => date('Y-m-d H:i:s'),
+                $Stok2 = array();
+                foreach ($Sisa as $stokKey => $itemStok) {
+                    array_push(
+                        $Stok2,
+                        array(
+                            "ID_PRODUCT" => $stokKey,
+                            "NEW_STOK" => $itemStok
+                        )
                     );
-                    TransactionDetail::insert($dataDetailTrans);
                 }
 
-                return response([
-                    "status_code"       => 200,
-                    "status_message"    => 'Data berhasil disimpan!',
-                    "data"              => ['ID_TRANS' => $transaction->ID_TRANS]
-                ], 200);
+                if ($tdkLolos == 0) {
+                    $transaction        = new Transaction();
+                    $location           = new Location();
+                    $regional           = new Regional();
+                    $area               = new Area();
+
+                    $newStok = array();
+                    for ($i = 0; $i < count($pecahIdproduk); $i++) {
+                        if (count($Stok2) == 1) {
+                            if ($Stok2[0]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
+                                array_push($newStok, $Stok2[0]['NEW_STOK']);
+                            } else {
+                                array_push($newStok, (int)$pecahRemainproduk[$i]);
+                            }
+                        } else {
+                            if ($Stok2[$i]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
+                                array_push($newStok, $Stok2[$i]['NEW_STOK']);
+                            } else {
+                                array_push($newStok, $pecahRemainproduk[$i]);
+                            }
+                        }
+                    }
+
+                    $remain = implode(";", $newStok);
+
+                    $updatePickup = Pickup::find($cekData->ID_PICKUP);
+                    $updatePickup->REMAININGSTOCK_PICKUP = $remain;
+                    $updatePickup->save();
+
+                    $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
+                    $transaction->ID_TRANS          = "TRANS_" . $unik;
+                    $transaction->ID_USER           = $req->input('id_user');
+                    $transaction->ID_TYPE           = $req->input('id_type');
+                    $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
+                    $transaction->REGIONAL_TRANS    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
+                    $transaction->QTY_TRANS         = $req->input('qty_trans');
+                    $transaction->TOTAL_TRANS       = $req->input('total_trans');
+                    $transaction->DATE_TRANS        = date('Y-m-d H:i:s');
+                    $transaction->AREA_TRANS        = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
+                    $transaction->LAT_TRANS         = $req->input('lat_trans');
+                    $transaction->LONG_TRANS        = $req->input('long_trans');
+                    $transaction->save();
+
+                    foreach ($req->input('product') as $item) {
+                        $dataDetailTrans = array(
+                            'ID_TRANS'      => "TRANS_" . $unik,
+                            'ID_PRODUCT'    => $item['id_product'],
+                            'QTY_TD'        => $item['qty_product'],
+                            'DATE_TD'       => date('Y-m-d H:i:s'),
+                        );
+                        TransactionDetail::insert($dataDetailTrans);
+                    }
+
+                    return response([
+                        "status_code"       => 200,
+                        "status_message"    => 'Data berhasil disimpan!',
+                        "data"              => ['ID_TRANS' => $transaction->ID_TRANS]
+                    ], 200);
+                } else {
+                    return response([
+                        "status_code"       => 200,
+                        "status_message"    => 'Cek Qty anda dengan stok sisa!'
+                    ], 200);
+                }
             } else {
                 return response([
                     "status_code"       => 200,
-                    "status_message"    => 'Cek Qty anda dengan stok sisa!'
+                    "status_message"    => 'Maaf Anda Tidak Bisa Melakukan UBLP di Daerah Ini!'
                 ], 200);
             }
-        } else {
+        } catch (HttpResponseException $exp) {
             return response([
-                "status_code"       => 200,
-                "status_message"    => 'Maaf Anda Tidak Bisa Melakukan UBLP di Daerah Ini!'
-            ], 200);
+                'status_code'       => $exp->getCode(),
+                'status_message'    => $exp->getMessage(),
+            ], $exp->getCode());
         }
     }
 
@@ -374,6 +386,17 @@ class TransactionApi extends Controller
                     "status_message"    => 'Cek Qty anda dengan stok sisa!'
                 ], 200);
             }
+        } catch (HttpResponseException $exp) {
+            return response([
+                'status_code'       => $exp->getCode(),
+                'status_message'    => $exp->getMessage(),
+            ], $exp->getCode());
+        }
+    }
+
+    public function TransactionHistory(Request $req)
+    {
+        try {
         } catch (HttpResponseException $exp) {
             return response([
                 'status_code'       => $exp->getCode(),
