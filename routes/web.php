@@ -110,4 +110,8 @@ Route::get('logout', 'AuthController@logout');
     Route::post('master/transaction/transactionUBDetail', 'TransactionController@getTransactionDetailUB');
     Route::post('master/transaction/transactionUBLPDetail', 'TransactionController@getTransactionDetailUBLP');
 
+    //MASTER ACTIVITY CATEGORY
+    Route::get('master/activity-category', 'ActivityCategoryController@index');
+    Route::get('master/activity-category/update', 'ActivityCategoryController@update');
+
     // });

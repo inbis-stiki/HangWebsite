@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\ActivityCategory;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class ActivityCategoryController extends Controller
+{
+    public function index(){
+        $data['title']              = "Aktivitas Kategori";
+        $data['sidebar']            = "master";
+        $data['sidebar2']           = "activity-category";
+        $data['activity_category']  = ActivityCategory::all();
+        $data['total_persen']       = ActivityCategory::where('deleted_at', null)->sum('PERCENTAGE_AC');
+
+        return view('master.activity_category.activity_category', $data);
+    }
+
+    public function update(Request $req){
+        $validator = Validator::make($req->all(), [
+            'category_activity'     => 'required',
+            'percentage_activity'   => 'required',
+            'status'                => 'required',
+        ], [
+            'required' => 'Data tidak boleh kosong!',
+        ]);
+
+        if($validator->fails()){
+            return redirect('master/activity-category')->withErrors($validator);
+        }
+
+        date_default_timezone_set("Asia/Bangkok");
+        $total   =   ActivityCategory::where('deleted_at', null)
+        ->whereNotIn('ID_AC', [$req->input('id')])
+        ->sum('PERCENTAGE_AC');
+        
+        $cek = $total+$req->input('percentage_activity');
+        if ($cek > 100) {
+            return redirect('master/activity-category')->with('err_msg', 'Persentase kategori aktivitas melebihi persentase, mohon kurangi persentase saat input!');
+        }else{
+            $category_activity                  = ActivityCategory::find($req->input('id'));
+            $category_activity->NAME_AC         = $req->input('category_activity');
+            $category_activity->PERCENTAGE_AC   = $req->input('percentage_activity');
+            $category_activity->deleted_at      = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+            $category_activity->save();
+
+            return redirect('master/activity-category')->with('succ_msg', 'Berhasil mengubah data kategori aktivitas!');
+        }
+    }
+}

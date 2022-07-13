@@ -15,6 +15,7 @@
                 </a>
                 <ul aria-expanded="false">
                     @if (Session::get('role') == 1 || Session::get('role') == 2)
+                    <li><a href="{{ url('master/activity-category') }}">Kategori Aktivitas</a></li>
                     <li><a href="{{ url('master/category-product') }}">Kategori Produk</a></li>
                     <li><a href="{{ url('master/product') }}">Produk</a></li>
                     @endif
