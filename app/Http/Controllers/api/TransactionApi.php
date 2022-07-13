@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Transaction;
 use App\TransactionDetail;
+use App\TransactionImage;
 use App\Location;
 use App\Regional;
 use App\Area;
@@ -265,9 +266,12 @@ class TransactionApi extends Controller
                     ], 200);
                 }
             } else {
+                $cekArea  = area::select('md_area.*')
+                    ->where('ID_AREA', '=', $req->input('id_area'))
+                    ->first();
                 return response([
                     "status_code"       => 200,
-                    "status_message"    => 'Maaf Anda Tidak Bisa Melakukan UBLP di Daerah Ini!'
+                    "status_message"    => 'Maaf Anda Tidak Bisa Melakukan UBLP di Luar Area ' . $cekArea['NAME_AREA'] . ' !'
                 ], 200);
             }
         } catch (HttpResponseException $exp) {
@@ -397,6 +401,106 @@ class TransactionApi extends Controller
     public function TransactionHistory(Request $req)
     {
         try {
+            $dataTrans = Transaction::select('transaction.*', 'user.*')
+                ->where('transaction.ID_USER', '=', $req->input('id_user'))
+                ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
+                ->orderBy('DATE_TRANS', 'DESC')
+                ->paginate(10);
+
+            $dataPagination = array();
+            array_push(
+                $dataPagination,
+                array(
+                    "TOTAL_DATA" => $dataTrans->total(),
+                    "PAGE" => $dataTrans->currentPage(),
+                    "TOTAL_PAGE" => $dataTrans->lastPage()
+                )
+            );
+
+            $Trans = array();
+            foreach ($dataTrans->items() as $item) {
+                $detTrans       = TransactionDetail::select('transaction_detail.*')
+                    ->where('transaction_detail.ID_TRANS', $item->ID_TRANS)
+                    ->get();
+
+                $jml_qty = 0;
+                foreach ($detTrans as $item2) {
+                    $jml_qty += $item2->QTY_TD;
+                }
+
+                array_push(
+                    $Trans,
+                    array(
+                        "ID_TRANS" => $item->ID_TRANS,
+                        "USERNAME_USER" => $item->USERNAME_USER,
+                        "DATE_TRANS" => $item->DATE_TRANS,
+                        "JML_QTY_PRODUCT" => $jml_qty,
+                    )
+                );
+            }
+
+            return response([
+                'status_code'       => 200,
+                'status_message'    => 'Data berhasil diambil!',
+                'data'              => $Trans,
+                'status_pagination' => $dataPagination
+            ], 200);
+        } catch (HttpResponseException $exp) {
+            return response([
+                'status_code'       => $exp->getCode(),
+                'status_message'    => $exp->getMessage(),
+            ], $exp->getCode());
+        }
+    }
+
+    public function DetailVisit(Request $req)
+    {
+        try {
+            $dataTrans = Transaction::select('transaction.*', 'user.*', 'md_shop.*')
+                ->where('transaction.ID_TRANS', '=', $req->input('id_trans'))
+                ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
+                ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
+                ->orderBy('DATE_TRANS', 'DESC')
+                ->first();
+
+            $detTrans       = TransactionDetail::select('md_product.NAME_PRODUCT', 'transaction_detail.QTY_TD')
+                ->where('transaction_detail.ID_TRANS', $dataTrans->ID_TRANS)
+                ->leftjoin('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
+                ->get();
+
+            $TransImage      = TransactionImage::select('transaction_image.*')
+                ->where('transaction_image.ID_TRANS', $dataTrans->ID_TRANS)
+                ->first();
+
+            $Trans = array(
+                "ID_TRANS" => $dataTrans->ID_TRANS,
+                "ID_TYPE" => $dataTrans->ID_TYPE,
+                "USERNAME_USER" => $dataTrans->USERNAME_USER,
+                "DATE_TRANS" => $dataTrans->DATE_TRANS,
+                "PRODUCT_TERJUAL" => $detTrans,
+                "IMAGE" => array(
+                    "URL" => explode(";", $TransImage->PHOTO_TI),
+                    "DESC_IMAGE" => explode(";", $TransImage->DESCRIPTION_TI),
+                )
+            );
+
+            if ($dataTrans->ID_TYPE == 1) {
+                $Trans['NAME_SHOP'] = $dataTrans->NAME_SHOP;
+                $Trans['DETAIL_ALAMAT'] = $dataTrans->DETLOC_SHOP;
+            }else{
+                $Trans['NAME_SHOP'] = null;
+                if ($dataTrans->ID_TYPE == 2) {  
+                    $Trans['DETAIL_ALAMAT'] = $dataTrans->AREA_TRANS;
+                }else{
+                    $Trans['DETAIL_ALAMAT'] = $dataTrans->DISTRICT;
+                }
+            }
+
+            return response([
+                'status_code'       => 200,
+                'status_message'    => 'Data berhasil diambil!',
+                'data'              => $Trans
+            ], 200);
         } catch (HttpResponseException $exp) {
             return response([
                 'status_code'       => $exp->getCode(),
