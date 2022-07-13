@@ -140,7 +140,8 @@ class TransactionApi extends Controller
                 'total_trans'               => 'required',
                 'name_district'             => 'required',
                 'lat_trans'                 => 'required',
-                'long_trans'                => 'required'
+                'long_trans'                => 'required',
+                'detail_loc'                => 'required'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
             ]);
@@ -242,6 +243,7 @@ class TransactionApi extends Controller
                     $transaction->AREA_TRANS        = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
                     $transaction->LONG_TRANS        = $req->input('long_trans');
+                    $transaction->DETAIL_LOCATION   = $req->input('detail_loc');
                     $transaction->save();
 
                     foreach ($req->input('product') as $item) {
@@ -490,9 +492,9 @@ class TransactionApi extends Controller
             }else{
                 $Trans['NAME_SHOP'] = null;
                 if ($dataTrans->ID_TYPE == 2) {  
-                    $Trans['DETAIL_ALAMAT'] = $dataTrans->AREA_TRANS;
-                }else{
                     $Trans['DETAIL_ALAMAT'] = $dataTrans->DISTRICT;
+                }else{
+                    $Trans['DETAIL_ALAMAT'] = $dataTrans->DETAIL_LOCATION;
                 }
             }
 
