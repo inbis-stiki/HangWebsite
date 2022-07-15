@@ -26,24 +26,24 @@
         @endif
 
         <div class="row">
-            <div class="col-6" style="margin-bottom: 5px;">
+            <div class="col-12" style="margin-bottom: 5px;">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Tanggal Transaksi</h4>
-                        <input rel="3" class="form-control" id="TglTrans" type="text" readonly>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6" style="margin-bottom: 5px;">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Jenis Transaksi</h4>
-                        <select rel="4" name="transaksi" id="SelectTrans" class="select2 form-control">
-                            <option selected value="0">All Transaksi</option>
-                            <option value="1">Spreading</option>
-                            <option value="2">UB</option>
-                            <option value="3">UBLP</option>
-                        </select>
+                        <div class="row">
+                            <div class="col-6">
+                                <h4 class="card-title">Tanggal Transaksi</h4>
+                                <input name="datepicker" class="datepicker-default form-control">
+                            </div>
+                            <div class="col-6">
+                                <h4 class="card-title">Jenis Transaksi</h4>
+                                <select name="transaksi" id="SelectTrans" class="form-control default-select">
+                                    <option selected value="0">All Transaksi</option>
+                                    <option value="1">Spreading</option>
+                                    <option value="2">UB</option>
+                                    <option value="3">UBLP</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -306,30 +306,19 @@
 
 <script>
     var tgl_trans = "";
-    var rel = $("#TglTrans").attr("rel");
-    filterData();
+    filterData("");
 
-    $("#TglTrans").datepicker({
-        dateFormat: "yy-mm-dd",
-        showOn: 'focus',
-        showButtonPanel: true,
-        closeText: 'Clear',
-        onSelect: function(dateText) {
+    $(".datepicker-default").pickadate({
+        format: 'yyyy-mm-dd',
+        onSet: function() {
+            const Date = this.get('select', 'yyyy-mm-dd')
             $('#datatables').DataTable().destroy()
-            $('#datatables').DataTable().columns(rel).search(dateText).draw();
-        },
-        onClose: function() {
-            var event = arguments.callee.caller.caller.arguments[0];
-            // If "Clear" gets clicked, then really clear it
-            if ($(event.delegateTarget).hasClass('ui-datepicker-close')) {
-                $(this).val('');
-                $('#datatables').DataTable().destroy()
-                $('#datatables').DataTable().columns(rel).search().draw();
-            }
+            $('#datatables').DataTable().columns(4).search(Date).draw();
         }
     });
 
-    function filterData() {
+
+    function filterData(Date) {
         $('#datatables').DataTable({
             "processing": true,
             "language": {
@@ -370,12 +359,13 @@
                     data: 'ACTION_BUTTON'
                 }
             ],
-        }).draw()
+        }).columns(4).search(Date).draw()
     }
 
     $('#SelectTrans').change(function() {
-        $('#datatables').DataTable().destroy()
-        filterData();
+        $('#datatables').DataTable().destroy();
+        const Date = $(".datepicker-default").val();
+        filterData(Date);
     });
 
     const showDetailSpread = (id_trans) => {

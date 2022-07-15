@@ -45,7 +45,11 @@
  {{-- <script src="{{ asset('js/dashboard/dashboard-1.js') }}"></script> --}}
  <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
  <script src="{{ asset('vendor/select2/js/select2.full.min.js') }}"></script>
- <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+ <!-- pickdate -->
+ <script src="./vendor/pickadate/picker.js"></script>
+ <script src="./vendor/pickadate/picker.time.js"></script>
+ <script src="./vendor/pickadate/picker.date.js"></script>
+
  <script>
  	$(document).ready(function() {
  		$('.select2').select2();

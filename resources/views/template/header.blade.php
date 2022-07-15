@@ -25,8 +25,10 @@
     <link href="{{ asset('vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/ui-lightness/jquery-ui.css">
-
+    
+    <!-- Pick date -->
+    <link rel="stylesheet" href="./vendor/pickadate/themes/default.css">
+    <link rel="stylesheet" href="./vendor/pickadate/themes/default.date.css">
 </head>
 
 <body>
