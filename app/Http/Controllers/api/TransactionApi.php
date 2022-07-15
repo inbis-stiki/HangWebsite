@@ -403,11 +403,24 @@ class TransactionApi extends Controller
     public function TransactionHistory(Request $req)
     {
         try {
-            $dataTrans = Transaction::select('transaction.*', 'user.*')
+            $tgl = $req->input('tanggal');
+            $FrmtTgl = date('Y-m-d', strtotime($tgl));
+            if ($tgl != NULL) {
+                $dataTrans = Transaction::select('transaction.*', 'user.*', 'md_shop.*')
                 ->where('transaction.ID_USER', '=', $req->input('id_user'))
+                ->where('transaction.DATE_TRANS', 'LIKE', '%'.$FrmtTgl.'%')
                 ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
+                ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
                 ->orderBy('DATE_TRANS', 'DESC')
                 ->paginate(10);
+            }else{
+                $dataTrans = Transaction::select('transaction.*', 'user.*', 'md_shop.*')
+                ->where('transaction.ID_USER', '=', $req->input('id_user'))
+                ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
+                ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
+                ->orderBy('DATE_TRANS', 'DESC')
+                ->paginate(10);
+            }
 
             $dataPagination = array();
             array_push(
@@ -420,6 +433,7 @@ class TransactionApi extends Controller
             );
 
             $Trans = array();
+            $counter = 0;
             foreach ($dataTrans->items() as $item) {
                 $detTrans       = TransactionDetail::select('transaction_detail.*')
                     ->where('transaction_detail.ID_TRANS', $item->ID_TRANS)
@@ -439,6 +453,17 @@ class TransactionApi extends Controller
                         "JML_QTY_PRODUCT" => $jml_qty,
                     )
                 );
+
+                if ($item->ID_TYPE == 1) {
+                    $Trans[$counter]['NAMA_TOKO'] = $item->NAME_SHOP;
+                }else{
+                    if ($item->ID_TYPE == 2) {  
+                        $Trans[$counter]['NAMA_PASAR'] = $item->DISTRICT;
+                    }else{
+                        $Trans[$counter]['NAMA_AREA'] = $item->AREA_TRANS;
+                    }
+                }
+                $counter++;
             }
 
             return response([
