@@ -15,6 +15,7 @@ class InvoiceApi extends Controller
     public function listproduct(Request $req){
         try {
             $ID_USER = $req->input("id_user");
+            $ID_REGIONAL = $req->input("id_regional");
             $validator = Validator::make($req->all(), [
                 'id_user'          => 'required|string|exists:user,ID_USER'
             ], [
@@ -42,6 +43,7 @@ class InvoiceApi extends Controller
                     ->join('product_price', 'product_price.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
                     ->join('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
                     ->where('transaction_detail.ID_TRANS', '=', $t->ID_TRANS)
+                    ->where('product_price.ID_REGIONAL', '=', $ID_REGIONAL)
                     ->get();
 
                 $THargaDetail = 0;
@@ -236,12 +238,16 @@ class InvoiceApi extends Controller
             ->whereDate('DATE_TD', '=', date('Y-m-d'))
             ->first();
 
-            if ($cektd->ISFINISHED_TD == 0) {
-                $msg    = 'Anda bisa input faktur!';
-                $td     = [];
+            if($cektd == null){
+                $msg    = 'Anda belum melakukan presensi!';
             }else{
-                $msg    = 'Anda sudah Mengirimkan Faktur hari ini!';
-                $td     = $cektd;
+                if ($cektd['ISFINISHED_TD'] == 0) {
+                    $msg    = 'Anda bisa input faktur!';
+                    $td     = [];
+                }else{
+                    $msg    = 'Anda sudah Mengirimkan Faktur hari ini!';
+                    $td     = $cektd;
+                }
             }
 
             return response([
