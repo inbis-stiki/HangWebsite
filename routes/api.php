@@ -59,6 +59,7 @@ Route::middleware(['checkAuthApi'])->group(function(){
     Route::post("transactionimage/ub", "api\TransactionImageApi@ubImage");
     Route::get("transaction/history", "api\TransactionApi@TransactionHistory");
     Route::get("transaction/detail", "api\TransactionApi@DetailVisit");
+    Route::post("newtransactionimage", "api\TransactionImageApi@newImage");
 
     //Faktur
     Route::get('invoice', 'api\InvoiceApi@listproduct');
