@@ -224,17 +224,35 @@ class TransactionImageApi extends Controller
             $path                   = $req->file('image')->store('images', 's3');
             $url                    = Storage::disk('s3')->url($path);
 
-            $transactionImage->ID_TRANS           = $req->input('id_trans');
-            $transactionImage->PHOTO_TI           = $url;
-            $transactionImage->DESCRIPTION_TI     = $req->input('desc');
-            $transactionImage->DATE_TI            = date('Y-m-d H:i:s');
-            $transactionImage->save();
+            $cekData    = TransactionImage::select('ID_TI','ID_TRANS', 'PHOTO_TI', 'DESCRIPTION_TI')->where([
+                        ['ID_TRANS', '=', $req->input('id_trans')],
+                        ])->get();            
+            
+            if ($cekData != null) {
+                $id                                 = $cekData->first()->ID_TI;
+                $transactionImage                   = TransactionImage::find($id);
+                $transactionImage->PHOTO_TI         = $transactionImage->PHOTO_TI.";".$url;
+                $transactionImage->DESCRIPTION_TI   = $transactionImage->DESCRIPTION_TI.";".$req->input('desc');
+                $transactionImage->save();
 
-            return response([
-                "status_code"       => 200,
-                "status_message"    => 'Data berhasil disimpan!',
-                "data"              => ['ID_TRANS' => $transactionImage->ID_TI]
-            ], 200);
+                return response([
+                    "status_code"       => 200,
+                    "status_message"    => 'Data berhasil disimpan!',
+                    "data"              => ['ID_TI' => $transactionImage->ID_TI]
+                ], 200);
+            }else{
+                $transactionImage->ID_TRANS           = $req->input('id_trans');
+                $transactionImage->PHOTO_TI           = $url;
+                $transactionImage->DESCRIPTION_TI     = $req->input('desc');
+                $transactionImage->DATE_TI            = date('Y-m-d H:i:s');
+                $transactionImage->save();
+
+                return response([
+                    "status_code"       => 200,
+                    "status_message"    => 'Data berhasil disimpan!',
+                    "data"              => ['ID_TI' => $transactionImage->ID_TI]
+                ], 200);
+            }
         } catch (HttpResponseException $exp) {
             return response([
                 'status_code'       => $exp->getCode(),
