@@ -226,10 +226,10 @@ class TransactionImageApi extends Controller
 
             $cekData    = TransactionImage::select('ID_TI','ID_TRANS', 'PHOTO_TI', 'DESCRIPTION_TI')->where([
                         ['ID_TRANS', '=', $req->input('id_trans')],
-                        ])->get();            
+                        ])->first();            
             
             if ($cekData != null) {
-                $id                                 = $cekData->first()->ID_TI;
+                $id                                 = $cekData->ID_TI;
                 $transactionImage                   = TransactionImage::find($id);
                 $transactionImage->PHOTO_TI         = $transactionImage->PHOTO_TI.";".$url;
                 $transactionImage->DESCRIPTION_TI   = $transactionImage->DESCRIPTION_TI.";".$req->input('desc');
