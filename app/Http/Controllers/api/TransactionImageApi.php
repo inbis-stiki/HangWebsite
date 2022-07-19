@@ -200,4 +200,46 @@ class TransactionImageApi extends Controller
             ], $exp->getCode());
         }
     }
+
+    public function newImage(Request $req)
+    {
+        try {
+            date_default_timezone_set("Asia/Bangkok");
+            $validator = Validator::make($req->all(), [
+                'id_trans'                  => 'required|exists:transaction,ID_TRANS',
+                'image'                     => 'required|image',
+                'desc'                      => 'required',
+            ], [
+                'required'  => 'Parameter :attribute tidak boleh kosong!',
+            ]);
+
+            if ($validator->fails()) {
+                return response([
+                    "status_code"       => 400,
+                    "status_message"    => $validator->errors()->first()
+                ], 400);
+            }
+
+            $transactionImage       = new TransactionImage();
+            $path                   = $req->file('image')->store('images', 's3');
+            $url                    = Storage::disk('s3')->url($path);
+
+            $transactionImage->ID_TRANS           = $req->input('id_trans');
+            $transactionImage->PHOTO_TI           = $url;
+            $transactionImage->DESCRIPTION_TI     = $req->input('desc');
+            $transactionImage->DATE_TI            = date('Y-m-d H:i:s');
+            $transactionImage->save();
+
+            return response([
+                "status_code"       => 200,
+                "status_message"    => 'Data berhasil disimpan!',
+                "data"              => ['ID_TRANS' => $transactionImage->ID_TI]
+            ], 200);
+        } catch (HttpResponseException $exp) {
+            return response([
+                'status_code'       => $exp->getCode(),
+                'status_message'    => $exp->getMessage(),
+            ], $exp->getCode());
+        }
+    }
 }
