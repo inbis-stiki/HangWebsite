@@ -52,37 +52,37 @@ class TransactionApi extends Controller
 
             $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
             $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
-
             $tdkLolos = 0;
-            $idproduct = array();
-            $totalpickup = array();
-            $sisa = array();
+            $Stok = array();
+            $Sisa = array();
 
-            foreach ($req->input('product') as $item) {
-                array_push($totalpickup, $item['qty_product']);
-                array_push($idproduct, $item['id_product']);
-            }
-
-            $tempe = array();
-            $index = 0;
-            foreach ($pecahIdproduk as $item) {
-                $tempe[$item] = $pecahRemainproduk[$index];
-                $index++;
+            for ($i = 0; $i < count($pecahIdproduk); $i++) {
+                $Stok[$pecahIdproduk[$i]] = $pecahRemainproduk[$i];
             }
 
             foreach ($req->input('product') as $item) {
-                if ($tempe[$item['id_product']] >= $item['qty_product']) {
-                    array_push($sisa, $tempe[$item['id_product']] - $item['qty_product']);
+                if ($Stok[$item['id_product']] >= $item['qty_product']) {
+                    $Sisa[$item['id_product']] = $Stok[$item['id_product']] - $item['qty_product'];
                 } else {
+                    $Sisa[$item['id_product']] = $Stok[$item['id_product']];
                     $tdkLolos++;
                 }
             }
 
-            if ($tdkLolos == 0) {
-                $remain = implode(";", $sisa);
+            $Stok2 = array();
+            foreach ($Sisa as $stokKey => $itemStok) {
+                array_push(
+                    $Stok2,
+                    array(
+                        "ID_PRODUCT" => $stokKey,
+                        "NEW_STOK" => $itemStok
+                    )
+                );
+            }
 
+            if ($tdkLolos == 0) {
                 $updatePickup = Pickup::find($cekData->ID_PICKUP);
-                $updatePickup->REMAININGSTOCK_PICKUP      = $remain;
+                $updatePickup->REMAININGSTOCK_PICKUP      = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                 $updatePickup->save();
 
                 $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
@@ -208,27 +208,8 @@ class TransactionApi extends Controller
                     $regional           = new Regional();
                     $area               = new Area();
 
-                    $newStok = array();
-                    for ($i = 0; $i < count($pecahIdproduk); $i++) {
-                        if (count($Stok2) == 1) {
-                            if ($Stok2[0]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
-                                array_push($newStok, $Stok2[0]['NEW_STOK']);
-                            } else {
-                                array_push($newStok, (int)$pecahRemainproduk[$i]);
-                            }
-                        } else {
-                            if ($Stok2[$i]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
-                                array_push($newStok, $Stok2[$i]['NEW_STOK']);
-                            } else {
-                                array_push($newStok, $pecahRemainproduk[$i]);
-                            }
-                        }
-                    }
-
-                    $remain = implode(";", $newStok);
-
                     $updatePickup = Pickup::find($cekData->ID_PICKUP);
-                    $updatePickup->REMAININGSTOCK_PICKUP = $remain;
+                    $updatePickup->REMAININGSTOCK_PICKUP = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                     $updatePickup->save();
 
                     $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
@@ -322,37 +303,38 @@ class TransactionApi extends Controller
 
             $pecahIdproduk = explode(";", $cekData->ID_PRODUCT);
             $pecahRemainproduk = explode(";", $cekData->REMAININGSTOCK_PICKUP);
+            $tdkLolos = 0;
+            $Stok = array();
+            $Sisa = array();
 
-            $tdkLolos       = 0;
-            $idproduct      = array();
-            $totalpickup    = array();
-            $sisa           = array();
-
-            foreach ($req->input('product') as $item) {
-                array_push($totalpickup, $item['qty_product']);
-                array_push($idproduct, $item['id_product']);
-            }
-
-            $temp   = array();
-            $index  = 0;
-            foreach ($pecahIdproduk as $item) {
-                $temp[$item] = $pecahRemainproduk[$index];
-                $index++;
+            for ($i = 0; $i < count($pecahIdproduk); $i++) {
+                $Stok[$pecahIdproduk[$i]] = $pecahRemainproduk[$i];
             }
 
             foreach ($req->input('product') as $item) {
-                if ($temp[$item['id_product']] >= $item['qty_product']) {
-                    array_push($sisa, $temp[$item['id_product']] - $item['qty_product']);
+                if ($Stok[$item['id_product']] >= $item['qty_product']) {
+                    $Sisa[$item['id_product']] = $Stok[$item['id_product']] - $item['qty_product'];
                 } else {
+                    $Sisa[$item['id_product']] = $Stok[$item['id_product']];
                     $tdkLolos++;
                 }
             }
 
+            $Stok2 = array();
+            foreach ($Sisa as $stokKey => $itemStok) {
+                array_push(
+                    $Stok2,
+                    array(
+                        "ID_PRODUCT" => $stokKey,
+                        "NEW_STOK" => $itemStok
+                    )
+                );
+            }
+
             if ($tdkLolos == 0) {
-                $remain = implode(";", $sisa);
 
                 $updatePickup = Pickup::find($cekData->ID_PICKUP);
-                $updatePickup->REMAININGSTOCK_PICKUP      = $remain;
+                $updatePickup->REMAININGSTOCK_PICKUP      = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                 $updatePickup->save();
 
                 $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
@@ -407,19 +389,19 @@ class TransactionApi extends Controller
             $FrmtTgl = date('Y-m-d', strtotime($tgl));
             if ($tgl != NULL) {
                 $dataTrans = Transaction::select('transaction.*', 'user.*', 'md_shop.*')
-                ->where('transaction.ID_USER', '=', $req->input('id_user'))
-                ->where('transaction.DATE_TRANS', 'LIKE', '%'.$FrmtTgl.'%')
-                ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
-                ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
-                ->orderBy('DATE_TRANS', 'DESC')
-                ->paginate(10);
-            }else{
+                    ->where('transaction.ID_USER', '=', $req->input('id_user'))
+                    ->where('transaction.DATE_TRANS', 'LIKE', '%' . $FrmtTgl . '%')
+                    ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
+                    ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
+                    ->orderBy('DATE_TRANS', 'DESC')
+                    ->paginate(10);
+            } else {
                 $dataTrans = Transaction::select('transaction.*', 'user.*', 'md_shop.*')
-                ->where('transaction.ID_USER', '=', $req->input('id_user'))
-                ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
-                ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
-                ->orderBy('DATE_TRANS', 'DESC')
-                ->paginate(10);
+                    ->where('transaction.ID_USER', '=', $req->input('id_user'))
+                    ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
+                    ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
+                    ->orderBy('DATE_TRANS', 'DESC')
+                    ->paginate(10);
             }
 
             $dataPagination = array();
@@ -456,10 +438,10 @@ class TransactionApi extends Controller
 
                 if ($item->ID_TYPE == 1) {
                     $Trans[$counter]['NAMA_TOKO'] = $item->NAME_SHOP;
-                }else{
-                    if ($item->ID_TYPE == 2) {  
+                } else {
+                    if ($item->ID_TYPE == 2) {
                         $Trans[$counter]['NAMA_PASAR'] = $item->DISTRICT;
-                    }else{
+                    } else {
                         $Trans[$counter]['NAMA_AREA'] = $item->AREA_TRANS;
                     }
                 }
@@ -514,11 +496,11 @@ class TransactionApi extends Controller
             if ($dataTrans->ID_TYPE == 1) {
                 $Trans['NAME_SHOP'] = $dataTrans->NAME_SHOP;
                 $Trans['DETAIL_ALAMAT'] = $dataTrans->DETLOC_SHOP;
-            }else{
+            } else {
                 $Trans['NAME_SHOP'] = null;
-                if ($dataTrans->ID_TYPE == 2) {  
+                if ($dataTrans->ID_TYPE == 2) {
                     $Trans['DETAIL_ALAMAT'] = $dataTrans->DISTRICT;
-                }else{
+                } else {
                     $Trans['DETAIL_ALAMAT'] = $dataTrans->DETAIL_LOCATION;
                 }
             }
@@ -534,5 +516,27 @@ class TransactionApi extends Controller
                 'status_message'    => $exp->getMessage(),
             ], $exp->getCode());
         }
+    }
+
+    public function UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk)
+    {
+        $newStok = array();
+        for ($i = 0; $i < count($pecahIdproduk); $i++) {
+            if (count($Stok2) == 1) {
+                if ($Stok2[0]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
+                    array_push($newStok, $Stok2[0]['NEW_STOK']);
+                } else {
+                    array_push($newStok, (int)$pecahRemainproduk[$i]);
+                }
+            } else {
+                if ($Stok2[$i]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
+                    array_push($newStok, $Stok2[$i]['NEW_STOK']);
+                } else {
+                    array_push($newStok, $pecahRemainproduk[$i]);
+                }
+            }
+        }
+
+        return implode(";", $newStok);
     }
 }
