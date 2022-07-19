@@ -44,8 +44,14 @@ class ActivityCategoryController extends Controller
             $category_activity->NAME_AC         = $req->input('category_activity');
             $category_activity->PERCENTAGE_AC   = $req->input('percentage_activity');
             $category_activity->deleted_at      = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
-            $category_activity->save();
-
+            try {
+                $category_activity->save();
+            } catch (\Illuminate\Database\QueryException $e) {
+                $errorCode = $e->errorInfo[1];
+                if($errorCode == '1062'){
+                    return redirect('master/activity-category')->with('err_msg', 'Kategori Aktivitas tidak boleh sama!');
+                }
+            }
             return redirect('master/activity-category')->with('succ_msg', 'Berhasil mengubah data kategori aktivitas!');
         }
     }
