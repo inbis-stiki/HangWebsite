@@ -101,6 +101,7 @@
             </div>
             <div class="modal-body">
                 <form method="post" action="{{ url('master/regional-price/store') }}" enctype="multipart/form-data">
+                    @csrf
                     <div class="rounded border border-primary w-100 h-75 d-inline-block p-10 d-flex justify-content-center p-5 flex-column">
                         <div class="mx-auto">
                             Upload Harga Regional dari Template yang sudah tersedia
@@ -128,6 +129,7 @@
             </div>
             <div class="modal-body">
                 <form action="{{ url('master/regional-price/update') }}">
+                    @csrf
                     <div class="row form-group">
                         <div class="col-md-6 ">
                             <label for="">Produk</label>
@@ -187,6 +189,7 @@
                 <p>Apakah anda yakin untuk menghapus harga regional ini?</p>
             </div>
             <form action="{{ url('master/regional-price/destroy') }}">
+                @csrf
                 <div class="modal-footer">
                     <input type="hidden" name="id" id="mdlDelete_id">
                     <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>

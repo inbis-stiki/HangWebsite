@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Carbon\Carbon;
 
 class RegionalPriceController extends Controller
 {
@@ -67,14 +68,13 @@ class RegionalPriceController extends Controller
         // dd($arrs);
         foreach ($arrs as $arr) {
             $regional_price = new RegionalPrice();
-            $product = Product::where('NAME_PRODUCT', '=', $arr[1])->first();
-            $regional = Regional::where('NAME_REGIONAL', '=', $arr[3])->first();
+            $regional = Regional::where('NAME_REGIONAL', '=', $arr[1])->first();
+            $product = Product::where('CODE_PRODUCT', '=', $arr[2])->first();
             $regional_price->ID_PRODUCT      = $product->ID_PRODUCT;
             $regional_price->ID_REGIONAL     = $regional->ID_REGIONAL;
-            $regional_price->PRICE_PP        = 200000;
-            $regional_price->TARGET_PP       = 1;
-            $regional_price->START_PP        = date('Y-m-d');
-            $regional_price->END_PP        = date('Y-m-d');
+            $regional_price->PRICE_PP        = $arr[3];
+            $regional_price->START_PP        = Carbon::createFromFormat('m/d/Y', $arr[4])->format('Y-m-d');
+            $regional_price->END_PP          = Carbon::createFromFormat('m/d/Y', $arr[5])->format('Y-m-d');
             $regional_price->save();
         }
         // Excel::import(new RegionalPriceImport, $file->getRealPath());
@@ -192,11 +192,13 @@ class RegionalPriceController extends Controller
         $sheet->getColumnDimension('B')->setWidth('30');
         $sheet->getColumnDimension('C')->setWidth('20');
         $sheet->getColumnDimension('D')->setWidth('25');
+        $sheet->getColumnDimension('E')->setWidth('20');
+        $sheet->getColumnDimension('F')->setWidth('20');
 
         $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
         $drawing->setName('Logo Finna');
         $drawing->setDescription('Logo Finna');
-        $drawing->setPath(public_path('images/finna-logo.png')); /* put your path and image here */
+        $drawing->setPath(public_path('images/new-logo.png')); /* put your path and image here */
         $drawing->setCoordinates('A1');
         $drawing->setWorksheet($sheet);
 
@@ -204,13 +206,15 @@ class RegionalPriceController extends Controller
         $sheet->setCellValue('A7', "HARGA REGIONAL")->getStyle('A7')->applyFromArray($styleHeading1);
 
         $sheet->setCellValue('A8', 'NO')->getStyle('A8')->applyFromArray($styleTitle);
-        $sheet->setCellValue('B8', 'NAMA PRODUK')->getStyle('B8')->applyFromArray($styleTitle);
-        $sheet->setCellValue('C8', 'HARGA PRODUK')->getStyle('C8')->applyFromArray($styleTitle);
-        $sheet->setCellValue('D8', 'REGION')->getStyle('D8')->applyFromArray($styleTitle);
+        $sheet->setCellValue('B8', 'REGIONAL')->getStyle('B8')->applyFromArray($styleTitle);
+        $sheet->setCellValue('C8', 'KODE PRODUK')->getStyle('C8')->applyFromArray($styleTitle);
+        $sheet->setCellValue('D8', 'HARGA PRODUK')->getStyle('D8')->applyFromArray($styleTitle);
+        $sheet->setCellValue('E8', 'START DATE')->getStyle('E8')->applyFromArray($styleTitle);
+        $sheet->setCellValue('F8', 'END DATE')->getStyle('F8')->applyFromArray($styleTitle);
         $products        = Product::all();
         $arrs_product = [];
         foreach ($products as $product) {
-            array_push($arrs_product, $product->NAME_PRODUCT);
+            array_push($arrs_product, $product->CODE_PRODUCT);
         }
         $regionals       = Regional::all();
         $arrs_regional = [];
@@ -222,16 +226,26 @@ class RegionalPriceController extends Controller
             $sheet->setCellValue('A' . $rowStart, $i)->getStyle('A' . $rowStart)->applyFromArray($styleContentCenterBold)->getAlignment()->setWrapText(true);
 
             $sheet->getStyle('B' . $rowStart)->applyFromArray($styleContentCenterBold)->getAlignment()->setWrapText(true);
-            $lstProduct = $sheet->getCell('B' . $rowStart)->getDataValidation();
+            $lstRegional = $sheet->getCell('B' . $rowStart)->getDataValidation();
+            $lstRegional->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)->setShowDropDown(true);
+            $lstRegional->setFormula1('"' . implode(',', $arrs_regional) . '"');
+
+            $sheet->getStyle('C' . $rowStart)->applyFromArray($styleContentCenterBold)->getAlignment()->setWrapText(true);
+            $lstProduct = $sheet->getCell('C' . $rowStart)->getDataValidation();
             $lstProduct->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)->setShowDropDown(true);
             $lstProduct->setFormula1('"' . implode(',', $arrs_product) . '"');
 
-            $sheet->getStyle('C' . $rowStart)->applyFromArray($styleContent)->getAlignment()->setWrapText(true);
+            $sheet->getStyle('D' . $rowStart)->applyFromArray($styleContent)->getAlignment()->setWrapText(true);
 
-            $sheet->getStyle('D' . $rowStart)->applyFromArray($styleContentCenterBold)->getAlignment()->setWrapText(true);
-            $lstRegional = $sheet->getCell('D' . $rowStart)->getDataValidation();
-            $lstRegional->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)->setShowDropDown(true);
-            $lstRegional->setFormula1('"' . implode(',', $arrs_regional) . '"');
+            $sheet->getStyle('E' . $rowStart)->applyFromArray($styleContent)->getAlignment()->setWrapText(true);
+            $lstProduct = $sheet->getCell('E' . $rowStart)->getDataValidation();
+            $lstProduct->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_DATE);
+
+            $sheet->getStyle('F' . $rowStart)->applyFromArray($styleContent)->getAlignment()->setWrapText(true);
+            $lstProduct = $sheet->getCell('F' . $rowStart)->getDataValidation();
+            $lstProduct->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_DATE);
+
+            
             $rowStart++;
         }
         $fileName = 'TEMPLATE_HARGA_REGIONAL_' . ((int)date('Y') + 1);
