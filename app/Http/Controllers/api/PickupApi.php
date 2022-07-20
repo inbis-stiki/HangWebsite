@@ -132,9 +132,8 @@ class PickupApi extends Controller
                 ])
                 ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
                 ->latest('ID_PICKUP')->first();
-                dd($cekPick);
     
-                if ($pick->ISFINISHED_PICKUP == 0) {
+                if (empty($pick) || $pick->ISFINISHED_PICKUP == 0) {
                     $msg    = 'Data terakhir pickup!';
                     $pickup = $pick;
                 }else{
