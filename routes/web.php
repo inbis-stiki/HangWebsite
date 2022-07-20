@@ -62,11 +62,19 @@ Route::get('logout', 'AuthController@logout');
     Route::get('master/regional-price/destroy', 'RegionalPriceController@destroy');
     Route::get('master/regional-price/download_template', 'RegionalPriceController@download_template');
 
-    // MASTER  REGIONAL
-    Route::get('master/targetregional', 'TargetRegionalController@index');
-    Route::get('master/targetregional/store', 'TargetRegionalController@store');
-    Route::get('master/targetregional/update', 'TargetRegionalController@update');
-    Route::get('master/targetregional/destroy', 'TargetRegionalController@destroy');
+    // MASTER TARGET AKTIVITAS
+    Route::get('master/target-activity', 'TargetActivityController@index');
+    Route::post('master/target-activity/store', 'TargetActivityController@store');
+    Route::get('master/target-activity/update', 'TargetActivityController@update');
+    Route::get('master/target-activity/destroy', 'TargetActivityController@destroy');
+    Route::get('master/target-activity/download_template', 'TargetActivityController@download_template');
+
+    // MASTER TARGET PENJUALAN
+    Route::get('master/target-sale', 'TargetSaleController@index');
+    Route::post('master/target-sale/store', 'TargetSaleController@store');
+    Route::get('master/target-sale/update', 'TargetSaleController@update');
+    Route::get('master/target-sale/destroy', 'TargetSaleController@destroy');
+    Route::get('master/target-sale/download_template', 'TargetSaleController@download_template');
 
     //MASTER KATEGORI PRODUK
     Route::get('master/category-product', 'CategoryProductController@index');

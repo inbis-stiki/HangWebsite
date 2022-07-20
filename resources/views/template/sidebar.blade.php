@@ -38,7 +38,8 @@
                     @endif
                     @if (Session::get('role') == 1 || Session::get('role') == 2)
                     <li><a href="{{ url('master/regional-price') }}">Harga Regional</a></li>
-                    <li><a href="#">Target Regional</a></li>
+                    <li><a href="{{ url('master/target-activity') }}">Target Aktivitas</a></li>
+                    <li><a href="{{ url('master/target-sale') }}">Target Penjualan</a></li>
                     <li><a href="#">Konversi</a></li>
                     @endif
                     @if (Session::get('role') < 5)

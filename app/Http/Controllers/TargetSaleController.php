@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\RegionalPriceImport;
-use App\Product;
+use App\CategoryProduct;
 use App\Regional;
-use App\RegionalPrice;
+use App\TargetSale;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -13,7 +12,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
 
-class RegionalPriceController extends Controller
+class TargetSaleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,15 +21,15 @@ class RegionalPriceController extends Controller
      */
     public function index()
     {
-        $data['title']              = "Harga Regional";
+        $data['title']              = "Target Penjualan";
         $data['sidebar']            = "master";
-        $data['sidebar2']           = "regionalprice";
+        $data['sidebar2']           = "targetsale";
 
-        $data['regional_prices']    = RegionalPrice::all();
-        $data['products']           = Product::all();
+        $data['target_sales']       = TargetSale::all();
+        $data['procats']            = CategoryProduct::all();
         $data['regionals']          = Regional::all();
 
-        return view('master.regionalprice.regionalprice', $data);
+        return view('master.targetsale.targetsale', $data);
         //
     }
 
@@ -49,7 +48,7 @@ class RegionalPriceController extends Controller
             'required' => 'Data tidak boleh kosong!',
         ]);
         if ($validator->fails()) {
-            return redirect('master/regional-price')->withErrors($validator);
+            return redirect('master/target-sale')->withErrors($validator);
         }
         $file = $request->file('file_excel_template');
         // dd($file);
@@ -67,19 +66,19 @@ class RegionalPriceController extends Controller
         }
         // dd($arrs);
         foreach ($arrs as $arr) {
-            $regional_price = new RegionalPrice();
+            $target_sale = new TargetSale();
             $regional = Regional::where('NAME_REGIONAL', '=', $arr[1])->first();
-            $product = Product::where('CODE_PRODUCT', '=', $arr[2])->first();
-            $regional_price->ID_PRODUCT      = $product->ID_PRODUCT;
-            $regional_price->ID_REGIONAL     = $regional->ID_REGIONAL;
-            $regional_price->PRICE_PP        = $arr[3];
-            $regional_price->START_PP        = Carbon::createFromFormat('m/d/Y', $arr[4])->format('Y-m-d');
-            $regional_price->END_PP          = Carbon::createFromFormat('m/d/Y', $arr[5])->format('Y-m-d');
-            $regional_price->save();
+            $catpro = CategoryProduct::where('NAME_PC', '=', $arr[2])->first();
+            $target_sale->ID_PROCAT       = $catpro->ID_PC;
+            $target_sale->ID_REGIONAL     = $regional->ID_REGIONAL;
+            $target_sale->QUANTITY        = $arr[3];
+            $target_sale->START_PP        = Carbon::createFromFormat('m/d/Y', $arr[4])->format('Y-m-d');
+            $target_sale->END_PP          = Carbon::createFromFormat('m/d/Y', $arr[5])->format('Y-m-d');
+            $target_sale->save();
         }
         // Excel::import(new RegionalPriceImport, $file->getRealPath());
 
-        return redirect('master/regional-price')->with('succ_msg', 'Berhasil menambahkan data harga regional!');
+        return redirect('master/target-sale')->with('succ_msg', 'Berhasil menambahkan data target penjualan!');
 
         //
     }
@@ -96,25 +95,25 @@ class RegionalPriceController extends Controller
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'id'             => 'required',
-            'product_edit'   => 'required',
+            'procat_edit'    => 'required',
             'regional_edit'  => 'required',
-            'harga'          => 'required',
+            'quantity'       => 'required',
             'status'         => 'required',
         ], [
             'required' => 'Data tidak boleh kosong!',
         ]);
         if ($validator->fails()) {
-            return redirect('master/regional-price')->withErrors($validator);
+            return redirect('master/target-sale')->withErrors($validator);
         }
         date_default_timezone_set("Asia/Bangkok");
-        $regional_price = RegionalPrice::find($request->input('id'));
-        $regional_price->ID_PRODUCT         = $request->input('product_edit');
-        $regional_price->ID_REGIONAL        = $request->input('regional_edit');
-        $regional_price->PRICE_PP           = $request->input('harga');
-        $regional_price->DELETED_AT         = $request->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
-        $regional_price->save();
+        $target_sale = TargetSale::find($request->input('id'));
+        $target_sale->ID_PROCAT          = $request->input('procat_edit');
+        $target_sale->ID_REGIONAL        = $request->input('regional_edit');
+        $target_sale->QUANTITY           = $request->input('quantity');
+        $target_sale->DELETED_AT         = $request->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+        $target_sale->save();
         // dd($regional_price);
-        return redirect('master/regional-price')->with('succ_msg', 'Berhasil mengubah data harga regional!');
+        return redirect('master/target-sale')->with('succ_msg', 'Berhasil mengubah data target penjualan!');
         //
     }
 
@@ -132,13 +131,13 @@ class RegionalPriceController extends Controller
             'required' => 'Data tidak boleh kosong!',
         ]);
         if ($validator->fails()) {
-            return redirect('master/regional-price')->withErrors($validator);
+            return redirect('master/target-sale')->withErrors($validator);
         }
         date_default_timezone_set("Asia/Bangkok");
-        $regional_price = RegionalPrice::find($request->input('id'));
-        $regional_price->delete();
+        $target_sale = TargetSale::find($request->input('id'));
+        $target_sale->delete();
         // dd($regional_price);
-        return redirect('master/regional-price')->with('succ_msg', 'Berhasil menghapus data harga regional!');
+        return redirect('master/target-sale')->with('succ_msg', 'Berhasil menghapus data target penjualan!');
         //
     }
     public function download_template()
@@ -203,18 +202,18 @@ class RegionalPriceController extends Controller
         $drawing->setWorksheet($sheet);
 
         $sheet->getRowDimension('7')->setRowHeight('30');
-        $sheet->setCellValue('A7', "HARGA REGIONAL")->getStyle('A7')->applyFromArray($styleHeading1);
+        $sheet->setCellValue('A7', "TARGET AKTIVITAS")->getStyle('A7')->applyFromArray($styleHeading1);
 
         $sheet->setCellValue('A8', 'NO')->getStyle('A8')->applyFromArray($styleTitle);
         $sheet->setCellValue('B8', 'REGIONAL')->getStyle('B8')->applyFromArray($styleTitle);
-        $sheet->setCellValue('C8', 'KODE PRODUK')->getStyle('C8')->applyFromArray($styleTitle);
-        $sheet->setCellValue('D8', 'HARGA PRODUK')->getStyle('D8')->applyFromArray($styleTitle);
+        $sheet->setCellValue('C8', 'KATEGORI PRODUK')->getStyle('C8')->applyFromArray($styleTitle);
+        $sheet->setCellValue('D8', 'QUANTITY')->getStyle('D8')->applyFromArray($styleTitle);
         $sheet->setCellValue('E8', 'START DATE')->getStyle('E8')->applyFromArray($styleTitle);
         $sheet->setCellValue('F8', 'END DATE')->getStyle('F8')->applyFromArray($styleTitle);
-        $products        = Product::all();
-        $arrs_product = [];
-        foreach ($products as $product) {
-            array_push($arrs_product, $product->CODE_PRODUCT);
+        $procats        = CategoryProduct::all();
+        $arrs_procat= [];
+        foreach ($procats as $procat) {
+            array_push($arrs_procat, $procat->NAME_PC);
         }
         $regionals       = Regional::all();
         $arrs_regional = [];
@@ -231,9 +230,9 @@ class RegionalPriceController extends Controller
             $lstRegional->setFormula1('"' . implode(',', $arrs_regional) . '"');
 
             $sheet->getStyle('C' . $rowStart)->applyFromArray($styleContentCenterBold)->getAlignment()->setWrapText(true);
-            $lstProduct = $sheet->getCell('C' . $rowStart)->getDataValidation();
-            $lstProduct->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)->setShowDropDown(true);
-            $lstProduct->setFormula1('"' . implode(',', $arrs_product) . '"');
+            $lstProCat = $sheet->getCell('C' . $rowStart)->getDataValidation();
+            $lstProCat->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)->setShowDropDown(true);
+            $lstProCat->setFormula1('"' . implode(',', $arrs_procat) . '"');
 
             $sheet->getStyle('D' . $rowStart)->applyFromArray($styleContent)->getAlignment()->setWrapText(true);
 
@@ -248,7 +247,7 @@ class RegionalPriceController extends Controller
             
             $rowStart++;
         }
-        $fileName = 'TEMPLATE_HARGA_REGIONAL_' . ((int)date('Y') + 1);
+        $fileName = 'TEMPLATE_TARGET_PENJUALAN_' . ((int)date('Y') + 1);
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file

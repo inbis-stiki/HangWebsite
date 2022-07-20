@@ -10,9 +10,9 @@
             <div class="col">
                 <button style="float: right;" data-toggle="modal" data-target="#mdlAdd" class="btn btn-sm btn-primary">
                     <i class="flaticon-381-add-2"></i>
-                    Tambah Harga Regional
+                    Tambah Target Aktivitas
                 </button>
-                <a href="{{ url('master/regional-price/download_template') }}" style="float: right;" class="btn btn-sm btn-outline-primary mr-3">
+                <a href="{{ url('master/target-activity/download_template') }}" style="float: right;" class="btn btn-sm btn-outline-primary mr-3">
                     <i class="flaticon-381-download"></i>
                     Download Template
                 </a>
@@ -42,8 +42,8 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Nama Produk</th>
-                                        <th>Harga Produk</th>
+                                        <th>Nama Aktivitas</th>
+                                        <th>Jumlah</th>
                                         <th>Region</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
@@ -53,15 +53,15 @@
                                     @php
                                     $no = 1;
                                     @endphp
-                                    @if (count($regional_prices) > 0)
-                                    @foreach ($regional_prices as $regional_price)
+                                    @if (count($target_activities) > 0)
+                                    @foreach ($target_activities as $target_activity)
                                     <tr>
                                         <td>{{ $no++ }}</td>
-                                        <td>{{ $regional_price->product->NAME_PRODUCT }}</td>
-                                        <td>{{ $regional_price->PRICE_PP }}</td>
-                                        <td>{{ $regional_price->regional->NAME_REGIONAL }}</td>
+                                        <td>{{ $target_activity->activity->NAME_AC }}</td>
+                                        <td>{{ $target_activity->QUANTITY }}</td>
+                                        <td>{{ $target_activity->regional->NAME_REGIONAL }}</td>
                                         <td>
-                                            @if ($regional_price->DELETED_AT == NULL)
+                                            @if ($target_activity->DELETED_AT == NULL)
                                             <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
                                             Enable
                                             @else
@@ -70,10 +70,10 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlEdit('{{ $regional_price->ID_PP}}', '{{ $regional_price->product->ID_PRODUCT }}', '{{ $regional_price->regional->ID_REGIONAL }}', '{{ $regional_price->PRICE_PP }}', '{{ $regional_price->DELETED_AT }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $target_activity->ID_TA}}', '{{ $target_activity->activity->ID_AC}}', '{{ $target_activity->regional->ID_REGIONAL }}', '{{ $target_activity->QUANTITY }}', '{{ $target_activity->DELETED_AT }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
-                                            <button onclick="showMdlDelete('{{ $regional_price->ID_PP}}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlDelete('{{ $target_activity->ID_TA}}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-trash-1"></i>
                                             </button>
                                         </td>
@@ -90,21 +90,21 @@
     </div>
 </div>
 
-<!-- Modal Tambah Harga Regional  -->
+<!-- Modal Tambah Target Aktivitas  -->
 <div class="modal fade" id="mdlAdd">
     <div class="modal-dialog" style="max-width:600px" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah File Harga Regional</h5>
+                <h5 class="modal-title">Tambah File Target Aktivitas</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" action="{{ url('master/regional-price/store') }}" enctype="multipart/form-data">
+                <form method="post" action="{{ url('master/target-activity/store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="rounded border border-primary w-100 h-75 d-inline-block p-10 d-flex justify-content-center p-5 flex-column">
                         <div class="mx-auto">
-                            Upload Harga Regional dari Template yang sudah tersedia
+                            Upload Target Aktivitas dari Template yang sudah tersedia
                         </div>
                         <input type="file" name="file_excel_template" class="dropzone">
                     </div>
@@ -123,20 +123,20 @@
     <div class="modal-dialog modal-lg" style="max-width:600px" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Ubah Harga Regional</h5>
+                <h5 class="modal-title">Ubah Target Aktivitas</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/regional-price/update') }}">
+                <form action="{{ url('master/target-activity/update') }}">
                     @csrf
                     <div class="row form-group">
                         <div class="col-md-6 ">
-                            <label for="">Produk</label>
-                            <select name="product_edit" class="select2" required>
-                                <option disabled value="">Pilih Produk</option>
-                                @foreach ($products as $product)
-                                <option value="{{ $product->ID_PRODUCT }}">{{ $product->NAME_PRODUCT }}</option>
+                            <label for="">Aktivitas</label>
+                            <select name="aktivitas_edit" class="select2" required>
+                                <option disabled value="">Pilih Aktivitas</option>
+                                @foreach ($activities as $activity)
+                                <option value="{{ $activity->ID_AC }}">{{ $activity->NAME_AC }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -152,8 +152,8 @@
                     </div>
                     <div class="row form-group">
                         <div class="col-md-12 ">
-                            <label for="harga">Harga</label>
-                            <input type="text" id="harga_edit" name="harga" class="form-control" placeholder="Harga" required>
+                            <label for="quantity">Quantity</label>
+                            <input type="text" id="quantity_edit" name="quantity" class="form-control" placeholder="Quantity" required>
                         </div>
                     </div>
                     <div class="row form-group">
@@ -181,14 +181,14 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Hapus Harga Regional</h5>
+                <h5 class="modal-title">Hapus Target Aktivitas</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Apakah anda yakin untuk menghapus harga regional ini?</p>
+                <p>Apakah anda yakin untuk menghapus target aktivitas ini?</p>
             </div>
-            <form action="{{ url('master/regional-price/destroy') }}">
+            <form action="{{ url('master/target-activity/destroy') }}">
                 @csrf
                 <div class="modal-footer">
                     <input type="hidden" name="id" id="mdlDelete_id">
@@ -208,12 +208,12 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, product_id, regional_id, price, status) {
+    function showMdlEdit(id, activity_id, regional_id, quantity, status) {
         $('#mdlEdit_id').val(id)
-        $('#product_edit').val(product_id)
+        $('#aktivitas_edit').val(activity_id)
         // $("#product_edit option[value=" + product_id + "]").attr('selected', 'selected');
         $('#regional_edit').val(regional_id)
-        $('#harga_edit').val(price)
+        $('#quantity_edit').val(quantity)
         // $('#name_edit').val(name)
         // $('#email_edit').val(email)
         // $('#telepon_edit').val(phone)
