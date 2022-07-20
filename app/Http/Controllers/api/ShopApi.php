@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
-use App\Recomendation;
 use App\Shop;
 use Exception;
-use Carbon\Carbon;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -206,133 +203,6 @@ class ShopApi extends Controller
                 'status_message'    => 'Data berhasil diambil!',
                 'data'              => $dataRespon,
                 'status_pagination' => $dataPagination
-            ], 200);
-        } catch (Exception $exp) {
-            return response([
-                'status_code'       => 500,
-                'status_message'    => $exp->getMessage(),
-            ], 500);
-        }
-    }
-
-    public function cronjob_store_rekomendasi(Request $req)
-    {
-        try {
-            date_default_timezone_set("Asia/Bangkok");
-            $validator = Validator::make($req->all(), [
-                'lat_user'           => 'required|numeric',
-                'lng_user'             => 'required|numeric'
-            ], [
-                'required'  => 'Parameter :attribute tidak boleh kosong!',
-                'string'    => 'Parameter :attribute harus bertipe string!',
-                'numeric'    => 'Parameter :attribute harus bertipe angka!',
-            ]);
-
-            if ($validator->fails()) {
-                return response([
-                    "status_code"       => 400,
-                    "status_message"    => $validator->errors()->first()
-                ], 400);
-            }
-
-            $latitude = $req->get('lat_user'); // "-7.965769846888459"
-            $longitude = $req->get('lng_user'); // "112.60750389398623"
-
-            $CheckPresence = DB::table("presence")
-                ->select("presence.*")
-                ->whereDate('presence.DATE_PRESENCE', '=', date('Y-m-d'))
-                ->where('presence.ID_USER', '=', $req->input("id_user"))
-                ->first();
-
-            if ($CheckPresence == NULL) {
-                return response([
-                    "status_code"       => 403,
-                    "status_message"    => "Silahkan Melakukan Presensi Terlebih Dahulu!"
-                ], 404);
-            }
-
-            $id_district = $CheckPresence->ID_DISTRICT;
-
-            $shop = DB::table("md_shop")
-                ->select("md_shop.*")
-                ->selectRaw("ST_DISTANCE_SPHERE(
-                    point('$longitude', '$latitude'),
-                    point(md_shop.LONG_SHOP, md_shop.LAT_SHOP)
-                )  AS DISTANCE_SHOP")
-                ->where('md_shop.ID_DISTRICT', '=', $id_district)
-                ->orderBy('DISTANCE_SHOP', 'asc')
-                ->get();
-
-            $dataRespon = array();
-            $jml_data = 0;
-            foreach ($shop as $shopData) {
-
-                $dataTrans = DB::table("transaction")
-                    ->select('transaction.*')
-                    ->selectRaw('DATEDIFF("' . Carbon::now() . '", transaction.DATE_TRANS) AS DateDiff')
-                    ->where('ID_USER', '=', $req->input('id_user'))
-                    ->where('ID_SHOP', '=', $shopData->ID_SHOP)
-                    ->orderBy('transaction.DATE_TRANS', 'DESC')
-                    ->first();
-
-                if ($dataTrans != null && $dataTrans->DateDiff >= 14) {
-                    $jml_data++;
-                    array_push(
-                        $dataRespon,
-                        array(
-                            "ID_SHOP" => $shopData->ID_SHOP,
-                            "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', ''),
-                            "LAST_VISITED" => $dataTrans->DateDiff
-                        )
-                    );
-                } else {
-                    array_push(
-                        $dataRespon,
-                        array(
-                            "ID_SHOP" => $shopData->ID_SHOP,
-                            "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', ''),
-                            "LAST_VISITED" => 0
-                        )
-                    );
-                }
-            }
-
-            $CheckRecom = DB::table("recomendation")
-                ->select("recomendation.*")
-                ->where('recomendation.ID_USER', '=', $req->input("id_user"))
-                ->get();
-
-            if (!empty($CheckRecom)) {
-                DB::table("recomendation")
-                    ->where('recomendation.ID_USER', '=', $req->input("id_user"))
-                    ->delete();
-            }
-
-            $dataIdShop = array();
-            $dataIdleRecom = array();
-            foreach ($dataRespon as $RecomShop) {
-                array_push(
-                    $dataIdShop,
-                    $RecomShop['ID_SHOP']
-                );
-
-                array_push(
-                    $dataIdleRecom,
-                    $RecomShop['LAST_VISITED']
-                );
-            }
-
-            $recomendation = new Recomendation();
-            $recomendation->ID_USER      = $req->input("id_user");
-            $recomendation->ID_SHOP      = implode(';', $dataIdShop);
-            $recomendation->IDLE_RECOM   = implode(';', $dataIdleRecom);
-            $recomendation->DATE_RECOM   = date('Y-m-d');
-            $recomendation->save();
-
-
-            return response([
-                "status_code"       => 200,
-                "status_message"    => 'Data berhasil disimpan!'
             ], 200);
         } catch (Exception $exp) {
             return response([
