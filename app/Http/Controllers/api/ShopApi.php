@@ -250,28 +250,66 @@ class ShopApi extends Controller
 
             $id_district = $CheckPresence->ID_DISTRICT;
 
-            $recom = DB::table("recomendation")
-                ->select("recomendation.*")
-                ->where("recomendation.ID_USER", "=", $req->input("id_user"))
-                ->first();
+            $shop = DB::table("md_shop")
+                ->select("md_shop.*")
+                ->selectRaw("ST_DISTANCE_SPHERE(
+                    point('$longitude', '$latitude'),
+                    point(md_shop.LONG_SHOP, md_shop.LAT_SHOP)
+                )  AS DISTANCE_SHOP")
+                ->where('md_shop.ID_DISTRICT', '=', $id_district)
+                ->orderBy('DISTANCE_SHOP', 'asc')
+                ->get();
 
-            $RecomData = array();
-            $pecahRecId = explode(';', $recom->ID_SHOP);
-            $pecahRecIdle = explode(';', $recom->IDLE_RECOM);
+            $dataRespon = array();
+            foreach ($shop as $shopData) {
+                
+                $recom = DB::table("recomendation")
+                    ->select("recomendation.*")
+                    ->selectRaw("ST_DISTANCE_SPHERE(
+                        point('$longitude', '$latitude'),
+                        point(recomendation.LONG_SHOP, recomendation.LAT_SHOP)
+                    )  AS DISTANCE_SHOP")
+                    ->where("recomendation.ID_USER", "=", $req->input("id_user"))
+                    ->orderBy('DISTANCE_SHOP', 'asc')
+                    ->first();
 
-            for ($i = 0; $i < count($pecahRecId); $i++) {
-                $RecomData[$pecahRecId[$i]] = $pecahRecIdle[$i];
+                if ($shopData->ID_SHOP == $recom->ID_SHOP){
+                    array_push(
+                        $dataRespon,
+                        array(
+                            "ID_SHOP" => $shopData->ID_SHOP,
+                            "PHOTO_SHOP" => $shopData->PHOTO_SHOP,
+                            "NAME_SHOP" => $shopData->NAME_SHOP,
+                            "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
+                            "LONG_SHOP" => $shopData->LONG_SHOP,
+                            "LAT_SHOP" => $shopData->LAT_SHOP,
+                            "LAST_VISITED" => $recom->IDLE_RECOM." Days Ago",
+                            "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', '')
+                        )
+                    );
+                } else {
+                    array_push(
+                        $dataRespon,
+                        array(
+                            "ID_SHOP" => $shopData->ID_SHOP,
+                            "PHOTO_SHOP" => $shopData->PHOTO_SHOP,
+                            "NAME_SHOP" => $shopData->NAME_SHOP,
+                            "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
+                            "LONG_SHOP" => $shopData->LONG_SHOP,
+                            "LAT_SHOP" => $shopData->LAT_SHOP,
+                            "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', '')
+                        )
+                    );
+                }
             }
 
-            // $shop = DB::table("md_shop")
-            //     ->select("md_shop.*")
-            //     ->selectRaw("ST_DISTANCE_SPHERE(
-            //         point('$longitude', '$latitude'),
-            //         point(md_shop.LONG_SHOP, md_shop.LAT_SHOP)
-            //     )  AS DISTANCE_SHOP")
-            //     ->join('recomendation', 'recomendation.')
-            //     ->orderBy('DISTANCE_SHOP', 'asc')
-            //     ->get();
+
+            return response([
+                'status_code'       => 200,
+                'status_message'    => 'Data berhasil diambil!',
+                'data'              => $dataRespon
+            ], 200);
+
         } catch (Exception $exp) {
             return response([
                 'status_code'       => 500,
