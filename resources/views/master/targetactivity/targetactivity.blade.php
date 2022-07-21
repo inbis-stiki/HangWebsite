@@ -133,8 +133,8 @@
                     <div class="row form-group">
                         <div class="col-md-6 ">
                             <label for="">Aktivitas</label>
-                            <select name="aktivitas_edit" class="select2" required>
-                                <option disabled value="">Pilih Aktivitas</option>
+                            <select name="aktivitas_edit" id="aktivitas_edit" class="select2" required>
+                                <option selected disabled value="">Pilih Aktivitas</option>
                                 @foreach ($activities as $activity)
                                 <option value="{{ $activity->ID_AC }}">{{ $activity->NAME_AC }}</option>
                                 @endforeach
@@ -142,8 +142,8 @@
                         </div>
                         <div class="col-md-6 ">
                             <label for="">Regional</label>
-                            <select name="regional_edit" class="select2" required>
-                                <option disabled value="">Pilih Regional</option>
+                            <select name="regional_edit" id="regional_edit" class="select2" required>
+                                <option selected disabled value="">Pilih Regional</option>
                                 @foreach ($regionals as $regional)
                                 <option value="{{ $regional->ID_REGIONAL }}">{{ $regional->NAME_REGIONAL }}</option>
                                 @endforeach
@@ -208,17 +208,11 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, activity_id, regional_id, quantity, status) {
+    function showMdlEdit(id, idactivity, idregional, quantity, status) {
         $('#mdlEdit_id').val(id)
-        $('#aktivitas_edit').val(activity_id)
-        // $("#product_edit option[value=" + product_id + "]").attr('selected', 'selected');
-        $('#regional_edit').val(regional_id)
+        $('#aktivitas_edit').val(idactivity).change()
+        $('#regional_edit').val(idregional).change()
         $('#quantity_edit').val(quantity)
-        // $('#name_edit').val(name)
-        // $('#email_edit').val(email)
-        // $('#telepon_edit').val(phone)
-        // $('#role_edit').val(idrole).change()
-        // $('#area_edit').val(area).change()
         if (status == null || status == '') {
             $('#status_enable').prop('checked', true)
         } else {

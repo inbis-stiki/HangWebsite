@@ -133,8 +133,8 @@
                     <div class="row form-group">
                         <div class="col-md-6 ">
                             <label for="">Kategori Produk</label>
-                            <select name="procat_edit" class="select2" required>
-                                <option disabled value="">Pilih Kategori Produk</option>
+                            <select name="procat_edit" id="procat_edit" class="select2" required>
+                                <option selected disabled value="">Pilih Kategori Produk</option>
                                 @foreach ($procats as $procat)
                                 <option value="{{ $procat->ID_PC }}">{{ $procat->NAME_PC }}</option>
                                 @endforeach
@@ -142,8 +142,8 @@
                         </div>
                         <div class="col-md-6 ">
                             <label for="">Regional</label>
-                            <select name="regional_edit" class="select2" required>
-                                <option disabled value="">Pilih Regional</option>
+                            <select name="regional_edit" id="regional_edit" class="select2" required>
+                                <option selected disabled value="">Pilih Regional</option>
                                 @foreach ($regionals as $regional)
                                 <option value="{{ $regional->ID_REGIONAL }}">{{ $regional->NAME_REGIONAL }}</option>
                                 @endforeach
@@ -208,17 +208,11 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, procat_id, regional_id, quantity, status) {
+    function showMdlEdit(id, idprocat, idregional, quantity, status) {
         $('#mdlEdit_id').val(id)
-        $('#procat_edit').val(procat_id)
-        // $("#product_edit option[value=" + product_id + "]").attr('selected', 'selected');
-        $('#regional_edit').val(regional_id)
+        $('#procat_edit').val(idprocat).change()
+        $('#regional_edit').val(idregional).change()
         $('#quantity_edit').val(quantity)
-        // $('#name_edit').val(name)
-        // $('#email_edit').val(email)
-        // $('#telepon_edit').val(phone)
-        // $('#role_edit').val(idrole).change()
-        // $('#area_edit').val(area).change()
         if (status == null || status == '') {
             $('#status_enable').prop('checked', true)
         } else {
