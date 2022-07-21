@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ShopApi extends Controller
 {
@@ -261,8 +264,8 @@ class ShopApi extends Controller
                 ->get();
 
             $dataRespon = array();
+            $temp = array();
             foreach ($shop as $shopData) {
-                
                 $recom = DB::table("recomendation")
                     ->select("recomendation.*")
                     ->selectRaw("ST_DISTANCE_SPHERE(
@@ -270,51 +273,76 @@ class ShopApi extends Controller
                         point(recomendation.LONG_SHOP, recomendation.LAT_SHOP)
                     )  AS DISTANCE_SHOP")
                     ->where("recomendation.ID_USER", "=", $req->input("id_user"))
-                    ->orderBy('DISTANCE_SHOP', 'asc')
+                    ->where("recomendation.ID_SHOP", "=", $shopData->ID_SHOP)
+                    ->orderBy('IDLE_RECOM', 'ASC')
                     ->first();
 
-                if ($shopData->ID_SHOP == $recom->ID_SHOP){
+                if ($recom != null){
                     array_push(
                         $dataRespon,
                         array(
                             "ID_SHOP" => $shopData->ID_SHOP,
-                            "PHOTO_SHOP" => $shopData->PHOTO_SHOP,
-                            "NAME_SHOP" => $shopData->NAME_SHOP,
-                            "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
-                            "LONG_SHOP" => $shopData->LONG_SHOP,
-                            "LAT_SHOP" => $shopData->LAT_SHOP,
+                            // "PHOTO_SHOP" => $shopData->PHOTO_SHOP,
+                            // "NAME_SHOP" => $shopData->NAME_SHOP,
+                            // "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
+                            // "LONG_SHOP" => $shopData->LONG_SHOP,
+                            // "LAT_SHOP" => $shopData->LAT_SHOP,
                             "LAST_VISITED" => $recom->IDLE_RECOM." Days Ago",
                             "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', '')
                         )
                     );
                 } else {
                     array_push(
-                        $dataRespon,
+                        $temp,
                         array(
                             "ID_SHOP" => $shopData->ID_SHOP,
-                            "PHOTO_SHOP" => $shopData->PHOTO_SHOP,
-                            "NAME_SHOP" => $shopData->NAME_SHOP,
-                            "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
-                            "LONG_SHOP" => $shopData->LONG_SHOP,
-                            "LAT_SHOP" => $shopData->LAT_SHOP,
+                            // "PHOTO_SHOP" => $shopData->PHOTO_SHOP,
+                            // "NAME_SHOP" => $shopData->NAME_SHOP,
+                            // "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
+                            // "LONG_SHOP" => $shopData->LONG_SHOP,
+                            // "LAT_SHOP" => $shopData->LAT_SHOP,
                             "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', '')
                         )
                     );
                 }
             }
 
+            for ($i=0; $i < count($temp); $i++) { 
+                array_push(
+                    $dataRespon,
+                    $temp[$i]
+                );
+            }
+
+            $dataPaginate = $this->paginate($dataRespon);
+            $dataPagination = array();
+            array_push(
+                $dataPagination,
+                array(
+                    "TOTAL_DATA" => $dataPaginate->total(),
+                    "PAGE" => $dataPaginate->currentPage(),
+                    "TOTAL_PAGE" => $dataPaginate->lastPage()
+                )
+            );
 
             return response([
                 'status_code'       => 200,
                 'status_message'    => 'Data berhasil diambil!',
-                'data'              => $dataRespon
+                'data'              => $dataPaginate->items(),
+                'status_pagination' => $dataPagination
             ], 200);
-
         } catch (Exception $exp) {
             return response([
                 'status_code'       => 500,
                 'status_message'    => $exp->getMessage(),
             ], 500);
         }
+    }
+
+    public function paginate($items, $perPage = 10, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }
