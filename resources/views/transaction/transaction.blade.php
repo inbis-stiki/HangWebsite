@@ -382,7 +382,6 @@
                 $('#mdlDetSpreadTrans_NameProduct').html('');
                 $('#mdlDetSpreadTrans_QTYProduct').html('');
                 $('#mdlSpreadTrans_Image').html('')
-                console.log(response.image_trans[0]);
                 if (response.image_trans[0] != undefined) {
                     $('#mdlSpreadTrans_Image_1').append('<img src="' + response.image_trans[0][0] + '" style="max-width: 300px; margin-bottom: 10px" alt="">');
                     $('#mdlSpreadTrans_Image_2').append('<img src="' + response.image_trans[0][1] + '" style="max-width: 300px; margin-bottom: 10px" alt="">');
@@ -440,7 +439,6 @@
             },
             dataType: 'json',
             success: function(response) {
-                console.log(response)
                 $('#mdlDetUblpTrans_NameShop').html('');
                 $('#mdlDetUblpTrans_NameProduct').html('');
                 $('#mdlDetUblpTrans_QTYProduct').html('');
@@ -455,7 +453,6 @@
                 $('#mdlTransUBLP_ImageIcip').append('<img src="' + response.image_trans[0][2] + '" style="max-width: 300px; margin-bottom: 10px" alt="">');
                 $('#mdlTransUBLP_ImageSell').append('<img src="' + response.image_trans[0][3] + '" style="max-width: 300px; margin-bottom: 10px" alt="">');
 
-                console.log(response);
                 for (let i = 0; i < response.data.length; i++) {
                     $('#mdlDetUblpTrans_AreaTrans').append('<p>' + response.data[i].AREA_TRANS + '</p>');
                     $('#mdlDetUblpTrans_NameProduct').append('<p>' + response.data[i].NAME_PRODUCT + '</p>');
