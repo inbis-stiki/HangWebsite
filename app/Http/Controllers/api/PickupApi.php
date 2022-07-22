@@ -118,7 +118,7 @@ class PickupApi extends Controller
                 return response([
                     'status_code'       => 200,
                     'status_message'    => 'User belum pickup!',
-                    'status_success'    => 0,
+                    'status_success'    => 1,
                     'data'              => []
                 ], 200);
             }else{
