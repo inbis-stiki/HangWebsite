@@ -238,21 +238,26 @@ class InvoiceApi extends Controller
             ->whereDate('DATE_TD', '=', date('Y-m-d'))
             ->first();
 
+            $td = [];
             if($cektd == null){
-                $msg    = 'Anda belum melakukan presensi!';
+                $msg        = 'Anda belum melakukan presensi!';
+                $success    = 0;
             }else{
                 if ($cektd['ISFINISHED_TD'] == 0) {
-                    $msg    = 'Anda bisa input faktur!';
-                    $td     = [];
+                    $msg        = 'Anda bisa input faktur!';
+                    $success    = 1;
+                    $td         = [];
                 }else{
-                    $msg    = 'Anda sudah Mengirimkan Faktur hari ini!';
-                    $td     = $cektd;
+                    $msg        = 'Anda sudah Mengirimkan Faktur hari ini!';
+                    $success    = 0;
+                    $td         = $cektd;
                 }
             }
 
             return response([
                 'status_code'       => 200,
                 'status_message'    => $msg,
+                'status_success'    => $success,
                 'data'              => $td
             ], 200);
         } catch (Exception $exp) {
