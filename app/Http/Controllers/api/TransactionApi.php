@@ -12,7 +12,6 @@ use App\Regional;
 use App\Area;
 use App\District;
 use App\Pickup;
-use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
 
@@ -201,7 +200,7 @@ class TransactionApi extends Controller
                         )
                     );
                 }
-
+                
                 if ($tdkLolos == 0) {
                     $transaction        = new Transaction();
                     $location           = new Location();
@@ -521,6 +520,7 @@ class TransactionApi extends Controller
     public function UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk)
     {
         $newStok = array();
+        $position = 0;
         for ($i = 0; $i < count($pecahIdproduk); $i++) {
             if (count($Stok2) == 1) {
                 if ($Stok2[0]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
@@ -529,10 +529,11 @@ class TransactionApi extends Controller
                     array_push($newStok, (int)$pecahRemainproduk[$i]);
                 }
             } else {
-                if ($Stok2[$i]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
-                    array_push($newStok, $Stok2[$i]['NEW_STOK']);
+                if ($Stok2[$position]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
+                    array_push($newStok, $Stok2[$position]['NEW_STOK']);
                 } else {
                     array_push($newStok, $pecahRemainproduk[$i]);
+                    $position++;
                 }
             }
         }
