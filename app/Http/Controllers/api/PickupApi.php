@@ -138,7 +138,7 @@ class PickupApi extends Controller
                 $success = "";
                 if (empty($pick) || $pick->ISFINISHED_PICKUP == 0) {
                     $msg        = 'Data terakhir pickup!';
-                    $success    = 1;
+                    $success    = 0;
                     $pickup     = $pick;
                 }else{
                     if ($cekPick == null) {

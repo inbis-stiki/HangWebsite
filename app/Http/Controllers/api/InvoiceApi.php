@@ -180,9 +180,11 @@ class InvoiceApi extends Controller
             array_push($url_array, $url_faktur2);
             $url = implode(";", $url_array);
 
-            $cekPickup = Pickup::where('ID_USER', '=', ''.$ID_USER.'')
-                ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
-                ->first();
+            $cekPickup = Pickup::where([
+                            ['ID_USER', '=', $ID_USER]
+                        ])
+                        ->whereDate('TIME_PICKUP', '<', date('Y-m-d'))
+                        ->latest('ID_PICKUP')->first();
 
             $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
                 ->where('ISFINISHED_TD', '=', '0')
