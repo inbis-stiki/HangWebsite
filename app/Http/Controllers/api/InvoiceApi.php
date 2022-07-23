@@ -183,7 +183,6 @@ class InvoiceApi extends Controller
             $cekPickup = Pickup::where([
                             ['ID_USER', '=', $ID_USER]
                         ])
-                        ->whereDate('TIME_PICKUP', '<', date('Y-m-d'))
                         ->latest('ID_PICKUP')->first();
 
             $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
