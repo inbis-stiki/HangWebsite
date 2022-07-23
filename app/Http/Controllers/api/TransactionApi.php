@@ -531,10 +531,10 @@ class TransactionApi extends Controller
             } else {
                 if ($Stok2[$position]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
                     array_push($newStok, $Stok2[$position]['NEW_STOK']);
+                    $position++;
                 } else {
                     array_push($newStok, $pecahRemainproduk[$i]);
-                    $position++;
-                }
+                } 
             }
         }
 
