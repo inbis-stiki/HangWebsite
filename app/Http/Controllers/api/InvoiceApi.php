@@ -201,7 +201,7 @@ class InvoiceApi extends Controller
                     "status_message"    => 'Anda sudah mengirimkan faktur'
                 ], 200);
             }else{
-                if ($cekPickup['ISFINISHED_PICKUP'] == '1' || $cekPickup == null){
+                if ($cekPickup == null || $cekPickup['ISFINISHED_PICKUP'] == '1'){
                     return response([
                         "status_code"       => 200,
                         "status_message"    => 'Anda belum pickup'
