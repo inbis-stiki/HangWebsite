@@ -137,7 +137,7 @@ class InvoiceApi extends Controller
     
     public function storedata(Request $req){
         try{
-            $ID_USER = "515dfab9";
+            $ID_USER = $req->input('id_user');
             
             $ID_LOCATION = DB::table("user")
                 ->select('md_area.NAME_AREA', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
