@@ -118,6 +118,7 @@ class PickupApi extends Controller
                 return response([
                     'status_code'       => 200,
                     'status_message'    => 'User belum pickup!',
+                    'status_success'    => 1,
                     'data'              => []
                 ], 200);
             }else{
@@ -132,16 +133,21 @@ class PickupApi extends Controller
                 ])
                 ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
                 ->latest('ID_PICKUP')->first();
-    
+
+
+                $success = "";
                 if (empty($pick) || $pick->ISFINISHED_PICKUP == 0) {
-                    $msg    = 'Data terakhir pickup!';
-                    $pickup = $pick;
+                    $msg        = 'Data terakhir pickup!';
+                    $success    = 1;
+                    $pickup     = $pick;
                 }else{
                     if ($cekPick == null) {
                         $msg    = 'Anda bisa pickup barang!';
+                        $success    = 1;
                         $pickup = [];
                     }else{
                         $msg    = 'Anda sudah pickup hari ini!';
+                        $success    = 0;
                         $pickup = $cekPick;
                     }
                 }
@@ -149,6 +155,7 @@ class PickupApi extends Controller
                 return response([
                     'status_code'       => 200,
                     'status_message'    => $msg,
+                    'status_success'    => $success,
                     'data'              => $pickup
                 ], 200);
             }
