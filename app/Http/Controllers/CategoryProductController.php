@@ -46,8 +46,14 @@ class CategoryProductController extends Controller
                 $category_product->NAME_PC          = $req->input('category_product');
                 $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
                 $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');    
-                $category_product->save();
-
+                try {
+                    $category_product->save();
+                } catch (\Illuminate\Database\QueryException $e) {
+                    $errorCode = $e->errorInfo[1];
+                    if($errorCode == '1062'){
+                        return redirect('master/category-product')->with('err_msg', 'Kategori Produk tidak boleh sama!');
+                    }
+                }
                 return redirect('master/category-product')->with('succ_msg', 'Berhasil menambah data kategori produk!');
             }    
         }
