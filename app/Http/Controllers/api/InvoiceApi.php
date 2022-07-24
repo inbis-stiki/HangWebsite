@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\TransactionDaily;
 use App\Pickup;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -230,6 +231,7 @@ class InvoiceApi extends Controller
             ], $exp->getCode());
         }
     }
+    
     public function cekFaktur(Request $req){
         try {
             $ID_USER = $req->input("id_user");

@@ -200,7 +200,7 @@ class TransactionApi extends Controller
                         )
                     );
                 }
-                
+
                 if ($tdkLolos == 0) {
                     $transaction        = new Transaction();
                     $location           = new Location();
@@ -519,6 +519,14 @@ class TransactionApi extends Controller
 
     public function UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk)
     {
+        $newIdProd = array();
+        foreach($Stok2 as $ItemNewStok){
+            array_push(
+                $newIdProd,
+                $ItemNewStok['ID_PRODUCT']
+            );
+        }
+
         $newStok = array();
         $position = 0;
         for ($i = 0; $i < count($pecahIdproduk); $i++) {
@@ -529,12 +537,12 @@ class TransactionApi extends Controller
                     array_push($newStok, (int)$pecahRemainproduk[$i]);
                 }
             } else {
-                if ($Stok2[$position]['ID_PRODUCT'] == $pecahIdproduk[$i]) {
+                if (in_array($pecahIdproduk[$i], $newIdProd)) {
                     array_push($newStok, $Stok2[$position]['NEW_STOK']);
                     $position++;
                 } else {
                     array_push($newStok, $pecahRemainproduk[$i]);
-                } 
+                }
             }
         }
 
