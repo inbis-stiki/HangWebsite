@@ -138,7 +138,7 @@ class InvoiceApi extends Controller
     
     public function storedata(Request $req){
         try{
-            $ID_USER = $req->input("id_user");
+            $ID_USER = $req->input('id_user');
             
             $ID_LOCATION = DB::table("user")
                 ->select('md_area.NAME_AREA', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
@@ -181,18 +181,17 @@ class InvoiceApi extends Controller
             array_push($url_array, $url_faktur2);
             $url = implode(";", $url_array);
 
-            $cekPickup = Pickup::where('ID_USER', '=', ''.$ID_USER.'')
-                ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
-                ->first();
+            $cekPickup = Pickup::where([
+                            ['ID_USER', '=', $ID_USER]
+                        ])
+                        ->latest('ID_PICKUP')->first();
 
             $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
                 ->where('ISFINISHED_TD', '=', '0')
-                ->whereDate('DATE_TD', '=', date('Y-m-d'))
-                ->first();
+                ->latest('ID_TD')->first();
 
             $cektd = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
-                ->whereDate('DATE_TD', '=', date('Y-m-d'))
-                ->first();
+                ->latest('ID_TD')->first();
             
             if ($cektd['ISFINISHED_TD'] == '1') {
                 return response([
@@ -200,29 +199,36 @@ class InvoiceApi extends Controller
                     "status_message"    => 'Anda sudah mengirimkan faktur'
                 ], 200);
             }else{
-                $TransactionDaily = TransactionDaily::find($cek->ID_TD);
-                $TransactionDaily->ID_TYPE         = $req->input('id_type');
-                $TransactionDaily->LOCATION_TD     = $ID_LOCATION->NAME_LOCATION;
-                $TransactionDaily->AREA_TD         = $ID_LOCATION->NAME_AREA;
-                $TransactionDaily->TOTQTY_TD       = $req->input('total_qty');
-                $TransactionDaily->TOTAL_TD        = $req->input('total_hrg');
-                $TransactionDaily->DATEFACTUR_TD   = date('Y-m-d H:i:s');
-                $TransactionDaily->FACTUR_TD       = $url;
-                $TransactionDaily->REGIONAL_TD     = $ID_LOCATION->NAME_LOCATION;
-                $TransactionDaily->ISFINISHED_TD   = '1';
-                $TransactionDaily->save();
-                
-                $Pickup = Pickup::find($cekPickup->ID_PICKUP);
-                $Pickup->ISFINISHED_PICKUP         = '1';
-                $Pickup->save();
-    
-                return response([
-                    "status_code"       => 200,
-                    "status_message"    => 'Data berhasil diupdate!',
-                    "data"              => [
-                        'ID_TD' => $TransactionDaily->ID_TD, 
-                        'ID_PICKUP' => $Pickup->ID_PICKUP]
-                ], 200);
+                if ($cekPickup == null || $cekPickup['ISFINISHED_PICKUP'] == '1'){
+                    return response([
+                        "status_code"       => 200,
+                        "status_message"    => 'Anda belum pickup'
+                    ], 200);
+                }else {
+                    $TransactionDaily = TransactionDaily::find($cek->ID_TD);
+                    $TransactionDaily->ID_TYPE         = $req->input('id_type');
+                    $TransactionDaily->LOCATION_TD     = $ID_LOCATION->NAME_LOCATION;
+                    $TransactionDaily->AREA_TD         = $ID_LOCATION->NAME_AREA;
+                    $TransactionDaily->TOTQTY_TD       = $req->input('total_qty');
+                    $TransactionDaily->TOTAL_TD        = $req->input('total_hrg');
+                    $TransactionDaily->DATEFACTUR_TD   = date('Y-m-d H:i:s');
+                    $TransactionDaily->FACTUR_TD       = $url;
+                    $TransactionDaily->REGIONAL_TD     = $ID_LOCATION->NAME_LOCATION;
+                    $TransactionDaily->ISFINISHED_TD   = '1';
+                    $TransactionDaily->save();
+                    
+                    $Pickup = Pickup::find($cekPickup->ID_PICKUP);
+                    $Pickup->ISFINISHED_PICKUP         = '1';
+                    $Pickup->save();
+        
+                    return response([
+                        "status_code"       => 200,
+                        "status_message"    => 'Data berhasil diupdate!',
+                        "data"              => [
+                            'ID_TD' => $TransactionDaily->ID_TD, 
+                            'ID_PICKUP' => $Pickup->ID_PICKUP]
+                    ], 200);
+                }
             }
         } catch (HttpResponseException $exp) {
             return response([
@@ -236,13 +242,13 @@ class InvoiceApi extends Controller
         try {
             $ID_USER = $req->input("id_user");
 
-            $cektd = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
-            ->whereDate('DATE_TD', '=', date('Y-m-d'))
-            ->first();
+            $cektd = TransactionDaily::where([
+                ['ID_USER', '=', $req->input('id_user')]
+            ])->latest('ID_TD')->first();
 
             $td = [];
             if($cektd == null){
-                $msg        = 'Anda belum melakukan presensi!';
+                $msg        = 'Anda belum Pickup Barang!';
                 $success    = 0;
             }else{
                 if ($cektd['ISFINISHED_TD'] == 0) {
@@ -250,7 +256,7 @@ class InvoiceApi extends Controller
                     $success    = 1;
                     $td         = [];
                 }else{
-                    $msg        = 'Anda sudah Mengirimkan Faktur hari ini!';
+                    $msg        = 'Anda sudah Mengirimkan Faktur!';
                     $success    = 0;
                     $td         = $cektd;
                 }
