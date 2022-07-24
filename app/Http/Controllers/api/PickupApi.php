@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Pickup;
+use App\TransactionDaily;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
@@ -52,6 +53,11 @@ class PickupApi extends Controller
             $pickup->TOTAL_PICKUP = implode(';', $totalpickup);
             $pickup->REMAININGSTOCK_PICKUP = $pickup->TOTAL_PICKUP;
             $pickup->save();
+
+            $transDaily = new TransactionDaily();
+            $transDaily->ID_USER = $req->input('id_user');
+            $transDaily->DATE_TD = date("Y-m-d H:i:s");
+            $transDaily->save();
 
             return response([
                 "status_code"       => 200,

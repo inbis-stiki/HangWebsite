@@ -115,10 +115,10 @@ class PresenceApi extends Controller
                 $presence->DATE_PRESENCE        = date('Y-m-d H:i:s');
                 $presence->save();
 
-                $transDaily = new TransactionDaily();
-                $transDaily->ID_USER = $req->input('id_user');
-                $transDaily->DATE_TD = date("Y-m-d H:i:s");
-                $transDaily->save();
+                // $transDaily = new TransactionDaily();
+                // $transDaily->ID_USER = $req->input('id_user');
+                // $transDaily->DATE_TD = date("Y-m-d H:i:s");
+                // $transDaily->save();
 
                 return response([
                     "status_code"       => 200,

@@ -187,12 +187,10 @@ class InvoiceApi extends Controller
 
             $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
                 ->where('ISFINISHED_TD', '=', '0')
-                ->whereDate('DATE_TD', '=', date('Y-m-d'))
-                ->first();
+                ->latest('ID_TD')->first();
 
             $cektd = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
-                ->whereDate('DATE_TD', '=', date('Y-m-d'))
-                ->first();
+                ->latest('ID_TD')->first();
             
             if ($cektd['ISFINISHED_TD'] == '1') {
                 return response([
@@ -242,13 +240,13 @@ class InvoiceApi extends Controller
         try {
             $ID_USER = $req->input("id_user");
 
-            $cektd = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
-            ->whereDate('DATE_TD', '=', date('Y-m-d'))
-            ->first();
+            $cektd = TransactionDaily::where([
+                ['ID_USER', '=', $req->input('id_user')]
+            ])->latest('ID_TD')->first();
 
             $td = [];
             if($cektd == null){
-                $msg        = 'Anda belum melakukan presensi!';
+                $msg        = 'Anda belum Pickup Barang!';
                 $success    = 0;
             }else{
                 if ($cektd['ISFINISHED_TD'] == 0) {
@@ -256,7 +254,7 @@ class InvoiceApi extends Controller
                     $success    = 1;
                     $td         = [];
                 }else{
-                    $msg        = 'Anda sudah Mengirimkan Faktur hari ini!';
+                    $msg        = 'Anda sudah Mengirimkan Faktur!';
                     $success    = 0;
                     $td         = $cektd;
                 }
