@@ -65,11 +65,11 @@
                     <span class="nav-text">Laporan</span>
                 </a>
             </li>
-            <li class="active"><a href="{{ url('logout') }}" class="ai-icon" aria-expanded="false">
+            {{-- <li class="active"><a href="{{ url('logout') }}" class="ai-icon" aria-expanded="false">
                 <i class="fa fa-power-off"></i>
                     <span class="nav-text">Log Out</span>
                 </a>
-            </li>
+            </li> --}}
         </ul>
     </div>
 </div>

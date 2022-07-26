@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Auth;
+use App\Role;
 use Session;
 use DateTime;
 
@@ -26,7 +27,8 @@ class AuthController extends Controller
                 'PASS_USER' => hash('sha256', md5($req->input('password')))
             ])->first();
             if ($user != null) {
-                    $this->setSession($req->input('username'), $user->NAME_USER, $user->ID_ROLE, $user->ID_LOCATION, $user->ID_REGIONAL, $user->ID_AREA);
+                    $role = Role::where('ID_ROLE', $user->ID_ROLE)->first();
+                    $this->setSession($req->input('username'), $user->NAME_USER, $user->ID_ROLE, $role->NAME_ROLE, $user->ID_LOCATION, $user->ID_REGIONAL, $user->ID_AREA);
 
                     return redirect('dashboard');  
                 } else {
@@ -88,14 +90,15 @@ class AuthController extends Controller
 		return $a;
 	}
 
-    public function setSession($username, $nama, $role, $location, $regional, $area){
+    public function setSession($username, $nama, $role, $nama_role, $location, $regional, $area){
         session([
-            'username' => $username,
-            'nama'     => $nama,
-            'role'     => $role,
-            'location' => $location,
-            'regional' => $regional,
-            'area'     => $area,
+            'username'  => $username,
+            'nama'      => $nama,
+            'role'      => $role,
+            'nama_role' => $nama_role,
+            'location'  => $location,
+            'regional'  => $regional,
+            'area'      => $area,
         ]);
     }
     
