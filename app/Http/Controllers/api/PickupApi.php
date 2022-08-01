@@ -18,7 +18,6 @@ class PickupApi extends Controller
                 'id_user'                   => 'required',
                 // 'id_district'               => 'required',
                 // 'id_type'                   => 'required',
-                'time'                      => 'required',
                 'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
                 'product.*.name_product'    => 'required',
             ], [
@@ -37,7 +36,7 @@ class PickupApi extends Controller
             // $pickup->ID_DISTRICT            = $req->input('id_district');
             // $pickup->DETAILLOKASI_PICKUP    = $req->input('detail_lokasi');
             // $pickup->ID_TYPE                = $req->input('id_type');
-            $pickup->TIME_PICKUP            = $req->input('time');
+            $pickup->TIME_PICKUP            = date("Y-m-d");
 
             $idproduct = array();
             $nameproduct = array();
