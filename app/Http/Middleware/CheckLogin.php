@@ -15,7 +15,7 @@ class CheckLogin
      */
     public function handle($request, Closure $next)
     {
-        if(auth()->guest()){
+        if(empty(session('role'))){
             return redirect()->route('login');
         }
         return $next($request);

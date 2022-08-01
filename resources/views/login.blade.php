@@ -22,7 +22,7 @@
 <body style="margin: 0; height: 100%; overflow: hidden" class="bg-white">
     <div class="row">
         <div class="col-8">
-            <img src="{{ asset('images/img-login.png') }}" alt="Image Sidebar" height="100%" width="100%" class="m-0" />
+            <img src="{{ asset('images/img-login.jpg') }}" alt="Image Sidebar" height="100%" width="100%" class="m-0" />
         </div>
         <div class="col-sm ">
             <div class="text-center mb-3 mt-5">

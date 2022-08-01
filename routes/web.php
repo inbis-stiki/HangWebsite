@@ -26,7 +26,7 @@ Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 Route::get('cronjob/shop/recomendation', 'CronjobController@cronjob_store_rekomendasi');
 
-// Route::group(['middleware' => ['checkLogin']], function() {
+Route::group(['middleware' => ['checkLogin']], function() {
     Route::get('dashboard', 'DashboardController@index');
 
     // MASTER LOCATION
@@ -123,4 +123,4 @@ Route::get('cronjob/shop/recomendation', 'CronjobController@cronjob_store_rekome
     Route::get('master/activity-category', 'ActivityCategoryController@index');
     Route::get('master/activity-category/update', 'ActivityCategoryController@update');
 
-    // });
+    });
