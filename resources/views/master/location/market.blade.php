@@ -105,7 +105,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Kecamatan</label>
-                    <select id="mdlAdd_selectD" name="district" class="select2" required>
+                    <select id="mdlAdd_selectD" name="districtK" class="select2" required>
                             <option selected disabled value="">Pilih Kecamatan</option>
                             @foreach ($district as $districts)
                                 <option value="{{ $districts->ID_DISTRICT }}">{{ $districts->NAME_DISTRICT }}</option>                            
@@ -164,7 +164,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Area</label>
-                    <select name="district" class="select2" id="mdlEdit_district" required>
+                    <select name="districtK" class="select2" id="mdlEdit_district" required>
                         <option selected disabled value="">Pilih Kecamatan</option>
                         @foreach ($district as $districts)
                             <option value="{{ $districts->ID_DISTRICT }}">{{ $districts->NAME_DISTRICT }}</option>                            
