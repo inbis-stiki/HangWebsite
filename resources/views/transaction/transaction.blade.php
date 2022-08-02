@@ -154,7 +154,7 @@
                 <h5 class="modal-title">Detail Transaksi</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
                 </button>
-            </div>
+            </div> 
             <div class="modal-body">
                 <div class="col-md-12 d-flex">
                     <div class="form-group col-md-6">
