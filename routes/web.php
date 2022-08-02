@@ -119,6 +119,9 @@ Route::group(['middleware' => ['checkLogin']], function() {
     Route::post('master/transaction/transactionUBDetail', 'TransactionController@getTransactionDetailUB');
     Route::post('master/transaction/transactionUBLPDetail', 'TransactionController@getTransactionDetailUBLP');
 
+    //FAKTUR
+    Route::get('faktur', 'FakturController@index');
+
     //MASTER ACTIVITY CATEGORY
     Route::get('master/activity-category', 'ActivityCategoryController@index');
     Route::get('master/activity-category/update', 'ActivityCategoryController@update');

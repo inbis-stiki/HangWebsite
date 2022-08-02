@@ -11,7 +11,7 @@ class TargetSale extends Model
     protected $primaryKey = 'ID_TS';
     public $timestamps = false;
     public $fillable = [
-        'ID_PROCAT',
+        'ID_PRODUCT',
         'ID_REGIONAL',
         'QUANTITY',
         'START_PP',
@@ -22,8 +22,8 @@ class TargetSale extends Model
     {
         return $this->hasOne('App\Regional', 'ID_REGIONAL', 'ID_REGIONAL');
     }
-    public function procat()
+    public function product()
     {
-        return $this->hasOne('App\CategoryProduct', 'ID_PC', 'ID_PROCAT');
+        return $this->hasOne('App\Product', 'ID_PRODUCT', 'ID_PRODUCT');
     }
 }

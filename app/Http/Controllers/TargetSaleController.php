@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\CategoryProduct;
+use App\Product;
 use App\Regional;
 use App\TargetSale;
 use Illuminate\Support\Facades\Validator;
@@ -26,7 +26,7 @@ class TargetSaleController extends Controller
         $data['sidebar2']           = "targetsale";
 
         $data['target_sales']       = TargetSale::all();
-        $data['procats']            = CategoryProduct::all();
+        $data['products']           = Product::all();
         $data['regionals']          = Regional::all();
 
         return view('master.targetsale.targetsale', $data);
@@ -68,8 +68,8 @@ class TargetSaleController extends Controller
         foreach ($arrs as $arr) {
             $target_sale = new TargetSale();
             $regional = Regional::where('NAME_REGIONAL', '=', $arr[1])->first();
-            $catpro = CategoryProduct::where('NAME_PC', '=', $arr[2])->first();
-            $target_sale->ID_PROCAT       = $catpro->ID_PC;
+            $product = Product::where('CODE_PRODUCT', '=', $arr[2])->first();
+            $target_sale->ID_PRODUCT      = $product->ID_PRODUCT;
             $target_sale->ID_REGIONAL     = $regional->ID_REGIONAL;
             $target_sale->QUANTITY        = $arr[3];
             $target_sale->START_PP        = Carbon::createFromFormat('m/d/Y', $arr[4])->format('Y-m-d');
@@ -95,7 +95,7 @@ class TargetSaleController extends Controller
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'id'             => 'required',
-            'procat_edit'    => 'required',
+            'product_edit'    => 'required',
             'regional_edit'  => 'required',
             'quantity'       => 'required',
             'status'         => 'required',
@@ -107,7 +107,7 @@ class TargetSaleController extends Controller
         }
         date_default_timezone_set("Asia/Bangkok");
         $target_sale = TargetSale::find($request->input('id'));
-        $target_sale->ID_PROCAT          = $request->input('procat_edit');
+        $target_sale->ID_PRODUCT         = $request->input('product_edit');
         $target_sale->ID_REGIONAL        = $request->input('regional_edit');
         $target_sale->QUANTITY           = $request->input('quantity');
         $target_sale->DELETED_AT         = $request->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
@@ -202,18 +202,18 @@ class TargetSaleController extends Controller
         $drawing->setWorksheet($sheet);
 
         $sheet->getRowDimension('7')->setRowHeight('30');
-        $sheet->setCellValue('A7', "TARGET AKTIVITAS")->getStyle('A7')->applyFromArray($styleHeading1);
+        $sheet->setCellValue('A7', "TARGET PENJUALAN")->getStyle('A7')->applyFromArray($styleHeading1);
 
         $sheet->setCellValue('A8', 'NO')->getStyle('A8')->applyFromArray($styleTitle);
         $sheet->setCellValue('B8', 'REGIONAL')->getStyle('B8')->applyFromArray($styleTitle);
-        $sheet->setCellValue('C8', 'KATEGORI PRODUK')->getStyle('C8')->applyFromArray($styleTitle);
+        $sheet->setCellValue('C8', 'KODE PRODUK')->getStyle('C8')->applyFromArray($styleTitle);
         $sheet->setCellValue('D8', 'QUANTITY')->getStyle('D8')->applyFromArray($styleTitle);
         $sheet->setCellValue('E8', 'START DATE')->getStyle('E8')->applyFromArray($styleTitle);
         $sheet->setCellValue('F8', 'END DATE')->getStyle('F8')->applyFromArray($styleTitle);
-        $procats        = CategoryProduct::all();
-        $arrs_procat= [];
-        foreach ($procats as $procat) {
-            array_push($arrs_procat, $procat->NAME_PC);
+        $products      = Product::all();
+        $arrs_product= [];
+        foreach ($products as $product) {
+            array_push($arrs_product, $product->CODE_PRODUCT);
         }
         $regionals       = Regional::all();
         $arrs_regional = [];
@@ -230,9 +230,9 @@ class TargetSaleController extends Controller
             $lstRegional->setFormula1('"' . implode(',', $arrs_regional) . '"');
 
             $sheet->getStyle('C' . $rowStart)->applyFromArray($styleContentCenterBold)->getAlignment()->setWrapText(true);
-            $lstProCat = $sheet->getCell('C' . $rowStart)->getDataValidation();
-            $lstProCat->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)->setShowDropDown(true);
-            $lstProCat->setFormula1('"' . implode(',', $arrs_procat) . '"');
+            $lstProduct = $sheet->getCell('C' . $rowStart)->getDataValidation();
+            $lstProduct->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST)->setShowDropDown(true);
+            $lstProduct->setFormula1('"' . implode(',', $arrs_product) . '"');
 
             $sheet->getStyle('D' . $rowStart)->applyFromArray($styleContent)->getAlignment()->setWrapText(true);
 
