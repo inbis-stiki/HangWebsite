@@ -65,4 +65,7 @@ Route::middleware(['checkAuthApi'])->group(function(){
     Route::get('invoice', 'api\InvoiceApi@listproduct');
     Route::post('invoice', 'api\InvoiceApi@storedata');
     Route::get("cek/invoice", 'api\InvoiceApi@cekFaktur');
+
+    // API DASHBOARD
+    Route::get("terjual/harian", 'api\DashboardApi@ProdukTerjual');
 });
