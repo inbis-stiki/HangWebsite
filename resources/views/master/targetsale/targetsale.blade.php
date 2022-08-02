@@ -42,7 +42,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Kategori Produk</th></th>
+                                        <th>Kode Produk</th></th>
                                         <th>Jumlah</th>
                                         <th>Region</th>
                                         <th>Status</th>
@@ -57,7 +57,7 @@
                                     @foreach ($target_sales as $target_sale)
                                     <tr>
                                         <td>{{ $no++ }}</td>
-                                        <td>{{ $target_sale->procat->NAME_PC }}</td>
+                                        <td>{{ $target_sale->product->CODE_PRODUCT }}</td>
                                         <td>{{ $target_sale->QUANTITY }}</td>
                                         <td>{{ $target_sale->regional->NAME_REGIONAL }}</td>
                                         <td>
@@ -70,7 +70,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlEdit('{{ $target_sale->ID_TS}}', '{{ $target_sale->procat->ID_PC}}', '{{ $target_sale->regional->ID_REGIONAL }}', '{{ $target_sale->QUANTITY }}', '{{ $target_sale->DELETED_AT }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $target_sale->ID_TS}}', '{{ $target_sale->product->ID_PRODUCT}}', '{{ $target_sale->regional->ID_REGIONAL }}', '{{ $target_sale->QUANTITY }}', '{{ $target_sale->DELETED_AT }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                             <button onclick="showMdlDelete('{{ $target_sale->ID_TS}}')" class="btn btn-primary btn-sm">
@@ -133,10 +133,10 @@
                     <div class="row form-group">
                         <div class="col-md-6 ">
                             <label for="">Kategori Produk</label>
-                            <select name="procat_edit" id="procat_edit" class="select2" required>
+                            <select name="product_edit" id="product_edit" class="select2" required>
                                 <option selected disabled value="">Pilih Kategori Produk</option>
-                                @foreach ($procats as $procat)
-                                <option value="{{ $procat->ID_PC }}">{{ $procat->NAME_PC }}</option>
+                                @foreach ($products as $product)
+                                <option value="{{ $product->ID_PRODUCT }}">{{ $product->CODE_PRODUCT }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -208,9 +208,9 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, idprocat, idregional, quantity, status) {
+    function showMdlEdit(id, idproduct, idregional, quantity, status) {
         $('#mdlEdit_id').val(id)
-        $('#procat_edit').val(idprocat).change()
+        $('#product_edit').val(idproduct).change()
         $('#regional_edit').val(idregional).change()
         $('#quantity_edit').val(quantity)
         if (status == null || status == '') {
