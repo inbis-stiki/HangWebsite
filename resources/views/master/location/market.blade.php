@@ -104,6 +104,15 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="">Kecamatan</label>
+                    <select id="mdlAdd_selectD" name="district" class="select2" required>
+                            <option selected disabled value="">Pilih Kecamatan</option>
+                            @foreach ($district as $districts)
+                                <option value="{{ $districts->ID_DISTRICT }}">{{ $districts->NAME_DISTRICT }}</option>                            
+                            @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="">Status Pasar</label>
                     <div class="form-group mb-0">
                         <div class="custom-control custom-checkbox mb-3">
@@ -150,6 +159,15 @@
                         <option selected disabled value="">Pilih Area</option>
                         @foreach ($areas as $area)
                             <option value="{{ $area->ID_AREA }}">{{ $area->NAME_AREA }}</option>                            
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="">Area</label>
+                    <select name="district" class="select2" id="mdlEdit_district" required>
+                        <option selected disabled value="">Pilih Kecamatan</option>
+                        @foreach ($district as $districts)
+                            <option value="{{ $districts->ID_DISTRICT }}">{{ $districts->NAME_DISTRICT }}</option>                            
                         @endforeach
                     </select>
                 </div>
@@ -211,11 +229,13 @@
     $('#mdlAdd').on('hidden.bs.modal', function () {
         $('#formAdd').trigger('reset')
         $('#mdlAdd_select').val("").change()
+        $('#mdlAdd_selectD').val("").change()
     })
-    function showMdlEdit(id, name, location, statusMarket, status){
+    function showMdlEdit(id, name, location, district, statusMarket, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
         $('#mdlEdit_area').val(location).change()
+        $('#mdlEdit_district').val(district).change()
         if (status == null || status == '') {
             $('#status_enable').prop('checked', true)
         } else {
