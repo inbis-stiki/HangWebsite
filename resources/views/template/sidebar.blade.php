@@ -60,6 +60,11 @@
                     <span class="nav-text">Presensi</span>
                 </a>
             </li>
+            <li class="active"><a href="{{ url('faktur') }}" class="ai-icon" aria-expanded="false">
+                    <i class="fa fa-receipt"></i>
+                    <span class="nav-text">Faktur</span>
+                </a>
+            </li>
             <li class="active"><a href="#" class="ai-icon" aria-expanded="false">
                     <i class="fa fa-newspaper"></i>
                     <span class="nav-text">Laporan</span>

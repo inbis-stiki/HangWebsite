@@ -309,14 +309,13 @@
     filterData("");
 
     $(".datepicker-default").pickadate({
-        format: 'yyyy-mm-dd',
+        format: 'd\ mmmm yyyy',
         onSet: function() {
-            const Date = this.get('select', 'yyyy-mm-dd')
+            const Date = this.get('select', 'd\ mmmm yyyy')
             $('#datatables').DataTable().destroy()
             $('#datatables').DataTable().columns(4).search(Date).draw();
         }
     });
-
 
     function filterData(Date) {
         $('#datatables').DataTable({

@@ -67,7 +67,7 @@ class TransactionController extends Controller
                 "ID_TRANS" => $item->ID_TRANS,
                 "AREA_TRANS" => $item->AREA_TRANS,
                 "REGIONAL_TRANS" => $item->REGIONAL_TRANS,
-                "DATE_TRANS" => $item->DATE_TRANS,
+                "DATE_TRANS" => date_format(date_create($item->DATE_TRANS), 'j F Y'),
                 "ID_TYPE" => $item->ID_TYPE,
                 "NAME_TYPE" => $item->NAME_TYPE
             );
