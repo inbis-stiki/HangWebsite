@@ -63,7 +63,7 @@ class PresenceApi extends Controller
                 'kecamatan'        => 'required|string|exists:md_district,NAME_DISTRICT',
                 'longitude'        => 'required|string',
                 'latitude'         => 'required|string',
-                'id_type'          => 'required|numeric|exists:md_type,ID_TYPE',
+                // 'id_type'          => 'required|numeric|exists:md_type,ID_TYPE',
                 'image'            => 'required|image'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
@@ -82,7 +82,7 @@ class PresenceApi extends Controller
             $path = $req->file('image')->store('images', 's3');
 
             $cek = Presence::where('ID_USER', '=', ''.$req->input('id_user').'')
-            ->where('ID_TYPE', '=', $req->input('id_type'))
+            // ->where('ID_TYPE', '=', $req->input('id_type'))
             ->whereDate('DATE_PRESENCE', '=', date('Y-m-d'))
             ->exists();
 
@@ -107,7 +107,7 @@ class PresenceApi extends Controller
             }else{
                 $presence = new Presence();
                 $presence->ID_USER              = $req->input('id_user');
-                $presence->ID_TYPE              = $req->input('id_type');
+                // $presence->ID_TYPE              = $req->input('id_type');
                 $presence->ID_DISTRICT          = $idDistrik->ID_DISTRICT;
                 $presence->LONG_PRESENCE        = $req->input('longitude');
                 $presence->LAT_PRESENCE         = $req->input('latitude');
