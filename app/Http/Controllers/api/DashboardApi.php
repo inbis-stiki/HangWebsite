@@ -22,36 +22,36 @@ class DashboardApi extends Controller
                 ->select(DB::raw("SUM(transaction.QTY_TRANS) as Harian"))
                 ->whereDate('transaction.DATE_TRANS', '=', date('Y-m-d'))
                 ->where('transaction.ID_USER', '=', $req->input("id_user"))
-                ->get();
+                ->first();
 
             $DataBulanan = DB::table("transaction")
                 ->select(DB::raw("SUM(transaction.QTY_TRANS) as Bulanan"))
                 ->where('transaction.DATE_TRANS', 'like', date('Y-m') . '%')
                 ->where('transaction.ID_USER', '=', $req->input("id_user"))
-                ->get();
+                ->first();
 
-            if ($DataBulanan[0]->Bulanan == null) {
+            if ($DataBulanan->Bulanan == null) {
                 array_push(
                     $AllData,
                     array(
-                        'Harian' => 0,
-                        'Bulanan' => 0
+                        'Hari' => 0,
+                        'Bulan' => 0
                     )
                 );
-            }else if ($DataHarian[0]->Harian == null) {
+            }else if ($DataHarian->Harian == null) {
                 array_push(
                     $AllData,
                     array(
-                        'Harian' => 0,
-                        'Bulanan' => $DataBulanan[0]->Bulanan
+                        'Hari' => 0,
+                        'Bulan' => $DataBulanan->Bulanan
                     )
                 );
             }else{
                 array_push(
                     $AllData,
                     array(
-                        'Hari' => $DataHarian[0]->Harian,
-                        'Bulan' => $DataBulanan[0]->Bulanan
+                        'Hari' => $DataHarian->Harian,
+                        'Bulan' => $DataBulanan->Bulanan
                     )
                 );
             }
@@ -90,7 +90,7 @@ class DashboardApi extends Controller
             $Average = $DataBulanan[0]->Bulanan / $dateFrom->diffInDays($dateTo);
             array_push(
                 $AllData,
-                array("Rata" => $Average." Product / Hari")
+                array("average_produk_terjual" => $Average." Product / Hari")
             );
 
             return response([
@@ -121,11 +121,54 @@ class DashboardApi extends Controller
                 ->where('user_target.ID_USER', '=', $req->input("id_user"))
                 ->latest("user_target.ID_USER")->first();
 
-            $Progress = (count($DataHarian) / $DataTarget->TOTALSALES_UT)*100;
+            $Progress = (count($DataHarian) / ($DataTarget->TOTALSALES_UT * 25))*100;
 
             array_push(
                 $AllData,
                 array("progress" => $Progress."%")
+            );
+
+            return response([
+                "status_code"       => 200,
+                "status_message"    => 'Data berhasil Diambil!',
+                "data"              => $AllData
+            ], 200);
+        } catch (HttpResponseException $exp) {
+            return response([
+                'status_code'       => $exp->getCode(),
+                'status_message'    => $exp->getMessage(),
+            ], $exp->getCode());
+        }
+    }
+
+    public function NotReachTarget(Request $req)
+    {
+        try {
+            date_default_timezone_set("Asia/Bangkok");
+
+            $AllData = array();
+            
+            $DataHarian = DB::table("transaction")
+                ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, SUM(transaction.QTY_TRANS) as TotalPenjualan")
+                ->where('transaction.ID_USER', '=', $req->input("id_user"))
+                ->groupByRaw('DATE(transaction.DATE_TRANS)')
+                ->orderBy('CnvrtDate', 'ASC')
+                ->get();
+
+            $DataTarget = DB::table("user_target")
+                ->where('user_target.ID_USER', '=', $req->input("id_user"))
+                ->latest("user_target.ID_USER")->first();
+
+            $TotalHari = 0;
+            foreach($DataHarian as $Data){
+                if ($Data->TotalPenjualan < $DataTarget->TOTALSALES_UT) {
+                    $TotalHari++;
+                }
+            }
+
+            array_push(
+                $AllData,
+                array("TotalHari" => $TotalHari." Hari")
             );
 
             return response([
