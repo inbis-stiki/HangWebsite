@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class DashboardApi extends Controller
 {
-    public function ProdukTerjual(Request $req)
+    public function ProductSold(Request $req)
     {
         try {
             date_default_timezone_set("Asia/Bangkok");
@@ -49,12 +50,83 @@ class DashboardApi extends Controller
                 array_push(
                     $AllData,
                     array(
-                        'Harian' => $DataHarian[0]->Harian,
-                        'Bulanan' => $DataBulanan[0]->Bulanan
+                        'Hari' => $DataHarian[0]->Harian,
+                        'Bulan' => $DataBulanan[0]->Bulanan
                     )
                 );
             }
             
+
+            return response([
+                "status_code"       => 200,
+                "status_message"    => 'Data berhasil Diambil!',
+                "data"              => $AllData
+            ], 200);
+        } catch (HttpResponseException $exp) {
+            return response([
+                'status_code'       => $exp->getCode(),
+                'status_message'    => $exp->getMessage(),
+            ], $exp->getCode());
+        }
+    }
+
+    public function AverageProductSold(Request $req)
+    {
+        try {
+            date_default_timezone_set("Asia/Bangkok");
+
+            $AllData = array();
+            $firstDay = Carbon::now()->firstOfMonth();  
+            $DateNow = Carbon::now();
+            $dateFrom = Carbon::createFromFormat('Y-m-d',$firstDay->toDateString());
+            $dateTo = Carbon::createFromFormat('Y-m-d',$DateNow->toDateString());
+            
+            $DataBulanan = DB::table("transaction")
+                ->select(DB::raw("SUM(transaction.QTY_TRANS) as Bulanan"))
+                ->where('transaction.DATE_TRANS', 'like', date('Y-m') . '%')
+                ->where('transaction.ID_USER', '=', $req->input("id_user"))
+                ->get();
+
+            $Average = $DataBulanan[0]->Bulanan / $dateFrom->diffInDays($dateTo);
+            array_push(
+                $AllData,
+                array("Rata" => $Average." Product / Hari")
+            );
+
+            return response([
+                "status_code"       => 200,
+                "status_message"    => 'Data berhasil Diambil!',
+                "data"              => $AllData
+            ], 200);
+        } catch (HttpResponseException $exp) {
+            return response([
+                'status_code'       => $exp->getCode(),
+                'status_message'    => $exp->getMessage(),
+            ], $exp->getCode());
+        }
+    }
+
+    public function SalesProgress(Request $req)
+    {
+        try {
+            date_default_timezone_set("Asia/Bangkok");
+
+            $AllData = array();
+            
+            $DataHarian = DB::table("transaction")
+                ->where('transaction.ID_USER', '=', $req->input("id_user"))
+                ->get();
+
+            $DataTarget = DB::table("user_target")
+                ->where('user_target.ID_USER', '=', $req->input("id_user"))
+                ->latest("user_target.ID_USER")->first();
+
+            $Progress = (count($DataHarian) / $DataTarget->TOTALSALES_UT)*100;
+
+            array_push(
+                $AllData,
+                array("progress" => $Progress."%")
+            );
 
             return response([
                 "status_code"       => 200,
