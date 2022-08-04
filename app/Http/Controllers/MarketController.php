@@ -136,11 +136,13 @@ class MarketController extends Controller
         }
 
         date_default_timezone_set("Asia/Bangkok");
+        
         $district = District::find($req->input('id'));
         $district->ID_AREA          = $req->input('area');
         $district->NAME_DISTRICT    = $req->input('district');
         $district->ISFOCUS_DISTRICT = !empty($req->input('statusMarket')) ? '1' : '0';
         $district->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+        $district->PARENT_DISTRICT  = $req->input('districtK');
         $district->save();
 
         return redirect('master/location/market')->with('succ_msg', 'Berhasil mengubah data pasar!');

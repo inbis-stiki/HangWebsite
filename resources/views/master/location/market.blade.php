@@ -163,7 +163,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="">Area</label>
+                    <label for="">Kecamatan</label>
                     <select name="districtK" class="select2" id="mdlEdit_district" required>
                         <option selected disabled value="">Pilih Kecamatan</option>
                         @foreach ($district as $districts)
