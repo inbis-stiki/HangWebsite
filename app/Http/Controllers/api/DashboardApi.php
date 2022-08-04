@@ -90,7 +90,7 @@ class DashboardApi extends Controller
             $Average = $DataBulanan[0]->Bulanan / $dateFrom->diffInDays($dateTo);
             array_push(
                 $AllData,
-                array("average_produk_terjual" => $Average." Product / Hari")
+                array("average_produk_terjual" => $Average)
             );
 
             return response([
@@ -168,7 +168,7 @@ class DashboardApi extends Controller
 
             array_push(
                 $AllData,
-                array("TotalHari" => $TotalHari." Hari")
+                array("TotalHari" => $TotalHari)
             );
 
             return response([
