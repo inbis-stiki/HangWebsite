@@ -71,4 +71,6 @@ Route::middleware(['checkAuthApi'])->group(function(){
     Route::get("product/average", 'api\DashboardApi@AverageProductSold');
     Route::get("sales/progress", 'api\DashboardApi@SalesProgress');
     Route::get("sales/not-reach-target", 'api\DashboardApi@NotReachTarget');
+    Route::get("dashboard/all", 'api\DashboardApi@AllApi');
+
 });
