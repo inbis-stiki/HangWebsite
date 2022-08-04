@@ -113,7 +113,8 @@ class DashboardApi extends Controller
 
             $AllData = array();
             
-            $DataHarian = DB::table("transaction")
+            $DataBulanan = DB::table("transaction")
+                ->where('transaction.DATE_TRANS', 'like', date('Y-m') . '%')
                 ->where('transaction.ID_USER', '=', $req->input("id_user"))
                 ->get();
 
@@ -121,7 +122,7 @@ class DashboardApi extends Controller
                 ->where('user_target.ID_USER', '=', $req->input("id_user"))
                 ->latest("user_target.ID_USER")->first();
 
-            $Progress = (count($DataHarian) / ($DataTarget->TOTALSALES_UT * 25))*100;
+            $Progress = (count($DataBulanan) / ($DataTarget->TOTALSALES_UT * 25))*100;
 
             array_push(
                 $AllData,
