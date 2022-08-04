@@ -67,6 +67,7 @@
                                         <th>Area</th>
                                         <th>Waktu</th>
                                         <th>Target Aktifitas</th>
+                                        <th>Jumlah Transaksi</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -353,6 +354,9 @@
                 },
                 {
                     data: 'NAME_TYPE'
+                },
+                {
+                    data: 'JML_TRANS'
                 },
                 {
                     data: 'ACTION_BUTTON'

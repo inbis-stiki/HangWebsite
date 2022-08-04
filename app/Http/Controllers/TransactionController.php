@@ -31,26 +31,30 @@ class TransactionController extends Controller
 
         if ($id_type == 0) {
             $ub     = DB::table('transaction')
+                ->select('transaction.*', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
+                ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, COUNT(transaction.ID_TRANS) as TotalTrans")
                 ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
                 ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
                 ->leftjoin('md_type', 'md_type.ID_TYPE', '=', 'transaction.ID_TYPE')
                 ->leftjoin('md_district', 'md_district.ID_DISTRICT', '=', 'md_shop.ID_DISTRICT')
                 ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
+                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER")
                 ->orderBy('transaction.DATE_TRANS', 'DESC')
-                ->select('transaction.*', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
                 ->get();
         } else {
             $ub     = DB::table('transaction')
                 ->where('transaction.ID_TYPE', $id_type)
-                ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
+                ->select('transaction.*', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
+                ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, COUNT(transaction.ID_TRANS) as TotalTrans")
                 ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
+                ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
                 ->leftjoin('md_type', 'md_type.ID_TYPE', '=', 'transaction.ID_TYPE')
                 ->leftjoin('md_district', 'md_district.ID_DISTRICT', '=', 'md_shop.ID_DISTRICT')
                 ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
+                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER")
                 ->orderBy('transaction.DATE_TRANS', 'DESC')
-                ->select('transaction.*', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.*', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
                 ->get();
         }
 
@@ -69,25 +73,23 @@ class TransactionController extends Controller
                 "REGIONAL_TRANS" => $item->REGIONAL_TRANS,
                 "DATE_TRANS" => date_format(date_create($item->DATE_TRANS), 'j F Y'),
                 "ID_TYPE" => $item->ID_TYPE,
+                "JML_TRANS" => $item->TotalTrans,
                 "NAME_TYPE" => $item->NAME_TYPE
             );
 
             if ($item->ID_TYPE == 1) {
-                $data['ACTION_BUTTON'] = '<button class="btn light btn-success" onclick="showDetailSpread(`' . $item->ID_TRANS . '`)"><i class="fa fa-circle-info"></i></button>
-            <a class="btn light btn-info" href="https://maps.google.com/maps?q=' . $item->LAT_SHOP . ',' . $item->LONG_SHOP . '&hl=es&z=14&amp;" target="_blank"><i class="fa fa-map-location-dot"></i></a>';
+                $data['ACTION_BUTTON'] = '<button class="btn light btn-success" onclick="showDetailSpread(`' . $item->ID_TRANS . '`)"><i class="fa fa-circle-info"></i></button>';
             } else if ($item->ID_TYPE == 2) {
-                $data['ACTION_BUTTON'] = '<button class="btn light btn-success" onclick="showDetailUB(`' . $item->ID_TRANS . '`)"><i class="fa fa-circle-info"></i></button>
-            <a class="btn light btn-info" href="https://maps.google.com/maps?q=' . $item->LAT_TRANS . ',' . $item->LONG_TRANS . '&hl=es&z=14&amp;" target="_blank"><i class="fa fa-map-location-dot"></i></a>';
+                $data['ACTION_BUTTON'] = '<button class="btn light btn-success" onclick="showDetailUB(`' . $item->ID_TRANS . '`)"><i class="fa fa-circle-info"></i></button>';
             } else {
-                $data['ACTION_BUTTON'] = '<button class="btn light btn-success" onclick="showDetailUBLP(`' . $item->ID_TRANS . '`)"><i class="fa fa-circle-info"></i></button>
-            <a class="btn light btn-info" href="https://maps.google.com/maps?q=' . $item->LAT_TRANS . ',' . $item->LONG_TRANS . '&hl=es&z=14&amp;" target="_blank"><i class="fa fa-map-location-dot"></i></a>';
+                $data['ACTION_BUTTON'] = '<button class="btn light btn-success" onclick="showDetailUBLP(`' . $item->ID_TRANS . '`)"><i class="fa fa-circle-info"></i></button>';
             }
 
             if ($id_role == 3 && ($key == 'REGIONAL_TRANS' || $item->REGIONAL_TRANS == $data_loc->NAME_REGIONAL)) {
-                array_push($NewData_asmen, $data);  
-            } else if($id_role == 4 && ($key == 'AREA_TRANS' || $item->AREA_TRANS == $data_loc->NAME_AREA)) {
-                array_push($NewData_rpo, $data);                
-            }else{
+                array_push($NewData_asmen, $data);
+            } else if ($id_role == 4 && ($key == 'AREA_TRANS' || $item->AREA_TRANS == $data_loc->NAME_AREA)) {
+                array_push($NewData_rpo, $data);
+            } else {
                 array_push($NewData_all, $data);
             }
         }
@@ -97,19 +99,19 @@ class TransactionController extends Controller
                 'status_code'       => 200,
                 'status_message'    => 'Data berhasil diambil!',
                 'data'              => $NewData_asmen
-            ], 200);   
-        } else if($id_role == 4) {
+            ], 200);
+        } else if ($id_role == 4) {
             return response([
                 'status_code'       => 200,
                 'status_message'    => 'Data berhasil diambil!',
                 'data'              => $NewData_rpo
-            ], 200);  
-        }else{
+            ], 200);
+        } else {
             return response([
                 'status_code'       => 200,
                 'status_message'    => 'Data berhasil diambil!',
                 'data'              => $NewData_all
-            ], 200);  
+            ], 200);
         }
     }
 
