@@ -92,39 +92,45 @@ class PresenceApi extends Controller
                 ['ISMARKET_DISTRICT', '=', '0']
             ])->whereNull('deleted_at')->first();
             
-            if ($idDistrik == null) {
-                return response([
-                    "status_code"       => 200,
-                    "status_message"    => 'Distrik tidak tersedia'
-                ], 200);
-            }
-
-            if ($cek == true) {
-                return response([
-                    "status_code"       => 200,
-                    "status_message"    => 'Anda sudah absen'
-                ], 200);
+            $cekLokasi = District::select('ID_DISTRICT', 'ID_AREA','NAME_DISTRICT', 'ADDRESS_DISTRICT')
+            ->where([
+                ['ID_AREA', '=', $req->input("id_area")],
+                ['ID_DISTRICT', '=', $idDistrik->ID_DISTRICT]
+            ])->whereNull('deleted_at')->get();
+            
+            if ($cekLokasi->isNotEmpty()) {
+                if ($cek == true) {
+                    return response([
+                        "status_code"       => 200,
+                        "status_message"    => 'Anda sudah absen'
+                    ], 200);
+                }else{
+                    $presence = new Presence();
+                    $presence->ID_USER              = $req->input('id_user');
+                    // $presence->ID_TYPE              = $req->input('id_type');
+                    $presence->ID_DISTRICT          = $idDistrik->ID_DISTRICT;
+                    $presence->LONG_PRESENCE        = $req->input('longitude');
+                    $presence->LAT_PRESENCE         = $req->input('latitude');
+                    $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
+                    $presence->DATE_PRESENCE        = date('Y-m-d H:i:s');
+                    $presence->save();
+    
+                    // $transDaily = new TransactionDaily();
+                    // $transDaily->ID_USER = $req->input('id_user');
+                    // $transDaily->DATE_TD = date("Y-m-d H:i:s");
+                    // $transDaily->save();
+    
+                    return response([
+                        "status_code"       => 200,
+                        "status_message"    => 'Data berhasil disimpan!',
+                        "data"              => ['ID_PRESENCE' => $presence->ID_PRESENCE]
+                    ], 200);
+                }
             }else{
-                $presence = new Presence();
-                $presence->ID_USER              = $req->input('id_user');
-                // $presence->ID_TYPE              = $req->input('id_type');
-                $presence->ID_DISTRICT          = $idDistrik->ID_DISTRICT;
-                $presence->LONG_PRESENCE        = $req->input('longitude');
-                $presence->LAT_PRESENCE         = $req->input('latitude');
-                $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
-                $presence->DATE_PRESENCE        = date('Y-m-d H:i:s');
-                $presence->save();
-
-                // $transDaily = new TransactionDaily();
-                // $transDaily->ID_USER = $req->input('id_user');
-                // $transDaily->DATE_TD = date("Y-m-d H:i:s");
-                // $transDaily->save();
-
                 return response([
-                    "status_code"       => 200,
-                    "status_message"    => 'Data berhasil disimpan!',
-                    "data"              => ['ID_PRESENCE' => $presence->ID_PRESENCE]
-                ], 200);
+                    'status_code'       => 500,
+                    'status_message'    => "Cek lokasi anda!",
+                ], 500);
             }
         } catch (HttpResponseException $exp) {
             return response([
