@@ -38,7 +38,7 @@ class DashboardApi extends Controller
                         'MONTH' => 0
                     )
                 );
-            }else if ($DataHarian->Harian == null) {
+            } else if ($DataHarian->Harian == null) {
                 array_push(
                     $AllData,
                     array(
@@ -46,7 +46,7 @@ class DashboardApi extends Controller
                         'MONTH' => $DataBulanan->Bulanan
                     )
                 );
-            }else{
+            } else {
                 array_push(
                     $AllData,
                     array(
@@ -55,7 +55,7 @@ class DashboardApi extends Controller
                     )
                 );
             }
-            
+
 
             return response([
                 "status_code"       => 200,
@@ -76,11 +76,11 @@ class DashboardApi extends Controller
             date_default_timezone_set("Asia/Bangkok");
 
             $AllData = array();
-            $firstDay = Carbon::now()->firstOfMonth();  
+            $firstDay = Carbon::now()->firstOfMonth();
             $DateNow = Carbon::now();
-            $dateFrom = Carbon::createFromFormat('Y-m-d',$firstDay->toDateString());
-            $dateTo = Carbon::createFromFormat('Y-m-d',$DateNow->toDateString());
-            
+            $dateFrom = Carbon::createFromFormat('Y-m-d', $firstDay->toDateString());
+            $dateTo = Carbon::createFromFormat('Y-m-d', $DateNow->toDateString());
+
             $DataBulanan = DB::table("transaction")
                 ->select(DB::raw("SUM(transaction.QTY_TRANS) as Bulanan"))
                 ->where('transaction.DATE_TRANS', 'like', date('Y-m') . '%')
@@ -112,7 +112,7 @@ class DashboardApi extends Controller
             date_default_timezone_set("Asia/Bangkok");
 
             $AllData = array();
-            
+
             $DataBulanan = DB::table("transaction")
                 ->select(DB::raw("SUM(transaction.QTY_TRANS) as Bulanan"))
                 ->where('transaction.DATE_TRANS', 'like', date('Y-m') . '%')
@@ -123,12 +123,19 @@ class DashboardApi extends Controller
                 ->where('user_target.ID_USER', '=', $req->input("id_user"))
                 ->latest("user_target.ID_USER")->first();
 
-            $Progress = ($DataBulanan->Bulanan / ($DataTarget->TOTALSALES_UT * 25))*100;
+            if (!empty($DataTarget)) {
+                $Progress = ($DataBulanan->Bulanan / ($DataTarget->TOTALSALES_UT * 25)) * 100;
 
-            array_push(
-                $AllData,
-                array("PROGRESS" => number_format((float)$Progress, 1, '.', ''))
-            );
+                array_push(
+                    $AllData,
+                    array("PROGRESS" => number_format((float)$Progress, 1, '.', ''))
+                );
+            } else {
+                array_push(
+                    $AllData,
+                    array("PROGRESS" => 0)
+                );
+            }
 
             return response([
                 "status_code"       => 200,
@@ -149,7 +156,7 @@ class DashboardApi extends Controller
             date_default_timezone_set("Asia/Bangkok");
 
             $AllData = array();
-            
+
             $DataHarian = DB::table("transaction")
                 ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, SUM(transaction.QTY_TRANS) as TotalPenjualan")
                 ->where('transaction.ID_USER', '=', $req->input("id_user"))
@@ -161,17 +168,24 @@ class DashboardApi extends Controller
                 ->where('user_target.ID_USER', '=', $req->input("id_user"))
                 ->latest("user_target.ID_USER")->first();
 
-            $TotalHari = 0;
-            foreach($DataHarian as $Data){
-                if ($Data->TotalPenjualan < $DataTarget->TOTALSALES_UT) {
-                    $TotalHari++;
+            if (!empty($DataTarget)) {
+                $TotalHari = 0;
+                foreach ($DataHarian as $Data) {
+                    if ($Data->TotalPenjualan < $DataTarget->TOTALSALES_UT) {
+                        $TotalHari++;
+                    }
                 }
-            }
 
-            array_push(
-                $AllData,
-                array("TOTAL_HARI" => $TotalHari)
-            );
+                array_push(
+                    $AllData,
+                    array("TOTAL_HARI" => $TotalHari)
+                );
+            } else {
+                array_push(
+                    $AllData,
+                    array("TOTAL_HARI" => 0)
+                );
+            }
 
             return response([
                 "status_code"       => 200,
@@ -185,14 +199,14 @@ class DashboardApi extends Controller
             ], $exp->getCode());
         }
     }
-    
+
     public function AllApi(Request $req)
     {
         try {
             date_default_timezone_set("Asia/Bangkok");
 
             $AllData = array();
-            
+
             $DataHarian = DB::table("transaction")
                 ->select(DB::raw("SUM(transaction.QTY_TRANS) as Harian"))
                 ->whereDate('transaction.DATE_TRANS', '=', date('Y-m-d'))
@@ -205,10 +219,10 @@ class DashboardApi extends Controller
                 ->where('transaction.ID_USER', '=', $req->input("id_user"))
                 ->first();
 
-            $firstDay = Carbon::now()->firstOfMonth();  
+            $firstDay = Carbon::now()->firstOfMonth();
             $DateNow = Carbon::now();
-            $dateFrom = Carbon::createFromFormat('Y-m-d',$firstDay->toDateString());
-            $dateTo = Carbon::createFromFormat('Y-m-d',$DateNow->toDateString());
+            $dateFrom = Carbon::createFromFormat('Y-m-d', $firstDay->toDateString());
+            $dateTo = Carbon::createFromFormat('Y-m-d', $DateNow->toDateString());
 
             $Average = $DataBulanan->Bulanan / ($dateFrom->diffInDays($dateTo) + 1);
 
@@ -216,45 +230,55 @@ class DashboardApi extends Controller
                 ->where('user_target.ID_USER', '=', $req->input("id_user"))
                 ->latest("user_target.ID_USER")->first();
 
-            $Progress = ($DataBulanan->Bulanan / ($DataTarget->TOTALSALES_UT * 25))*100;
-            
-            $DataHarian2 = DB::table("transaction")
-                ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, SUM(transaction.QTY_TRANS) as TotalPenjualan")
-                ->where('transaction.ID_USER', '=', $req->input("id_user"))
-                ->groupByRaw('DATE(transaction.DATE_TRANS)')
-                ->orderBy('CnvrtDate', 'ASC')
-                ->get();
-
-            $DataTarget = DB::table("user_target")
-                ->where('user_target.ID_USER', '=', $req->input("id_user"))
-                ->latest("user_target.ID_USER")->first();
-
-            $TotalHari = 0;
-            foreach($DataHarian2 as $Data){
-                if ($Data->TotalPenjualan < $DataTarget->TOTALSALES_UT) {
-                    $TotalHari++;
-                }
-            }
 
             $day = $DataHarian->Harian;
             $month = $DataBulanan->Bulanan;
             if ($DataBulanan->Bulanan == null) {
                 $day = 0;
                 $month = 0;
-            }else if ($DataHarian->Harian == null) {
+            } else if ($DataHarian->Harian == null) {
                 $day = 0;
             }
 
-            array_push(
-                $AllData,
-                array(
-                    'DAYS' => $day,
-                    'MONTH' => $month,
-                    'AVERAGE' => round($Average),
-                    'PROGRESS' => number_format((float)$Progress, 1, '.', ''),
-                    'TOTAL_HARI' => $TotalHari
-                )
-            );
+            if (!empty($DataTarget)) {
+                $Progress = ($DataBulanan->Bulanan / ($DataTarget->TOTALSALES_UT * 25)) * 100;
+
+                $DataHarian2 = DB::table("transaction")
+                    ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, SUM(transaction.QTY_TRANS) as TotalPenjualan")
+                    ->where('transaction.ID_USER', '=', $req->input("id_user"))
+                    ->groupByRaw('DATE(transaction.DATE_TRANS)')
+                    ->orderBy('CnvrtDate', 'ASC')
+                    ->get();
+
+                $TotalHari = 0;
+                foreach ($DataHarian2 as $Data) {
+                    if ($Data->TotalPenjualan < $DataTarget->TOTALSALES_UT) {
+                        $TotalHari++;
+                    }
+                }
+
+                array_push(
+                    $AllData,
+                    array(
+                        'DAYS' => $day,
+                        'MONTH' => $month,
+                        'AVERAGE' => round($Average),
+                        'PROGRESS' => number_format((float)$Progress, 1, '.', ''),
+                        'TOTAL_HARI' => $TotalHari
+                    )
+                );
+            } else {
+                array_push(
+                    $AllData,
+                    array(
+                        'DAYS' => $day,
+                        'MONTH' => $month,
+                        'AVERAGE' => round($Average),
+                        'PROGRESS' => 0,
+                        'TOTAL_HARI' => 0
+                    )
+                );
+            }
 
             return response([
                 "status_code"       => 200,
