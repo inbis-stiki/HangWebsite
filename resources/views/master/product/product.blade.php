@@ -65,7 +65,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlEdit('{{ $item->ID_PRODUCT }}', '{{ $item->NAME_PRODUCT }}', '{{ $item->CODE_PRODUCT }}', '{{ $item->ID_PC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $item->ID_PRODUCT }}', '{{ $item->NAME_PRODUCT }}', '{{ $item->CODE_PRODUCT }}', '{{ $item->ID_PC }}', '{{ $item->IMAGE_PRODUCT }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                             <button onclick="showMdlDelete('{{ $item->ID_PRODUCT }}')" class="btn btn-primary btn-sm">
@@ -94,7 +94,8 @@
                 </button>
             </div>
             <div class="modal-body">
-            <form action="{{ url('master/product/store') }}">
+            <form action="{{ url('master/product/store') }}" method="post" enctype="multipart/form-data">
+                @csrf
                 <div class="form-group">
                     <label for="">Nama Produk</label>
                     <input type="text" name="name_product" class="form-control" placeholder="Input Nama Produk" required>
@@ -110,6 +111,14 @@
                         <option value="{{ $item->ID_PC }}">{{ $item->NAME_PC }}</option>
                         @endforeach
                     </select>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input name="image" type="file" class="custom-file-input" accept="image/png, image/gif, image/jpeg">
+                            <label class="custom-file-label">Choose file</label>
+                        </div> 
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="">Status</label>
@@ -138,7 +147,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('master/product/update') }}">
+                <form action="{{ url('master/product/update') }}" method="POST" enctype="multipart/form-data">
+                @csrf
                 <div class="form-group">
                     <label for="">Nama Produk</label>
                     <input type="text" name="name_product" id="mdlEdit_name" class="form-control" placeholder="Input nama produk" required>
@@ -154,6 +164,17 @@
                         <option value="{{ $item->ID_PC }}">{{ $item->NAME_PC }}</option>
                         @endforeach
                     </select>
+                </div>
+                <div class="form-group">
+                    <img id="mdlEdit_image" src="" height="380px" alt="Image Product">
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input name="image" type="file" class="custom-file-input" accept="image/png, image/gif, image/jpeg">
+                            <label class="custom-file-label">Choose file</label>
+                        </div> 
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="">Status</label>
@@ -204,12 +225,16 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, name, code, category, status){
+    function showMdlEdit(id, name, code, category, image, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
         $('#mdlEdit_code').val(code)
-        console.log(category)
         $('#mdlEdit_category').val(category).change()
+        if (image == null || image == '') {
+            $("#mdlEdit_image").attr("src", "https://comnplayscience.eu/app/images/notfound.png");
+        }else{
+            $("#mdlEdit_image").attr("src", image);
+        }
         if (status == null || status == '') {
             $('#status_enable').prop('checked', true)
         } else {
