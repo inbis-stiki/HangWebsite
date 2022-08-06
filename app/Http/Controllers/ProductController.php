@@ -6,6 +6,7 @@ use App\Product;
 use App\CategoryProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -39,10 +40,13 @@ class ProductController extends Controller
         if ($cek == true) {
             return redirect('master/product')->with('err_msg', 'Kode produk sudah ada!');
         }else{
+            $path = $req->file('image')->store('images', 's3');
+
             $product                        = new Product();
             $product->NAME_PRODUCT          = $req->input('name_product');
             $product->CODE_PRODUCT          = $req->input('code_product');
             $product->ID_PC                 = $req->input('category_product');
+            $product->IMAGE_PRODUCT         = Storage::disk('s3')->url($path);
             $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
             $product->save();
 
@@ -65,12 +69,14 @@ class ProductController extends Controller
         }
 
         date_default_timezone_set("Asia/Bangkok");
+        $path = $req->file('image')->store('images', 's3');
         $product = Product::find($req->input('id'));
         $cek = $product->CODE_PRODUCT == strtoupper($req->input('code_product')); 
         if ($cek == true) {
             $product->NAME_PRODUCT          = $req->input('name_product');
             $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
             $product->ID_PC                 = $req->input('category_product');
+            $product->IMAGE_PRODUCT         = Storage::disk('s3')->url($path);
             $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
             $product->save();
 
@@ -83,6 +89,7 @@ class ProductController extends Controller
                 $product->NAME_PRODUCT          = $req->input('name_product');
                 $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
                 $product->ID_PC                 = $req->input('category_product');
+                $product->IMAGE_PRODUCT         = Storage::disk('s3')->url($path);
                 $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
                 $product->save();
 
