@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Pickup;
+use App\Product;
 use App\TransactionDaily;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -72,7 +73,7 @@ class PickupApi extends Controller
 
     public function pickup(Request $req){
         try {
-            $pick = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP')
+            $pick = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP','NAMEPRODUCT_PICKUP')
             ->where([
                 ['ID_USER', '=', $req->input('id_user')],
                 ['ISFINISHED_PICKUP', '=', 0]
@@ -87,11 +88,17 @@ class PickupApi extends Controller
             }
 
             $arrId = explode(";", $pick->ID_PRODUCT);
-            $arrRemain =explode(";", $pick->REMAININGSTOCK_PICKUP);
+            $arrRemain = explode(";", $pick->REMAININGSTOCK_PICKUP);
+            $arrName = explode(";", $pick->NAMEPRODUCT_PICKUP);
 
             $products = array();
             foreach ($arrId as $key => $value) {
-                $product = array('id_product'=>$value, 'qty_product'=>$arrRemain[$key]);
+                $product = array(
+                    'id_product'=>$value, 
+                    'name_product'=>$arrName[$key],
+                    'image_product'=>Product::select('IMAGE_PRODUCT')->where('ID_PRODUCT', $value)->first()->IMAGE_PRODUCT,
+                    'qty_product'=>$arrRemain[$key],
+                );
                 array_push($products, $product);
             }
 
