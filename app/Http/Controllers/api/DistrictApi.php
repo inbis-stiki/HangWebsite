@@ -53,13 +53,11 @@ class DistrictApi extends Controller
                 ['PARENT_DISTRICT', '=', $parent_id]
             ])->whereNull('deleted_at')->get();
 
-            $last_query = end($list);
-            dd($last_query);
-            // return response([
-            //     'status_code'       => 200,
-            //     'status_message'    => 'Data berhasil diambil!',
-            //     'data'              => $list
-            // ], 200);
+            return response([
+                'status_code'       => 200,
+                'status_message'    => 'Data berhasil diambil!',
+                'data'              => $list
+            ], 200);
         } catch (Exception $exp) {
             return response([
                 'status_code'       => 500,
