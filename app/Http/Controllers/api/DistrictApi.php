@@ -39,7 +39,7 @@ class DistrictApi extends Controller
             $id_district = Presence::select('ID_DISTRICT')
             ->whereDate('DATE_PRESENCE', date('Y-m-d'))->where('ID_USER',  $req->input("id_user"))
             ->first()->ID_DISTRICT;
-            // dd($id_district);
+
             $parent_id = District::select('PARENT_DISTRICT')
             ->where([
                 ['ID_DISTRICT', '=', $id_district]
@@ -50,7 +50,7 @@ class DistrictApi extends Controller
             ->where([
                 ['ID_AREA', '=', $req->input("id_area")],
                 ['ISMARKET_DISTRICT', '=', '1'],
-                ['PARENT_DISTRICT', '=', $parent_id]
+                ['PARENT_DISTRICT', '=', $id_district]
             ])->whereNull('deleted_at')->get();
 
             return response([
