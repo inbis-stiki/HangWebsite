@@ -39,7 +39,7 @@ class DistrictApi extends Controller
             $id_district = Presence::select('ID_DISTRICT')
             ->whereDate('DATE_PRESENCE', date('Y-m-d'))->where('ID_USER',  $req->input("id_user"))
             ->first()->ID_DISTRICT;
-            
+            // dd($id_district);
             $parent_id = District::select('PARENT_DISTRICT')
             ->where([
                 ['ID_DISTRICT', '=', $id_district]
@@ -50,14 +50,16 @@ class DistrictApi extends Controller
             ->where([
                 ['ID_AREA', '=', $req->input("id_area")],
                 ['ISMARKET_DISTRICT', '=', '1'],
-                ['ID_DISTRICT', '=', $parent_id]
+                ['PARENT_DISTRICT', '=', $parent_id]
             ])->whereNull('deleted_at')->get();
 
-            return response([
-                'status_code'       => 200,
-                'status_message'    => 'Data berhasil diambil!',
-                'data'              => $list
-            ], 200);
+            $last_query = end($list);
+            dd($last_query);
+            // return response([
+            //     'status_code'       => 200,
+            //     'status_message'    => 'Data berhasil diambil!',
+            //     'data'              => $list
+            // ], 200);
         } catch (Exception $exp) {
             return response([
                 'status_code'       => 500,
