@@ -86,19 +86,14 @@ class PresenceApi extends Controller
             ->whereDate('DATE_PRESENCE', '=', date('Y-m-d'))
             ->exists();
 
-            $idDistrik = District::select("ID_DISTRICT")
+            $district = District::select("ID_DISTRICT")
             ->where([
                 ['NAME_DISTRICT', '=', $req->input('kecamatan')],
+                ['ID_AREA', '=', $req->input('id_area')],
                 ['ISMARKET_DISTRICT', '=', '0']
             ])->whereNull('deleted_at')->first();
             
-            $cekLokasi = District::select('ID_DISTRICT', 'ID_AREA','NAME_DISTRICT', 'ADDRESS_DISTRICT')
-            ->where([
-                ['ID_AREA', '=', $req->input("id_area")],
-                ['ID_DISTRICT', '=', $idDistrik->ID_DISTRICT]
-            ])->whereNull('deleted_at')->get();
-            
-            if ($cekLokasi->isNotEmpty()) {
+            if ($district != null) {
                 if ($cek == true) {
                     return response([
                         "status_code"       => 200,
@@ -108,7 +103,7 @@ class PresenceApi extends Controller
                     $presence = new Presence();
                     $presence->ID_USER              = $req->input('id_user');
                     // $presence->ID_TYPE              = $req->input('id_type');
-                    $presence->ID_DISTRICT          = $idDistrik->ID_DISTRICT;
+                    $presence->ID_DISTRICT          = $district->ID_DISTRICT;
                     $presence->LONG_PRESENCE        = $req->input('longitude');
                     $presence->LAT_PRESENCE         = $req->input('latitude');
                     $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
