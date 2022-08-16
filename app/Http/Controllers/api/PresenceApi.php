@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Storage;
 
 class PresenceApi extends Controller
 {
+    public function __construct(){
+        parent::__coonstruct();
+        date_default_timezone_set("Asia/Bangkok");
+    }
     public function index(){
         try {
             $presence = Presence::all();
@@ -123,9 +127,9 @@ class PresenceApi extends Controller
                 }
             }else{
                 return response([
-                    'status_code'       => 500,
+                    'status_code'       => 403,
                     'status_message'    => "Cek lokasi anda!",
-                ], 500);
+                ], 403);
             }
         } catch (HttpResponseException $exp) {
             return response([
