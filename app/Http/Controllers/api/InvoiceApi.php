@@ -255,13 +255,19 @@ class InvoiceApi extends Controller
                 $msg        = 'Anda belum Pickup Barang!';
                 $success    = 0;
             }else{
-                if ($cektd['ISFINISHED_TD'] == 0) {
-                    $msg        = 'Anda bisa input faktur!';
-                    $success    = 1;
-                    $td         = [];
+                if (date_format(date_create($cektd['DATE_TD']), 'Y-m-d') == date('Y-m-d')){
+                    if ($cektd['ISFINISHED_TD'] == 0) {
+                        $msg        = 'Anda bisa input faktur!';
+                        $success    = 1;
+                        $td         = [];
+                    }else{
+                        $msg        = 'Anda sudah Mengirimkan Faktur!';
+                        $success    = 0;
+                        $td         = $cektd;
+                    }
                 }else{
-                    $msg        = 'Anda sudah Mengirimkan Faktur!';
-                    $success    = 0;
+                    $msg        = 'Anda telat input faktur!';
+                    $success    = 2;
                     $td         = $cektd;
                 }
             }
