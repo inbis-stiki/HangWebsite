@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 class PickupApi extends Controller
 {
     public function store(Request $req){
+        date_default_timezone_set("Asia/Bangkok");
         try {
             $validator = Validator::make($req->all(), [
                 'id_user'                   => 'required',
