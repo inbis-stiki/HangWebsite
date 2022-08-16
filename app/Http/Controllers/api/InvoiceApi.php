@@ -31,10 +31,14 @@ class InvoiceApi extends Controller
                 ], 400);
             }
 
+            $lastInvoice = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
+                ->where('ISFINISHED_TD', '=', '0')
+                ->latest('ID_TD')->first();
+
             $ts = DB::table("transaction")
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction.ID_TYPE')
                 ->where('transaction.ID_USER', '=', $ID_USER)
-                ->whereDate('transaction.DATE_TRANS', '=', date('Y-m-d'))
+                ->whereDate('transaction.DATE_TRANS', '=', $lastInvoice->DATE_TD)
                 ->get();
 
             $dataT = array();
@@ -213,7 +217,7 @@ class InvoiceApi extends Controller
                     $TransactionDaily->TOTAL_TD        = $req->input('total_hrg');
                     $TransactionDaily->DATEFACTUR_TD   = date('Y-m-d H:i:s');
                     $TransactionDaily->FACTUR_TD       = $url;
-                    $TransactionDaily->REGIONAL_TD     = $ID_LOCATION->NAME_LOCATION;
+                    $TransactionDaily->REGIONAL_TD     = $ID_LOCATION->NAME_REGIONAL;
                     $TransactionDaily->ISFINISHED_TD   = '1';
                     $TransactionDaily->save();
                     
