@@ -244,6 +244,7 @@ class InvoiceApi extends Controller
     
     public function cekFaktur(Request $req){
         try {
+            date_default_timezone_set("Asia/Bangkok");
             $ID_USER = $req->input("id_user");
 
             $cektd = TransactionDaily::where([
