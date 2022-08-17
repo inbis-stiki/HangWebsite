@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\TransactionDaily;
 use App\Pickup;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -35,10 +36,13 @@ class InvoiceApi extends Controller
                 ->where('ISFINISHED_TD', '=', '0')
                 ->latest('ID_TD')->first();
 
+            $dt = new DateTime($lastInvoice->DATE_TD);
+            $date = $dt->format('Y-m-d');
+
             $ts = DB::table("transaction")
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction.ID_TYPE')
                 ->where('transaction.ID_USER', '=', $ID_USER)
-                ->whereDate('transaction.DATE_TRANS', '=', $lastInvoice->DATE_TD)
+                ->whereDate('transaction.DATE_TRANS', '=', $date)
                 ->get();
 
             $dataT = array();
@@ -139,7 +143,6 @@ class InvoiceApi extends Controller
          }
     }
 
-    
     public function storedata(Request $req){
         try{
             $ID_USER = $req->input('id_user');
