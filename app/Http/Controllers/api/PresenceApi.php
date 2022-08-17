@@ -125,7 +125,7 @@ class PresenceApi extends Controller
                 return response([
                     'status_code'       => 403,
                     'status_message'    => "Cek lokasi anda!",
-                ], 403);
+                ], 200);
             }
         } catch (HttpResponseException $exp) {
             return response([
