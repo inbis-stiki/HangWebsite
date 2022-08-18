@@ -33,7 +33,7 @@
                                     </div>
                                     <div class="pr-2">
                                         <svg width="20" height="8" viewBox="0 0 20 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <rect width="20" height="8" rx="4" fill="#FE634E"/>
+                                            <rect width="20" height="8" rx="4" fill="#F26F21"/>
                                         </svg>
                                         <h4 class="fs-18 text-black mb-1 font-w600">45,612</h4>
                                         <span class="fs-14">Ticket Sold</span>
