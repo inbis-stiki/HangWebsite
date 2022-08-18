@@ -95,13 +95,13 @@
 					datasets: [{
 						label: "Sales Stats",
 						backgroundColor: ['rgba(19, 180, 151, 0)'],
-						borderColor: '#FE634E',
-						pointBackgroundColor: '#FE634E',
-						pointBorderColor: '#FE634E',
+						borderColor: '#F26F21',
+						pointBackgroundColor: '#F26F21',
+						pointBorderColor: '#F26F21',
 						borderWidth:6,
 						borderRadius:10,
-						pointHoverBackgroundColor: '#FE634E',
-						pointHoverBorderColor: '#FE634E',
+						pointHoverBackgroundColor: '#F26F21',
+						pointHoverBorderColor: '#F26F21',
 						
 						data: [5, 1, 5, 1, 7, 2, 6, 1]
 					}]
@@ -196,7 +196,7 @@
 		},
 		fill: {
           type: 'gradient',
-		  colors:'#FE634E',
+		  colors:'#F26F21',
           gradient: {
               shade: 'dark',
               shadeIntensity: 0.15,
@@ -208,7 +208,7 @@
         },
         stroke: {
 			lineCap: 'round',
-		  colors:'#FE634E'
+		  colors:'#F26F21'
         },
 		labels: [''],
 		};
