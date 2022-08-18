@@ -124,7 +124,7 @@ Route::group(['middleware' => ['checkLogin']], function() {
 
     //FAKTUR
     Route::get('faktur', 'FakturController@index');
-    Route::get('faktur', 'FakturController@DetailFaktur');
+    Route::get('detail/faktur', 'FakturController@DetailFaktur');
 
     //MASTER ACTIVITY CATEGORY
     Route::get('master/activity-category', 'ActivityCategoryController@index');
