@@ -18,13 +18,13 @@ Route::get('testimage', 'ImageController@create');
 Route::post('testimage', 'ImageController@store');
 Route::get('testimage/{image}', 'ImageController@show');
 
-
 //Login
 Route::get('/', 'AuthController@login');
 Route::get('/', 'AuthController@login')->name('login');
 Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 Route::get('cronjob/shop/recomendation', 'CronjobController@cronjob_store_rekomendasi');
+Route::get('cronjob/rangking', 'CronjobController@cronjob_template_rangking');
 
 Route::group(['middleware' => ['checkLogin']], function() {
     Route::get('dashboard', 'DashboardController@index');
