@@ -20,4 +20,12 @@ class FakturController extends Controller
 
         return view('master.faktur.faktur', $data);
     }
+
+    public function DetailFaktur()
+    {
+        $data['title']          = "Faktur";
+        $data['sidebar']        = "faktur";
+
+        return view('master.faktur.detail_faktur', $data);
+    }
 }

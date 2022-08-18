@@ -78,11 +78,11 @@ class TransactionController extends Controller
             );
 
             if ($item->ID_TYPE == 1) {
-                $data['ACTION_BUTTON'] = '<button class="btn light btn-success" onclick="showDetailSpread(`' . $item->ID_TRANS . '`)"><i class="fa fa-circle-info"></i></button>';
+                $data['ACTION_BUTTON'] = '<a href="'.url('detail/transaction/spread').'"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             } else if ($item->ID_TYPE == 2) {
-                $data['ACTION_BUTTON'] = '<button class="btn light btn-success" onclick="showDetailUB(`' . $item->ID_TRANS . '`)"><i class="fa fa-circle-info"></i></button>';
+                $data['ACTION_BUTTON'] = '<a href="'.url('detail/transaction/ub').'"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             } else {
-                $data['ACTION_BUTTON'] = '<button class="btn light btn-success" onclick="showDetailUBLP(`' . $item->ID_TRANS . '`)"><i class="fa fa-circle-info"></i></button>';
+                $data['ACTION_BUTTON'] = '<a href="'.url('detail/transaction/ublp').'"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             }
 
             if ($id_role == 3 && ($key == 'REGIONAL_TRANS' || $item->REGIONAL_TRANS == $data_loc->NAME_REGIONAL)) {

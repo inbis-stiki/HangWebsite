@@ -18,17 +18,26 @@ class DetailTransController extends Controller
 
     public function DetailSpread(Request $req)
     {
-        
+        $data['title']          = "Detail Spreading";
+        $data['sidebar']        = "transaksi";
+
+        return view('transaction/detail_spread', $data);   
     }
 
     public function DetailUB(Request $req)
     {
-        
+        $data['title']          = "Detail UB";
+        $data['sidebar']        = "transaksi";
+
+        return view('transaction/detail_ub', $data);
     }
 
     public function DetailUBLP(Request $req)
     {
-        
+        $data['title']          = "Detail UBLP";
+        $data['sidebar']        = "transaksi";
+
+        return view('transaction/detail_ublp', $data);
     }
 }
 
