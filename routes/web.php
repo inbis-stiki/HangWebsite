@@ -114,13 +114,10 @@ Route::group(['middleware' => ['checkLogin']], function() {
 
     // TRANSAKSI
     Route::get('transaction', 'TransactionController@index');
-    Route::get('detail/transaction/spread', 'DetailTransController@DetailSpread');
-    Route::get('detail/transaction/ub', 'DetailTransController@DetailUB');
-    Route::get('detail/transaction/ublp', 'DetailTransController@DetailUBLP');
+    Route::get('transaction/spread', 'DetailTransController@DetailSpread');
+    Route::get('transaction/ub', 'DetailTransController@DetailUB');
+    Route::get('transaction/ublp', 'DetailTransController@DetailUBLP');
     Route::post('master/transaction/Alltransaction', 'TransactionController@getAllTrans');
-    Route::post('master/transaction/transactionSpreadDetail', 'TransactionController@getTransactionDetailSpreading');
-    Route::post('master/transaction/transactionUBDetail', 'TransactionController@getTransactionDetailUB');
-    Route::post('master/transaction/transactionUBLPDetail', 'TransactionController@getTransactionDetailUBLP');
 
     //FAKTUR
     Route::get('faktur', 'FakturController@index');

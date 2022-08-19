@@ -31,7 +31,7 @@ class TransactionController extends Controller
 
         if ($id_type == 0) {
             $ub     = DB::table('transaction')
-                ->select('transaction.*', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
+                ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
                 ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, COUNT(transaction.ID_TRANS) as TotalTrans")
                 ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
                 ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
@@ -39,13 +39,13 @@ class TransactionController extends Controller
                 ->leftjoin('md_district', 'md_district.ID_DISTRICT', '=', 'md_shop.ID_DISTRICT')
                 ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
-                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER")
+                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
                 ->orderBy('transaction.DATE_TRANS', 'DESC')
                 ->get();
         } else {
             $ub     = DB::table('transaction')
                 ->where('transaction.ID_TYPE', $id_type)
-                ->select('transaction.*', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
+                ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
                 ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, COUNT(transaction.ID_TRANS) as TotalTrans")
                 ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
                 ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
@@ -53,7 +53,7 @@ class TransactionController extends Controller
                 ->leftjoin('md_district', 'md_district.ID_DISTRICT', '=', 'md_shop.ID_DISTRICT')
                 ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
-                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER")
+                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
                 ->orderBy('transaction.DATE_TRANS', 'DESC')
                 ->get();
         }
@@ -78,11 +78,11 @@ class TransactionController extends Controller
             );
 
             if ($item->ID_TYPE == 1) {
-                $data['ACTION_BUTTON'] = '<a href="'.url('detail/transaction/spread').'"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
+                $data['ACTION_BUTTON'] = '<a href="' . url("transaction/spread/?id_user=$item->ID_USER&date=".date_format(date_create($item->DATE_TRANS), 'Y-m-d') ."&type=$item->ID_TYPE") . '"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             } else if ($item->ID_TYPE == 2) {
-                $data['ACTION_BUTTON'] = '<a href="'.url('detail/transaction/ub').'"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
+                $data['ACTION_BUTTON'] = '<a href="' . url("transaction/ub/?id_user=$item->ID_USER&date=".date_format(date_create($item->DATE_TRANS), 'Y-m-d') ."&type=$item->ID_TYPE").'"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             } else {
-                $data['ACTION_BUTTON'] = '<a href="'.url('detail/transaction/ublp').'"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
+                $data['ACTION_BUTTON'] = '<a href="' . url("transaction/ublp/?id_user=$item->ID_USER&date=".date_format(date_create($item->DATE_TRANS), 'Y-m-d') ."&type=$item->ID_TYPE") . '"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             }
 
             if ($id_role == 3 && ($key == 'REGIONAL_TRANS' || $item->REGIONAL_TRANS == $data_loc->NAME_REGIONAL)) {
@@ -113,97 +113,5 @@ class TransactionController extends Controller
                 'data'              => $NewData_all
             ], 200);
         }
-    }
-
-    public function getTransactionDetailSpreading(Request $req)
-    {
-        $id_trans   = $req->input('id_trans');
-        $data       = DB::table('transaction_detail')
-            ->where('transaction_detail.ID_TRANS', $id_trans)
-            ->join('md_shop', 'md_shop.ID_SHOP', '=', 'transaction_detail.ID_SHOP')
-            ->join('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
-            ->select('transaction_detail.*', 'md_shop.NAME_SHOP', 'md_product.NAME_PRODUCT')
-            ->get();
-
-        $query       = DB::table('transaction_image')
-            ->where('transaction_image.ID_TRANS', $id_trans)
-            ->select('transaction_image.*')
-            ->get();
-
-        $ImageTrans = array();
-        foreach ($query as $Image) {
-            array_push(
-                $ImageTrans,
-                explode(";", $Image->PHOTO_TI)
-            );
-        }
-
-        return response([
-            'status_code'       => 200,
-            'status_message'    => 'Data berhasil diambil!',
-            'data'              => $data,
-            'image_trans'      => $ImageTrans
-        ], 200);
-    }
-
-    public function getTransactionDetailUB(Request $req)
-    {
-        $id_trans   = $req->input('id_trans');
-        $data       = DB::table('transaction_detail')
-            ->where('transaction_detail.ID_TRANS', $id_trans)
-            ->join('md_shop', 'md_shop.ID_SHOP', '=', 'transaction_detail.ID_SHOP')
-            ->join('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
-            ->select('transaction_detail.*', 'md_shop.NAME_SHOP', 'md_product.NAME_PRODUCT')
-            ->get();
-
-        $query       = DB::table('transaction_image')
-            ->where('transaction_image.ID_TRANS', $id_trans)
-            ->select('transaction_image.*')
-            ->get();
-
-        $ImageTrans = array();
-        foreach ($query as $Image) {
-            array_push(
-                $ImageTrans,
-                explode(";", $Image->PHOTO_TI)
-            );
-        }
-
-        return response([
-            'status_code'       => 200,
-            'status_message'    => 'Data berhasil diambil!',
-            'data'              => $data,
-            'image_trans'      => $ImageTrans
-        ], 200);
-    }
-
-    public function getTransactionDetailUBLP(Request $req)
-    {
-        $id_trans   = $req->input('id_trans');
-        $data       = DB::table('transaction_detail')
-            ->where('transaction_detail.ID_TRANS', $id_trans)
-            ->join('transaction', 'transaction_detail.ID_TRANS', '=', 'transaction.ID_TRANS')
-            ->join('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
-            ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT')
-            ->get();
-        $query       = DB::table('transaction_image')
-            ->where('transaction_image.ID_TRANS', $id_trans)
-            ->select('transaction_image.*')
-            ->get();
-
-        $ImageTrans = array();
-        foreach ($query as $Image) {
-            array_push(
-                $ImageTrans,
-                explode(";", $Image->PHOTO_TI)
-            );
-        }
-
-        return response([
-            'status_code'       => 200,
-            'status_message'    => 'Data berhasil diambil!',
-            'data'              => $data,
-            'image_trans'      => $ImageTrans
-        ], 200);
     }
 }
