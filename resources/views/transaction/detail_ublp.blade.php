@@ -15,8 +15,9 @@
                     <div class="card-header d-block">
                         <h4 class="card-title">Location</h4>
                         <div class="row">
-                            <div class="col-lg-12">
+                            <div class="col-lg-12 overflow-hidden">
                                 <div id='map'></div>
+                                <canvas id="canvasID" height="480">Canvas not supported</canvas>
                             </div>
                         </div>
                     </div>
@@ -82,7 +83,7 @@
                                                         <br>
                                                         <img src="<?= $data_ublp['IMAGE'][0][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                     </div>
-                                                </div>                                                
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -137,16 +138,35 @@
                             container: 'map',
                             style: 'mapbox://styles/mapbox/outdoors-v11',
                             center: [<?= $centerCord[1] ?>, <?= $centerCord[0] ?>],
-                            zoom: 16
+                            zoom: 15.5
                         });
 
                         map.loadImage(
-                            'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
+                            '<?= asset('images/icon/map-marker-green.png'); ?>',
                             (error, image) => {
                                 if (error) throw error;
                                 map.addImage('custom-marker', image);
                                 map.setRenderWorldCopies(false);
+                                map.resize();
 
+                                map.addSource('canvas-source', {
+                                    type: 'canvas',
+                                    canvas: 'canvasID',
+                                    coordinates: [
+                                        [91.4461, 21.5006],
+                                        [100.3541, 21.5006],
+                                        [100.3541, 13.9706],
+                                        [91.4461, 13.9706]
+                                    ],
+                                    // Set to true if the canvas source is animated. If the canvas is static, animate should be set to false to improve performance.
+                                    animate: true
+                                });
+
+                                map.addLayer({
+                                    id: 'canvas-layer',
+                                    type: 'raster',
+                                    source: 'canvas-source'
+                                });
                                 // Add a GeoJSON source with 2 points
                                 <?php for ($i = 0; $i < count($coords); $i++) { ?>
                                     map.addSource('points<?= $i; ?>', {
@@ -200,10 +220,11 @@
     Content body end
 ***********************************-->
 <style>
-    .mapboxgl-canvas {
-        width: 100%;
-        height: auto;
-        position: relative;
+    #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 97%;
     }
 </style>
 @include('template/footer')
