@@ -63,7 +63,7 @@
                                         <td>{{ $faktur->NAME_TYPE }}</td>
                                         <td>{{ $faktur->DATEFACTUR_TD ? date_format(date_create($faktur->DATEFACTUR_TD), 'j F Y H:i') : "" }}</td>
                                         <td>
-                                            <a href="<?='detail/faktur?id_td='.$faktur->ID_TD.'&id_user='.$faktur->ID_USER.'&id_regional='.$faktur->REGIONAL_TD ?>"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>
+                                            <a href="<?='detail/faktur?id_td='.$faktur->ID_TD.'&id_user='.$faktur->ID_USER.'&date='.date_format(date_create($faktur->DATEFACTUR_TD), 'Y-m-d') ?>"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>
                                         </td>
                                     </tr>
                                     @endforeach

@@ -33,9 +33,9 @@
                                     <span class="fs-20 text-black d-block mb-3">Area</span>
                                     <p class="fs-18 ml-4"><?= $faktur->AREA_TD ?></p>
                                     <span class="fs-20 text-black d-block mb-3">List Barang</span>
-                                        
-                                        <p class="fs-18 ml-4">Pax</p>
-                                        
+                                    <?php foreach ($detail as $brg_detail) : ?>
+                                        <p class="fs-18 ml-4"><?= $brg_detail['NAME_PRODUCT']; ?> - <?= $brg_detail['TOT_QTY_PROD']; ?> Pax</p>
+                                    <?php endforeach; ?>
                                     <span class="fs-20 text-black d-block mb-3">Total Harga</span>
                                     <p class="fs-18 ml-4">IDR <?= $faktur->TOTAL_TD ?></p>
                                     <span class="fs-20 text-black d-block mb-3">Regional</span>
