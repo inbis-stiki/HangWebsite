@@ -6,14 +6,14 @@
 <div class="content-body">
     <!-- row -->
     <div class="container-fluid">
-        <div class="row mb-4">
+        {{-- <div class="row mb-4">
             <div class="col">
                 <button style="float: right;" data-toggle="modal" data-target="#mdlAdd"  class="btn btn-sm btn-primary">
                     <i class="flaticon-381-add-2"></i>
                     Tambah Kategori Produk
                 </button>
             </div>
-        </div>
+        </div> --}}
         
         @if ($errors->any())
             <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
@@ -69,9 +69,9 @@
                                             <button onclick="showMdlEdit('{{ $item->ID_PC }}', '{{ $item->NAME_PC }}', '{{ $item->PERCENTAGE_PC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
-                                            <button onclick="showMdlDelete('{{ $item->ID_PC }}')" class="btn btn-primary btn-sm">
+                                            {{-- <button onclick="showMdlDelete('{{ $item->ID_PC }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-trash-1"></i>
-                                            </button>
+                                            </button> --}}
                                         </td>
                                     </tr>
                                     @endforeach
