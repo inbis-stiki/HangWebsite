@@ -22,11 +22,13 @@ class RankingApi extends Controller
                 return response([
                     'status_code'       => 200,
                     'status_message'    => 'Data berhasil ditemukan',
+                    'updated_at'        => $currDate,
                     'data'              => $rankings
                 ], 200);
             }else{
                 return response([
                     'status_code'       => 200,
+                    'updated_at'        => $currDate,
                     'status_message'    => 'Data tidak ditemukan'
                 ], 200);
             }
