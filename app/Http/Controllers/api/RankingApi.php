@@ -18,7 +18,7 @@ class RankingApi extends Controller
                 ->orderBy('AVERAGE', 'DESC')
                 ->get();
 
-            if($rankings != null){
+            if(!$rankings->isEmpty()){
                 return response([
                     'status_code'       => 200,
                     'status_message'    => 'Data berhasil ditemukan',
