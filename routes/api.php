@@ -73,4 +73,6 @@ Route::middleware(['checkAuthApi'])->group(function(){
     Route::get("sales/not-reach-target", 'api\DashboardApi@NotReachTarget');
     Route::get("dashboard/all", 'api\DashboardApi@AllApi');
 
+    // API RANKING
+    Route::get("ranking/sale", 'api\RankingApi@rankingSale');
 });

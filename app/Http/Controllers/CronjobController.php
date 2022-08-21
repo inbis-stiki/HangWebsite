@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Recomendation;
+use App\UserRankingSale;
 use AWS\CRT\HTTP\Request;
 use Carbon\Carbon;
 use Exception;
@@ -546,5 +547,146 @@ class CronjobController extends Controller
         $ObjSheet->mergeCells('Z20:Z21')->getStyle('Z20:Z21')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'))->getAlignment()->setWrapText(true);
         $ObjSheet->mergeCells('AA20:AA21')->getStyle('AA20:AA21')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'))->getAlignment()->setWrapText(true);
         $ObjSheet->mergeCells('AB20:AB21')->getStyle('AB20:AB21')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+    }
+    public function updateDailyRanking(){
+        date_default_timezone_set("Asia/Bangkok");
+        $currDate       = date('Y-m-d');
+        $currDateTime   = date('Y-m-d H:i:s');
+        $formData = [];
+
+        $targetRegionals = $this->queryGetTargetRegional($currDate);
+
+        foreach ($targetRegionals as $targetRegional) {
+            if($targetRegional->MONTH_TARGET != NULL){
+                $querySum       = [];
+                $weightProdCat  = [];
+                $targetProdCat  = [];
+                $targetUserMonthlys = $this->queryGetTargetUserMonthly($currDate, $targetRegional);
+                
+                foreach ($targetUserMonthlys as $targetUserMonthly) {
+                    $namePC = str_replace("-", "_", $targetUserMonthly->NAME_PC);
+                    $querySum[] = "
+                        SUM(
+                            (
+                                SELECT SUM(td.QTY_TD)
+                                FROM transaction_detail td , md_product mp
+                                WHERE 
+                                    td.ID_TRANS = t.ID_TRANS  
+                                    AND td.ID_PRODUCT = mp.ID_PRODUCT 
+                                    AND mp.ID_PC = ".$targetUserMonthly->ID_PC."
+                            ) 
+                        ) as ".$namePC."
+                    ";
+                    $weightProdCat[$namePC] = $targetUserMonthly->PERCENTAGE_PC;
+                    $targetProdCat[$namePC] = $targetUserMonthly->TARGET;
+                }
+
+                $transUsers = $this->queryGetTransUser($querySum, $currDate);
+
+                foreach ($transUsers as $transUser) {
+                    $arrTemp['ID_USER']             = $transUser->ID_USER;
+                    $arrTemp['ID_REGIONAL']         = $targetRegional->ID_REGIONAL;
+                    $arrTemp['ID_AREA']             = $transUser->ID_AREA;
+                    $arrTemp['NAME_REGIONAL']       = $targetRegional->NAME_REGIONAL;
+                    $arrTemp['NAME_AREA']           = $transUser->NAME_AREA;
+                    $arrTemp['NAME_USER']           = $transUser->NAME_USER;
+                    $arrTemp['ID_ROLE']             = $transUser->ID_ROLE;
+                    $arrTemp['TARGET_UST']          = $targetProdCat['UST'];
+                    $arrTemp['REAL_UST']            = $transUser->UST != NULL ? $transUser->UST : 0;
+                    $arrTemp['VSTARGET_UST']        = ($arrTemp['REAL_UST'] / $arrTemp['TARGET_UST']) * 100;
+                    $arrTemp['TARGET_NONUST']       = $targetProdCat['NON_UST'];
+                    $arrTemp['REAL_NONUST']         = $transUser->NON_UST != NULL ? $transUser->NON_UST : 0;
+                    $arrTemp['VSTARGET_NONUST']     = ($arrTemp['REAL_NONUST'] / $arrTemp['TARGET_NONUST']) * 100;
+                    $arrTemp['TARGET_SELERAKU']     = $targetProdCat['Seleraku'];
+                    $arrTemp['REAL_SELERAKU']       = $transUser->Seleraku != NULL ? $transUser->Seleraku : 0;
+                    $arrTemp['VSTARGET_SELERAKU']   = ($arrTemp['REAL_SELERAKU'] / $arrTemp['TARGET_SELERAKU']) * 100;
+                    $arrTemp['WEIGHT_UST']          = $weightProdCat['UST'];
+                    $arrTemp['WEIGHT_NONUST']       = $weightProdCat['NON_UST'];
+                    $arrTemp['WEIGHT_SELERAKU']     = $weightProdCat['Seleraku'];
+
+                    $avgCount = 0;
+                    if($weightProdCat['UST'] != 0) $avgCount++;
+                    if($weightProdCat['NON_UST'] != 0) $avgCount++;
+                    if($weightProdCat['Seleraku'] != 0) $avgCount++;
+
+                    $arrTemp['AVERAGE'] = ((($arrTemp['VSTARGET_UST'] / 100) * ($weightProdCat['UST'] / 100)));
+                    $arrTemp['AVERAGE'] += (($arrTemp['VSTARGET_NONUST'] / 100) * ($weightProdCat['NON_UST'] / 100));
+                    $arrTemp['AVERAGE'] += (($arrTemp['VSTARGET_SELERAKU'] / 100) * ($weightProdCat['Seleraku'] / 100));
+                    $arrTemp['AVERAGE'] = $arrTemp['AVERAGE'] / $avgCount;
+
+                    $arrTemp['created_at']  = $currDateTime;
+                    $formData[] = $arrTemp;
+                }
+            }
+        }
+        if($formData != null){
+            UserRankingSale::insert($formData);
+        }
+        dd($formData);
+    }
+    public function queryGetTargetRegional($currDate){
+        return DB::select("
+            SELECT 
+                mr.ID_REGIONAL, 
+                mr.NAME_REGIONAL, 
+                ma.ID_AREA ,
+                COUNT(ma.ID_AREA) as TOTAL_AREA ,
+                (
+                    SELECT SUM(ts.QUANTITY) 
+                    FROM target_sale ts 
+                    WHERE 
+                        DATE(ts.START_PP) <= '".$currDate."' 
+                        AND DATE(ts.END_PP) >= '".$currDate."'
+                        AND ts.ID_REGIONAL = ma.ID_REGIONAL 
+                ) as MONTH_TARGET
+            FROM md_area ma , md_regional mr 
+            WHERE 
+                ma.deleted_at IS NULL
+                AND ma.ID_REGIONAL = mr.ID_REGIONAL 
+            GROUP BY ma.ID_REGIONAL 
+        ");
+    }
+    public function queryGetTargetUserMonthly($currDate, $targetRegional){
+        return DB::select("
+            SELECT 
+                ts.ID_REGIONAL ,
+                mpc.ID_PC ,
+                mp.ID_PRODUCT ,
+                mpc.NAME_PC ,
+                mpc.PERCENTAGE_PC ,
+                ROUND(((SUM(ts.QUANTITY) / ".$targetRegional->TOTAL_AREA.") / 3) / 25) as TARGET
+            FROM 
+                target_sale ts ,
+                md_product mp ,
+                md_product_category mpc 
+            WHERE
+                DATE(ts.START_PP) <= '".$currDate."' 
+                AND DATE(ts.END_PP) >= '".$currDate."' 
+                AND ts.ID_REGIONAL = 7
+                AND ts.ID_PRODUCT = mp.ID_PRODUCT 
+                AND mp.ID_PC = mpc.ID_PC 
+            GROUP BY mpc.ID_PC 
+        ");
+    }
+    public function queryGetTransUser($querySum, $currDate){
+        return DB::select("
+            SELECT 
+                u.ID_USER ,
+                u.NAME_USER ,
+                u.ID_ROLE ,
+                u.ID_AREA ,
+                ma.NAME_AREA ,
+                ".implode(', ', $querySum)."
+            FROM 
+                `transaction` t ,
+                `user` u ,
+                md_area ma 
+            WHERE
+                DATE(t.DATE_TRANS) = '".$currDate."'
+                AND u.ID_REGIONAL = 7
+                AND t.ID_USER = u.ID_USER 
+                AND ma.ID_AREA = u.ID_AREA 
+            GROUP BY t.ID_USER 
+        ");
     }
 }

@@ -25,6 +25,7 @@ Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 Route::get('cronjob/shop/recomendation', 'CronjobController@cronjob_store_rekomendasi');
 Route::get('cronjob/rangking', 'CronjobController@cronjob_template_rangking');
+Route::get('cronjob/update-daily-rangking', 'CronjobController@updateDailyRanking');
 
 Route::group(['middleware' => ['checkLogin']], function() {
     Route::get('dashboard', 'DashboardController@index');
