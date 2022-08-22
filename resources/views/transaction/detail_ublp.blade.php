@@ -140,14 +140,15 @@
                             center: [<?= $centerCord[1] ?>, <?= $centerCord[0] ?>],
                             zoom: 15.5
                         });
-
-                        map.loadImage(
+                        map.on('load', () => {
+                            map.loadImage(
                             '<?= asset('images/icon/map-marker-green.png'); ?>',
                             (error, image) => {
                                 if (error) throw error;
                                 map.addImage('custom-marker', image);
                                 map.setRenderWorldCopies(false);
                                 map.resize();
+                                map.addControl(new mapboxgl.FullscreenControl());
 
                                 map.addSource('canvas-source', {
                                     type: 'canvas',
@@ -159,7 +160,7 @@
                                         [91.4461, 13.9706]
                                     ],
                                     // Set to true if the canvas source is animated. If the canvas is static, animate should be set to false to improve performance.
-                                    animate: true
+                                    animate: false
                                 });
 
                                 map.addLayer({
@@ -205,8 +206,8 @@
                                     });
 
                                 <?php } ?>
-                            }
-                        );
+                            })
+                        });
                     </script>
                 </div>
             </div>
