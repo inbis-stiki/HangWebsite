@@ -12,7 +12,8 @@
                     <i class="flaticon-381-add-2"></i>
                     Tambah Target Penjualan
                 </button>
-                <a href="{{ url('master/target-sale/download_template') }}" style="float: right;" class="btn btn-sm btn-outline-primary mr-3">
+                <a href="{{ url('master/target-sale/download_template') }}" style="float: right;"
+                    class="btn btn-sm btn-outline-primary mr-3">
                     <i class="flaticon-381-download"></i>
                     Download Template
                 </a>
@@ -20,13 +21,13 @@
         </div>
 
         @if ($errors->any())
-        <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
+            <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
         @endif
         @if (session('succ_msg'))
-        <div class="alert alert-success">{{ session('succ_msg') }}</div>
+            <div class="alert alert-success">{{ session('succ_msg') }}</div>
         @endif
         @if (session('err_msg'))
-        <div class="alert alert-danger">{{ session('err_msg') }}</div>
+            <div class="alert alert-danger">{{ session('err_msg') }}</div>
         @endif
 
         <!-- Add Order -->
@@ -42,7 +43,8 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
-                                        <th>Kode Produk</th></th>
+                                        <th>Kode Produk</th>
+                                        </th>
                                         <th>Jumlah</th>
                                         <th>Region</th>
                                         <th>Status</th>
@@ -51,34 +53,37 @@
                                 </thead>
                                 <tbody>
                                     @php
-                                    $no = 1;
+                                        $no = 1;
                                     @endphp
                                     @if (count($target_sales) > 0)
-                                    @foreach ($target_sales as $target_sale)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>
-                                        <td>{{ $target_sale->product->CODE_PRODUCT }}</td>
-                                        <td>{{ $target_sale->QUANTITY }}</td>
-                                        <td>{{ $target_sale->regional->NAME_REGIONAL }}</td>
-                                        <td>
-                                            @if ($target_sale->DELETED_AT == NULL)
-                                            <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
-                                            Enable
-                                            @else
-                                            <i class="fa-solid fa-circle mr-2" style="color:#C13B3B;"></i>
-                                            Disable
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <button onclick="showMdlEdit('{{ $target_sale->ID_TS}}', '{{ $target_sale->product->ID_PRODUCT}}', '{{ $target_sale->regional->ID_REGIONAL }}', '{{ $target_sale->QUANTITY }}', '{{ $target_sale->DELETED_AT }}')" class="btn btn-primary btn-sm">
-                                                <i class="flaticon-381-edit-1"></i>
-                                            </button>
-                                            <button onclick="showMdlDelete('{{ $target_sale->ID_TS}}')" class="btn btn-primary btn-sm">
-                                                <i class="flaticon-381-trash-1"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
+                                        @foreach ($target_sales as $target_sale)
+                                            <tr>
+                                                <td>{{ $no++ }}</td>
+                                                <td>{{ $target_sale->product->CODE_PRODUCT }}</td>
+                                                <td>{{ $target_sale->QUANTITY }}</td>
+                                                <td>{{ $target_sale->regional->NAME_REGIONAL }}</td>
+                                                <td>
+                                                    @if ($target_sale->DELETED_AT == null)
+                                                        <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
+                                                        Enable
+                                                    @else
+                                                        <i class="fa-solid fa-circle mr-2" style="color:#C13B3B;"></i>
+                                                        Disable
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        onclick="showMdlEdit('{{ $target_sale->ID_TS }}', '{{ $target_sale->product->ID_PRODUCT }}', '{{ $target_sale->regional->ID_REGIONAL }}', '{{ $target_sale->QUANTITY }}', '{{ $target_sale->DELETED_AT }}')"
+                                                        class="btn btn-primary btn-sm">
+                                                        <i class="flaticon-381-edit-1"></i>
+                                                    </button>
+                                                    <button onclick="showMdlDelete('{{ $target_sale->ID_TS }}')"
+                                                        class="btn btn-primary btn-sm">
+                                                        <i class="flaticon-381-trash-1"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     @endif
                                 </tbody>
                             </table>
@@ -102,7 +107,8 @@
             <div class="modal-body">
                 <form method="post" action="{{ url('master/target-sale/store') }}" enctype="multipart/form-data">
                     @csrf
-                    <div class="rounded border border-primary w-100 h-75 d-inline-block p-10 d-flex justify-content-center p-5 flex-column">
+                    <div
+                        class="rounded border border-primary w-100 h-75 d-inline-block p-10 d-flex justify-content-center p-5 flex-column">
                         <div class="mx-auto">
                             Upload Target Penjualan dari Template yang sudah tersedia
                         </div>
@@ -136,7 +142,7 @@
                             <select name="product_edit" id="product_edit" class="select2" required>
                                 <option selected disabled value="">Pilih Kategori Produk</option>
                                 @foreach ($products as $product)
-                                <option value="{{ $product->ID_PRODUCT }}">{{ $product->CODE_PRODUCT }}</option>
+                                    <option value="{{ $product->ID_PRODUCT }}">{{ $product->CODE_PRODUCT }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -145,7 +151,8 @@
                             <select name="regional_edit" id="regional_edit" class="select2" required>
                                 <option selected disabled value="">Pilih Regional</option>
                                 @foreach ($regionals as $regional)
-                                <option value="{{ $regional->ID_REGIONAL }}">{{ $regional->NAME_REGIONAL }}</option>
+                                    <option value="{{ $regional->ID_REGIONAL }}">{{ $regional->NAME_REGIONAL }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -153,15 +160,18 @@
                     <div class="row form-group">
                         <div class="col-md-12 ">
                             <label for="quantity">Quantity</label>
-                            <input type="text" id="quantity_edit" name="quantity" class="form-control" placeholder="Quantity" required>
+                            <input type="text" id="quantity_edit" name="quantity" class="form-control"
+                                placeholder="Quantity" required>
                         </div>
                     </div>
                     <div class="row form-group">
                         <div class="col-md-6">
                             <label for="">Status</label>
                             <div class="form-group mb-0">
-                                <label class="radio-inline mr-3"><input type="radio" id="status_enable" name="status" value="1" required> Enable</label>
-                                <label class="radio-inline mr-3"><input type="radio" id="status_disable" name="status" value="0" required> Disable</label>
+                                <label class="radio-inline mr-3"><input type="radio" id="status_enable"
+                                        name="status" value="1" required> Enable</label>
+                                <label class="radio-inline mr-3"><input type="radio" id="status_disable"
+                                        name="status" value="0" required> Disable</label>
                             </div>
                         </div>
                     </div>

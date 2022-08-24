@@ -128,4 +128,7 @@ Route::group(['middleware' => ['checkLogin']], function() {
     Route::get('master/activity-category', 'ActivityCategoryController@index');
     Route::get('master/activity-category/update', 'ActivityCategoryController@update');
 
+    //MASTER USER TARGET
+    Route::get('master/user-target', 'UserTargetController@index');
+
     });
