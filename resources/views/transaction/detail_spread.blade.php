@@ -31,6 +31,7 @@
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false">
                                         <span class="accordion__header--text"><?= $data_ublp['LOCATION']; ?></span>
+                                        <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_ublp['DATE_TRANS']), 'H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
                                     <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body">
@@ -47,7 +48,7 @@
                                                     <p class="fs-18 ml-3">Tanggal</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= $data_ublp['DATE_TRANS']; ?></p>
+                                                    <p class="fs-18 float-right"><?= date_format(date_create($data_ublp['DATE_TRANS']), 'j F Y H:i'); ?></p>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <p class="fs-18 ml-3">Alamat</p>

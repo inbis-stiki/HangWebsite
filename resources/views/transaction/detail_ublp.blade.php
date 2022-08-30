@@ -31,6 +31,7 @@
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false">
                                         <span class="accordion__header--text"><?= $data_ublp['LOCATION']; ?></span>
+                                        <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_ublp['DATE_TRANS']), 'H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
                                     <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body">
@@ -47,7 +48,7 @@
                                                     <p class="fs-18 ml-3">Tanggal</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= $data_ublp['DATE_TRANS']; ?></p>
+                                                    <p class="fs-18 float-right"><?= date_format(date_create($data_ublp['DATE_TRANS']), 'j F Y H:i'); ?></p>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <p class="fs-18 ml-3">Alamat</p>
@@ -74,14 +75,26 @@
                                             <div class="row">
                                                 <div class="col-md-12 d-flex">
                                                     <div class="form-group col-md-6">
-                                                        <label for="">Foto 1</label>
+                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
                                                         <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                     </div>
                                                     <div class="form-group col-md-6">
-                                                        <label for="">Foto 2</label>
+                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
                                                         <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 d-flex">
+                                                    <div class="form-group col-md-6">
+                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][2]; ?></label>
+                                                        <br>
+                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][3]; ?></label>
+                                                        <br>
+                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                     </div>
                                                 </div>
                                             </div>
@@ -142,71 +155,71 @@
                         });
                         map.on('load', () => {
                             map.loadImage(
-                            '<?= asset('images/icon/map-marker-green.png'); ?>',
-                            (error, image) => {
-                                if (error) throw error;
-                                map.addImage('custom-marker', image);
-                                map.setRenderWorldCopies(false);
-                                map.resize();
-                                map.addControl(new mapboxgl.FullscreenControl());
+                                '<?= asset('images/icon/map-marker-green.png'); ?>',
+                                (error, image) => {
+                                    if (error) throw error;
+                                    map.addImage('custom-marker', image);
+                                    map.setRenderWorldCopies(false);
+                                    map.resize();
+                                    map.addControl(new mapboxgl.FullscreenControl());
 
-                                map.addSource('canvas-source', {
-                                    type: 'canvas',
-                                    canvas: 'canvasID',
-                                    coordinates: [
-                                        [91.4461, 21.5006],
-                                        [100.3541, 21.5006],
-                                        [100.3541, 13.9706],
-                                        [91.4461, 13.9706]
-                                    ],
-                                    // Set to true if the canvas source is animated. If the canvas is static, animate should be set to false to improve performance.
-                                    animate: false
-                                });
-
-                                map.addLayer({
-                                    id: 'canvas-layer',
-                                    type: 'raster',
-                                    source: 'canvas-source'
-                                });
-                                // Add a GeoJSON source with 2 points
-                                <?php for ($i = 0; $i < count($coords); $i++) { ?>
-                                    map.addSource('points<?= $i; ?>', {
-                                        'type': 'geojson',
-                                        'data': {
-                                            'type': 'FeatureCollection',
-                                            'features': [{
-                                                'type': 'Feature',
-                                                'geometry': {
-                                                    'type': 'Point',
-                                                    // 'coordinates': [Longitude, Latitude]
-                                                    'coordinates': [<?= $coords[$i]['lng']; ?>, <?= $coords[$i]['lat']; ?>]
-                                                },
-                                                'properties': {
-                                                    'title': '<?= $coords[$i]['loc']; ?>'
-                                                }
-                                            }]
-                                        }
+                                    map.addSource('canvas-source', {
+                                        type: 'canvas',
+                                        canvas: 'canvasID',
+                                        coordinates: [
+                                            [91.4461, 21.5006],
+                                            [100.3541, 21.5006],
+                                            [100.3541, 13.9706],
+                                            [91.4461, 13.9706]
+                                        ],
+                                        // Set to true if the canvas source is animated. If the canvas is static, animate should be set to false to improve performance.
+                                        animate: false
                                     });
 
-                                    // Add a symbol layer
                                     map.addLayer({
-                                        'id': 'points<?= $i; ?>',
-                                        'type': 'symbol',
-                                        'source': 'points<?= $i; ?>',
-                                        'layout': {
-                                            'icon-image': 'custom-marker',
-                                            'text-field': ['get', 'title'],
-                                            'text-font': [
-                                                'Open Sans Semibold',
-                                                'Arial Unicode MS Bold'
-                                            ],
-                                            'text-offset': [0, 1.25],
-                                            'text-anchor': 'top'
-                                        }
+                                        id: 'canvas-layer',
+                                        type: 'raster',
+                                        source: 'canvas-source'
                                     });
+                                    // Add a GeoJSON source with 2 points
+                                    <?php for ($i = 0; $i < count($coords); $i++) { ?>
+                                        map.addSource('points<?= $i; ?>', {
+                                            'type': 'geojson',
+                                            'data': {
+                                                'type': 'FeatureCollection',
+                                                'features': [{
+                                                    'type': 'Feature',
+                                                    'geometry': {
+                                                        'type': 'Point',
+                                                        // 'coordinates': [Longitude, Latitude]
+                                                        'coordinates': [<?= $coords[$i]['lng']; ?>, <?= $coords[$i]['lat']; ?>]
+                                                    },
+                                                    'properties': {
+                                                        'title': '<?= $coords[$i]['loc']; ?>'
+                                                    }
+                                                }]
+                                            }
+                                        });
 
-                                <?php } ?>
-                            })
+                                        // Add a symbol layer
+                                        map.addLayer({
+                                            'id': 'points<?= $i; ?>',
+                                            'type': 'symbol',
+                                            'source': 'points<?= $i; ?>',
+                                            'layout': {
+                                                'icon-image': 'custom-marker',
+                                                'text-field': ['get', 'title'],
+                                                'text-font': [
+                                                    'Open Sans Semibold',
+                                                    'Arial Unicode MS Bold'
+                                                ],
+                                                'text-offset': [0, 1.25],
+                                                'text-anchor': 'top'
+                                            }
+                                        });
+
+                                    <?php } ?>
+                                })
                         });
                     </script>
                 </div>

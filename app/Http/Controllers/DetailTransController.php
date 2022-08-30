@@ -118,7 +118,10 @@ class DetailTransController extends Controller
             foreach ($transaction_image as $Image) {
                 array_push(
                     $data_image_trans,
-                    explode(";", $Image->PHOTO_TI)
+                    array(
+                        "desc" => explode(";", $Image->DESCRIPTION_TI),
+                        "image" => explode(";", $Image->PHOTO_TI)
+                    )
                 );
             }
 
@@ -185,7 +188,10 @@ class DetailTransController extends Controller
             foreach ($transaction_image as $Image) {
                 array_push(
                     $data_image_trans,
-                    explode(";", $Image->PHOTO_TI)
+                    array(
+                        "desc" => explode(";", $Image->DESCRIPTION_TI),
+                        "image" => explode(";", $Image->PHOTO_TI)
+                    )
                 );
             }
 
@@ -203,7 +209,7 @@ class DetailTransController extends Controller
             );
         }
 
-        // dump(count($data['transaction'][0]['IMAGE'][0]));exit;
+        // dump($data['transaction'][0]['IMAGE'][0]['desc']);exit;
 
         return view('transaction/detail_ublp', $data);
     }
