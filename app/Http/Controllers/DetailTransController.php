@@ -23,16 +23,17 @@ class DetailTransController extends Controller
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
             ->where('transaction.ID_USER', '=', $id_user)
             ->where('transaction.ID_TYPE', '=', $type)
+            ->orderBy('transaction.DATE_TRANS', 'DESC')
             ->get();
 
         $data['transaction'] = array();
         foreach ($transaction as $Item_ts) {
             $data_ts_detail = array();
             $transaction_detail       = DB::table('transaction_detail')
-                ->where('transaction_detail.ID_TRANS', $Item_ts->ID_TRANS)
+                ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT')
                 ->join('transaction', 'transaction_detail.ID_TRANS', '=', 'transaction.ID_TRANS')
                 ->join('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
-                ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT')
+                ->where('transaction_detail.ID_TRANS', $Item_ts->ID_TRANS)
                 ->get();
 
             foreach ($transaction_detail as $ts_detail) {
@@ -90,16 +91,17 @@ class DetailTransController extends Controller
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
             ->where('transaction.ID_USER', '=', $id_user)
             ->where('transaction.ID_TYPE', '=', $type)
+            ->orderBy('transaction.DATE_TRANS', 'DESC')
             ->get();
 
         $data['transaction'] = array();
         foreach ($transaction as $Item_ts) {
             $data_ts_detail = array();
             $transaction_detail       = DB::table('transaction_detail')
-                ->where('transaction_detail.ID_TRANS', $Item_ts->ID_TRANS)
+                ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT')
                 ->join('transaction', 'transaction_detail.ID_TRANS', '=', 'transaction.ID_TRANS')
                 ->join('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
-                ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT')
+                ->where('transaction_detail.ID_TRANS', $Item_ts->ID_TRANS)
                 ->get();
 
             foreach ($transaction_detail as $ts_detail) {
@@ -160,6 +162,7 @@ class DetailTransController extends Controller
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
             ->where('transaction.ID_USER', '=', $id_user)
             ->where('transaction.ID_TYPE', '=', $type)
+            ->orderBy('transaction.DATE_TRANS', 'DESC')
             ->get();
 
         $data['transaction'] = array();

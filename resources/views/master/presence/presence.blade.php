@@ -42,7 +42,6 @@
                                         <th>Area</th>
                                         <th>Kecamatan</th>
                                         <th>Waktu</th>
-                                        <th>Target Aktifitas</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -57,9 +56,8 @@
                                         <td>{{ $presence->NAME_AREA }}</td>
                                         <td>{{ $presence->NAME_DISTRICT }}</td>
                                         <td>{{ date_format(date_create($presence->DATE_PRESENCE), 'j F Y H:i') }}</td>
-                                        <td>{{ $presence->NAME_TYPE }}</td>
                                         <td>
-                                            <button class="btn light btn-success"  onclick="showPresence('{{ $presence->PHOTO_PRESENCE }}', '{{ $presence->NAME_USER }}', '{{ $presence->NAME_DISTRICT }}', '{{ date_format(date_create($presence->DATE_PRESENCE), 'j F Y H:i') }}', '{{ $presence->NAME_AREA }}', '{{ $presence->NAME_TYPE }}', '{{ $presence->NAME_REGIONAL }}')"><i class="fa fa-circle-info"></i></button>
+                                            <button class="btn light btn-success"  onclick="showPresence('{{ $presence->PHOTO_PRESENCE }}', '{{ $presence->NAME_USER }}', '{{ $presence->NAME_DISTRICT }}', '{{ date_format(date_create($presence->DATE_PRESENCE), 'j F Y H:i') }}', '{{ $presence->NAME_AREA }}', '{{ $presence->NAME_REGIONAL }}')"><i class="fa fa-circle-info"></i></button>
                                             {{-- <button class="btn light btn-info" onclick="showLocation({{ $presence->LONG_PRESENCE }}, {{ $presence->LAT_PRESENCE }})"><i class="fa fa-map-location-dot"></i></button> --}}
                                             <a class="btn light btn-info" href="https://maps.google.com/maps?q={{ $presence->LAT_PRESENCE }},{{ $presence->LONG_PRESENCE }}&hl=es&z=14&amp;" target="_blank"><i class="fa fa-map-location-dot"></i></a>
                                         </td>
@@ -122,12 +120,6 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
-                            <label for="">Target Aktifitas</label>
-                            <input class="form-control" type="text" id="mdlPresence_target" readonly>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
                             <label for="">Regional</label>
                             <input class="form-control" type="text" id="mdlPresence_regional" readonly>
                         </div>
@@ -174,13 +166,12 @@
 @include('template/footer')
 <script>
     $('#datatable').DataTable()
-    const showPresence = (src, name, district, date, area, target, regional) => {
+    const showPresence = (src, name, district, date, area, regional) => {
         $('#mdlPresence_src').attr('src', src);
         $('#mdlPresence_name').val(name);
         $('#mdlPresence_district').val(district);
         $('#mdlPresence_date').val(date);
         $('#mdlPresence_area').val(area);
-        $('#mdlPresence_target').val(target);
         $('#mdlPresence_regional').val(regional);
         $('#mdlPresence').modal('show')
     }
