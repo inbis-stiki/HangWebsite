@@ -95,12 +95,13 @@
         $('#datatables').DataTable({
             "processing": true,
             "language": {
-                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
-                "ZeroRecords": " ",
-                EmptyTable: ''
+                "processing"    : '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                "loadingRecords": "Loading...",
+                "emptyTable"    : "  ",
+                "infoEmpty"     : "No Data to Show",
             },
-            'serverMethod': 'POST',
-            'ajax': {
+            "serverMethod": 'POST',
+            "ajax": {
                 'url': "{{ url('master/transaction/Alltransaction') }}",
                 'beforeSend': function(request) {
                     request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
@@ -110,7 +111,7 @@
                     data.tglSearchtrans = tgl_trans;
                 }
             },
-            'columns': [{
+            "columns": [{
                     data: 'NO'
                 },
                 {

@@ -14,15 +14,15 @@
                 </button> --}}
             </div>
         </div>
-        
+
         @if ($errors->any())
-            <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
+        <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
         @endif
         @if (session('succ_msg'))
-            <div class="alert alert-success">{{ session('succ_msg') }}</div>
+        <div class="alert alert-success">{{ session('succ_msg') }}</div>
         @endif
         @if (session('err_msg'))
-            <div class="alert alert-danger">{{ session('err_msg') }}</div>
+        <div class="alert alert-danger">{{ session('err_msg') }}</div>
         @endif
 
         <div class="row">
@@ -78,7 +78,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group" >
+                <div class="form-group">
                     <label for="">Foto</label>
                     <br>
                     <div style="text-align: center;">
@@ -138,17 +138,8 @@
                 </button>
             </div>
             <div class="modal-body" style="text-align: center;">
-                <iframe 
-                    width="600" 
-                    height="400" 
-                    frameborder="0" 
-                    scrolling="no" 
-                    marginheight="0" 
-                    marginwidth="0" 
-                    id="mdlLocation_src"
-                    src=""
-                    >
-                    </iframe>
+                <iframe width="600" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="mdlLocation_src" src="">
+                </iframe>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Tutup</button>
@@ -178,15 +169,16 @@
     filterData();
 
     function filterData() {
-        $('#datatable').DataTable({
+        $("#datatable").DataTable({
             "processing": true,
             "language": {
-                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
-                "ZeroRecords": " ",
-                EmptyTable: ''
+                "processing"    : '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                "loadingRecords": "Loading...",
+                "emptyTable"    : "  ",
+                "infoEmpty"     : "No Data to Show",
             },
-            'serverMethod': 'POST',
-            'ajax': {
+            "serverMethod": 'POST',
+            "ajax": {
                 'url': "{{ url('presence/AllPresence') }}",
                 'beforeSend': function(request) {
                     request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
@@ -195,7 +187,7 @@
                     data.tglSearchPresence = tgl_presence;
                 }
             },
-            'columns': [{
+            "columns": [{
                     data: 'NO'
                 },
                 {
@@ -216,7 +208,7 @@
             ],
         }).draw()
     }
-    
+
     var tgl_presence = "";
     $(".datepicker-default").pickadate({
         format: 'd\ mmmm yyyy',
