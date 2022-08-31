@@ -25,6 +25,21 @@
             <div class="alert alert-danger">{{ session('err_msg') }}</div>
         @endif
 
+        <div class="row">
+            <div class="col-12" style="margin-bottom: 5px;">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="card-title">Tanggal Presensi</h4>
+                                <input name="datepicker" class="datepicker-default form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Add Order -->
         <div class="row">
             <div class="col-12">
@@ -45,25 +60,6 @@
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @php
-                                        $no = 1;
-                                    @endphp
-                                    @foreach ($presences as $presence)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>    
-                                        <td>{{ $presence->NAME_USER }}</td>
-                                        <td>{{ $presence->NAME_AREA }}</td>
-                                        <td>{{ $presence->NAME_DISTRICT }}</td>
-                                        <td>{{ date_format(date_create($presence->DATE_PRESENCE), 'j F Y H:i') }}</td>
-                                        <td>
-                                            <button class="btn light btn-success"  onclick="showPresence('{{ $presence->PHOTO_PRESENCE }}', '{{ $presence->NAME_USER }}', '{{ $presence->NAME_DISTRICT }}', '{{ date_format(date_create($presence->DATE_PRESENCE), 'j F Y H:i') }}', '{{ $presence->NAME_AREA }}', '{{ $presence->NAME_REGIONAL }}')"><i class="fa fa-circle-info"></i></button>
-                                            {{-- <button class="btn light btn-info" onclick="showLocation({{ $presence->LONG_PRESENCE }}, {{ $presence->LAT_PRESENCE }})"><i class="fa fa-map-location-dot"></i></button> --}}
-                                            <a class="btn light btn-info" href="https://maps.google.com/maps?q={{ $presence->LAT_PRESENCE }},{{ $presence->LONG_PRESENCE }}&hl=es&z=14&amp;" target="_blank"><i class="fa fa-map-location-dot"></i></a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -165,7 +161,6 @@
 ***********************************-->
 @include('template/footer')
 <script>
-    $('#datatable').DataTable()
     const showPresence = (src, name, district, date, area, regional) => {
         $('#mdlPresence_src').attr('src', src);
         $('#mdlPresence_name').val(name);
@@ -179,4 +174,56 @@
         $('#mdlLocation_src').attr('src', `https://maps.google.com/maps?q=${lat},${long}&hl=es&z=14&amp;output=embed`);
         $('#mdlLocation').modal('show')
     }
+
+    filterData();
+
+    function filterData() {
+        $('#datatable').DataTable({
+            "processing": true,
+            "language": {
+                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                "ZeroRecords": " ",
+                EmptyTable: ''
+            },
+            'serverMethod': 'POST',
+            'ajax': {
+                'url': "{{ url('presence/AllPresence') }}",
+                'beforeSend': function(request) {
+                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                },
+                'data': function(data) {
+                    data.tglSearchPresence = tgl_presence;
+                }
+            },
+            'columns': [{
+                    data: 'NO'
+                },
+                {
+                    data: 'NAME_USER'
+                },
+                {
+                    data: 'NAME_AREA'
+                },
+                {
+                    data: 'NAME_DISTRICT'
+                },
+                {
+                    data: 'DATE_PRESENCE'
+                },
+                {
+                    data: 'ACTION_BUTTON'
+                }
+            ],
+        }).draw()
+    }
+    
+    var tgl_presence = "";
+    $(".datepicker-default").pickadate({
+        format: 'd\ mmmm yyyy',
+        onSet: function() {
+            tgl_presence = this.get('select', 'yyyy-mm-dd');
+            $('#datatable').DataTable().destroy();
+            filterData();
+        }
+    });
 </script>

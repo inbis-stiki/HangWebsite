@@ -112,6 +112,7 @@ Route::group(['middleware' => ['checkLogin']], function() {
 
     // PRESENCE
     Route::get('presence', 'PresenceController@index');
+    Route::post('presence/AllPresence', 'PresenceController@getAllPresence');
 
     // TRANSAKSI
     Route::get('transaction', 'TransactionController@index');

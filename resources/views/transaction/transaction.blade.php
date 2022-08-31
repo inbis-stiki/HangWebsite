@@ -88,18 +88,10 @@
 
 <script>
     var tgl_trans = "";
-    filterData("");
+    var type = "";
+    filterData();
 
-    $(".datepicker-default").pickadate({
-        format: 'd\ mmmm yyyy',
-        onSet: function() {
-            const Date = this.get('select', 'd\ mmmm yyyy')
-            $('#datatables').DataTable().destroy()
-            $('#datatables').DataTable().columns(4).search(Date).draw();
-        }
-    });
-
-    function filterData(Date) {
+    function filterData() {
         $('#datatables').DataTable({
             "processing": true,
             "language": {
@@ -115,7 +107,7 @@
                 },
                 'data': function(data) {
                     data.searchTrans = $('#SelectTrans').val();
-                    data.tgl_trans = tgl_trans;
+                    data.tglSearchtrans = tgl_trans;
                 }
             },
             'columns': [{
@@ -143,13 +135,21 @@
                     data: 'ACTION_BUTTON'
                 }
             ],
-        }).columns(4).search(Date).draw()
+        }).draw()
     }
+
+    $(".datepicker-default").pickadate({
+        format: 'd\ mmmm yyyy',
+        onSet: function() {
+            tgl_trans = this.get('select', 'yyyy-mm-dd');
+            $('#datatables').DataTable().destroy();
+            filterData();
+        }
+    });
 
     $('#SelectTrans').change(function() {
         $('#datatables').DataTable().destroy();
-        const Date = $(".datepicker-default").val();
-        filterData(Date);
+        filterData();
     });
 
     // const showLocation = (long, lat) => {

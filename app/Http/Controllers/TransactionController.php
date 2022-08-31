@@ -19,6 +19,7 @@ class TransactionController extends Controller
     public function getAllTrans(Request $req)
     {
         $id_type    = $req->input('searchTrans');
+        $tgl_trans  = $req->input('tglSearchtrans');
         $id_user    = $req->input('id_user');
         $id_role    = $req->input('id_role');
 
@@ -30,7 +31,7 @@ class TransactionController extends Controller
             ->first();
 
         if ($id_type == 0) {
-            $ub     = DB::table('transaction')
+            $dataTrans     = DB::table('transaction')
                 ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
                 ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, COUNT(transaction.ID_TRANS) as TotalTrans")
                 ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
@@ -41,10 +42,10 @@ class TransactionController extends Controller
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
                 ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
                 ->orderBy('transaction.DATE_TRANS', 'DESC')
+                ->where('transaction.DATE_TRANS', 'like', $tgl_trans.'%')
                 ->get();
         } else {
-            $ub     = DB::table('transaction')
-                ->where('transaction.ID_TYPE', $id_type)
+            $dataTrans     = DB::table('transaction')
                 ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
                 ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, COUNT(transaction.ID_TRANS) as TotalTrans")
                 ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
@@ -54,6 +55,8 @@ class TransactionController extends Controller
                 ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
                 ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
+                ->where('transaction.ID_TYPE', '=', $id_type)
+                ->where('transaction.DATE_TRANS', 'like', $tgl_trans.'%')
                 ->orderBy('transaction.DATE_TRANS', 'DESC')
                 ->get();
         }
@@ -62,7 +65,7 @@ class TransactionController extends Controller
         $NewData_rpo = array();
         $NewData_all = array();
         $i = 0;
-        foreach ($ub as $key => $item) {
+        foreach ($dataTrans as $key => $item) {
             $i++;
 
             $data = array(
