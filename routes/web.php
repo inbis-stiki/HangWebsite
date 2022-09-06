@@ -17,6 +17,7 @@ use App\Http\Middleware\CheckRole;
 Route::get('testimage', 'ImageController@create');
 Route::post('testimage', 'ImageController@store');
 Route::get('testimage/{image}', 'ImageController@show');
+Route::get('testTemplate', 'CronjobController@TestTemplate');
 
 //Login
 Route::get('/', 'AuthController@login');
