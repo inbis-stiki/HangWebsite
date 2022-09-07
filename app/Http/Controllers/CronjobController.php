@@ -136,7 +136,7 @@ class CronjobController extends Controller
                     $targetProdCat[$namePC] = $targetUserMonthly->TARGET;
                 }
 
-                $transUsers = $this->queryGetTransUser($querySum, $currDate);
+                $transUsers = $this->queryGetTransUser($querySum, $currDate, $targetRegional);
 
                 foreach ($transUsers as $transUser) {
                     $arrTemp['ID_USER']             = $transUser->ID_USER;
@@ -217,13 +217,13 @@ class CronjobController extends Controller
             WHERE
                 DATE(ts.START_PP) <= '".$currDate."' 
                 AND DATE(ts.END_PP) >= '".$currDate."' 
-                AND ts.ID_REGIONAL = 7
+                AND ts.ID_REGIONAL = ".$targetRegional->ID_AREA."
                 AND ts.ID_PRODUCT = mp.ID_PRODUCT 
                 AND mp.ID_PC = mpc.ID_PC 
             GROUP BY mpc.ID_PC 
         ");
     }
-    public function queryGetTransUser($querySum, $currDate){
+    public function queryGetTransUser($querySum, $currDate, $targetRegional){
         return DB::select("
             SELECT 
                 u.ID_USER ,
@@ -238,7 +238,7 @@ class CronjobController extends Controller
                 md_area ma 
             WHERE
                 DATE(t.DATE_TRANS) = '".$currDate."'
-                AND u.ID_REGIONAL = 7
+                AND u.ID_REGIONAL = ".$targetRegional->ID_REGIONAL."
                 AND t.ID_USER = u.ID_USER 
                 AND ma.ID_AREA = u.ID_AREA 
             GROUP BY t.ID_USER 
