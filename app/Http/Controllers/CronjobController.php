@@ -220,7 +220,7 @@ class CronjobController extends Controller
                     $targetActCat[$nameAC] = $targetUserMonthly->TARGET;
                 }
 
-                $transUsers = $this->queryGetTransUser($querySum, $currDate, $targetRegional);
+                $transUsers = $this->queryGetTransUserActivity($querySum, $currDate, $targetRegional);
 
                 foreach ($transUsers as $transUser) {
                     $arrTemp['ID_USER']             = $transUser->ID_USER;
