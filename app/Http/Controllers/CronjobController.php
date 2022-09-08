@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Recomendation;
 use App\UserRankingSale;
+use App\UserRankingActivity;
 use App\ReportExcell;
 use AWS\CRT\HTTP\Request;
 use Carbon\Carbon;
@@ -181,6 +182,88 @@ class CronjobController extends Controller
         }
         dd($formData);
     }
+
+    //ACTIVITY RANK
+    public function updateDailyRankingActivity(){
+        date_default_timezone_set("Asia/Bangkok");
+        $currDate       = date('Y-m-d');
+        $currDateTime   = date('Y-m-d H:i:s');
+        $formData = [];
+
+        $targetRegionals = $this->queryGetTargetRegionalActivity($currDate);
+
+        foreach ($targetRegionals as $targetRegional) {
+            if($targetRegional->MONTH_TARGET != NULL){
+                $querySum       = [];
+                $weightActCat  = [];
+                $targetActCat  = [];
+                $targetUserMonthlys = $this->queryGetTargetUserMonthlyActivity($currDate, $targetRegional);
+                
+                foreach ($targetUserMonthlys as $targetUserMonthly) {
+                    $nameAC = str_replace("-", "_", $targetUserMonthly->NAME_AC);
+                    $querySum[] = "
+                        SUM(
+                            (
+                                SELECT SUM(td.QTY_TD)
+                                FROM transaction_detail td
+                                , md_shop ms
+                                WHERE 
+                                    td.ID_TRANS = t.ID_TRANS
+                                    AND td.ID_SHOP = t.ID_SHOP
+                                    AND t.ID_TYPE = ".$targetUserMonthly->ID_AC."
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = '".$targetUserMonthly->NAME_AC."'
+                            ) 
+                        ) as ".$nameAC."
+                    ";
+                    $weightActCat[$nameAC] = $targetUserMonthly->PERCENTAGE_AC;
+                    $targetActCat[$nameAC] = $targetUserMonthly->TARGET;
+                }
+
+                $transUsers = $this->queryGetTransUser($querySum, $currDate, $targetRegional);
+
+                foreach ($transUsers as $transUser) {
+                    $arrTemp['ID_USER']             = $transUser->ID_USER;
+                    $arrTemp['ID_REGIONAL']         = $targetRegional->ID_REGIONAL;
+                    $arrTemp['ID_AREA']             = $transUser->ID_AREA;
+                    $arrTemp['NAME_REGIONAL']       = $targetRegional->NAME_REGIONAL;
+                    $arrTemp['NAME_AREA']           = $transUser->NAME_AREA;
+                    $arrTemp['NAME_USER']           = $transUser->NAME_USER;
+                    $arrTemp['ID_ROLE']             = $transUser->ID_ROLE;
+                    $arrTemp['TARGET_UB']           = $targetActCat['AKTIVITAS_UB'];
+                    $arrTemp['REAL_UB']             = $transUser->UB_UBLP != NULL ? $transUser->UB_UBLP : 0;
+                    $arrTemp['VSTARGET_UB']         = ($arrTemp['REAL_UB'] / $arrTemp['TARGET_UB']) * 100;
+                    $arrTemp['TARGET_PDGSAYUR']     = $targetActCat['PEDAGANG_SAYUR'];
+                    $arrTemp['REAL_PDGSAYUR']       = $transUser->PEDAGANG_SAYUR != NULL ? $transUser->PEDAGANG_SAYUR : 0;
+                    $arrTemp['VSTARGET_PDGSAYUR']   = ($arrTemp['REAL_PDGSAYUR'] / $arrTemp['TARGET_PDGSAYUR']) * 100;
+                    $arrTemp['TARGET_RETAIL']       = $targetActCat['RETAIL'];
+                    $arrTemp['REAL_RETAIL']         = $transUser->RETAIL != NULL ? $transUser->RETAIL : 0;
+                    $arrTemp['VSTARGET_RETAIL']     = ($arrTemp['REAL_RETAIL'] / $arrTemp['TARGET_RETAIL']) * 100;
+                    $arrTemp['WEIGHT_UB']           = $weightActCat['AKTIVITAS_UB'];
+                    $arrTemp['WEIGHT_PDGSAYUR']     = $weightActCat['PEDAGANG_SAYUR'];
+                    $arrTemp['WEIGHT_RETAIL']       = $weightActCat['RETAIL'];
+
+                    $avgCount = 0;
+                    if($weightActCat['AKTIVITAS_UB'] != 0) $avgCount++;
+                    if($weightActCat['PEDAGANG_SAYUR'] != 0) $avgCount++;
+                    if($weightActCat['RETAIL'] != 0) $avgCount++;
+
+                    $arrTemp['AVERAGE'] = ((($arrTemp['VSTARGET_UB'] / 100) * ($weightActCat['AKTIVITAS_UB'] / 100)));
+                    $arrTemp['AVERAGE'] += (($arrTemp['VSTARGET_PDGSAYUR'] / 100) * ($weightActCat['PEDAGANG_SAYUR'] / 100));
+                    $arrTemp['AVERAGE'] += (($arrTemp['VSTARGET_RETAIL'] / 100) * ($weightActCat['RETAIL'] / 100));
+                    $arrTemp['AVERAGE'] = $arrTemp['AVERAGE'] / $avgCount;
+
+                    $arrTemp['created_at']  = $currDateTime;
+                    $formData[] = $arrTemp;
+                }
+            }
+        }
+        if($formData != null){
+            UserRankingActivity::insert($formData);
+        }
+        dd($formData);
+    }
+
     public function queryGetTargetRegional($currDate){
         return DB::select("
             SELECT 
@@ -233,6 +316,79 @@ class CronjobController extends Controller
                 u.ID_ROLE ,
                 u.ID_AREA ,
                 ma.NAME_AREA ,
+                ".implode(', ', $querySum)."
+            FROM 
+                `transaction` t ,
+                `user` u ,
+                md_area ma 
+            WHERE
+                DATE(t.DATE_TRANS) = '".$currDate."'
+                AND u.ID_REGIONAL = ".$targetRegional->ID_REGIONAL."
+                AND t.ID_USER = u.ID_USER 
+                AND ma.ID_AREA = u.ID_AREA 
+            GROUP BY t.ID_USER 
+        ");
+    }
+
+    //ACTIVITY RANK
+    public function queryGetTargetRegionalActivity($currDate){
+        return DB::select("
+            SELECT 
+            mr.ID_REGIONAL, 
+            mr.NAME_REGIONAL, 
+            ma.ID_AREA ,
+            COUNT(ma.ID_AREA) as TOTAL_AREA ,
+            (
+                    SELECT SUM(ta.QUANTITY) 
+                    FROM target_activity ta 
+                    WHERE 
+                            DATE(ta.START_PP) <= '".$currDate."' 
+                            AND DATE(ta.END_PP) >= '".$currDate."'
+                            AND ta.ID_REGIONAL = ma.ID_REGIONAL 
+            ) as MONTH_TARGET
+            FROM md_area ma , md_regional mr 
+            WHERE 
+                    ma.deleted_at IS NULL
+                    AND ma.ID_REGIONAL = mr.ID_REGIONAL 
+            GROUP BY ma.ID_REGIONAL 
+        ");
+    }
+    public function queryGetTargetUserMonthlyActivity($currDate, $targetRegional){
+        return DB::select("
+            SELECT 
+            ta.ID_REGIONAL ,
+            mac.ID_AC ,
+            mac.NAME_AC ,
+            mac.PERCENTAGE_AC ,
+            ROUND(((SUM(ta.QUANTITY) / ".$targetRegional->TOTAL_AREA.") / 3) / 25) as TARGET
+            FROM 
+                    target_activity ta ,
+                    md_activity_category mac 
+            WHERE
+                    DATE(ta.START_PP) <= '".$currDate."' 
+                    AND DATE(ta.END_PP) >= '".$currDate."' 
+                    AND ta.ID_REGIONAL = ".$targetRegional->ID_AREA."
+                    AND ta.ID_ACTIVITY = mac.ID_AC 
+            GROUP BY mac.ID_AC
+        ");
+    }
+    public function queryGetTransUserActivity($querySum, $currDate, $targetRegional){
+        return DB::select("
+        SELECT 
+                u.ID_USER ,
+                u.NAME_USER ,
+                u.ID_ROLE ,
+                u.ID_AREA ,
+                ma.NAME_AREA ,
+                SUM(
+                    (
+                        SELECT SUM(td.QTY_TD)
+                            FROM transaction_detail td
+                            WHERE 
+                                td.ID_TRANS = t.ID_TRANS
+                                AND t.ID_TYPE IN (2,3)
+                    ) 
+                ) as UB_UBLP
                 ".implode(', ', $querySum)."
             FROM 
                 `transaction` t ,
