@@ -200,7 +200,7 @@ class CronjobController extends Controller
                 $targetUserMonthlys = $this->queryGetTargetUserMonthlyActivity($currDate, $targetRegional);
                 
                 foreach ($targetUserMonthlys as $targetUserMonthly) {
-                    $nameAC = str_replace("-", "_", $targetUserMonthly->NAME_AC);
+                    $nameAC = str_replace(" ", "_", $targetUserMonthly->NAME_AC);
                     $querySum[] = "
                         SUM(
                             (
