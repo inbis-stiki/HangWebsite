@@ -717,4 +717,104 @@ class CronjobController extends Controller
         }
         return $data;
     }
+
+    public function AktivitasAsmen(){
+        $month = date('n');
+        $user_asmens = DB::select("
+        SELECT
+            ml.ID_LOCATION,
+            ml.NAME_LOCATION,
+            (
+            SELECT
+                        u.NAME_USER
+                    FROM
+                        `user` u
+                    WHERE
+                        u.ID_ROLE = 3 
+                        AND u.ID_LOCATION = ml.ID_LOCATION
+                        LIMIT 1
+            ) AS NAME_USER
+        FROM
+            md_location ml
+        ");
+
+        foreach ($user_asmens as $user_asmen) {
+            $transAsmen = DB::select("
+            SELECT 
+            (
+                    SELECT
+                            QUANTITY
+                            FROM
+                            target_activity ta
+                            WHERE
+                                    ID_ACTIVITY = 1
+                                    AND ID_REGIONAL = usa.ID_REGIONAL
+                                    AND usa.ID_LOCATION = ml.ID_LOCATION
+            ) AS TARGET_UB, 
+            SUM(usa.REAL_UB) AS REAL_UB, 
+            usa.VSTARGET_UB, 
+            (
+                    SELECT
+                            QUANTITY
+                            FROM
+                            target_activity ta
+                            WHERE
+                                    ID_ACTIVITY = 2
+                                    AND ID_REGIONAL = usa.ID_REGIONAL
+                                    AND usa.ID_LOCATION = ml.ID_LOCATION
+            ) AS TARGET_PDGSAYUR, 
+            SUM(usa.REAL_PDGSAYUR) AS REAL_PDGSAYUR, 
+            usa.VSTARGET_PDGSAYUR, 
+            (
+                    SELECT
+                            QUANTITY
+                            FROM
+                            target_activity ta
+                            WHERE
+                                    ID_ACTIVITY = 3
+                                    AND ID_REGIONAL = usa.ID_REGIONAL
+                                    AND usa.ID_LOCATION = ml.ID_LOCATION
+            ) AS TARGET_RETAIL, 
+            SUM(usa.REAL_RETAIL) AS REAL_RETAIL, 
+            usa.VSTARGET_RETAIL, 
+            usa.AVERAGE, 
+            usa.ID_USER_RANKACTIVITY
+            FROM
+                    user_ranking_activity AS usa,
+                    md_location AS ml
+            WHERE
+                    usa.ID_LOCATION = ".$user_asmen->ID_LOCATION."
+                    AND usa.ID_LOCATION = ml.ID_LOCATION
+                    AND MONTH(DATE(usa.created_at)) = ".$month."
+            GROUP BY
+                    usa.ID_LOCATION
+            ");
+
+            $temp['NAME_USER']          = $user_asmen->NAME_USER;
+            $temp['NAME_REGIONAL']      = $user_asmen->NAME_LOCATION;
+            $temp['TARGET_UB']          = !empty($transAsmen[0]->TARGET_UB) ? $transAsmen[0]->TARGET_UB : "-";
+            $temp['REAL_UB']            = !empty($transAsmen[0]->REAL_UB) ? $transAsmen[0]->REAL_UB : "-";
+            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB']/$temp['TARGET_UB'])*100 : "-";
+            $temp['TARGET_PDGSAYUR']    = !empty($transAsmen[0]->TARGET_PDGSAYUR) ? $transAsmen[0]->TARGET_PDGSAYUR : "-";
+            $temp['REAL_PDGSAYUR']      = !empty($transAsmen[0]->REAL_PDGSAYUR) ? $transAsmen[0]->REAL_PDGSAYUR : "-";
+            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR']/$temp['TARGET_PDGSAYUR'])*100 : "-";
+            $temp['TARGET_RETAIL']      = !empty($transAsmen[0]->TARGET_RETAIL) ? $transAsmen[0]->TARGET_RETAIL : "-";
+            $temp['REAL_RETAIL']        = !empty($transAsmen[0]->REAL_RETAIL) ? $transAsmen[0]->REAL_RETAIL : "-";
+            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL']/$temp['TARGET_RETAIL'])*100 : "-";
+            
+            $weightActCat = ActivityCategory::where('deleted_at', NULL)->get()->toArray();
+            $avgCount = 0;
+            if($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
+
+            $temp['AVERAGE'] = (((float)$temp['VSTARGET_UB'] / 100) * ((float)$weightActCat[0]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_PDGSAYUR'] / 100) * ((float)$weightActCat[1]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_RETAIL'] / 100) * ((float)$weightActCat[2]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
+            
+            $data[] = $temp;
+        }
+        return $data;
+    }
 }

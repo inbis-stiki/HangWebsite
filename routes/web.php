@@ -31,6 +31,7 @@ Route::get('cronjob/update-daily-rangking', 'CronjobController@updateDailyRankin
 Route::get('cronjob/update-daily-rangking-activity', 'CronjobController@updateDailyRankingActivity');
 Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
+Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
 
 Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('dashboard', 'DashboardController@index');
