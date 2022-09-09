@@ -183,7 +183,7 @@
                                                     'coordinates': [<?= $coords[$i]['lng']; ?>, <?= $coords[$i]['lat']; ?>]
                                                 },
                                                 'properties': {
-                                                    'title': '<?= $coords[$i]['loc']; ?>'
+                                                    'title': "<?= $coords[$i]['loc']; ?>"
                                                 }
                                             }]
                                         }

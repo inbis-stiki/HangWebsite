@@ -20,10 +20,15 @@
                     <span class="nav-text text-primary">Faktur</span>
                 </a>
             </li>
-            <li class="active"><a href="#" class="ai-icon" aria-expanded="false">
+            <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
                     <img src="{{ asset('images/icon/laporan.svg') }}" alt="">&nbsp;
                     <span class="nav-text text-primary">Laporan</span>
                 </a>
+                <ul aria-expanded="false">
+                    <li><a href="{{ url('laporan/lpr-ranking') }}">Ranking</a></li>
+                    <li><a href="{{ url('laporan/lpr-trend') }}">Trend</a></li>
+                    <li><a href="{{ url('laporan/lpr-transaction') }}">Transaksi Harian</a></li>
+                </ul>
             </li>
             <li class="active"><a href="{{ url('presence') }}" class="ai-icon" aria-expanded="false">
                     <img src="{{ asset('images/icon/presensi.svg') }}" alt="">&nbsp;
@@ -54,7 +59,8 @@
                             <li style="margin-left: 25px"><a href="{{ url('master/location/area') }}">Area</a></li>
                             <li style="margin-left: 25px"><a href="{{ url('master/location/district') }}">Kecamatan</a>
                             </li>
-                            <li style="margin-left: 25px"><a href="{{ url('master/location/market') }}">Pasar</a></li>
+                            <li style="margin-left: 25px"><a href="{{ url('master/location/market') }}">Pasar</a>
+                            </li>
                         </ul>
                     </li>
                     @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 4)
