@@ -193,37 +193,22 @@ class CronjobController extends Controller
         $formData = [];
 
         $targetRegionals = $this->queryGetTargetRegionalActivity($currDate);
+        
 
         foreach ($targetRegionals as $targetRegional) {
             if($targetRegional->MONTH_TARGET != NULL){
-                $querySum       = [];
                 $weightActCat  = [];
                 $targetActCat  = [];
                 $targetUserMonthlys = $this->queryGetTargetUserMonthlyActivity($currDate, $targetRegional);
                 
                 foreach ($targetUserMonthlys as $targetUserMonthly) {
                     $nameAC = str_replace(" ", "_", $targetUserMonthly->NAME_AC);
-                    $querySum[] = "
-                        SUM(
-                            (
-                                SELECT SUM(td.QTY_TD)
-                                FROM transaction_detail td
-                                , md_shop ms
-                                WHERE 
-                                    td.ID_TRANS = t.ID_TRANS
-                                    AND td.ID_SHOP = t.ID_SHOP
-                                    AND t.ID_TYPE = ".$targetUserMonthly->ID_AC."
-                                    AND ms.ID_SHOP = t.ID_SHOP
-                                    AND ms.TYPE_SHOP = '".$targetUserMonthly->NAME_AC."'
-                            ) 
-                        ) as ".$nameAC."
-                    ";
                     $weightActCat[$nameAC] = $targetUserMonthly->PERCENTAGE_AC;
                     $targetActCat[$nameAC] = $targetUserMonthly->TARGET;
                 }
 
-                $transUsers = $this->queryGetTransUserActivity($querySum, $currDate, $targetRegional);
-
+                $transUsers = $this->queryGetTransUserActivity($currDate, $targetRegional);
+                
                 foreach ($transUsers as $transUser) {
                     $arrTemp['ID_USER']             = $transUser->ID_USER;
                     $arrTemp['ID_REGIONAL']         = $targetRegional->ID_REGIONAL;
@@ -233,7 +218,7 @@ class CronjobController extends Controller
                     $arrTemp['NAME_USER']           = $transUser->NAME_USER;
                     $arrTemp['ID_ROLE']             = $transUser->ID_ROLE;
                     $arrTemp['TARGET_UB']           = $targetActCat['AKTIVITAS_UB'];
-                    $arrTemp['REAL_UB']             = $transUser->UB_UBLP != NULL ? $transUser->UB_UBLP : 0;
+                    $arrTemp['REAL_UB']             = $transUser->AKTIVITAS_UB != NULL ? $transUser->AKTIVITAS_UB : 0;
                     $arrTemp['VSTARGET_UB']         = ($arrTemp['REAL_UB'] / $arrTemp['TARGET_UB']) * 100;
                     $arrTemp['TARGET_PDGSAYUR']     = $targetActCat['PEDAGANG_SAYUR'];
                     $arrTemp['REAL_PDGSAYUR']       = $transUser->PEDAGANG_SAYUR != NULL ? $transUser->PEDAGANG_SAYUR : 0;
@@ -304,7 +289,7 @@ class CronjobController extends Controller
             WHERE
                 DATE(ts.START_PP) <= '".$currDate."' 
                 AND DATE(ts.END_PP) >= '".$currDate."' 
-                AND ts.ID_REGIONAL = ".$targetRegional->ID_AREA."
+                AND ts.ID_REGIONAL = ".$targetRegional->ID_REGIONAL."
                 AND ts.ID_PRODUCT = mp.ID_PRODUCT 
                 AND mp.ID_PC = mpc.ID_PC 
             GROUP BY mpc.ID_PC 
@@ -369,12 +354,12 @@ class CronjobController extends Controller
             WHERE
                     DATE(ta.START_PP) <= '".$currDate."' 
                     AND DATE(ta.END_PP) >= '".$currDate."' 
-                    AND ta.ID_REGIONAL = ".$targetRegional->ID_AREA."
+                    AND ta.ID_REGIONAL = ".$targetRegional->ID_REGIONAL."
                     AND ta.ID_ACTIVITY = mac.ID_AC 
             GROUP BY mac.ID_AC
         ");
     }
-    public function queryGetTransUserActivity($querySum, $currDate, $targetRegional){
+    public function queryGetTransUserActivity($currDate, $targetRegional){
         return DB::select("
         SELECT 
                 u.ID_USER ,
@@ -390,8 +375,33 @@ class CronjobController extends Controller
                                 td.ID_TRANS = t.ID_TRANS
                                 AND t.ID_TYPE IN (2,3)
                     ) 
-                ) as UB_UBLP
-                ".implode(', ', $querySum)."
+                ) as AKTIVITAS_UB ,
+                SUM(
+                    (
+                        SELECT SUM(td.QTY_TD)
+                            FROM transaction_detail td
+                            , md_shop ms
+                            WHERE 
+                                td.ID_TRANS = t.ID_TRANS
+                                AND td.ID_SHOP = t.ID_SHOP
+                                AND t.ID_TYPE = 1
+                                AND ms.ID_SHOP = t.ID_SHOP
+                                AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                    ) 
+                ) as PEDAGANG_SAYUR ,
+                SUM(
+                    (
+                        SELECT SUM(td.QTY_TD)
+                            FROM transaction_detail td
+                            , md_shop ms
+                            WHERE 
+                                td.ID_TRANS = t.ID_TRANS
+                                AND td.ID_SHOP = t.ID_SHOP
+                                AND t.ID_TYPE = 1
+                                AND ms.ID_SHOP = t.ID_SHOP
+                                AND ms.TYPE_SHOP = 'Retail'
+                    ) 
+                ) as RETAIL
             FROM 
                 `transaction` t ,
                 `user` u ,
