@@ -416,7 +416,7 @@ class CronjobController extends Controller
         ");
     }
 
-    public function AktivitasRPOLapul(){
+    public function AktivitasRPODapul(){
         $month = date('n');
         $data = array();
         $user_regionals = DB::select("
@@ -438,6 +438,108 @@ class CronjobController extends Controller
             md_location ml
         WHERE
             ml.ISINSIDE_LOCATION = 1
+            AND mr.ID_LOCATION = ml.ID_LOCATION           
+        ");
+        
+        foreach ($user_regionals as $user_regional) {
+            $activity_rankings = DB::select("
+            SELECT 
+            (
+                SELECT
+                    QUANTITY
+                    FROM
+                    target_activity ta
+                    WHERE
+                        ID_ACTIVITY = 1
+                        AND ID_REGIONAL = usa.ID_REGIONAL
+            ) AS TARGET_UB, 
+            SUM(usa.REAL_UB) AS REAL_UB, 
+            usa.VSTARGET_UB, 
+            (
+                SELECT
+                    QUANTITY
+                    FROM
+                    target_activity ta
+                    WHERE
+                        ID_ACTIVITY = 2
+                        AND ID_REGIONAL = usa.ID_REGIONAL
+            ) AS TARGET_PDGSAYUR, 
+            SUM(usa.REAL_PDGSAYUR) AS REAL_PDGSAYUR, 
+            usa.VSTARGET_PDGSAYUR, 
+            (
+                SELECT
+                    QUANTITY
+                    FROM
+                    target_activity ta
+                    WHERE
+                        ID_ACTIVITY = 3
+                        AND ID_REGIONAL = usa.ID_REGIONAL
+            ) AS TARGET_RETAIL, 
+            SUM(usa.REAL_RETAIL) AS REAL_RETAIL, 
+            usa.VSTARGET_RETAIL, 
+            usa.AVERAGE, 
+            usa.ID_USER_RANKACTIVITY
+            FROM
+                user_ranking_activity AS usa,
+                md_regional AS mr
+            WHERE
+                usa.ID_REGIONAL	= ".$user_regional->ID_REGIONAL."
+                AND usa.ID_REGIONAL = mr.ID_REGIONAL
+                AND MONTH(DATE(usa.created_at)) = ".$month."
+            GROUP BY
+                usa.ID_REGIONAL
+            ");
+
+            $temp['NAME_USER']          = $user_regional->NAME_USER;
+            $temp['NAME_REGIONAL']      = $user_regional->NAME_REGIONAL;
+            $temp['TARGET_UB']          = !empty($activity_rankings[0]->TARGET_UB) ? $activity_rankings[0]->TARGET_UB : "-";
+            $temp['REAL_UB']            = !empty($activity_rankings[0]->REAL_UB) ? $activity_rankings[0]->REAL_UB : "-";
+            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB']/$temp['TARGET_UB'])*100 : "-";
+            $temp['TARGET_PDGSAYUR']    = !empty($activity_rankings[0]->TARGET_PDGSAYUR) ? $activity_rankings[0]->TARGET_PDGSAYUR : "-";
+            $temp['REAL_PDGSAYUR']      = !empty($activity_rankings[0]->REAL_PDGSAYUR) ? $activity_rankings[0]->REAL_PDGSAYUR : "-";
+            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR']/$temp['TARGET_PDGSAYUR'])*100 : "-";
+            $temp['TARGET_RETAIL']      = !empty($activity_rankings[0]->TARGET_RETAIL) ? $activity_rankings[0]->TARGET_RETAIL : "-";
+            $temp['REAL_RETAIL']        = !empty($activity_rankings[0]->REAL_RETAIL) ? $activity_rankings[0]->REAL_RETAIL : "-";
+            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL']/$temp['TARGET_RETAIL'])*100 : "-";
+            
+            $weightActCat = ActivityCategory::where('deleted_at', NULL)->get()->toArray();
+            $avgCount = 0;
+            if($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
+
+            $temp['AVERAGE'] = (((float)$temp['VSTARGET_UB'] / 100) * ((float)$weightActCat[0]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_PDGSAYUR'] / 100) * ((float)$weightActCat[1]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_RETAIL'] / 100) * ((float)$weightActCat[2]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
+            
+            $data[] = $temp;
+        }
+        return $data;
+    }
+
+    public function AktivitasRPOLapul(){
+        $month = date('n');
+        $data = array();
+        $user_regionals = DB::select("
+        SELECT
+        (
+            SELECT
+                u.NAME_USER
+            FROM
+                `user` u
+            WHERE
+                u.ID_ROLE = 4 
+                AND u.ID_REGIONAL = mr.ID_REGIONAL
+                LIMIT 1
+        ) AS NAME_USER,
+        mr.NAME_REGIONAL,
+        mr.ID_REGIONAL
+        FROM
+            md_regional mr,
+            md_location ml
+        WHERE
+            ml.ISINSIDE_LOCATION = 0
             AND mr.ID_LOCATION = ml.ID_LOCATION           
         ");
         
