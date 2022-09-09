@@ -9,6 +9,7 @@ use App\UserRankingSale;
 use App\UserRankingActivity;
 use App\ReportExcell;
 use App\ActivityCategory;
+use App\CategoryProduct;
 use AWS\CRT\HTTP\Request;
 use Carbon\Carbon;
 use Exception;
@@ -811,6 +812,115 @@ class CronjobController extends Controller
             $temp['AVERAGE'] = (((float)$temp['VSTARGET_UB'] / 100) * ((float)$weightActCat[0]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_PDGSAYUR'] / 100) * ((float)$weightActCat[1]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_RETAIL'] / 100) * ((float)$weightActCat[2]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
+            
+            $data[] = $temp;
+        }
+        return $data;
+    }
+
+    public function PencapaianAsmen(){
+        $month = date('n');
+        $user_asmens = DB::select("
+        SELECT
+            ml.ID_LOCATION,
+            ml.NAME_LOCATION,
+            (
+            SELECT
+                        u.NAME_USER
+                    FROM
+                        `user` u
+                    WHERE
+                        u.ID_ROLE = 3 
+                        AND u.ID_LOCATION = ml.ID_LOCATION
+                        LIMIT 1
+            ) AS NAME_USER
+        FROM
+            md_location ml
+        ");
+
+        foreach ($user_asmens as $user_asmen) {
+            $pcpAsmen = DB::select("
+            SELECT 
+            (
+                    SELECT
+                            QUANTITY
+                            FROM
+                            target_sale ts,
+                            md_product mp
+                            WHERE
+                                    mp.ID_PC = 12
+                                    AND ts.ID_PRODUCT = mp.ID_PRODUCT
+                                    AND ID_REGIONAL = urs.ID_REGIONAL
+                                    AND urs.ID_LOCATION = ml.ID_LOCATION
+                                    LIMIT 1
+            ) AS TARGET_UST, 
+            SUM(urs.REAL_UST) AS REAL_UST, 
+            urs.VSTARGET_UST, 
+            (
+                    SELECT
+                            QUANTITY
+                            FROM
+                            target_sale ts,
+                            md_product mp
+                            WHERE
+                                    mp.ID_PC = 2
+                                    AND ts.ID_PRODUCT = mp.ID_PRODUCT
+                                    AND ID_REGIONAL = urs.ID_REGIONAL
+                                    AND urs.ID_LOCATION = ml.ID_LOCATION
+                                    LIMIT 1
+            ) AS TARGET_NONUST, 
+            SUM(urs.REAL_NONUST) AS REAL_NONUST, 
+            urs.VSTARGET_NONUST, 
+            (
+                    SELECT
+                            QUANTITY
+                            FROM
+                            target_sale ts,
+                            md_product mp
+                            WHERE
+                                    mp.ID_PC = 3
+                                    AND ts.ID_PRODUCT = mp.ID_PRODUCT
+                                    AND ID_REGIONAL = urs.ID_REGIONAL
+                                    AND urs.ID_LOCATION = ml.ID_LOCATION
+                                    LIMIT 1
+            ) AS TARGET_SELERAKU, 
+            SUM(urs.REAL_SELERAKU) AS REAL_SELERAKU, 
+            urs.VSTARGET_SELERAKU, 
+            urs.AVERAGE, 
+            urs.ID_USER_RANKSALE
+            FROM
+                    user_ranking_sale AS urs,
+                    md_location AS ml
+            WHERE
+                    urs.ID_LOCATION = ".$user_asmen->ID_LOCATION."
+                    AND urs.ID_LOCATION = ml.ID_LOCATION
+                    AND MONTH(DATE(urs.created_at)) = ".$month."
+            GROUP BY
+                    urs.ID_LOCATION
+            ");
+
+            $temp['NAME_USER']          = $user_asmen->NAME_USER;
+            $temp['NAME_REGIONAL']      = $user_asmen->NAME_LOCATION;
+            $temp['TARGET_UST']         = !empty($pcpAsmen[0]->TARGET_UST) ? $pcpAsmen[0]->TARGET_UST : "-";
+            $temp['REAL_UST']           = !empty($pcpAsmen[0]->REAL_UST) ? $pcpAsmen[0]->REAL_UST : "-";
+            $temp['VSTARGET_UST']       = $temp['REAL_UST'] != "-" && $temp['TARGET_UST'] != "-" ? ($temp['REAL_UST']/$temp['TARGET_UST'])*100 : "-";
+            $temp['TARGET_NONUST']      = !empty($pcpAsmen[0]->TARGET_NONUST) ? $pcpAsmen[0]->TARGET_NONUST : "-";
+            $temp['REAL_NONUST']        = !empty($pcpAsmen[0]->REAL_NONUST) ? $pcpAsmen[0]->REAL_NONUST : "-";
+            $temp['VSTARGET_NONUST']    = $temp['REAL_NONUST'] != "-" && $temp['TARGET_NONUST'] != "-" ? ($temp['REAL_NONUST']/$temp['TARGET_NONUST'])*100 : "-";
+            $temp['TARGET_SELERAKU']    = !empty($pcpAsmen[0]->TARGET_SELERAKU) ? $pcpAsmen[0]->TARGET_SELERAKU : "-";
+            $temp['REAL_SELERAKU']      = !empty($pcpAsmen[0]->REAL_SELERAKU) ? $pcpAsmen[0]->REAL_SELERAKU : "-";
+            $temp['VSTARGET_SELERAKU']  = $temp['REAL_SELERAKU'] != "-" && $temp['TARGET_SELERAKU'] != "-" ? ($temp['REAL_SELERAKU']/$temp['TARGET_SELERAKU'])*100 : "-";
+            
+            $weightProdCat = CategoryProduct::where('deleted_at', NULL)->get()->toArray();
+            $avgCount = 0;
+            if($weightProdCat[0]["PERCENTAGE_PC"] != 0) $avgCount++;
+            if($weightProdCat[1]["PERCENTAGE_PC"] != 0) $avgCount++;
+            if($weightProdCat[2]["PERCENTAGE_PC"] != 0) $avgCount++;
+
+            $temp['AVERAGE'] = (((float)$temp['VSTARGET_UST'] / 100) * ((float)$weightProdCat[0]["PERCENTAGE_PC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_NONUST'] / 100) * ((float)$weightProdCat[1]["PERCENTAGE_PC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_SELERAKU'] / 100) * ((float)$weightProdCat[2]["PERCENTAGE_PC"] / 100));
             $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
             
             $data[] = $temp;
