@@ -101,9 +101,11 @@ class CronjobController extends Controller
 
     public function TestTemplate()
     {
-        app(ReportExcell::class)->generate_ranking_rpo();
+        // app(ReportExcell::class)->generate_ranking_rpo();
         // app(ReportExcell::class)->generate_ranking_asmen();
         // app(ReportExcell::class)->generate_transaksi_harian();
+        // app(ReportExcell::class)->generate_trend_asmen();
+        app(ReportExcell::class)->generate_trend_rpo();
     }
 
     public function updateDailyRanking(){
