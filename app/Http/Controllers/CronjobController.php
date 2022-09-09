@@ -186,7 +186,7 @@ class CronjobController extends Controller
     //ACTIVITY RANK
     public function updateDailyRankingActivity(){
         date_default_timezone_set("Asia/Bangkok");
-        $currDate       = '2022-08-30';
+        $currDate       = date('Y-m-d');
         $currDateTime   = date('Y-m-d H:i:s');
         $formData = [];
 
