@@ -18,6 +18,7 @@ Route::get('testimage', 'ImageController@create');
 Route::post('testimage', 'ImageController@store');
 Route::get('testimage/{image}', 'ImageController@show');
 Route::get('testTemplate', 'CronjobController@TestTemplate');
+Route::get('tesQuery', 'CronjobController@tesQuery');
 
 //Login
 Route::get('/', 'AuthController@login');
@@ -28,8 +29,12 @@ Route::get('cronjob/shop/recomendation', 'CronjobController@cronjob_store_rekome
 Route::get('cronjob/rangking', 'CronjobController@cronjob_template_rangking');
 Route::get('cronjob/update-daily-rangking', 'CronjobController@updateDailyRanking');
 Route::get('cronjob/update-daily-rangking-activity', 'CronjobController@updateDailyRankingActivity');
+Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
+Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
+Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
+Route::get('cronjob/pencapaianasmen', 'CronjobController@PencapaianAsmen');
 
-Route::group(['middleware' => ['checkLogin']], function() {
+Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('dashboard', 'DashboardController@index');
 
     // MASTER LOCATION
@@ -84,7 +89,7 @@ Route::group(['middleware' => ['checkLogin']], function() {
     Route::get('master/category-product', 'CategoryProductController@index');
     Route::get('master/category-product/store', 'CategoryProductController@store');
     Route::get('master/category-product/update', 'CategoryProductController@update');
-    Route::get('master/category-product/destroy', 'CategoryProductController@destroy');    
+    Route::get('master/category-product/destroy', 'CategoryProductController@destroy');
 
     //MASTER PRODUK
     Route::get('master/product', 'ProductController@index');
@@ -105,11 +110,11 @@ Route::group(['middleware' => ['checkLogin']], function() {
     Route::get('master/user/destroy', 'UserController@destroy');
 
     // MASTER ROLE
-    Route::group(['middleware' => ['checkRole:1']], function() {
-    Route::get('master/role', 'RoleController@index');
-    Route::get('master/role/store', 'RoleController@store');
-    Route::get('master/role/update', 'RoleController@update');
-    Route::get('master/role/destroy', 'RoleController@destroy');
+    Route::group(['middleware' => ['checkRole:1']], function () {
+        Route::get('master/role', 'RoleController@index');
+        Route::get('master/role/store', 'RoleController@store');
+        Route::get('master/role/update', 'RoleController@update');
+        Route::get('master/role/destroy', 'RoleController@destroy');
     });
 
     // PRESENCE
@@ -134,4 +139,8 @@ Route::group(['middleware' => ['checkLogin']], function() {
     //MASTER USER TARGET
     Route::get('master/user-target', 'UserTargetController@index');
 
-    });
+    //LAPORAN
+    Route::get('laporan/lpr-ranking', 'ReportRankingController@index');
+    Route::get('laporan/lpr-trend', 'ReportTrendController@index');
+    Route::get('laporan/lpr-transaction', 'ReportTransactionController@index');
+});
