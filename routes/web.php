@@ -18,6 +18,7 @@ Route::get('testimage', 'ImageController@create');
 Route::post('testimage', 'ImageController@store');
 Route::get('testimage/{image}', 'ImageController@show');
 Route::get('testTemplate', 'CronjobController@TestTemplate');
+Route::get('tesQuery', 'CronjobController@tesQuery');
 
 //Login
 Route::get('/', 'AuthController@login');

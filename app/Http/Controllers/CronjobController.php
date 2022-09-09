@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Product;
 use App\Recomendation;
 use App\UserRankingSale;
 use App\UserRankingActivity;
@@ -401,5 +402,95 @@ class CronjobController extends Controller
                 AND ma.ID_AREA = u.ID_AREA 
             GROUP BY t.ID_USER 
         ");
+    }
+    public function tesQuery(){
+        $data       = array();
+        $currDate   = '2022-08-30';
+        $idRegional = 7;
+
+        $users = DB::select("
+            SELECT 
+                u.ID_USER ,
+                u.NAME_USER , 
+                mr.NAME_ROLE as ROLE_USER,
+                mre.NAME_REGIONAL ,
+                ma.NAME_AREA 
+            FROM 
+                `user` u,
+                md_regional mre ,
+                md_area ma ,
+                md_role mr 
+            WHERE
+                u.ID_REGIONAL = '".$idRegional."'
+                AND mr.ID_ROLE = u.ID_ROLE 
+                AND mr.NAME_ROLE IN('APO', 'SALES')
+                AND mre.ID_REGIONAL = u.ID_REGIONAL 
+                AND ma.ID_AREA = u.ID_AREA 
+            ORDER BY ma.ID_AREA  ASC, mr.NAME_ROLE ASC
+        ");
+
+        foreach ($users as $user) {
+            $products = Product::where('deleted_at', NULL)->get();
+            $sumQuery = [];
+            foreach ($products as $product) {
+                $sumQuery[] = "
+                    (
+                        SELECT SUM(td2.QTY_TD) as TOTAL
+                        FROM transaction t, transaction_detail td2 
+                        WHERE 
+                            t.ID_USER = '".$user->ID_USER."'
+                            AND DATE(t.DATE_TRANS) = '".$currDate."'
+                            AND t.ID_TRANS = td2.ID_TRANS 
+                            AND td2.ID_PRODUCT = ".$product->ID_PRODUCT."
+                    ) AS '".$product->CODE_PRODUCT."'
+                ";
+            }
+
+            $trans = DB::select("
+                SELECT 
+                    mt.NAME_TYPE as TYPE,
+                    td.ID_TD ,
+                    ".implode(',', $sumQuery).",
+                    (
+                        SELECT SUM(td2.QTY_TD) as TOTAL
+                        FROM transaction t, transaction_detail td2
+                        WHERE
+                            t.ID_USER = '".$user->ID_USER."'
+                            AND DATE(t.DATE_TRANS) = '".$currDate."'
+                            AND t.ID_TRANS = td2.ID_TRANS 
+                    ) AS TOTAL_DISPLAY
+                FROM 
+                    transaction_daily td ,
+                    md_type mt  
+                WHERE 
+                    td.ID_USER = '".$user->ID_USER."'
+                    AND DATE(td.DATE_TD) = '".$currDate."'
+                    AND mt.ID_TYPE = td.ID_TYPE 
+            ");
+
+            $temp['DATE_TRANS']     = '30 August 2022';
+            $temp['NAME_USER']      = $user->NAME_USER;
+            $temp['ROLE_USER']      = $user->ROLE_USER;
+            $temp['AREA_TRANS']     = $user->ROLE_USER;
+            $temp['TYPE']           = !empty($trans[0]->TYPE) ? $trans[0]->TYPE : '-';
+            $temp['UST']            = !empty($trans[0]->UST20) ? $trans[0]->UST20 : '-';
+            $temp['USU']            = !empty($trans[0]->USU18) ? $trans[0]->USU18 : '-';
+            $temp['USP']            = !empty($trans[0]->USP20) ? $trans[0]->USP20 : '-';
+            $temp['USI']            = !empty($trans[0]->USI20) ? $trans[0]->USI20 : '-';
+            $temp['USTR']           = !empty($trans[0]->USTR18) ? $trans[0]->USTR18 : '-';
+            $temp['USB']            = !empty($trans[0]->USB20) ? $trans[0]->USB20 : '-';
+            $temp['USK']            = !empty($trans[0]->USK20) ? $trans[0]->USK20 : '-';
+            $temp['USR']            = !empty($trans[0]->USR20) ? $trans[0]->USR20 : '-';
+            $temp['UBNG']           = '-';
+            $temp['FSU']            = !empty($trans[0]->FSU60) ? $trans[0]->FSU60 : '-';
+            $temp['FSB']            = !empty($trans[0]->FSB60) ? $trans[0]->FSB60 : '-';
+            $temp['TOTAL_DISPLAY']  = !empty($trans[0]->TOTAL_DISPLAY) ? $trans[0]->TOTAL_DISPLAY : '-';
+            
+
+            $data[] = $temp;
+        }
+        // dump();
+        
+        dd($data);
     }
 }
