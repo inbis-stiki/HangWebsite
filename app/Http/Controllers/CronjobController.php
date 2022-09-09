@@ -148,6 +148,7 @@ class CronjobController extends Controller
                 foreach ($transUsers as $transUser) {
                     $arrTemp['ID_USER']             = $transUser->ID_USER;
                     $arrTemp['ID_REGIONAL']         = $targetRegional->ID_REGIONAL;
+                    $arrTemp['ID_LOCATION']         = $targetRegional->ID_LOCATION;
                     $arrTemp['ID_AREA']             = $transUser->ID_AREA;
                     $arrTemp['NAME_REGIONAL']       = $targetRegional->NAME_REGIONAL;
                     $arrTemp['NAME_AREA']           = $transUser->NAME_AREA;
@@ -214,6 +215,7 @@ class CronjobController extends Controller
                 foreach ($transUsers as $transUser) {
                     $arrTemp['ID_USER']             = $transUser->ID_USER;
                     $arrTemp['ID_REGIONAL']         = $targetRegional->ID_REGIONAL;
+                    $arrTemp['ID_LOCATION']         = $targetRegional->ID_LOCATION;
                     $arrTemp['ID_AREA']             = $transUser->ID_AREA;
                     $arrTemp['NAME_REGIONAL']       = $targetRegional->NAME_REGIONAL;
                     $arrTemp['NAME_AREA']           = $transUser->NAME_AREA;
@@ -257,6 +259,7 @@ class CronjobController extends Controller
         return DB::select("
             SELECT 
                 mr.ID_REGIONAL, 
+                ml.ID_LOCATION,
                 mr.NAME_REGIONAL, 
                 ma.ID_AREA ,
                 COUNT(ma.ID_AREA) as TOTAL_AREA ,
@@ -268,10 +271,11 @@ class CronjobController extends Controller
                         AND DATE(ts.END_PP) >= '".$currDate."'
                         AND ts.ID_REGIONAL = ma.ID_REGIONAL 
                 ) as MONTH_TARGET
-            FROM md_area ma , md_regional mr 
+            FROM md_area ma , md_regional mr , md_location ml
             WHERE 
                 ma.deleted_at IS NULL
                 AND ma.ID_REGIONAL = mr.ID_REGIONAL 
+                AND mr.ID_LOCATION = ml.ID_LOCATION
             GROUP BY ma.ID_REGIONAL 
         ");
     }
@@ -324,6 +328,7 @@ class CronjobController extends Controller
         return DB::select("
             SELECT 
             mr.ID_REGIONAL, 
+            ml.ID_LOCATION,
             mr.NAME_REGIONAL, 
             ma.ID_AREA ,
             COUNT(ma.ID_AREA) as TOTAL_AREA ,
@@ -335,10 +340,11 @@ class CronjobController extends Controller
                             AND DATE(ta.END_PP) >= '".$currDate."'
                             AND ta.ID_REGIONAL = ma.ID_REGIONAL 
             ) as MONTH_TARGET
-            FROM md_area ma , md_regional mr 
+            FROM md_area ma , md_regional mr , md_location ml
             WHERE 
                     ma.deleted_at IS NULL
                     AND ma.ID_REGIONAL = mr.ID_REGIONAL 
+                    AND mr.ID_LOCATION = ml.ID_LOCATION
             GROUP BY ma.ID_REGIONAL 
         ");
     }
