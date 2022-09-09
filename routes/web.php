@@ -18,6 +18,7 @@ Route::get('testimage', 'ImageController@create');
 Route::post('testimage', 'ImageController@store');
 Route::get('testimage/{image}', 'ImageController@show');
 Route::get('testTemplate', 'CronjobController@TestTemplate');
+Route::get('tesQuery', 'CronjobController@tesQuery');
 
 //Login
 Route::get('/', 'AuthController@login');
@@ -28,6 +29,10 @@ Route::get('cronjob/shop/recomendation', 'CronjobController@cronjob_store_rekome
 Route::get('cronjob/rangking', 'CronjobController@cronjob_template_rangking');
 Route::get('cronjob/update-daily-rangking', 'CronjobController@updateDailyRanking');
 Route::get('cronjob/update-daily-rangking-activity', 'CronjobController@updateDailyRankingActivity');
+Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
+Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
+Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
+Route::get('cronjob/pencapaianasmen', 'CronjobController@PencapaianAsmen');
 
 Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('dashboard', 'DashboardController@index');

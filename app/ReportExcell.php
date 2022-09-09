@@ -23,6 +23,13 @@ class ReportExcell
             "AVERAGE" => 1.77885,
             "ID_USER_RANKSALE" => 1
         ]
+    );    
+
+    protected $dataPencapaianApoSPG = array(
+        [
+            "NAME_USER" => "Imanda",
+            "NAME_AREA" => "MALANG 2",
+        ]
     );
 
     protected $dataAktifitasRPOLapul = array(
