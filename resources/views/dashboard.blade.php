@@ -1,5 +1,27 @@
 @include('template/header')
 @include('template/sidebar')
+
+<style>
+    .tgt {
+        border-style: solid;
+        border-color: #3F3D56;
+    }
+
+    .real {
+        border-left-style: solid;
+        border-right-style: solid;
+        border-color: #3F3D56;
+    }
+
+    .vstgt {
+        border-style: solid;
+        border-color: #3F3D56;
+    }
+
+    .bg-dark-custom {
+        background-color: #3F3D56;
+    }
+</style>
 <!--**********************************
     Content body start
 ***********************************-->
@@ -8,314 +30,399 @@
     <div class="container-fluid">
         <!-- Add Order -->
         <div class="row">
-            <div class="col-xl-3 col-xxl-4">
-                <div class="row">
-                    <div class="col-xl-12 col-md-6">
-                        <div class="card">
-                            <div class="card-header border-0 pb-0">
-                                <h4 class="fs-20">Best Selling</h4>
-                                <select class="form-control style-1 default-select ">
-                                    <option>This Week</option>
-                                    <option>Next Week</option>
-                                    <option>This Month</option>
-                                    <option>Next Month</option>
-                                </select>
-                            </div>
-                            <div class="card-body">
-                                <div id="donutChart"></div>
-                                <div class="d-flex justify-content-between mt-4">
-                                    <div class="pr-2">
-                                        <svg width="20" height="8" viewBox="0 0 20 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <rect width="20" height="8" rx="4" fill="#214BB8"/>
-                                        </svg>
-                                        <h4 class="fs-18 text-black mb-1 font-w600">21,512</h4>
-                                        <span class="fs-14">Ticket Left</span>
-                                    </div>
-                                    <div class="pr-2">
-                                        <svg width="20" height="8" viewBox="0 0 20 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <rect width="20" height="8" rx="4" fill="#F26F21"/>
-                                        </svg>
-                                        <h4 class="fs-18 text-black mb-1 font-w600">45,612</h4>
-                                        <span class="fs-14">Ticket Sold</span>
-                                    </div>
-                                    <div class="">
-                                        <svg width="20" height="8" viewBox="0 0 20 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <rect width="20" height="8" rx="4" fill="#45ADDA"/>
-                                        </svg>
-                                        <h4 class="fs-18 text-black mb-1 font-w600">275</h4>
-                                        <span class="fs-14">Event Held</span>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-header pb-0 d-block d-flex border-0">
+                        <h3 class="fs-16 font-weight-bolder text-black mb-0">Trend</h3>
+                        <div class="card-action revenue-tabs mt-3 mt-sm-0 ml-5">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active fs-12" data-toggle="tab" href="#" role="tab"
+                                        aria-selected="false">
+                                        UST
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-12" data-toggle="tab" href="#" role="tab"
+                                        aria-selected="false">
+                                        Non UST
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-12" data-toggle="tab" href="#" role="tab"
+                                        aria-selected="false">
+                                        Seleraku
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="d-flex ml-auto">
+                            <select name="" id="" class="form-control default-select fs-12">
+                                <option selected value="0">Tahun</option>
+                                <option value="">2021</option>
+                                <option value="">2022</option>
+                                <option value="">2023</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="col-xl-12 col-md-6">
-                        <div class="card">
-                            <div class="card-header border-0 pb-0">
-                                <h4 class="fs-20">Latest Sales</h4>
-                                <select class="form-control style-1 default-select ">
-                                    <option>This Week</option>
-                                    <option>Next Week</option>
-                                    <option>This Month</option>
-                                    <option>Next Month</option>
-                                </select>
-                            </div>
-                            <div class="card-body pb-0 dz-scroll height630 loadmore-content" id="latestSalesContent">
-                                <div class="pb-3 mb-3 border-bottom">
-                                    <p class="font-w600"><a href="event.html" class="text-black">The Story’s of Danau Toba (Drama Theater)</a></p>
-                                    <div class="d-flex align-items-end">
-                                        <img src="images/profile/20.jpg" alt="" width="42" class="rounded-circle mr-2">
-                                        <div class="mr-auto">
-                                            <h4 class="fs-14 mb-0"><a href="app-profile.html" class="text-black">Steffany Humble</a></h4>
-                                            <span class="fs-12">2m ago</span>
-                                        </div>
-                                        <span class="badge badge-sm light badge-primary">4 Ticket</span>
-                                    </div>
-                                </div>
-                                <div class="pb-3 mb-3 border-bottom">
-                                    <p class="font-w600"><a href="event.html" class="text-black">Envato Author SF Meetup</a></p>
-                                    <div class="d-flex align-items-end">
-                                        <img src="images/profile/21.jpg" alt="" width="42" class="rounded-circle mr-2">
-                                        <div class="mr-auto">
-                                            <h4 class="fs-14 mb-0"><a href="app-profile.com" class="text-black">Jacob Swing Swing</a></h4>
-                                            <span class="fs-12">6h ago</span>
-                                        </div>
-                                        <span class="badge badge-sm light badge-primary">2 Ticket</span>
-                                    </div>
-                                </div>
-                                <div class="pb-3 mb-3 border-bottom">
-                                    <p class="font-w600"><a href="event.html" class="text-black">Envato Atuhor Community Fun Hiking at Sibayak Mountaint</a></p>
-                                    <div class="d-flex align-items-end">
-                                        <img src="images/profile/22.jpg" alt="" width="42" class="rounded-circle mr-2">
-                                        <div class="mr-auto">
-                                            <h4 class="fs-14 mb-0"><a href="app-profile.com" class="text-black">Robert Carloz</a></h4>
-                                            <span class="fs-12">10h ago</span>
-                                        </div>
-                                        <span class="badge badge-sm light badge-primary">1 Ticket</span>
-                                    </div>
-                                </div>
-                                <div class="pb-3 mb-3 border-bottom">
-                                    <p class="font-w600"><a href="event.html" class="text-black">Indonesia Envato Authors National Meetup</a></p>
-                                    <div class="d-flex align-items-end">
-                                        <img src="images/profile/23.jpg" alt="" width="42" class="rounded-circle mr-2">
-                                        <div class="mr-auto">
-                                            <h4 class="fs-14 mb-0"><a href="app-profile.com" class="text-black">Kevin Stefanus</a></h4>
-                                            <span class="fs-12">2m ago</span>
-                                        </div>
-                                        <span class="badge badge-sm light badge-primary">1 Ticket</span>
-                                    </div>
-                                </div>
-                                <div class="pb-3 mb-3 border-bottom">
-                                    <p class="font-w600"><a href="event.html" class="text-black">Envato Author SF Meetup</a></p>
-                                    <div class="d-flex align-items-end">
-                                        <img src="images/profile/21.jpg" alt="" width="42" class="rounded-circle mr-2">
-                                        <div class="mr-auto">
-                                            <h4 class="fs-14 mb-0"><a href="app-profile.com" class="text-black">Jacob Swing Swing</a></h4>
-                                            <span class="fs-12">6h ago</span>
-                                        </div>
-                                        <span class="badge badge-sm light badge-primary">2 Ticket</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer text-center border-0">
-                                <a class="btn btn-primary btn-sm dz-load-more" id="latestSales" href="javascript:void(0)" rel="ajax/latest-sales.html">View More</a>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="LineChart" role="tabpanel">
+                                {{-- <canvas id="" class="chart"></canvas> --}}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-9 col-xxl-8">
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header pb-0 d-block d-flex flex-row justify-content-start border-0">
+                        <h3 class="fs-16 text-black font-weight-bolder mb-0">Ranking</h3>
+                        <div class="card-action revenue-tabs mt-3 mt-sm-0 ml-5">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active fs-12" data-toggle="tab" href="#" role="tab"
+                                        aria-selected="false">
+                                        Aktivitas
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-12" data-toggle="tab" href="#" role="tab"
+                                        aria-selected="false">
+                                        Pencapaian
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="card text-black mb-3" style="max-width: 18rem; background-color: #F3F2F0;">
+                                    <div class="card-body">
+                                        <h5 class="card-title fs-14">ASMEN</h5>
+                                        <div class="table">
+                                            <table id="datatables" class="table table-light rounded ml-n3">
+                                                <tbody class="fs-12">
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nama</td>
+                                                        <td>Area</td>
+                                                        <td>54.7%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nama</td>
+                                                        <td>Area</td>
+                                                        <td>54.7%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nama</td>
+                                                        <td>Area</td>
+                                                        <td>54.7%</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="card text-white mb-3" style="max-width: 18rem; background-color: #F3F2F0;">
+                                    <div class="card-body">
+                                        <h5 class="card-title fs-14">RPO</h5>
+                                        <div class="table">
+                                            <table id="datatables" class="table table-light rounded ml-n3">
+                                                <tbody class="fs-12">
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nama</td>
+                                                        <td>Area</td>
+                                                        <td>54.7%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nama</td>
+                                                        <td>Area</td>
+                                                        <td>54.7%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nama</td>
+                                                        <td>Area</td>
+                                                        <td>54.7%</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm ">
+                                <div class="card text-white mb-3" style="max-width: 18rem; background-color: #F3F2F0;">
+                                    <div class="card-body">
+                                        <h5 class="card-title fs-14">APO</h5>
+                                        <div class="table">
+                                            <table id="datatables" class="table table-light rounded ml-n3">
+                                                <tbody class="fs-12">
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nama</td>
+                                                        <td>Area</td>
+                                                        <td>54.7%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nama</td>
+                                                        <td>Area</td>
+                                                        <td>54.7%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Nama</td>
+                                                        <td>Area</td>
+                                                        <td>54.7%</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3 class="fs-16 text-black font-weight-bolder mb-3">Ranking</h3>
                 <div class="row">
-                    <div class="col-xl-4 col-xxl-6 col-lg-4 col-sm-6">
-                        <div class="card">
+                    <div class="col">
+                        <div class="card text-black mb-3" style="max-width: 18rem;">
                             <div class="card-body">
-                                <div class="d-flex align-items-end">
-                                    <div>
-                                        <p class="fs-14 mb-1">New Sales</p>
-                                        <span class="fs-35 text-black font-w600">93
-                                            <svg class="ml-1" width="19" height="12" viewBox="0 0 19 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M2.00401 11.1924C0.222201 11.1924 -0.670134 9.0381 0.589795 7.77817L7.78218 0.585786C8.56323 -0.195262 9.82956 -0.195262 10.6106 0.585786L17.803 7.77817C19.0629 9.0381 18.1706 11.1924 16.3888 11.1924H2.00401Z" fill="#33C25B"/>
-                                            </svg>
-                                        </span>
+                                <h5 class="card-title fs-14">Aktivitas UB</h5>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="radialBar1" role="tabpanel">
+                                        {{-- <canvas id="" class="chart"></canvas> --}}
                                     </div>
-                                    <canvas class="lineChart" id="chart_widget_2" height="85"></canvas>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-xxl-6 col-lg-4 col-sm-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <p class="fs-14 mb-1">Event Held</p>
-                                        <span class="fs-35 text-black font-w600">856
-                                            <svg class="ml-1" width="19" height="12" viewBox="0 0 19 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M2.00401 11.1924C0.222201 11.1924 -0.670134 9.0381 0.589795 7.77817L7.78218 0.585786C8.56323 -0.195262 9.82956 -0.195262 10.6106 0.585786L17.803 7.77817C19.0629 9.0381 18.1706 11.1924 16.3888 11.1924H2.00401Z" fill="#33C25B"/>
-                                            </svg>
-                                        </span>
-                                    </div>
-                                    <div class="d-inline-block ml-auto position-relative donut-chart-sale">
-                                        <span class="donut" data-peity='{ "fill": ["rgb(254, 99, 78)", "rgba(244, 244, 244, 1)"],   "innerRadius": 31, "radius": 10}'>6/8</span>
-                                        <small class="text-secondary">90%</small>
+                                <div class="basic-form mt-4">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                            <div class="col text-black text-center tgt">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                            <div class="col text-black text-center real">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                            <div class="col text-primary text-center vstgt">76.3%</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-4 col-xxl-12 col-lg-4">
-                        <div class="card">
-                            <div class="card-header align-items-start pb-0 border-0">	
-                                <div>
-                                    <h4 class="fs-16 mb-0 text-black font-w600">Increase 25%</h4>
-                                    <span class="fs-12">Comparisson</span>
-                                </div>
-                                <select class="form-control style-1 default-select ">
-                                    <option>Daily</option>
-                                    <option>Monthly</option>
-                                    <option>Weekly</option>
-                                </select>
-                            </div>
-                            <div class="card-body pt-0">
-                                <canvas id="widgetChart1" height="50"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-12">
-                        <div class="card" id="sales-revenue">
-                            <div class="card-header pb-0 d-block d-sm-flex border-0">
-                                <h3 class="fs-20 text-black mb-0">Sales Revenue</h3>
-                                <div class="card-action revenue-tabs mt-3 mt-sm-0">
-                                    <ul class="nav nav-tabs" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" data-toggle="tab" href="#monthly" role="tab" aria-selected="false">
-                                                Monthly
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#weekly" role="tab" aria-selected="false">
-                                                Weekly
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" data-toggle="tab" href="#today" role="tab" aria-selected="true">
-                                                Daily
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="col">
+                        <div class="card text-white mb-3" style="max-width: 18rem;">
                             <div class="card-body">
-                                <div class="tab-content" id="myTabContent">
-                                    <div class="tab-pane fade show active" id="user" role="tabpanel">
-                                        <canvas id="revenue" class="chartjs"></canvas>
+                                <h5 class="card-title fs-14">Pedagang Sayur</h5>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="radialBar2" role="tabpanel">
+                                        {{-- <canvas id="" class="chart"></canvas> --}}
+                                    </div>
+                                </div>
+                                <div class="basic-form mt-4">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                            <div class="col text-black text-center tgt">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                            <div class="col text-black text-center real">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                            <div class="col text-primary text-center vstgt">76.3%</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-12">
-                        <div class="card">
-                            <div class="card-header border-0 pb-sm-0 pb-5">
-                                <h4 class="fs-20">Recent Event List</h4>
-                                <div class="dropdown custom-dropdown mb-0">
-                                    <div data-toggle="dropdown">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M12 12.9999C12.5523 12.9999 13 12.5522 13 11.9999C13 11.4477 12.5523 10.9999 12 10.9999C11.4477 10.9999 11 11.4477 11 11.9999C11 12.5522 11.4477 12.9999 12 12.9999Z" stroke="#7E7E7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M12 5.99994C12.5523 5.99994 13 5.55222 13 4.99994C13 4.44765 12.5523 3.99994 12 3.99994C11.4477 3.99994 11 4.44765 11 4.99994C11 5.55222 11.4477 5.99994 12 5.99994Z" stroke="#7E7E7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M12 19.9999C12.5523 19.9999 13 19.5522 13 18.9999C13 18.4477 12.5523 17.9999 12 17.9999C11.4477 17.9999 11 18.4477 11 18.9999C11 19.5522 11.4477 19.9999 12 19.9999Z" stroke="#7E7E7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </div>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="javascript:void(0);">Details</a>
-                                        <a class="dropdown-item text-danger" href="javascript:void(0);">Cancel</a>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="col">
+                        <div class="card text-white mb-3" style="max-width: 18rem;">
                             <div class="card-body">
-                                <div class="event-bx owl-carousel">
-                                    <div class="items">
-                                        <div class="image-bx">
-                                            <img src="images/events/1.png" alt="">
-                                            <div class="info">
-                                                <p class="fs-18 font-w600"><a href="event-detail.html" class="text-black">International Live Choice Festivals (2020)</a></p>
-                                                <span class="fs-14 text-black d-block mb-3">Manchester, London</span>
-                                                <p class="fs-12">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad mini</p>
-                                                <ul>
-                                                    <li><i class="las la-dollar-sign"></i>$124,00</li>
-                                                    <li><i class="las la-calendar"></i>June 20, 2020</li>
-                                                    <li><i class="fa fa-ticket"></i>561 pcs</li>
-                                                    <li><i class="las la-clock"></i>08:35 AM</li>
-                                                </ul>
-                                            </div>
-                                        </div>
+                                <h5 class="card-title fs-14">Retail</h5>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="radialBar3" role="tabpanel">
+                                        {{-- <canvas id="" class="chart"></canvas> --}}
                                     </div>
-                                    <div class="items">
-                                        <div class="image-bx">
-                                            <img src="images/events/3.png" alt="">
-                                            <div class="info">
-                                                <p class="fs-18 font-w600"><a href="event-detail.html" class="text-black">Envato Atuhor Community Fun Hiking at Sibayak Mt.</a></p>
-                                                <span class="fs-14 text-black d-block mb-3">London, United Kingdom</span>
-                                                <p class="fs-12">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad mini</p>
-                                                <ul>
-                                                    <li><i class="las la-dollar-sign"></i>$124,00</li>
-                                                    <li><i class="las la-calendar"></i>June 20, 2020</li>
-                                                    <li><i class="fa fa-ticket"></i>561 pcs</li>
-                                                    <li><i class="las la-clock"></i>08:35 AM</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="items">
-                                        <div class="image-bx">
-                                            <img src="images/events/1.png" alt="">
-                                            <div class="info">
-                                                <p class="fs-18 font-w600"><a href="event-detail.html" class="text-black">International Live Choice Festivals (2020)</a></p>
-                                                <span class="fs-14 text-black d-block mb-3">Manchester, London</span>
-                                                <p class="fs-12">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad mini</p>
-                                                <ul>
-                                                    <li><i class="las la-dollar-sign"></i>$124,00</li>
-                                                    <li><i class="las la-calendar"></i>June 20, 2020</li>
-                                                    <li><i class="fa fa-ticket"></i>561 pcs</li>
-                                                    <li><i class="las la-clock"></i>08:35 AM</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="items">
-                                        <div class="image-bx">
-                                            <img src="images/events/2.png" alt="">
-                                            <div class="info">
-                                                <p class="fs-18 font-w600"><a href="event-detail.html" class="text-black">Envato Indonesian Authors Meetup 2020</a></p>
-                                                <span class="fs-14 text-black d-block mb-3">Medan, Indonesia</span>
-                                                <p class="fs-12">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad mini</p>
-                                                <ul>
-                                                    <li><i class="las la-dollar-sign"></i>$124,00</li>
-                                                    <li><i class="las la-calendar"></i>June 20, 2020</li>
-                                                    <li><i class="fa fa-ticket"></i>561 pcs</li>
-                                                    <li><i class="las la-clock"></i>08:35 AM</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="items">
-                                        <div class="image-bx">
-                                            <img src="images/events/3.png" alt="">
-                                            <div class="info">
-                                                <p class="fs-18 font-w600"><a href="event-detail.html" class="text-black">Envato Atuhor Community Fun Hiking at Sibayak Mt.</a></p>
-                                                <span class="fs-14 text-black d-block mb-3">London, United Kingdom</span>
-                                                <p class="fs-12">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad mini</p>
-                                                <ul>
-                                                    <li><i class="las la-dollar-sign"></i>$124,00</li>
-                                                    <li><i class="las la-calendar"></i>June 20, 2020</li>
-                                                    <li><i class="fa fa-ticket"></i>561 pcs</li>
-                                                    <li><i class="las la-clock"></i>08:35 AM</li>
-                                                </ul>
-                                            </div>
+                                </div>
+                                <div class="basic-form mt-4">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                            <div class="col text-black text-center tgt">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                            <div class="col text-black text-center real">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                            <div class="col text-primary text-center vstgt">76.3%</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3 class="fs-16 text-black font-weight-bolder mb-3">Pencapaian</h3>
+                <div class="row">
+                    <div class="col">
+                        <div class="card text-black mb-3" style="max-width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title fs-14">Non UST</h5>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="donut1" role="tabpanel">
+                                        {{-- <canvas id="" class="chart"></canvas> --}}
+                                    </div>
+                                </div>
+                                <div class="basic-form mt-4">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                            <div class="col text-black text-center tgt">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                            <div class="col text-black text-center real">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                            <div class="col text-primary text-center vstgt">76.3%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white mb-3" style="max-width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title fs-14">UST</h5>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="donut2" role="tabpanel">
+                                        {{-- <canvas id="" class="chart"></canvas> --}}
+                                    </div>
+                                </div>
+                                <div class="basic-form mt-4">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                            <div class="col text-black text-center tgt">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                            <div class="col text-black text-center real">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                            <div class="col text-primary text-center vstgt">76.3%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white mb-3" style="max-width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title fs-14">Seleraku</h5>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="donut3" role="tabpanel">
+                                        {{-- <canvas id="" class="chart"></canvas> --}}
+                                    </div>
+                                </div>
+                                <div class="basic-form mt-4">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                            <div class="col text-black text-center tgt">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                            <div class="col text-black text-center real">161</div>
+                                            <div class="w-100"></div>
+                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                            <div class="col text-primary text-center vstgt">76.3%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header pb-0 d-block d-flex flex-row justify-content-start border-0">
+                        <h3 class="fs-16 text-black font-weight-bolder mb-0">Presensi</h3>
+                        <div class="basic-form ml-auto pr-2">
+                            <form>
+                                <div class="form-row">
+                                    <div class="col mt-2 mt-sm-0">
+                                        <select name="" id="" class="form-control default-select">
+                                            <option selected value="0">Area</option>
+                                            <option value="1">Spreading</option>
+                                            <option value="2">UB</option>
+                                            <option value="3">UBLP</option>
+                                        </select>
+                                    </div>
+                                    <div class="col mt-2 mt-sm-0">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <button class="btn btn-light" type="button"><i
+                                                        class="flaticon-381-calendar-1 pl-2"></i></button>
+                                            </div>
+                                            <input type="text" class="form-control input-default"
+                                                id="datePresensi" placeholder="Tanggal">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-responsive-md">
+                                <thead>
+                                    <tr>
+                                        <th class="font-weight-bolder fs-14 text-black">Nama</th>
+                                        <th class="font-weight-bolder fs-14 text-black">Area</th>
+                                        <th class="font-weight-bolder fs-14 text-black">Jumlah</th>
+                                        <th class="font-weight-bolder fs-14 text-black">Bulan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fs-12">Nama</td>
+                                        <td class="fs-12">Area</td>
+                                        <td class="fs-12">Jumlah</td>
+                                        <td class="fs-12">Bulan</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fs-12">Nama</td>
+                                        <td class="fs-12">Area</td>
+                                        <td class="fs-12">Jumlah</td>
+                                        <td class="fs-12">Bulan</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -327,3 +434,343 @@
     Content body end
 ***********************************-->
 @include('template/footer')
+
+<script>
+    var options = {
+        colors: ["#EC1D25", "#F26F21", "#F8C460"],
+        series: [{
+                name: "ASMEN 1",
+                data: [12, 31, 38, 58, 48, 68, 69, 91, 148, 12, 76, 40]
+            },
+            {
+                name: "ASMEN 2",
+                data: [15, 21, 39, 55, 45, 76, 73, 57, 12, 36, 19, 87]
+            },
+            {
+                name: "ASMEN 3",
+                data: [9, 41, 32, 52, 42, 91, 41, 64, 47, 16, 29, 38]
+            }
+        ],
+        chart: {
+            height: 350,
+            type: 'line',
+            zoom: {
+                enabled: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        grid: {
+            row: {
+                colors: ['#f3f3f3', 'transparent'],
+                opacity: 0.5
+            },
+        },
+        xaxis: {
+            categories: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+        },
+        legend: {
+            position: 'bottom',
+            horizontalAlign: 'left',
+        },
+    };
+
+    var chart = new ApexCharts(document.querySelector("#LineChart"), options);
+    chart.render();
+
+    //FlatPicker
+    $("#datePresensi").flatpickr({
+        dateFormat: "m-Y"
+    });
+
+    //BEGIN RADIAL BAR CHART
+    var optionsCircle1 = {
+        chart: {
+            type: 'radialBar',
+            height: 300,
+            zoom: {
+                enabled: false
+            },
+            offsetY: 20
+        },
+        colors: ["#F26F21"],
+        plotOptions: {
+            radialBar: {
+                dataLabels: {
+                    name: {
+                        show: false
+                    },
+                    value: {
+                        offsetY: 0
+                    }
+                }
+            }
+        },
+        series: [76.3],
+        theme: {
+            monochrome: {
+                enabled: false
+            }
+        },
+        legend: {
+            show: false
+        },
+    }
+
+    var chartCircle1 = new ApexCharts(document.querySelector('#radialBar1'), optionsCircle1);
+    chartCircle1.render();
+
+    var optionsCircle2 = {
+        chart: {
+            type: 'radialBar',
+            height: 300,
+            zoom: {
+                enabled: false
+            },
+            offsetY: 20
+        },
+        colors: ["#F26F21"],
+        plotOptions: {
+            radialBar: {
+                dataLabels: {
+                    name: {
+                        show: false
+                    },
+                    value: {
+                        offsetY: 0
+                    }
+                }
+            }
+        },
+        series: [76.3],
+        theme: {
+            monochrome: {
+                enabled: false
+            }
+        },
+        legend: {
+            show: false
+        },
+    }
+
+    var chartCircle2 = new ApexCharts(document.querySelector('#radialBar2'), optionsCircle2);
+    chartCircle2.render();
+    
+    var optionsCircle3 = {
+        chart: {
+            type: 'radialBar',
+            height: 300,
+            zoom: {
+                enabled: false
+            },
+            offsetY: 20
+        },
+        colors: ["#F26F21"],
+        plotOptions: {
+            radialBar: {
+                dataLabels: {
+                    name: {
+                        show: false
+                    },
+                    value: {
+                        offsetY: 0
+                    }
+                }
+            }
+        },
+        series: [76.3],
+        theme: {
+            monochrome: {
+                enabled: false
+            }
+        },
+        legend: {
+            show: false
+        },
+    }
+
+    var chartCircle3 = new ApexCharts(document.querySelector('#radialBar3'), optionsCircle3);
+    chartCircle3.render();
+
+    //BEGIN DONUT CHART
+    var donut1 = {
+        colors: ["#3F3D56", "#F26F21"],
+        series: [44, 55],
+
+        chart: {
+            width: 240,
+            type: 'donut',
+            sparkline: {
+                enabled: true
+            },
+        },
+        stroke: {
+            width: 0,
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    labels: {
+                        show: true,
+                        color: "#F26F21",
+                        total: {
+                            showAlways: true,
+                            show: true
+                        }
+                    }
+                }
+            }
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        fill: {
+            type: 'donut',
+            opacity: 1,
+        },
+        states: {
+            hover: {
+                filter: 'none'
+            }
+        },
+        theme: {
+            palette: 'palette2'
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    show: false,
+                }
+            }
+        }]
+    };
+
+    var donut1 = new ApexCharts(document.querySelector("#donut1"), donut1);
+    donut1.render();
+
+    var donut2 = {
+        colors: ["#3F3D56", "#F26F21"],
+        series: [44, 55],
+
+        chart: {
+            width: 240,
+            type: 'donut',
+            sparkline: {
+                enabled: true
+            },
+        },
+        stroke: {
+            width: 0,
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    labels: {
+                        show: true,
+                        color: "#F26F21",
+                        total: {
+                            showAlways: true,
+                            show: true
+                        }
+                    }
+                }
+            }
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        fill: {
+            type: 'donut',
+            opacity: 1,
+        },
+        states: {
+            hover: {
+                filter: 'none'
+            }
+        },
+        theme: {
+            palette: 'palette2'
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    show: false,
+                }
+            }
+        }]
+    };
+
+    var donut2 = new ApexCharts(document.querySelector("#donut2"), donut2);
+    donut2.render();
+
+    var donut3 = {
+        colors: ["#3F3D56", "#F26F21"],
+        series: [44, 55],
+
+        chart: {
+            width: 240,
+            type: 'donut',
+            sparkline: {
+                enabled: true
+            },
+        },
+        stroke: {
+            width: 0,
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    labels: {
+                        show: true,
+                        color: "#F26F21",
+                        total: {
+                            showAlways: true,
+                            show: true
+                        }
+                    }
+                }
+            }
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        fill: {
+            type: 'donut',
+            opacity: 1,
+        },
+        states: {
+            hover: {
+                filter: 'none'
+            }
+        },
+        theme: {
+            palette: 'palette2'
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    show: false,
+                }
+            }
+        }]
+    };
+
+    var donut3 = new ApexCharts(document.querySelector("#donut3"), donut3);
+    donut3.render();
+</script>

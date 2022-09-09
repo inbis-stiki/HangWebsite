@@ -38,6 +38,13 @@
  <!-- Chart piety plugin files -->
  <script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
 
+ 
+{{-- ApexCharts --}}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+{{-- FlatPicker --}}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
  <!-- Apex Chart -->
  {{-- <script src="{{ asset('vendor/apexchart/apexchart.js') }}"></script> --}}
 
