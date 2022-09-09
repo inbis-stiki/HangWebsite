@@ -49,6 +49,8 @@ class ReportExcell
         [
             "NAME_USER" => "Imanda",
             "NAME_AREA" => "MALANG 2",
+        ]
+    );
 
     protected $dataAktifitasRPOLapul = array(
         [
