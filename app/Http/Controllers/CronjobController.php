@@ -417,7 +417,7 @@ class CronjobController extends Controller
     }
 
     public function AktivitasRPOLapul(){
-        $month = 9;
+        $month = date('n');
         $data = array();
         $user_regionals = DB::select("
         SELECT
