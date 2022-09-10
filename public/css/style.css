@@ -31011,3 +31011,6 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
       color: #fff; }
 
 /*# sourceMappingURL=style.css.map */
+.img-grey {
+  filter: brightness(0) saturate(100%) invert(51%) sepia(0%) saturate(0%) hue-rotate(346deg) brightness(96%) contrast(90%)!important;
+};
