@@ -102,17 +102,19 @@ class CronjobController extends Controller
         }
     }
 
-    public function TestTemplate()
+    public function TestTemplate(ReportExcell $Excell_Reporting)
     {
-        // app(ReportExcell::class)->generate_ranking_rpo();
-        // app(ReportExcell::class)->generate_ranking_asmen();
-        // app(ReportExcell::class)->generate_transaksi_harian();
-        // app(ReportExcell::class)->generate_trend_asmen();
-        app(ReportExcell::class)->generate_ranking_apo_spg();
-        // app(ReportExcell::class)->generate_trend_rpo();
+        // $Excell_Reporting->set_data($this->AktivitasRPOLapul(), $this->AktivitasRPODapul(), $this->AktivitasAsmen(), $this->PencapaianAsmen());
+        // $Excell_Reporting->generate_ranking_rpo();
+        $Excell_Reporting->generate_ranking_asmen();
+        // $Excell_Reporting->generate_transaksi_harian();
+        // $Excell_Reporting->generate_trend_asmen();
+        // $Excell_Reporting->generate_ranking_apo_spg();
+        // $Excell_Reporting->generate_trend_rpo();
     }
 
-    public function updateDailyRanking(){
+    public function updateDailyRanking()
+    {
         date_default_timezone_set("Asia/Bangkok");
         $currDate       = date('Y-m-d');
         $currDateTime   = date('Y-m-d H:i:s');
@@ -121,12 +123,12 @@ class CronjobController extends Controller
         $targetRegionals = $this->queryGetTargetRegional($currDate);
 
         foreach ($targetRegionals as $targetRegional) {
-            if($targetRegional->MONTH_TARGET != NULL){
+            if ($targetRegional->MONTH_TARGET != NULL) {
                 $querySum       = [];
                 $weightProdCat  = [];
                 $targetProdCat  = [];
                 $targetUserMonthlys = $this->queryGetTargetUserMonthly($currDate, $targetRegional);
-                
+
                 foreach ($targetUserMonthlys as $targetUserMonthly) {
                     $namePC = str_replace("-", "_", $targetUserMonthly->NAME_PC);
                     $querySum[] = "
@@ -137,9 +139,9 @@ class CronjobController extends Controller
                                 WHERE 
                                     td.ID_TRANS = t.ID_TRANS  
                                     AND td.ID_PRODUCT = mp.ID_PRODUCT 
-                                    AND mp.ID_PC = ".$targetUserMonthly->ID_PC."
+                                    AND mp.ID_PC = " . $targetUserMonthly->ID_PC . "
                             ) 
-                        ) as ".$namePC."
+                        ) as " . $namePC . "
                     ";
                     $weightProdCat[$namePC] = $targetUserMonthly->PERCENTAGE_PC;
                     $targetProdCat[$namePC] = $targetUserMonthly->TARGET;
@@ -170,9 +172,9 @@ class CronjobController extends Controller
                     $arrTemp['WEIGHT_SELERAKU']     = $weightProdCat['Seleraku'];
 
                     $avgCount = 0;
-                    if($weightProdCat['UST'] != 0) $avgCount++;
-                    if($weightProdCat['NON_UST'] != 0) $avgCount++;
-                    if($weightProdCat['Seleraku'] != 0) $avgCount++;
+                    if ($weightProdCat['UST'] != 0) $avgCount++;
+                    if ($weightProdCat['NON_UST'] != 0) $avgCount++;
+                    if ($weightProdCat['Seleraku'] != 0) $avgCount++;
 
                     $arrTemp['AVERAGE'] = ((($arrTemp['VSTARGET_UST'] / 100) * ($weightProdCat['UST'] / 100)));
                     $arrTemp['AVERAGE'] += (($arrTemp['VSTARGET_NONUST'] / 100) * ($weightProdCat['NON_UST'] / 100));
@@ -184,28 +186,29 @@ class CronjobController extends Controller
                 }
             }
         }
-        if($formData != null){
+        if ($formData != null) {
             UserRankingSale::insert($formData);
         }
         dd($formData);
     }
 
     //ACTIVITY RANK
-    public function updateDailyRankingActivity(){
+    public function updateDailyRankingActivity()
+    {
         date_default_timezone_set("Asia/Bangkok");
         $currDate       = date('Y-m-d');
         $currDateTime   = date('Y-m-d H:i:s');
         $formData = [];
 
         $targetRegionals = $this->queryGetTargetRegionalActivity($currDate);
-        
+
 
         foreach ($targetRegionals as $targetRegional) {
-            if($targetRegional->MONTH_TARGET != NULL){
+            if ($targetRegional->MONTH_TARGET != NULL) {
                 $weightActCat  = [];
                 $targetActCat  = [];
                 $targetUserMonthlys = $this->queryGetTargetUserMonthlyActivity($currDate, $targetRegional);
-                
+
                 foreach ($targetUserMonthlys as $targetUserMonthly) {
                     $nameAC = str_replace(" ", "_", $targetUserMonthly->NAME_AC);
                     $weightActCat[$nameAC] = $targetUserMonthly->PERCENTAGE_AC;
@@ -213,7 +216,7 @@ class CronjobController extends Controller
                 }
 
                 $transUsers = $this->queryGetTransUserActivity($currDate, $targetRegional);
-                
+
                 foreach ($transUsers as $transUser) {
                     $arrTemp['ID_USER']             = $transUser->ID_USER;
                     $arrTemp['ID_REGIONAL']         = $targetRegional->ID_REGIONAL;
@@ -237,9 +240,9 @@ class CronjobController extends Controller
                     $arrTemp['WEIGHT_RETAIL']       = $weightActCat['RETAIL'];
 
                     $avgCount = 0;
-                    if($weightActCat['AKTIVITAS_UB'] != 0) $avgCount++;
-                    if($weightActCat['PEDAGANG_SAYUR'] != 0) $avgCount++;
-                    if($weightActCat['RETAIL'] != 0) $avgCount++;
+                    if ($weightActCat['AKTIVITAS_UB'] != 0) $avgCount++;
+                    if ($weightActCat['PEDAGANG_SAYUR'] != 0) $avgCount++;
+                    if ($weightActCat['RETAIL'] != 0) $avgCount++;
 
                     $arrTemp['AVERAGE'] = ((($arrTemp['VSTARGET_UB'] / 100) * ($weightActCat['AKTIVITAS_UB'] / 100)));
                     $arrTemp['AVERAGE'] += (($arrTemp['VSTARGET_PDGSAYUR'] / 100) * ($weightActCat['PEDAGANG_SAYUR'] / 100));
@@ -251,13 +254,14 @@ class CronjobController extends Controller
                 }
             }
         }
-        if($formData != null){
+        if ($formData != null) {
             UserRankingActivity::insert($formData);
         }
         dd($formData);
     }
 
-    public function queryGetTargetRegional($currDate){
+    public function queryGetTargetRegional($currDate)
+    {
         return DB::select("
             SELECT 
                 mr.ID_REGIONAL, 
@@ -269,8 +273,8 @@ class CronjobController extends Controller
                     SELECT SUM(ts.QUANTITY) 
                     FROM target_sale ts 
                     WHERE 
-                        DATE(ts.START_PP) <= '".$currDate."' 
-                        AND DATE(ts.END_PP) >= '".$currDate."'
+                        DATE(ts.START_PP) <= '" . $currDate . "' 
+                        AND DATE(ts.END_PP) >= '" . $currDate . "'
                         AND ts.ID_REGIONAL = ma.ID_REGIONAL 
                 ) as MONTH_TARGET
             FROM md_area ma , md_regional mr , md_location ml
@@ -281,7 +285,8 @@ class CronjobController extends Controller
             GROUP BY ma.ID_REGIONAL 
         ");
     }
-    public function queryGetTargetUserMonthly($currDate, $targetRegional){
+    public function queryGetTargetUserMonthly($currDate, $targetRegional)
+    {
         return DB::select("
             SELECT 
                 ts.ID_REGIONAL ,
@@ -289,21 +294,22 @@ class CronjobController extends Controller
                 mp.ID_PRODUCT ,
                 mpc.NAME_PC ,
                 mpc.PERCENTAGE_PC ,
-                ROUND(((SUM(ts.QUANTITY) / ".$targetRegional->TOTAL_AREA.") / 3) / 25) as TARGET
+                ROUND(((SUM(ts.QUANTITY) / " . $targetRegional->TOTAL_AREA . ") / 3) / 25) as TARGET
             FROM 
                 target_sale ts ,
                 md_product mp ,
                 md_product_category mpc 
             WHERE
-                DATE(ts.START_PP) <= '".$currDate."' 
-                AND DATE(ts.END_PP) >= '".$currDate."' 
-                AND ts.ID_REGIONAL = ".$targetRegional->ID_REGIONAL."
+                DATE(ts.START_PP) <= '" . $currDate . "' 
+                AND DATE(ts.END_PP) >= '" . $currDate . "' 
+                AND ts.ID_REGIONAL = " . $targetRegional->ID_REGIONAL . "
                 AND ts.ID_PRODUCT = mp.ID_PRODUCT 
                 AND mp.ID_PC = mpc.ID_PC 
             GROUP BY mpc.ID_PC 
         ");
     }
-    public function queryGetTransUser($querySum, $currDate, $targetRegional){
+    public function queryGetTransUser($querySum, $currDate, $targetRegional)
+    {
         return DB::select("
             SELECT 
                 u.ID_USER ,
@@ -311,14 +317,14 @@ class CronjobController extends Controller
                 u.ID_ROLE ,
                 u.ID_AREA ,
                 ma.NAME_AREA ,
-                ".implode(', ', $querySum)."
+                " . implode(', ', $querySum) . "
             FROM 
                 `transaction` t ,
                 `user` u ,
                 md_area ma 
             WHERE
-                DATE(t.DATE_TRANS) = '".$currDate."'
-                AND u.ID_REGIONAL = ".$targetRegional->ID_REGIONAL."
+                DATE(t.DATE_TRANS) = '" . $currDate . "'
+                AND u.ID_REGIONAL = " . $targetRegional->ID_REGIONAL . "
                 AND t.ID_USER = u.ID_USER 
                 AND ma.ID_AREA = u.ID_AREA 
             GROUP BY t.ID_USER 
@@ -326,7 +332,8 @@ class CronjobController extends Controller
     }
 
     //ACTIVITY RANK
-    public function queryGetTargetRegionalActivity($currDate){
+    public function queryGetTargetRegionalActivity($currDate)
+    {
         return DB::select("
             SELECT 
             mr.ID_REGIONAL, 
@@ -338,8 +345,8 @@ class CronjobController extends Controller
                     SELECT SUM(ta.QUANTITY) 
                     FROM target_activity ta 
                     WHERE 
-                            DATE(ta.START_PP) <= '".$currDate."' 
-                            AND DATE(ta.END_PP) >= '".$currDate."'
+                            DATE(ta.START_PP) <= '" . $currDate . "' 
+                            AND DATE(ta.END_PP) >= '" . $currDate . "'
                             AND ta.ID_REGIONAL = ma.ID_REGIONAL 
             ) as MONTH_TARGET
             FROM md_area ma , md_regional mr , md_location ml
@@ -350,26 +357,28 @@ class CronjobController extends Controller
             GROUP BY ma.ID_REGIONAL 
         ");
     }
-    public function queryGetTargetUserMonthlyActivity($currDate, $targetRegional){
+    public function queryGetTargetUserMonthlyActivity($currDate, $targetRegional)
+    {
         return DB::select("
             SELECT 
             ta.ID_REGIONAL ,
             mac.ID_AC ,
             mac.NAME_AC ,
             mac.PERCENTAGE_AC ,
-            ROUND(((SUM(ta.QUANTITY) / ".$targetRegional->TOTAL_AREA.") / 3) / 25) as TARGET
+            ROUND(((SUM(ta.QUANTITY) / " . $targetRegional->TOTAL_AREA . ") / 3) / 25) as TARGET
             FROM 
                     target_activity ta ,
                     md_activity_category mac 
             WHERE
-                    DATE(ta.START_PP) <= '".$currDate."' 
-                    AND DATE(ta.END_PP) >= '".$currDate."' 
-                    AND ta.ID_REGIONAL = ".$targetRegional->ID_REGIONAL."
+                    DATE(ta.START_PP) <= '" . $currDate . "' 
+                    AND DATE(ta.END_PP) >= '" . $currDate . "' 
+                    AND ta.ID_REGIONAL = " . $targetRegional->ID_REGIONAL . "
                     AND ta.ID_ACTIVITY = mac.ID_AC 
             GROUP BY mac.ID_AC
         ");
     }
-    public function queryGetTransUserActivity($currDate, $targetRegional){
+    public function queryGetTransUserActivity($currDate, $targetRegional)
+    {
         return DB::select("
         SELECT 
                 u.ID_USER ,
@@ -417,14 +426,15 @@ class CronjobController extends Controller
                 `user` u ,
                 md_area ma 
             WHERE
-                DATE(t.DATE_TRANS) = '".$currDate."'
-                AND u.ID_REGIONAL = ".$targetRegional->ID_REGIONAL."
+                DATE(t.DATE_TRANS) = '" . $currDate . "'
+                AND u.ID_REGIONAL = " . $targetRegional->ID_REGIONAL . "
                 AND t.ID_USER = u.ID_USER 
                 AND ma.ID_AREA = u.ID_AREA 
             GROUP BY t.ID_USER 
         ");
     }
-    public function tesQuery(){
+    public function tesQuery()
+    {
         $data       = array();
         $currDate   = '2022-08-30';
         $idRegional = 7;
@@ -442,7 +452,7 @@ class CronjobController extends Controller
                 md_area ma ,
                 md_role mr 
             WHERE
-                u.ID_REGIONAL = '".$idRegional."'
+                u.ID_REGIONAL = '" . $idRegional . "'
                 AND mr.ID_ROLE = u.ID_ROLE 
                 AND mr.NAME_ROLE IN('APO', 'SALES')
                 AND mre.ID_REGIONAL = u.ID_REGIONAL 
@@ -459,11 +469,11 @@ class CronjobController extends Controller
                         SELECT SUM(td2.QTY_TD) as TOTAL
                         FROM transaction t, transaction_detail td2 
                         WHERE 
-                            t.ID_USER = '".$user->ID_USER."'
-                            AND DATE(t.DATE_TRANS) = '".$currDate."'
+                            t.ID_USER = '" . $user->ID_USER . "'
+                            AND DATE(t.DATE_TRANS) = '" . $currDate . "'
                             AND t.ID_TRANS = td2.ID_TRANS 
-                            AND td2.ID_PRODUCT = ".$product->ID_PRODUCT."
-                    ) AS '".$product->CODE_PRODUCT."'
+                            AND td2.ID_PRODUCT = " . $product->ID_PRODUCT . "
+                    ) AS '" . $product->CODE_PRODUCT . "'
                 ";
             }
 
@@ -471,21 +481,21 @@ class CronjobController extends Controller
                 SELECT 
                     mt.NAME_TYPE as TYPE,
                     td.ID_TD ,
-                    ".implode(',', $sumQuery).",
+                    " . implode(',', $sumQuery) . ",
                     (
                         SELECT SUM(td2.QTY_TD) as TOTAL
                         FROM transaction t, transaction_detail td2
                         WHERE
-                            t.ID_USER = '".$user->ID_USER."'
-                            AND DATE(t.DATE_TRANS) = '".$currDate."'
+                            t.ID_USER = '" . $user->ID_USER . "'
+                            AND DATE(t.DATE_TRANS) = '" . $currDate . "'
                             AND t.ID_TRANS = td2.ID_TRANS 
                     ) AS TOTAL_DISPLAY
                 FROM 
                     transaction_daily td ,
                     md_type mt  
                 WHERE 
-                    td.ID_USER = '".$user->ID_USER."'
-                    AND DATE(td.DATE_TD) = '".$currDate."'
+                    td.ID_USER = '" . $user->ID_USER . "'
+                    AND DATE(td.DATE_TD) = '" . $currDate . "'
                     AND mt.ID_TYPE = td.ID_TYPE 
             ");
 
@@ -506,16 +516,17 @@ class CronjobController extends Controller
             $temp['FSU']            = !empty($trans[0]->FSU60) ? $trans[0]->FSU60 : '-';
             $temp['FSB']            = !empty($trans[0]->FSB60) ? $trans[0]->FSB60 : '-';
             $temp['TOTAL_DISPLAY']  = !empty($trans[0]->TOTAL_DISPLAY) ? $trans[0]->TOTAL_DISPLAY : '-';
-            
+
 
             $data[] = $temp;
         }
         // dump();
-        
-        dd($data);
-   }
 
-    public function AktivitasRPODapul(){
+        dd($data);
+    }
+
+    public function AktivitasRPODapul()
+    {
         $month = date('n');
         $data = array();
         $user_regionals = DB::select("
@@ -539,7 +550,7 @@ class CronjobController extends Controller
             ml.ISINSIDE_LOCATION = 1
             AND mr.ID_LOCATION = ml.ID_LOCATION           
         ");
-        
+
         foreach ($user_regionals as $user_regional) {
             $activity_rankings = DB::select("
             SELECT 
@@ -582,9 +593,9 @@ class CronjobController extends Controller
                 user_ranking_activity AS usa,
                 md_regional AS mr
             WHERE
-                usa.ID_REGIONAL	= ".$user_regional->ID_REGIONAL."
+                usa.ID_REGIONAL	= " . $user_regional->ID_REGIONAL . "
                 AND usa.ID_REGIONAL = mr.ID_REGIONAL
-                AND MONTH(DATE(usa.created_at)) = ".$month."
+                AND MONTH(DATE(usa.created_at)) = " . $month . "
             GROUP BY
                 usa.ID_REGIONAL
             ");
@@ -593,31 +604,32 @@ class CronjobController extends Controller
             $temp['NAME_REGIONAL']      = $user_regional->NAME_REGIONAL;
             $temp['TARGET_UB']          = !empty($activity_rankings[0]->TARGET_UB) ? $activity_rankings[0]->TARGET_UB : "-";
             $temp['REAL_UB']            = !empty($activity_rankings[0]->REAL_UB) ? $activity_rankings[0]->REAL_UB : "-";
-            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB']/$temp['TARGET_UB'])*100 : "-";
+            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB'] / $temp['TARGET_UB']) * 100 : "-";
             $temp['TARGET_PDGSAYUR']    = !empty($activity_rankings[0]->TARGET_PDGSAYUR) ? $activity_rankings[0]->TARGET_PDGSAYUR : "-";
             $temp['REAL_PDGSAYUR']      = !empty($activity_rankings[0]->REAL_PDGSAYUR) ? $activity_rankings[0]->REAL_PDGSAYUR : "-";
-            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR']/$temp['TARGET_PDGSAYUR'])*100 : "-";
+            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR'] / $temp['TARGET_PDGSAYUR']) * 100 : "-";
             $temp['TARGET_RETAIL']      = !empty($activity_rankings[0]->TARGET_RETAIL) ? $activity_rankings[0]->TARGET_RETAIL : "-";
             $temp['REAL_RETAIL']        = !empty($activity_rankings[0]->REAL_RETAIL) ? $activity_rankings[0]->REAL_RETAIL : "-";
-            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL']/$temp['TARGET_RETAIL'])*100 : "-";
-            
+            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL'] / $temp['TARGET_RETAIL']) * 100 : "-";
+
             $weightActCat = ActivityCategory::where('deleted_at', NULL)->get()->toArray();
             $avgCount = 0;
-            if($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
-            if($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
-            if($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
 
             $temp['AVERAGE'] = (((float)$temp['VSTARGET_UB'] / 100) * ((float)$weightActCat[0]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_PDGSAYUR'] / 100) * ((float)$weightActCat[1]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_RETAIL'] / 100) * ((float)$weightActCat[2]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
-            
+
             $data[] = $temp;
         }
         return $data;
     }
 
-    public function AktivitasRPOLapul(){
+    public function AktivitasRPOLapul()
+    {
         $month = date('n');
         $data = array();
         $user_regionals = DB::select("
@@ -641,7 +653,7 @@ class CronjobController extends Controller
             ml.ISINSIDE_LOCATION = 0
             AND mr.ID_LOCATION = ml.ID_LOCATION           
         ");
-        
+
         foreach ($user_regionals as $user_regional) {
             $activity_rankings = DB::select("
             SELECT 
@@ -684,9 +696,9 @@ class CronjobController extends Controller
                 user_ranking_activity AS usa,
                 md_regional AS mr
             WHERE
-                usa.ID_REGIONAL	= ".$user_regional->ID_REGIONAL."
+                usa.ID_REGIONAL	= " . $user_regional->ID_REGIONAL . "
                 AND usa.ID_REGIONAL = mr.ID_REGIONAL
-                AND MONTH(DATE(usa.created_at)) = ".$month."
+                AND MONTH(DATE(usa.created_at)) = " . $month . "
             GROUP BY
                 usa.ID_REGIONAL
             ");
@@ -695,31 +707,32 @@ class CronjobController extends Controller
             $temp['NAME_REGIONAL']      = $user_regional->NAME_REGIONAL;
             $temp['TARGET_UB']          = !empty($activity_rankings[0]->TARGET_UB) ? $activity_rankings[0]->TARGET_UB : "-";
             $temp['REAL_UB']            = !empty($activity_rankings[0]->REAL_UB) ? $activity_rankings[0]->REAL_UB : "-";
-            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB']/$temp['TARGET_UB'])*100 : "-";
+            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB'] / $temp['TARGET_UB']) * 100 : "-";
             $temp['TARGET_PDGSAYUR']    = !empty($activity_rankings[0]->TARGET_PDGSAYUR) ? $activity_rankings[0]->TARGET_PDGSAYUR : "-";
             $temp['REAL_PDGSAYUR']      = !empty($activity_rankings[0]->REAL_PDGSAYUR) ? $activity_rankings[0]->REAL_PDGSAYUR : "-";
-            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR']/$temp['TARGET_PDGSAYUR'])*100 : "-";
+            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR'] / $temp['TARGET_PDGSAYUR']) * 100 : "-";
             $temp['TARGET_RETAIL']      = !empty($activity_rankings[0]->TARGET_RETAIL) ? $activity_rankings[0]->TARGET_RETAIL : "-";
             $temp['REAL_RETAIL']        = !empty($activity_rankings[0]->REAL_RETAIL) ? $activity_rankings[0]->REAL_RETAIL : "-";
-            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL']/$temp['TARGET_RETAIL'])*100 : "-";
-            
+            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL'] / $temp['TARGET_RETAIL']) * 100 : "-";
+
             $weightActCat = ActivityCategory::where('deleted_at', NULL)->get()->toArray();
             $avgCount = 0;
-            if($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
-            if($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
-            if($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
 
             $temp['AVERAGE'] = (((float)$temp['VSTARGET_UB'] / 100) * ((float)$weightActCat[0]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_PDGSAYUR'] / 100) * ((float)$weightActCat[1]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_RETAIL'] / 100) * ((float)$weightActCat[2]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
-            
+
             $data[] = $temp;
         }
         return $data;
     }
 
-    public function AktivitasAsmen(){
+    public function AktivitasAsmen()
+    {
         $month = date('n');
         $user_asmens = DB::select("
         SELECT
@@ -784,9 +797,9 @@ class CronjobController extends Controller
                     user_ranking_activity AS usa,
                     md_location AS ml
             WHERE
-                    usa.ID_LOCATION = ".$user_asmen->ID_LOCATION."
+                    usa.ID_LOCATION = " . $user_asmen->ID_LOCATION . "
                     AND usa.ID_LOCATION = ml.ID_LOCATION
-                    AND MONTH(DATE(usa.created_at)) = ".$month."
+                    AND MONTH(DATE(usa.created_at)) = " . $month . "
             GROUP BY
                     usa.ID_LOCATION
             ");
@@ -795,31 +808,32 @@ class CronjobController extends Controller
             $temp['NAME_REGIONAL']      = $user_asmen->NAME_LOCATION;
             $temp['TARGET_UB']          = !empty($transAsmen[0]->TARGET_UB) ? $transAsmen[0]->TARGET_UB : "-";
             $temp['REAL_UB']            = !empty($transAsmen[0]->REAL_UB) ? $transAsmen[0]->REAL_UB : "-";
-            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB']/$temp['TARGET_UB'])*100 : "-";
+            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB'] / $temp['TARGET_UB']) * 100 : "-";
             $temp['TARGET_PDGSAYUR']    = !empty($transAsmen[0]->TARGET_PDGSAYUR) ? $transAsmen[0]->TARGET_PDGSAYUR : "-";
             $temp['REAL_PDGSAYUR']      = !empty($transAsmen[0]->REAL_PDGSAYUR) ? $transAsmen[0]->REAL_PDGSAYUR : "-";
-            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR']/$temp['TARGET_PDGSAYUR'])*100 : "-";
+            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR'] / $temp['TARGET_PDGSAYUR']) * 100 : "-";
             $temp['TARGET_RETAIL']      = !empty($transAsmen[0]->TARGET_RETAIL) ? $transAsmen[0]->TARGET_RETAIL : "-";
             $temp['REAL_RETAIL']        = !empty($transAsmen[0]->REAL_RETAIL) ? $transAsmen[0]->REAL_RETAIL : "-";
-            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL']/$temp['TARGET_RETAIL'])*100 : "-";
-            
+            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL'] / $temp['TARGET_RETAIL']) * 100 : "-";
+
             $weightActCat = ActivityCategory::where('deleted_at', NULL)->get()->toArray();
             $avgCount = 0;
-            if($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
-            if($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
-            if($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
 
             $temp['AVERAGE'] = (((float)$temp['VSTARGET_UB'] / 100) * ((float)$weightActCat[0]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_PDGSAYUR'] / 100) * ((float)$weightActCat[1]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_RETAIL'] / 100) * ((float)$weightActCat[2]["PERCENTAGE_AC"] / 100));
             $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
-            
+
             $data[] = $temp;
         }
         return $data;
     }
 
-    public function PencapaianAsmen(){
+    public function PencapaianAsmen()
+    {
         $month = date('n');
         $user_asmens = DB::select("
         SELECT
@@ -893,9 +907,9 @@ class CronjobController extends Controller
                     user_ranking_sale AS urs,
                     md_location AS ml
             WHERE
-                    urs.ID_LOCATION = ".$user_asmen->ID_LOCATION."
+                    urs.ID_LOCATION = " . $user_asmen->ID_LOCATION . "
                     AND urs.ID_LOCATION = ml.ID_LOCATION
-                    AND MONTH(DATE(urs.created_at)) = ".$month."
+                    AND MONTH(DATE(urs.created_at)) = " . $month . "
             GROUP BY
                     urs.ID_LOCATION
             ");
@@ -904,25 +918,25 @@ class CronjobController extends Controller
             $temp['NAME_REGIONAL']      = $user_asmen->NAME_LOCATION;
             $temp['TARGET_UST']         = !empty($pcpAsmen[0]->TARGET_UST) ? $pcpAsmen[0]->TARGET_UST : "-";
             $temp['REAL_UST']           = !empty($pcpAsmen[0]->REAL_UST) ? $pcpAsmen[0]->REAL_UST : "-";
-            $temp['VSTARGET_UST']       = $temp['REAL_UST'] != "-" && $temp['TARGET_UST'] != "-" ? ($temp['REAL_UST']/$temp['TARGET_UST'])*100 : "-";
+            $temp['VSTARGET_UST']       = $temp['REAL_UST'] != "-" && $temp['TARGET_UST'] != "-" ? ($temp['REAL_UST'] / $temp['TARGET_UST']) * 100 : "-";
             $temp['TARGET_NONUST']      = !empty($pcpAsmen[0]->TARGET_NONUST) ? $pcpAsmen[0]->TARGET_NONUST : "-";
             $temp['REAL_NONUST']        = !empty($pcpAsmen[0]->REAL_NONUST) ? $pcpAsmen[0]->REAL_NONUST : "-";
-            $temp['VSTARGET_NONUST']    = $temp['REAL_NONUST'] != "-" && $temp['TARGET_NONUST'] != "-" ? ($temp['REAL_NONUST']/$temp['TARGET_NONUST'])*100 : "-";
+            $temp['VSTARGET_NONUST']    = $temp['REAL_NONUST'] != "-" && $temp['TARGET_NONUST'] != "-" ? ($temp['REAL_NONUST'] / $temp['TARGET_NONUST']) * 100 : "-";
             $temp['TARGET_SELERAKU']    = !empty($pcpAsmen[0]->TARGET_SELERAKU) ? $pcpAsmen[0]->TARGET_SELERAKU : "-";
             $temp['REAL_SELERAKU']      = !empty($pcpAsmen[0]->REAL_SELERAKU) ? $pcpAsmen[0]->REAL_SELERAKU : "-";
-            $temp['VSTARGET_SELERAKU']  = $temp['REAL_SELERAKU'] != "-" && $temp['TARGET_SELERAKU'] != "-" ? ($temp['REAL_SELERAKU']/$temp['TARGET_SELERAKU'])*100 : "-";
-            
+            $temp['VSTARGET_SELERAKU']  = $temp['REAL_SELERAKU'] != "-" && $temp['TARGET_SELERAKU'] != "-" ? ($temp['REAL_SELERAKU'] / $temp['TARGET_SELERAKU']) * 100 : "-";
+
             $weightProdCat = CategoryProduct::where('deleted_at', NULL)->get()->toArray();
             $avgCount = 0;
-            if($weightProdCat[0]["PERCENTAGE_PC"] != 0) $avgCount++;
-            if($weightProdCat[1]["PERCENTAGE_PC"] != 0) $avgCount++;
-            if($weightProdCat[2]["PERCENTAGE_PC"] != 0) $avgCount++;
+            if ($weightProdCat[0]["PERCENTAGE_PC"] != 0) $avgCount++;
+            if ($weightProdCat[1]["PERCENTAGE_PC"] != 0) $avgCount++;
+            if ($weightProdCat[2]["PERCENTAGE_PC"] != 0) $avgCount++;
 
             $temp['AVERAGE'] = (((float)$temp['VSTARGET_UST'] / 100) * ((float)$weightProdCat[0]["PERCENTAGE_PC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_NONUST'] / 100) * ((float)$weightProdCat[1]["PERCENTAGE_PC"] / 100));
             $temp['AVERAGE'] += (((float)$temp['VSTARGET_SELERAKU'] / 100) * ((float)$weightProdCat[2]["PERCENTAGE_PC"] / 100));
             $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
-            
+
             $data[] = $temp;
         }
         return $data;

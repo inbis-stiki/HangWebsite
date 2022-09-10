@@ -25,13 +25,6 @@ class ReportExcell
         ]
     );    
 
-    protected $dataPencapaianApoSPG = array(
-        [
-            "NAME_USER" => "Imanda",
-            "NAME_AREA" => "MALANG 2",
-        ]
-    );
-
     protected $dataAktifitasRPOLapul = array(
         [
             "NAME_USER" => "Doni",
@@ -249,6 +242,15 @@ class ReportExcell
             "OMSET" => ["25", "20", "23", "27", "29", "17", "20", "25", "0", "21", "19", "17"]
         ]
     );
+
+    public function set_data($AktifitasRPOLapul, $AktifitasRPODapul, $AktifitasAsmen, $PencapaianAsmen)
+    {        
+        $this->dataAktifitasAsmen = $AktifitasAsmen;
+        $this->dataPencapaianAsmen = $PencapaianAsmen;
+        $this->dataAktifitasRPOLapul = $AktifitasRPOLapul;
+        $this->dataAktifitasRPODapul = $AktifitasRPODapul;
+        // dump($AktifitasRPOLapul);die;
+    }
 
     public function styling_default_template($FontSize, $ColorText)
     {
@@ -654,7 +656,6 @@ class ReportExcell
     public function generate_ranking_asmen()
     {
         $spreadsheet = new Spreadsheet();
-
         $ObjSheet = $spreadsheet->getActiveSheet();
         $ObjSheet->setTitle("RANGKING ASMEN");
 
@@ -717,15 +718,15 @@ class ReportExcell
 
             $ObjSheet->setCellValue('B' . $rowStart, $this->dataAktifitasAsmen[$i]['NAME_USER'])->getStyle('B' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->setCellValue('C' . $rowStart, $this->dataAktifitasAsmen[$i]['NAME_AREA'])->getStyle('C' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('D' . $rowStart, $this->dataAktifitasAsmen[$i]['TARGET_NONUST'])->getStyle('D' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('E' . $rowStart, $this->dataAktifitasAsmen[$i]['REAL_NONUST'])->getStyle('E' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('F' . $rowStart, $this->dataAktifitasAsmen[$i]['VSTARGET_NONUST'])->getStyle('F' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('G' . $rowStart, $this->dataAktifitasAsmen[$i]['TARGET_UST'])->getStyle('G' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('H' . $rowStart, $this->dataAktifitasAsmen[$i]['REAL_UST'])->getStyle('H' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('I' . $rowStart, $this->dataAktifitasAsmen[$i]['VSTARGET_UST'])->getStyle('I' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('J' . $rowStart, $this->dataAktifitasAsmen[$i]['TARGET_SELERAKU'])->getStyle('J' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('K' . $rowStart, $this->dataAktifitasAsmen[$i]['REAL_SELERAKU'])->getStyle('K' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('L' . $rowStart, $this->dataAktifitasAsmen[$i]['VSTARGET_SELERAKU'])->getStyle('L' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('D' . $rowStart, $this->dataAktifitasAsmen[$i]['TARGET_UB'])->getStyle('D' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('E' . $rowStart, $this->dataAktifitasAsmen[$i]['REAL_UB'])->getStyle('E' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('F' . $rowStart, $this->dataAktifitasAsmen[$i]['VSTARGET_UB'])->getStyle('F' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('G' . $rowStart, $this->dataAktifitasAsmen[$i]['TARGET_PDGSAYUR'])->getStyle('G' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('H' . $rowStart, $this->dataAktifitasAsmen[$i]['REAL_PDGSAYUR'])->getStyle('H' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('I' . $rowStart, $this->dataAktifitasAsmen[$i]['VSTARGET_PDGSAYUR'])->getStyle('I' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('J' . $rowStart, $this->dataAktifitasAsmen[$i]['TARGET_RETAIL'])->getStyle('J' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('K' . $rowStart, $this->dataAktifitasAsmen[$i]['REAL_RETAIL'])->getStyle('K' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('L' . $rowStart, $this->dataAktifitasAsmen[$i]['VSTARGET_RETAIL'])->getStyle('L' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->setCellValue('M' . $rowStart, $this->dataAktifitasAsmen[$i]['AVERAGE'])->getStyle('M' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->setCellValue('N' . $rowStart, $this->dataAktifitasAsmen[$i]['ID_USER_RANKSALE'])->getStyle('N' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
 
@@ -874,6 +875,7 @@ class ReportExcell
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
+
 
     public function generate_transaksi_harian()
     {
