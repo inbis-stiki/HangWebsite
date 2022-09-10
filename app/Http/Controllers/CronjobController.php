@@ -601,7 +601,7 @@ class CronjobController extends Controller
             ");
 
             $temp['NAME_USER']          = $user_regional->NAME_USER;
-            $temp['NAME_REGIONAL']      = $user_regional->NAME_REGIONAL;
+            $temp['NAME_AREA']          = $user_regional->NAME_REGIONAL;
             $temp['TARGET_UB']          = !empty($activity_rankings[0]->TARGET_UB) ? $activity_rankings[0]->TARGET_UB : "-";
             $temp['REAL_UB']            = !empty($activity_rankings[0]->REAL_UB) ? $activity_rankings[0]->REAL_UB : "-";
             $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB'] / $temp['TARGET_UB']) * 100 : "-";
@@ -624,6 +624,12 @@ class CronjobController extends Controller
             $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
 
             $data[] = $temp;
+        }
+        usort($data, function($a, $b){
+            return strnatcmp($b['AVERAGE'], $a['AVERAGE']);
+        });
+        foreach($data as $key => $value){
+            $data[$key]['ID_USER_RANKSALE'] = $key+1;
         }
         return $data;
     }
@@ -704,7 +710,7 @@ class CronjobController extends Controller
             ");
 
             $temp['NAME_USER']          = $user_regional->NAME_USER;
-            $temp['NAME_REGIONAL']      = $user_regional->NAME_REGIONAL;
+            $temp['NAME_AREA']          = $user_regional->NAME_REGIONAL;
             $temp['TARGET_UB']          = !empty($activity_rankings[0]->TARGET_UB) ? $activity_rankings[0]->TARGET_UB : "-";
             $temp['REAL_UB']            = !empty($activity_rankings[0]->REAL_UB) ? $activity_rankings[0]->REAL_UB : "-";
             $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB'] / $temp['TARGET_UB']) * 100 : "-";
@@ -727,6 +733,12 @@ class CronjobController extends Controller
             $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
 
             $data[] = $temp;
+        }
+        usort($data, function($a, $b){
+            return strnatcmp($b['AVERAGE'], $a['AVERAGE']);
+        });
+        foreach($data as $key => $value){
+            $data[$key]['ID_USER_RANKSALE'] = $key+1;
         }
         return $data;
     }
@@ -805,7 +817,7 @@ class CronjobController extends Controller
             ");
 
             $temp['NAME_USER']          = $user_asmen->NAME_USER;
-            $temp['NAME_REGIONAL']      = $user_asmen->NAME_LOCATION;
+            $temp['NAME_AREA']          = $user_asmen->NAME_LOCATION;
             $temp['TARGET_UB']          = !empty($transAsmen[0]->TARGET_UB) ? $transAsmen[0]->TARGET_UB : "-";
             $temp['REAL_UB']            = !empty($transAsmen[0]->REAL_UB) ? $transAsmen[0]->REAL_UB : "-";
             $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB'] / $temp['TARGET_UB']) * 100 : "-";
@@ -828,6 +840,12 @@ class CronjobController extends Controller
             $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
 
             $data[] = $temp;
+        }
+        usort($data, function($a, $b){
+            return strnatcmp($b['AVERAGE'], $a['AVERAGE']);
+        });
+        foreach($data as $key => $value){
+            $data[$key]['ID_USER_RANKSALE'] = $key+1;
         }
         return $data;
     }
@@ -915,7 +933,7 @@ class CronjobController extends Controller
             ");
 
             $temp['NAME_USER']          = $user_asmen->NAME_USER;
-            $temp['NAME_REGIONAL']      = $user_asmen->NAME_LOCATION;
+            $temp['NAME_AREA']          = $user_asmen->NAME_LOCATION;
             $temp['TARGET_UST']         = !empty($pcpAsmen[0]->TARGET_UST) ? $pcpAsmen[0]->TARGET_UST : "-";
             $temp['REAL_UST']           = !empty($pcpAsmen[0]->REAL_UST) ? $pcpAsmen[0]->REAL_UST : "-";
             $temp['VSTARGET_UST']       = $temp['REAL_UST'] != "-" && $temp['TARGET_UST'] != "-" ? ($temp['REAL_UST'] / $temp['TARGET_UST']) * 100 : "-";
@@ -938,6 +956,12 @@ class CronjobController extends Controller
             $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
 
             $data[] = $temp;
+        }
+        usort($data, function($a, $b){
+            return strnatcmp($b['AVERAGE'], $a['AVERAGE']);
+        });
+        foreach($data as $key => $value){
+            $data[$key]['ID_USER_RANKSALE'] = $key+1;
         }
         return $data;
     }
