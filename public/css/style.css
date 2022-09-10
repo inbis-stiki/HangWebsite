@@ -24010,8 +24010,8 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0; }
   .accordion-primary-solid .accordion__header.collapsed {
-    background: #ffd3cd;
-    border-color: #ffd3cd;
+    background: #ff9248;
+    border-color: #ff9248;
     color: #211c37;
     box-shadow: none;
     border-bottom-left-radius: 1.25rem;

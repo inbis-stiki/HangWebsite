@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div id="accordion-two" class="accordion accordion-danger-solid">
+                        <div id="accordion-two" class="accordion accordion-primary-solid">
                             <?php
                             $no = 0;
                             $coords = array();
