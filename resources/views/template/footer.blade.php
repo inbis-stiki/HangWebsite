@@ -44,6 +44,7 @@
 
 {{-- FlatPicker --}}
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
 
  <!-- Apex Chart -->
  {{-- <script src="{{ asset('vendor/apexchart/apexchart.js') }}"></script> --}}

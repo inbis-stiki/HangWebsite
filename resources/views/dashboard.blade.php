@@ -1,27 +1,6 @@
 @include('template/header')
 @include('template/sidebar')
 
-<style>
-    .tgt {
-        border-style: solid;
-        border-color: #3F3D56;
-    }
-
-    .real {
-        border-left-style: solid;
-        border-right-style: solid;
-        border-color: #3F3D56;
-    }
-
-    .vstgt {
-        border-style: solid;
-        border-color: #3F3D56;
-    }
-
-    .bg-dark-custom {
-        background-color: #3F3D56;
-    }
-</style>
 <!--**********************************
     Content body start
 ***********************************-->
@@ -199,7 +178,28 @@
         </div>
         <div class="row">
             <div class="col">
-                <h3 class="fs-16 text-black font-weight-bolder mb-3">Ranking</h3>
+                <div class="row">
+                    <div class="col-sm">
+                        <h3 class="fs-16 text-black font-weight-bolder mb-3">Ranking</h3>
+                    </div>
+                    <div class="col-sm-2 mb-3 mt-n2">
+                        <div class="basic-form ml-auto pr-2">
+                            <form>
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-light" style="background-color: white"
+                                                type="button"><i class="flaticon-381-calendar-1 pl-2"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control input-default" id="datePresensi"
+                                            placeholder="Bulan">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col">
                         <div class="card text-black mb-3">
@@ -284,7 +284,28 @@
         </div>
         <div class="row">
             <div class="col">
-                <h3 class="fs-16 text-black font-weight-bolder mb-3">Pencapaian</h3>
+                <div class="row">
+                    <div class="col-sm">
+                        <h3 class="fs-16 text-black font-weight-bolder mb-3">Pencapaian</h3>
+                    </div>
+                    <div class="col-sm-2 mb-3 mt-n2">
+                        <div class="basic-form ml-auto pr-2">
+                            <form>
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-light" style="background-color: white"
+                                                type="button"><i class="flaticon-381-calendar-1 pl-2"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control input-default" id="datePresensi"
+                                            placeholder="Bulan">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col">
                         <div class="card text-black mb-3">
@@ -390,7 +411,7 @@
                                                         class="flaticon-381-calendar-1 pl-2"></i></button>
                                             </div>
                                             <input type="text" class="form-control input-default"
-                                                id="datePresensi" placeholder="Tanggal">
+                                                id="datePresensi" placeholder="Bulan">
                                         </div>
                                     </div>
                                 </div>
@@ -398,6 +419,7 @@
                         </div>
                     </div>
                     <div class="card-body">
+
                         <div class="table-responsive">
                             <table class="table table-responsive-md">
                                 <thead>
@@ -434,8 +456,23 @@
     Content body end
 ***********************************-->
 @include('template/footer')
+{{-- Flatpickr --}}
+<script type="text/javascript">
+    flatpickr(datePresensi, {
+        inline: false,
+        plugins: [
+            new monthSelectPlugin({
+                shorthand: true,
+                dateFormat: "M Y",
+                altFormat: "F Y"
+            })
+        ]
+    });
+</script>
 
-<script>
+<script type="text/javascript">
+    //Chart Trend
+
     var options = {
         colors: ["#EC1D25", "#F26F21", "#F8C460"],
         series: [{
@@ -481,11 +518,6 @@
 
     var chart = new ApexCharts(document.querySelector("#LineChart"), options);
     chart.render();
-
-    //FlatPicker
-    $("#datePresensi").flatpickr({
-        dateFormat: "m-Y"
-    });
 
     //Aktivitas UB
     var aktivUB = {
