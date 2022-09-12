@@ -4,40 +4,56 @@
 <div class="deznav">
     <div class="deznav-scroll">
         <ul class="metismenu" id="menu">
-            <li><a href="{{ url('dashboard') }}" class="ai-icon" aria-expanded="false">
-                    <img src="{{ asset('images/icon/dashboard.svg') }}" alt="">&nbsp;
-                    <span class="nav-text text-primary">Dashboard</span>
+            <li class="active">
+                <a href="{{ url('dashboard') }}" class="ai-icon" aria-expanded="false">
+                    <div class="{{ request()->is('dashboard') ? 'text-primary' : 'img-grey' }}">
+                        <img src="{{ asset('images/icon/dashboard.svg') }}" alt="">&nbsp;
+                        <span class="nav-text">Dashboard</span>
+                    </div>
                 </a>
             </li>
             <li class="active">
                 <a href="{{ url('transaction') }}" class="ai-icon" aria-expanded="false">
-                    <img src="{{ asset('images/icon/transaksi.svg') }}" alt="">&nbsp;
-                    <span class="nav-text mt-1 text-primary">Transaksi</span>
+                    <div class="{{ request()->is('transaction') ? '' : 'img-grey' }} ">
+                        <img src="{{ asset('images/icon/transaksi.svg') }}" alt="">&nbsp;
+                        <span class="nav-text mt-1">Transaksi</span>
+                    </div>
                 </a>
             </li>
-            <li class="active"><a href="{{ url('faktur') }}" class="ai-icon" aria-expanded="false">
-                    <img src="{{ asset('images/icon/faktur.svg') }}" alt="">&nbsp;
-                    <span class="nav-text text-primary">Faktur</span>
+            <li class="active">
+                <a href="{{ url('faktur') }}" class="ai-icon" aria-expanded="false">
+                    <div class="{{ request()->is('faktur') ? '' : 'img-grey' }}">
+                        <img src="{{ asset('images/icon/faktur.svg') }}" alt="">&nbsp;
+                        <span class="nav-text">Faktur</span>
+                    </div>
                 </a>
             </li>
-            <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
-                    <img src="{{ asset('images/icon/laporan.svg') }}" alt="">&nbsp;
-                    <span class="nav-text text-primary">Laporan</span>
+            <li><a class="has-arrow" href="javascript:void()">
+                    <div class="{{ request()->is('laporan/lpr-ranking','laporan/lpr-trend', 'laporan/lpr-transaction') ? '' : 'img-grey' }} || ">    
+                        <img src="{{ asset('images/icon/laporan.svg') }}" alt="">&nbsp;
+                        <span class="nav-text">Laporan</span> 
+                    </div>
                 </a>
-                <ul aria-expanded="false">
+                <ul class="" aria-expanded="false">
                     <li><a href="{{ url('laporan/lpr-ranking') }}">Ranking</a></li>
                     <li><a href="{{ url('laporan/lpr-trend') }}">Trend</a></li>
                     <li><a href="{{ url('laporan/lpr-transaction') }}">Transaksi Harian</a></li>
                 </ul>
             </li>
-            <li class="active"><a href="{{ url('presence') }}" class="ai-icon" aria-expanded="false">
-                    <img src="{{ asset('images/icon/presensi.svg') }}" alt="">&nbsp;
-                    <span class="nav-text text-primary">Presensi</span>
+            <li class="active">
+                <a href="{{ url('presence') }}" class="ai-icon" aria-expanded="false">
+                    <div class="{{ request()->is('presence') ? '' : 'img-grey' }}">
+                        <img src="{{ asset('images/icon/presensi.svg') }}" alt="">&nbsp;
+                        <span class="nav-text">Presensi</span>
+                    </div>
                 </a>
             </li>
-            <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
+            <li><a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                <div class="
+                {{ request()->is('master/activity-category', 'master/category-product', 'master/product', 'master/location/national', 'master/location/regional', 'master/location/area', 'master/location/district' , 'master/location/market', 'master/shop', 'master/regional-price', 'master/target-activity', 'master/target-sale', 'master/user', 'master/user-target', 'master/role') ? '' : 'img-grey' }} ">
                     <img src="{{ asset('images/icon/master.svg') }}" alt="">&nbsp;
-                    <span class="nav-text text-primary">Master</span>
+                    <span class="nav-text">Master</span>
+                </div>   
                 </a>
                 <ul aria-expanded="false">
                     @if (Session::get('role') == 1 || Session::get('role') == 2)

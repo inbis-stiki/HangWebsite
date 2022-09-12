@@ -1,27 +1,6 @@
 @include('template/header')
 @include('template/sidebar')
 
-<style>
-    .tgt {
-        border-style: solid;
-        border-color: #3F3D56;
-    }
-
-    .real {
-        border-left-style: solid;
-        border-right-style: solid;
-        border-color: #3F3D56;
-    }
-
-    .vstgt {
-        border-style: solid;
-        border-color: #3F3D56;
-    }
-
-    .bg-dark-custom {
-        background-color: #3F3D56;
-    }
-</style>
 <!--**********************************
     Content body start
 ***********************************-->
@@ -99,12 +78,12 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-sm">
-                                <div class="card text-black mb-3" style="max-width: 18rem; background-color: #F3F2F0;">
+                            <div class="col-sm-4">
+                                <div class="card text-black mb-3" style="background-color: #F3F2F0;">
                                     <div class="card-body">
                                         <h5 class="card-title fs-14">ASMEN</h5>
-                                        <div class="table">
-                                            <table id="datatables" class="table table-light rounded ml-n3">
+                                        <div class="table-responsive">
+                                            <table id="datatables" class="table table-light rounded">
                                                 <tbody class="fs-12">
                                                     <tr>
                                                         <td>1</td>
@@ -130,12 +109,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm">
-                                <div class="card text-white mb-3" style="max-width: 18rem; background-color: #F3F2F0;">
+                            <div class="col-sm-4">
+                                <div class="card text-white mb-3" style="background-color: #F3F2F0;">
                                     <div class="card-body">
                                         <h5 class="card-title fs-14">RPO</h5>
-                                        <div class="table">
-                                            <table id="datatables" class="table table-light rounded ml-n3">
+                                        <div class="table-responsive">
+                                            <table id="datatables" class="table table-light rounded">
                                                 <tbody class="fs-12">
                                                     <tr>
                                                         <td>1</td>
@@ -161,12 +140,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm ">
-                                <div class="card text-white mb-3" style="max-width: 18rem; background-color: #F3F2F0;">
+                            <div class="col-sm-4">
+                                <div class="card text-white mb-3" style="background-color: #F3F2F0;">
                                     <div class="card-body">
                                         <h5 class="card-title fs-14">APO</h5>
-                                        <div class="table">
-                                            <table id="datatables" class="table table-light rounded ml-n3">
+                                        <div class="table-responsive">
+                                            <table id="datatables" class="table table-light rounded">
                                                 <tbody class="fs-12">
                                                     <tr>
                                                         <td>1</td>
@@ -199,14 +178,35 @@
         </div>
         <div class="row">
             <div class="col">
-                <h3 class="fs-16 text-black font-weight-bolder mb-3">Ranking</h3>
+                <div class="row">
+                    <div class="col-sm">
+                        <h3 class="fs-16 text-black font-weight-bolder mb-3">Ranking</h3>
+                    </div>
+                    <div class="col-sm-2 mb-3 mt-n2">
+                        <div class="basic-form ml-auto pr-2">
+                            <form>
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-light" style="background-color: white"
+                                                type="button"><i class="flaticon-381-calendar-1 pl-2"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control input-default" id="datePresensi"
+                                            placeholder="Bulan">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col">
-                        <div class="card text-black mb-3" style="max-width: 18rem;">
+                        <div class="card text-black mb-3">
                             <div class="card-body">
                                 <h5 class="card-title fs-14">Aktivitas UB</h5>
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="radialBar1" role="tabpanel">
+                                    <div class="tab-pane fade show active" id="aktivUB" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
                                     </div>
                                 </div>
@@ -228,11 +228,11 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card text-white mb-3" style="max-width: 18rem;">
+                        <div class="card text-white mb-3">
                             <div class="card-body">
                                 <h5 class="card-title fs-14">Pedagang Sayur</h5>
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="radialBar2" role="tabpanel">
+                                    <div class="tab-pane fade show active" id="PedagangSayur" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
                                     </div>
                                 </div>
@@ -254,11 +254,11 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card text-white mb-3" style="max-width: 18rem;">
+                        <div class="card text-white mb-3">
                             <div class="card-body">
                                 <h5 class="card-title fs-14">Retail</h5>
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="radialBar3" role="tabpanel">
+                                    <div class="tab-pane fade show active" id="Retail" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
                                     </div>
                                 </div>
@@ -284,14 +284,35 @@
         </div>
         <div class="row">
             <div class="col">
-                <h3 class="fs-16 text-black font-weight-bolder mb-3">Pencapaian</h3>
+                <div class="row">
+                    <div class="col-sm">
+                        <h3 class="fs-16 text-black font-weight-bolder mb-3">Pencapaian</h3>
+                    </div>
+                    <div class="col-sm-2 mb-3 mt-n2">
+                        <div class="basic-form ml-auto pr-2">
+                            <form>
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-light" style="background-color: white"
+                                                type="button"><i class="flaticon-381-calendar-1 pl-2"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control input-default" id="datePresensi"
+                                            placeholder="Bulan">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col">
-                        <div class="card text-black mb-3" style="max-width: 18rem;">
+                        <div class="card text-black mb-3">
                             <div class="card-body">
                                 <h5 class="card-title fs-14">Non UST</h5>
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="donut1" role="tabpanel">
+                                    <div class="tab-pane fade show active" id="NonUST" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
                                     </div>
                                 </div>
@@ -313,11 +334,11 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card text-white mb-3" style="max-width: 18rem;">
+                        <div class="card text-white mb-3">
                             <div class="card-body">
                                 <h5 class="card-title fs-14">UST</h5>
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="donut2" role="tabpanel">
+                                    <div class="tab-pane fade show active" id="Ust" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
                                     </div>
                                 </div>
@@ -339,11 +360,11 @@
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card text-white mb-3" style="max-width: 18rem;">
+                        <div class="card text-white mb-3">
                             <div class="card-body">
                                 <h5 class="card-title fs-14">Seleraku</h5>
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="donut3" role="tabpanel">
+                                    <div class="tab-pane fade show active" id="Seleraku" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
                                     </div>
                                 </div>
@@ -390,7 +411,7 @@
                                                         class="flaticon-381-calendar-1 pl-2"></i></button>
                                             </div>
                                             <input type="text" class="form-control input-default"
-                                                id="datePresensi" placeholder="Tanggal">
+                                                id="datePresensi" placeholder="Bulan">
                                         </div>
                                     </div>
                                 </div>
@@ -398,6 +419,7 @@
                         </div>
                     </div>
                     <div class="card-body">
+
                         <div class="table-responsive">
                             <table class="table table-responsive-md">
                                 <thead>
@@ -434,8 +456,23 @@
     Content body end
 ***********************************-->
 @include('template/footer')
+{{-- Flatpickr --}}
+<script type="text/javascript">
+    flatpickr(datePresensi, {
+        inline: false,
+        plugins: [
+            new monthSelectPlugin({
+                shorthand: true,
+                dateFormat: "M Y",
+                altFormat: "F Y"
+            })
+        ]
+    });
+</script>
 
-<script>
+<script type="text/javascript">
+    //Chart Trend
+
     var options = {
         colors: ["#EC1D25", "#F26F21", "#F8C460"],
         series: [{
@@ -482,34 +519,45 @@
     var chart = new ApexCharts(document.querySelector("#LineChart"), options);
     chart.render();
 
-    //FlatPicker
-    $("#datePresensi").flatpickr({
-        dateFormat: "m-Y"
-    });
-
-    //BEGIN RADIAL BAR CHART
-    var optionsCircle1 = {
+    //Aktivitas UB
+    var aktivUB = {
         chart: {
             type: 'radialBar',
-            height: 300,
+            size: '50%',
+            height: 350,
             zoom: {
                 enabled: false
             },
             offsetY: 20
         },
-        colors: ["#F26F21"],
         plotOptions: {
             radialBar: {
+                track: {
+                    opacity: 1,
+                    background: '#3F3D56',
+                    dropShadow: {
+                        enabled: true,
+                        top: 0,
+                        left: 0,
+                        blur: 0,
+                        opacity: 100
+                    },
+                },
                 dataLabels: {
                     name: {
                         show: false
                     },
                     value: {
-                        offsetY: 0
+                        offsetY: 10,
+                        offsetX: 4,
+                        color: "#F26F21",
+                        fontSize: "30px",
+                        show: true
                     }
                 }
             }
         },
+        colors: ["#F26F21"],
         series: [76.3],
         theme: {
             monochrome: {
@@ -517,35 +565,52 @@
             }
         },
         legend: {
-            show: false
+            show: false,
         },
     }
 
-    var chartCircle1 = new ApexCharts(document.querySelector('#radialBar1'), optionsCircle1);
-    chartCircle1.render();
+    var aktivUB = new ApexCharts(document.querySelector('#aktivUB'), aktivUB);
+    aktivUB.render();
 
-    var optionsCircle2 = {
+    // Pedagang Sayur
+    var PedagangSayur = {
         chart: {
             type: 'radialBar',
-            height: 300,
+            size: '50%',
+            height: 350,
             zoom: {
                 enabled: false
             },
             offsetY: 20
         },
-        colors: ["#F26F21"],
         plotOptions: {
             radialBar: {
+                track: {
+                    opacity: 1,
+                    background: '#3F3D56',
+                    dropShadow: {
+                        enabled: true,
+                        top: 0,
+                        left: 0,
+                        blur: 0,
+                        opacity: 100
+                    },
+                },
                 dataLabels: {
                     name: {
                         show: false
                     },
                     value: {
-                        offsetY: 0
+                        offsetY: 10,
+                        offsetX: 4,
+                        color: "#F26F21",
+                        fontSize: "30px",
+                        show: true
                     }
                 }
             }
         },
+        colors: ["#F26F21"],
         series: [76.3],
         theme: {
             monochrome: {
@@ -553,35 +618,52 @@
             }
         },
         legend: {
-            show: false
+            show: false,
         },
     }
 
-    var chartCircle2 = new ApexCharts(document.querySelector('#radialBar2'), optionsCircle2);
-    chartCircle2.render();
-    
-    var optionsCircle3 = {
+    var PedagangSayur = new ApexCharts(document.querySelector('#PedagangSayur'), PedagangSayur);
+    PedagangSayur.render();
+
+    // Retail
+    var Retail = {
         chart: {
             type: 'radialBar',
-            height: 300,
+            size: '50%',
+            height: 350,
             zoom: {
                 enabled: false
             },
             offsetY: 20
         },
-        colors: ["#F26F21"],
         plotOptions: {
             radialBar: {
+                track: {
+                    opacity: 1,
+                    background: '#3F3D56',
+                    dropShadow: {
+                        enabled: true,
+                        top: 0,
+                        left: 0,
+                        blur: 0,
+                        opacity: 100
+                    },
+                },
                 dataLabels: {
                     name: {
                         show: false
                     },
                     value: {
-                        offsetY: 0
+                        offsetY: 10,
+                        offsetX: 4,
+                        color: "#F26F21",
+                        fontSize: "30px",
+                        show: true
                     }
                 }
             }
         },
+        colors: ["#F26F21"],
         series: [76.3],
         theme: {
             monochrome: {
@@ -589,188 +671,169 @@
             }
         },
         legend: {
-            show: false
+            show: false,
         },
     }
 
-    var chartCircle3 = new ApexCharts(document.querySelector('#radialBar3'), optionsCircle3);
-    chartCircle3.render();
+    var Retail = new ApexCharts(document.querySelector('#Retail'), Retail);
+    Retail.render();
 
-    //BEGIN DONUT CHART
-    var donut1 = {
-        colors: ["#3F3D56", "#F26F21"],
-        series: [44, 55],
-
+    // NonUST
+    var NonUST = {
         chart: {
-            width: 240,
-            type: 'donut',
-            sparkline: {
-                enabled: true
+            type: 'radialBar',
+            size: '50%',
+            height: 350,
+            zoom: {
+                enabled: false
             },
-        },
-        stroke: {
-            width: 0,
+            offsetY: 20
         },
         plotOptions: {
-            pie: {
-                donut: {
-                    labels: {
-                        show: true,
+            radialBar: {
+                track: {
+                    opacity: 1,
+                    background: '#3F3D56',
+                    dropShadow: {
+                        enabled: true,
+                        top: 0,
+                        left: 0,
+                        blur: 0,
+                        opacity: 100
+                    },
+                },
+                dataLabels: {
+                    name: {
+                        show: false
+                    },
+                    value: {
+                        offsetY: 10,
+                        offsetX: 4,
                         color: "#F26F21",
-                        total: {
-                            showAlways: true,
-                            show: true
-                        }
+                        fontSize: "30px",
+                        show: true
                     }
                 }
             }
         },
-        dataLabels: {
-            enabled: false,
-        },
-        fill: {
-            type: 'donut',
-            opacity: 1,
-        },
-        states: {
-            hover: {
-                filter: 'none'
-            }
-        },
+        colors: ["#F26F21"],
+        series: [76.3],
         theme: {
-            palette: 'palette2'
-        },
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 200
-                },
-                legend: {
-                    show: false,
-                }
+            monochrome: {
+                enabled: false
             }
-        }]
-    };
-
-    var donut1 = new ApexCharts(document.querySelector("#donut1"), donut1);
-    donut1.render();
-
-    var donut2 = {
-        colors: ["#3F3D56", "#F26F21"],
-        series: [44, 55],
-
-        chart: {
-            width: 240,
-            type: 'donut',
-            sparkline: {
-                enabled: true
-            },
         },
-        stroke: {
-            width: 0,
+        legend: {
+            show: false,
+        },
+    }
+
+    var NonUST = new ApexCharts(document.querySelector('#NonUST'), NonUST);
+    NonUST.render();
+
+    // UST
+    var Ust = {
+        chart: {
+            type: 'radialBar',
+            size: '50%',
+            height: 350,
+            zoom: {
+                enabled: false
+            },
+            offsetY: 20
         },
         plotOptions: {
-            pie: {
-                donut: {
-                    labels: {
-                        show: true,
+            radialBar: {
+                track: {
+                    opacity: 1,
+                    background: '#3F3D56',
+                    dropShadow: {
+                        enabled: true,
+                        top: 0,
+                        left: 0,
+                        blur: 0,
+                        opacity: 100
+                    },
+                },
+                dataLabels: {
+                    name: {
+                        show: false
+                    },
+                    value: {
+                        offsetY: 10,
+                        offsetX: 4,
                         color: "#F26F21",
-                        total: {
-                            showAlways: true,
-                            show: true
-                        }
+                        fontSize: "30px",
+                        show: true
                     }
                 }
             }
         },
-        dataLabels: {
-            enabled: false,
-        },
-        fill: {
-            type: 'donut',
-            opacity: 1,
-        },
-        states: {
-            hover: {
-                filter: 'none'
-            }
-        },
+        colors: ["#F26F21"],
+        series: [76.3],
         theme: {
-            palette: 'palette2'
-        },
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 200
-                },
-                legend: {
-                    show: false,
-                }
+            monochrome: {
+                enabled: false
             }
-        }]
-    };
-
-    var donut2 = new ApexCharts(document.querySelector("#donut2"), donut2);
-    donut2.render();
-
-    var donut3 = {
-        colors: ["#3F3D56", "#F26F21"],
-        series: [44, 55],
-
-        chart: {
-            width: 240,
-            type: 'donut',
-            sparkline: {
-                enabled: true
-            },
         },
-        stroke: {
-            width: 0,
+        legend: {
+            show: false,
+        },
+    }
+
+    var Ust = new ApexCharts(document.querySelector('#Ust'), Ust);
+    Ust.render();
+
+    // Seleraku
+    var Seleraku = {
+        chart: {
+            type: 'radialBar',
+            size: '50%',
+            height: 350,
+            zoom: {
+                enabled: false
+            },
+            offsetY: 20
         },
         plotOptions: {
-            pie: {
-                donut: {
-                    labels: {
-                        show: true,
+            radialBar: {
+                track: {
+                    opacity: 1,
+                    background: '#3F3D56',
+                    dropShadow: {
+                        enabled: true,
+                        top: 0,
+                        left: 0,
+                        blur: 0,
+                        opacity: 100
+                    },
+                },
+                dataLabels: {
+                    name: {
+                        show: false
+                    },
+                    value: {
+                        offsetY: 10,
+                        offsetX: 4,
                         color: "#F26F21",
-                        total: {
-                            showAlways: true,
-                            show: true
-                        }
+                        fontSize: "30px",
+                        show: true
                     }
                 }
             }
         },
-        dataLabels: {
-            enabled: false,
-        },
-        fill: {
-            type: 'donut',
-            opacity: 1,
-        },
-        states: {
-            hover: {
-                filter: 'none'
-            }
-        },
+        colors: ["#F26F21"],
+        series: [76.3],
         theme: {
-            palette: 'palette2'
-        },
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 200
-                },
-                legend: {
-                    show: false,
-                }
+            monochrome: {
+                enabled: false
             }
-        }]
-    };
+        },
+        legend: {
+            show: false,
+        },
+    }
 
-    var donut3 = new ApexCharts(document.querySelector("#donut3"), donut3);
-    donut3.render();
+    var Seleraku = new ApexCharts(document.querySelector('#Seleraku'), Seleraku);
+    Seleraku.render();
 </script>
