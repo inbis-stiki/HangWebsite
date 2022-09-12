@@ -104,9 +104,9 @@ class CronjobController extends Controller
 
     public function TestTemplate(ReportExcell $Excell_Reporting)
     {
-        // $Excell_Reporting->set_data($this->AktivitasRPOLapul(), $this->AktivitasRPODapul(), $this->AktivitasAsmen(), $this->PencapaianAsmen());
-        // $Excell_Reporting->generate_ranking_rpo();
-        $Excell_Reporting->generate_ranking_asmen();
+        $Excell_Reporting->set_data($this->AktivitasRPOLapul(), $this->AktivitasRPODapul(), $this->AktivitasAsmen(), $this->PencapaianAsmen());
+        $Excell_Reporting->generate_ranking_rpo();
+        // $Excell_Reporting->generate_ranking_asmen();
         // $Excell_Reporting->generate_transaksi_harian();
         // $Excell_Reporting->generate_trend_asmen();
         // $Excell_Reporting->generate_ranking_apo_spg();

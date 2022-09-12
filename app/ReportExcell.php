@@ -9,7 +9,7 @@ class ReportExcell
 {
     protected $dataPencapaianRPOLapul = array(
         [
-            "NAME_USER" => "Doni",
+            "NAME_USER" => "Dummy 1",
             "NAME_AREA" => "MALANG 2",
             "TARGET_UST" => 9,
             "REAL_UST" => 8,
@@ -27,7 +27,7 @@ class ReportExcell
 
     protected $dataAktifitasRPOLapul = array(
         [
-            "NAME_USER" => "Doni",
+            "NAME_USER" => "Dummy 1",
             "NAME_AREA" => "MALANG 2",
             "TARGET_UB" => 9,
             "REAL_UB" => 8,
@@ -45,7 +45,7 @@ class ReportExcell
 
     protected $dataPencapaianRPODapul = array(
         [
-            "NAME_USER" => "Zidan",
+            "NAME_USER" => "Dummy 2",
             "NAME_AREA" => "MALANG 2",
             "TARGET_UST" => 9,
             "REAL_UST" => 8,
@@ -63,7 +63,7 @@ class ReportExcell
 
     protected $dataAktifitasRPODapul = array(
         [
-            "NAME_USER" => "Zidan",
+            "NAME_USER" => "Dummy 2",
             "NAME_AREA" => "MALANG 2",
             "TARGET_UB" => 9,
             "REAL_UB" => 8,
@@ -737,17 +737,19 @@ class ReportExcell
 
         $ObjSheet->setCellValue('B' . ($rowStart + 1), 'AVERAGE')->getStyle('B' . ($rowStart + 1))->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFFFF'));
         $ObjSheet->setCellValue('C' . ($rowStart + 1), 'NASIONAL')->getStyle('C' . ($rowStart + 1))->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFFFF'));
-
-        $ObjSheet->getStyle('D' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('E' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('F' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('G' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('H' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('I' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('J' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('K' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('L' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('M' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        
+        $firstRow = 7;
+        $lastRow = $rowStart - 1;
+        $ObjSheet->setCellValue('D' . ($rowStart + 1), '=AVERAGE(D'.$firstRow.':D'.$lastRow.')')->getStyle('D' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);        
+        $ObjSheet->setCellValue('E' . ($rowStart + 1), '=AVERAGE(E'.$firstRow.':E'.$lastRow.')')->getStyle('E' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('F' . ($rowStart + 1), '=AVERAGE(F'.$firstRow.':F'.$lastRow.')')->getStyle('F' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('G' . ($rowStart + 1), '=AVERAGE(G'.$firstRow.':G'.$lastRow.')')->getStyle('G' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('H' . ($rowStart + 1), '=AVERAGE(H'.$firstRow.':H'.$lastRow.')')->getStyle('H' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('I' . ($rowStart + 1), '=AVERAGE(I'.$firstRow.':I'.$lastRow.')')->getStyle('I' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('J' . ($rowStart + 1), '=AVERAGE(J'.$firstRow.':J'.$lastRow.')')->getStyle('J' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('K' . ($rowStart + 1), '=AVERAGE(K'.$firstRow.':K'.$lastRow.')')->getStyle('K' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('L' . ($rowStart + 1), '=AVERAGE(L'.$firstRow.':L'.$lastRow.')')->getStyle('L' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('M' . ($rowStart + 1), '=AVERAGE(M'.$firstRow.':M'.$lastRow.')')->getStyle('M' . ($rowStart + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
         $ObjSheet->getStyle('N' . ($rowStart + 1))->applyFromArray($this->styling_title_template('FF000000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
 
         // Pencapaian Asmen
@@ -810,16 +812,18 @@ class ReportExcell
         $ObjSheet->setCellValue('B' . ($rowStart3 + 1), 'AVERAGE')->getStyle('B' . ($rowStart3 + 1))->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFFFF'));
         $ObjSheet->setCellValue('C' . ($rowStart3 + 1), 'NASIONAL')->getStyle('C' . ($rowStart3 + 1))->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFFFF'));
 
-        $ObjSheet->getStyle('D' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('E' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('F' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('G' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('H' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('I' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('J' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('K' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('L' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-        $ObjSheet->getStyle('M' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $firstRow = $rowStart2 + 4;
+        $lastRow = $rowStart3 - 1;
+        $ObjSheet->setCellValue('D' . ($rowStart3 + 1), '=AVERAGE(D'.$firstRow.':D'.$lastRow.')')->getStyle('D' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);        
+        $ObjSheet->setCellValue('E' . ($rowStart3 + 1), '=AVERAGE(E'.$firstRow.':E'.$lastRow.')')->getStyle('E' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('F' . ($rowStart3 + 1), '=AVERAGE(F'.$firstRow.':F'.$lastRow.')')->getStyle('F' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('G' . ($rowStart3 + 1), '=AVERAGE(G'.$firstRow.':G'.$lastRow.')')->getStyle('G' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('H' . ($rowStart3 + 1), '=AVERAGE(H'.$firstRow.':H'.$lastRow.')')->getStyle('H' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('I' . ($rowStart3 + 1), '=AVERAGE(I'.$firstRow.':I'.$lastRow.')')->getStyle('I' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('J' . ($rowStart3 + 1), '=AVERAGE(J'.$firstRow.':J'.$lastRow.')')->getStyle('J' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('K' . ($rowStart3 + 1), '=AVERAGE(K'.$firstRow.':K'.$lastRow.')')->getStyle('K' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('L' . ($rowStart3 + 1), '=AVERAGE(L'.$firstRow.':L'.$lastRow.')')->getStyle('L' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+        $ObjSheet->setCellValue('M' . ($rowStart3 + 1), '=AVERAGE(M'.$firstRow.':M'.$lastRow.')')->getStyle('M' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
         $ObjSheet->getStyle('N' . ($rowStart3 + 1))->applyFromArray($this->styling_title_template('FF000000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
 
         $ObjSheet->mergeCells('S17:S19')->setCellValue('S17', 'AREA')->getStyle('S17:S19')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
@@ -875,7 +879,6 @@ class ReportExcell
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
-
 
     public function generate_transaksi_harian()
     {
