@@ -201,10 +201,10 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-sm-4">
                         <div class="card text-black mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title fs-14">Aktivitas UB</h5>
+                            <div class="card-body mb-4">
+                                <h5 class="card-title fs-14 mb-4">Aktivitas UB</h5>
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="aktivUB" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
@@ -227,16 +227,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-sm-4">
                         <div class="card text-white mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title fs-14">Pedagang Sayur</h5>
+                            <div class="card-body mb-4">
+                                <h5 class="card-title fs-14 mb-4">Pedagang Sayur</h5>
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="PedagangSayur" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
                                     </div>
                                 </div>
-                                <div class="basic-form mt-4">
+                                <div class="basic-form mt-4 ">
                                     <div class="container">
                                         <div class="row">
                                             <div class="col text-white text-center bg-dark-custom ">TGT</div>
@@ -253,10 +253,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-sm-4">
                         <div class="card text-white mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title fs-14">Retail</h5>
+                            <div class="card-body mb-4">
+                                <h5 class="card-title fs-14 mb-4">Retail</h5>
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="Retail" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
@@ -307,10 +307,10 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-sm-4">
                         <div class="card text-black mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title fs-14">Non UST</h5>
+                            <div class="card-body mb-4">
+                                <h5 class="card-title fs-14 mb-4">Non UST</h5>
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="NonUST" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
@@ -333,10 +333,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-sm-4">
                         <div class="card text-white mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title fs-14">UST</h5>
+                            <div class="card-body mb-4">
+                                <h5 class="card-title fs-14 mb-4">UST</h5>
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="Ust" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
@@ -359,10 +359,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-sm-4">
                         <div class="card text-white mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title fs-14">Seleraku</h5>
+                            <div class="card-body mb-4">
+                                <h5 class="card-title fs-14 mb-4">Seleraku</h5>
                                 <div class="tab-content">
                                     <div class="tab-pane fade show active" id="Seleraku" role="tabpanel">
                                         {{-- <canvas id="" class="chart"></canvas> --}}
@@ -521,52 +521,53 @@
 
     //Aktivitas UB
     var aktivUB = {
+        series: [50, 50],
+        labels: ["Real", "TGT"],
+        colors: ["#F26F21", "#3F3D56"],
         chart: {
-            type: 'radialBar',
-            size: '50%',
-            height: 350,
-            zoom: {
-                enabled: false
-            },
-            offsetY: 20
+            type: 'donut',
+            height: 280,
+        },
+        dataLabels: {
+            enabled: false,
         },
         plotOptions: {
-            radialBar: {
-                track: {
-                    opacity: 1,
-                    background: '#3F3D56',
-                    dropShadow: {
-                        enabled: true,
-                        top: 0,
-                        left: 0,
-                        blur: 0,
-                        opacity: 100
-                    },
-                },
-                dataLabels: {
-                    name: {
-                        show: false
-                    },
-                    value: {
-                        offsetY: 10,
-                        offsetX: 4,
-                        color: "#F26F21",
-                        fontSize: "30px",
-                        show: true
+            pie: {
+                expandOnClick: false,
+                size: 200,
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        name: {
+                            show: true,
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: undefined,
+                            offsetY: 11,
+                            offsetX: 0,
+                            formatter: function(val) {
+                                return val
+                            }
+                        },
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: ' 50%',
+                            fontSize: '30px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: "#F26F21",
+                            formatter: () => ''
+                        },
                     }
                 }
             }
         },
-        colors: ["#F26F21"],
-        series: [76.3],
-        theme: {
-            monochrome: {
-                enabled: false
-            }
-        },
         legend: {
-            show: false,
-        },
+            show: false
+        }
     }
 
     var aktivUB = new ApexCharts(document.querySelector('#aktivUB'), aktivUB);
@@ -574,52 +575,53 @@
 
     // Pedagang Sayur
     var PedagangSayur = {
+        series: [50, 50],
+        labels: ["Real", "TGT"],
+        colors: ["#F26F21", "#3F3D56"],
         chart: {
-            type: 'radialBar',
-            size: '50%',
-            height: 350,
-            zoom: {
-                enabled: false
-            },
-            offsetY: 20
+            type: 'donut',
+            height: 280,
+        },
+        dataLabels: {
+            enabled: false,
         },
         plotOptions: {
-            radialBar: {
-                track: {
-                    opacity: 1,
-                    background: '#3F3D56',
-                    dropShadow: {
-                        enabled: true,
-                        top: 0,
-                        left: 0,
-                        blur: 0,
-                        opacity: 100
-                    },
-                },
-                dataLabels: {
-                    name: {
-                        show: false
-                    },
-                    value: {
-                        offsetY: 10,
-                        offsetX: 4,
-                        color: "#F26F21",
-                        fontSize: "30px",
-                        show: true
+            pie: {
+                expandOnClick: false,
+                size: 200,
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        name: {
+                            show: true,
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: undefined,
+                            offsetY: 11,
+                            offsetX: 0,
+                            formatter: function(val) {
+                                return val
+                            }
+                        },
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: ' 50%',
+                            fontSize: '30px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: "#F26F21",
+                            formatter: () => ''
+                        },
                     }
                 }
             }
         },
-        colors: ["#F26F21"],
-        series: [76.3],
-        theme: {
-            monochrome: {
-                enabled: false
-            }
-        },
         legend: {
-            show: false,
-        },
+            show: false
+        }
     }
 
     var PedagangSayur = new ApexCharts(document.querySelector('#PedagangSayur'), PedagangSayur);
@@ -627,52 +629,53 @@
 
     // Retail
     var Retail = {
+        series: [50, 50],
+        labels: ["Real", "TGT"],
+        colors: ["#F26F21", "#3F3D56"],
         chart: {
-            type: 'radialBar',
-            size: '50%',
-            height: 350,
-            zoom: {
-                enabled: false
-            },
-            offsetY: 20
+            type: 'donut',
+            height: 280,
+        },
+        dataLabels: {
+            enabled: false,
         },
         plotOptions: {
-            radialBar: {
-                track: {
-                    opacity: 1,
-                    background: '#3F3D56',
-                    dropShadow: {
-                        enabled: true,
-                        top: 0,
-                        left: 0,
-                        blur: 0,
-                        opacity: 100
-                    },
-                },
-                dataLabels: {
-                    name: {
-                        show: false
-                    },
-                    value: {
-                        offsetY: 10,
-                        offsetX: 4,
-                        color: "#F26F21",
-                        fontSize: "30px",
-                        show: true
+            pie: {
+                expandOnClick: false,
+                size: 200,
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        name: {
+                            show: true,
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: undefined,
+                            offsetY: 11,
+                            offsetX: 0,
+                            formatter: function(val) {
+                                return val
+                            }
+                        },
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: ' 50%',
+                            fontSize: '30px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: "#F26F21",
+                            formatter: () => ''
+                        },
                     }
                 }
             }
         },
-        colors: ["#F26F21"],
-        series: [76.3],
-        theme: {
-            monochrome: {
-                enabled: false
-            }
-        },
         legend: {
-            show: false,
-        },
+            show: false
+        }
     }
 
     var Retail = new ApexCharts(document.querySelector('#Retail'), Retail);
@@ -680,52 +683,53 @@
 
     // NonUST
     var NonUST = {
+        series: [50, 50],
+        labels: ["Real", "TGT"],
+        colors: ["#F26F21", "#3F3D56"],
         chart: {
-            type: 'radialBar',
-            size: '50%',
-            height: 350,
-            zoom: {
-                enabled: false
-            },
-            offsetY: 20
+            type: 'donut',
+            height: 280,
+        },
+        dataLabels: {
+            enabled: false,
         },
         plotOptions: {
-            radialBar: {
-                track: {
-                    opacity: 1,
-                    background: '#3F3D56',
-                    dropShadow: {
-                        enabled: true,
-                        top: 0,
-                        left: 0,
-                        blur: 0,
-                        opacity: 100
-                    },
-                },
-                dataLabels: {
-                    name: {
-                        show: false
-                    },
-                    value: {
-                        offsetY: 10,
-                        offsetX: 4,
-                        color: "#F26F21",
-                        fontSize: "30px",
-                        show: true
+            pie: {
+                expandOnClick: false,
+                size: 200,
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        name: {
+                            show: true,
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: undefined,
+                            offsetY: 11,
+                            offsetX: 0,
+                            formatter: function(val) {
+                                return val
+                            }
+                        },
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: ' 50%',
+                            fontSize: '30px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: "#F26F21",
+                            formatter: () => ''
+                        },
                     }
                 }
             }
         },
-        colors: ["#F26F21"],
-        series: [76.3],
-        theme: {
-            monochrome: {
-                enabled: false
-            }
-        },
         legend: {
-            show: false,
-        },
+            show: false
+        }
     }
 
     var NonUST = new ApexCharts(document.querySelector('#NonUST'), NonUST);
@@ -733,52 +737,53 @@
 
     // UST
     var Ust = {
+        series: [50, 50],
+        labels: ["Real", "TGT"],
+        colors: ["#F26F21", "#3F3D56"],
         chart: {
-            type: 'radialBar',
-            size: '50%',
-            height: 350,
-            zoom: {
-                enabled: false
-            },
-            offsetY: 20
+            type: 'donut',
+            height: 280,
+        },
+        dataLabels: {
+            enabled: false,
         },
         plotOptions: {
-            radialBar: {
-                track: {
-                    opacity: 1,
-                    background: '#3F3D56',
-                    dropShadow: {
-                        enabled: true,
-                        top: 0,
-                        left: 0,
-                        blur: 0,
-                        opacity: 100
-                    },
-                },
-                dataLabels: {
-                    name: {
-                        show: false
-                    },
-                    value: {
-                        offsetY: 10,
-                        offsetX: 4,
-                        color: "#F26F21",
-                        fontSize: "30px",
-                        show: true
+            pie: {
+                expandOnClick: false,
+                size: 200,
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        name: {
+                            show: true,
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: undefined,
+                            offsetY: 11,
+                            offsetX: 0,
+                            formatter: function(val) {
+                                return val
+                            }
+                        },
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: ' 50%',
+                            fontSize: '30px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: "#F26F21",
+                            formatter: () => ''
+                        },
                     }
                 }
             }
         },
-        colors: ["#F26F21"],
-        series: [76.3],
-        theme: {
-            monochrome: {
-                enabled: false
-            }
-        },
         legend: {
-            show: false,
-        },
+            show: false
+        }
     }
 
     var Ust = new ApexCharts(document.querySelector('#Ust'), Ust);
@@ -786,52 +791,53 @@
 
     // Seleraku
     var Seleraku = {
+        series: [50, 50],
+        labels: ["Real", "TGT"],
+        colors: ["#F26F21", "#3F3D56"],
         chart: {
-            type: 'radialBar',
-            size: '50%',
-            height: 350,
-            zoom: {
-                enabled: false
-            },
-            offsetY: 20
+            type: 'donut',
+            height: 280,
+        },
+        dataLabels: {
+            enabled: false,
         },
         plotOptions: {
-            radialBar: {
-                track: {
-                    opacity: 1,
-                    background: '#3F3D56',
-                    dropShadow: {
-                        enabled: true,
-                        top: 0,
-                        left: 0,
-                        blur: 0,
-                        opacity: 100
-                    },
-                },
-                dataLabels: {
-                    name: {
-                        show: false
-                    },
-                    value: {
-                        offsetY: 10,
-                        offsetX: 4,
-                        color: "#F26F21",
-                        fontSize: "30px",
-                        show: true
+            pie: {
+                expandOnClick: false,
+                size: 200,
+                donut: {
+                    size: '65%',
+                    labels: {
+                        show: true,
+                        name: {
+                            show: true,
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: undefined,
+                            offsetY: 11,
+                            offsetX: 0,
+                            formatter: function(val) {
+                                return val
+                            }
+                        },
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: ' 50%',
+                            fontSize: '30px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: "#F26F21",
+                            formatter: () => ''
+                        },
                     }
                 }
             }
         },
-        colors: ["#F26F21"],
-        series: [76.3],
-        theme: {
-            monochrome: {
-                enabled: false
-            }
-        },
         legend: {
-            show: false,
-        },
+            show: false
+        }
     }
 
     var Seleraku = new ApexCharts(document.querySelector('#Seleraku'), Seleraku);
