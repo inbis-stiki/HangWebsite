@@ -72,8 +72,8 @@ class TargetActivityController extends Controller
             $target_activity->ID_ACTIVITY     = $activitycategory->ID_AC;
             $target_activity->ID_REGIONAL     = $regional->ID_REGIONAL;
             $target_activity->QUANTITY        = $arr[3];
-            $target_activity->START_PP        = Carbon::createFromFormat('m/d/Y', $arr[4])->format('Y-m-d');
-            $target_activity->END_PP          = Carbon::createFromFormat('m/d/Y', $arr[5])->format('Y-m-d');
+            $target_activity->START_PP        = Carbon::createFromFormat('d/m/Y', $arr[4])->format('Y-m-d');
+            $target_activity->END_PP          = Carbon::createFromFormat('d/m/Y', $arr[5])->format('Y-m-d');
             $target_activity->save();
         }
         // Excel::import(new RegionalPriceImport, $file->getRealPath());
@@ -211,7 +211,7 @@ class TargetActivityController extends Controller
         $sheet->setCellValue('E8', 'START DATE')->getStyle('E8')->applyFromArray($styleTitle);
         $sheet->setCellValue('F8', 'END DATE')->getStyle('F8')->applyFromArray($styleTitle);
         $actcats        = ActivityCategory::all();
-        $arrs_actcat= [];
+        $arrs_actcat = [];
         foreach ($actcats as $actcat) {
             array_push($arrs_actcat, $actcat->NAME_AC);
         }
@@ -244,7 +244,7 @@ class TargetActivityController extends Controller
             $lstProduct = $sheet->getCell('F' . $rowStart)->getDataValidation();
             $lstProduct->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_DATE);
 
-            
+
             $rowStart++;
         }
         $fileName = 'TEMPLATE_TARGET_AKTIVITAS_' . ((int)date('Y') + 1);
