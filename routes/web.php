@@ -135,10 +135,7 @@ Route::group(['middleware' => ['checkLogin']], function () {
     //MASTER ACTIVITY CATEGORY
     Route::get('master/activity-category', 'ActivityCategoryController@index');
     Route::get('master/activity-category/update', 'ActivityCategoryController@update');
-
-    //MASTER USER TARGET
-    Route::get('master/user-target', 'UserTargetController@index');
-
+    
     //LAPORAN
     Route::get('laporan/lpr-ranking', 'ReportRankingController@index');
     Route::get('laporan/lpr-trend', 'ReportTrendController@index');
