@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\ActivityCategory;
+use App\ReportQuery;
 use App\UserRankingActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,13 +21,128 @@ class DashboardController extends Controller
         return view('dashboard', $data);
     }
 
+    public function AktivitasRPO()
+    {
+        $month = date('n');
+        $data = array();
+        $user_regionals = DB::select("
+        SELECT
+        (
+            SELECT
+                u.NAME_USER
+            FROM
+                `user` u
+            WHERE
+                u.ID_ROLE = 4 
+                AND u.ID_REGIONAL = mr.ID_REGIONAL
+                LIMIT 1
+        ) AS NAME_USER,
+        (
+            SELECT
+                u.ID_ROLE
+            FROM
+                `user` u
+            WHERE
+                u.ID_ROLE = 4 
+                AND u.ID_REGIONAL = mr.ID_REGIONAL
+                LIMIT 1
+        ) AS ROLE_USER,
+        mr.NAME_REGIONAL,
+        mr.ID_REGIONAL
+        FROM
+            md_regional mr,
+            md_location ml
+        WHERE
+            mr.ID_LOCATION = ml.ID_LOCATION           
+        ");
+
+        foreach ($user_regionals as $user_regional) {
+            $activity_rankings = DB::select("
+            SELECT 
+            (
+                SELECT
+                    QUANTITY
+                    FROM
+                    target_activity ta
+                    WHERE
+                        ID_ACTIVITY = 1
+                        AND ID_REGIONAL = usa.ID_REGIONAL
+            ) AS TARGET_UB, 
+            SUM(usa.REAL_UB) AS REAL_UB, 
+            usa.VSTARGET_UB, 
+            (
+                SELECT
+                    QUANTITY
+                    FROM
+                    target_activity ta
+                    WHERE
+                        ID_ACTIVITY = 2
+                        AND ID_REGIONAL = usa.ID_REGIONAL
+            ) AS TARGET_PDGSAYUR, 
+            SUM(usa.REAL_PDGSAYUR) AS REAL_PDGSAYUR, 
+            usa.VSTARGET_PDGSAYUR, 
+            (
+                SELECT
+                    QUANTITY
+                    FROM
+                    target_activity ta
+                    WHERE
+                        ID_ACTIVITY = 3
+                        AND ID_REGIONAL = usa.ID_REGIONAL
+            ) AS TARGET_RETAIL, 
+            SUM(usa.REAL_RETAIL) AS REAL_RETAIL, 
+            usa.VSTARGET_RETAIL, 
+            usa.AVERAGE, 
+            usa.ID_USER_RANKACTIVITY
+            FROM
+                user_ranking_activity AS usa,
+                md_regional AS mr
+            WHERE
+                usa.ID_REGIONAL	= " . $user_regional->ID_REGIONAL . "
+                AND usa.ID_REGIONAL = mr.ID_REGIONAL
+                AND MONTH(DATE(usa.created_at)) = " . $month . "
+            GROUP BY
+                usa.ID_REGIONAL
+            ");
+
+            $temp['NAME_USER']          = $user_regional->NAME_USER;
+            $temp['NAME_AREA']          = $user_regional->NAME_REGIONAL;
+            $temp['ID_ROLE']            = $user_regional->ROLE_USER;
+            $temp['TARGET_UB']          = !empty($activity_rankings[0]->TARGET_UB) ? $activity_rankings[0]->TARGET_UB : "-";
+            $temp['REAL_UB']            = !empty($activity_rankings[0]->REAL_UB) ? $activity_rankings[0]->REAL_UB : "-";
+            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB'] / $temp['TARGET_UB']) * 100 : "-";
+            $temp['TARGET_PDGSAYUR']    = !empty($activity_rankings[0]->TARGET_PDGSAYUR) ? $activity_rankings[0]->TARGET_PDGSAYUR : "-";
+            $temp['REAL_PDGSAYUR']      = !empty($activity_rankings[0]->REAL_PDGSAYUR) ? $activity_rankings[0]->REAL_PDGSAYUR : "-";
+            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR'] / $temp['TARGET_PDGSAYUR']) * 100 : "-";
+            $temp['TARGET_RETAIL']      = !empty($activity_rankings[0]->TARGET_RETAIL) ? $activity_rankings[0]->TARGET_RETAIL : "-";
+            $temp['REAL_RETAIL']        = !empty($activity_rankings[0]->REAL_RETAIL) ? $activity_rankings[0]->REAL_RETAIL : "-";
+            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL'] / $temp['TARGET_RETAIL']) * 100 : "-";
+
+            $weightActCat = ActivityCategory::where('deleted_at', NULL)->get()->toArray();
+            $avgCount = 0;
+            if ($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
+            if ($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
+
+            $temp['AVERAGE'] = (((float)$temp['VSTARGET_UB'] / 100) * ((float)$weightActCat[0]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_PDGSAYUR'] / 100) * ((float)$weightActCat[1]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_RETAIL'] / 100) * ((float)$weightActCat[2]["PERCENTAGE_AC"] / 100));
+            $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
+
+            $data[] = $temp;
+        }
+        usort($data, function ($a, $b) {
+            return strnatcmp($b['AVERAGE'], $a['AVERAGE']);
+        });
+        foreach ($data as $key => $value) {
+            $data[$key]['ID_USER_RANKSALE'] = $key + 1;
+        }
+        return $data;
+    }
+
     public function ranking_activity()
     {
-        $ranking_activity = DB::table('user_ranking_activity')
-            ->select('user_ranking_activity.ID_USER_RANKACTIVITY', 'user_ranking_activity.ID_ROLE', 'user_ranking_activity.AVERAGE', 'user.NAME_USER')
-            ->join('user', 'user_ranking_activity.ID_USER', '=', 'user.ID_USER')
-            ->orderBy('ID_USER_RANKACTIVITY', 'ASC')
-            ->skip(0)->take(5)->get();
+        $ranking_activity = $this->AktivitasRPO();
         return json_encode($ranking_activity);
     }
 
@@ -222,5 +339,10 @@ class DashboardController extends Controller
             'status_message'    => 'Data berhasil diambil!',
             'data'              => $NewData_all
         ], 200);
+    }
+
+    public function trend_asmen()
+    {
+        
     }
 }
