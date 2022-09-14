@@ -35,7 +35,15 @@ Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
 Route::get('cronjob/pencapaianasmen', 'CronjobController@PencapaianAsmen');
 
 Route::group(['middleware' => ['checkLogin']], function () {
+    // MASTER DASHBORAD
     Route::get('dashboard', 'DashboardController@index');
+    Route::get('dashboard/ranking_activity', 'DashboardController@ranking_activity');
+    Route::get('dashboard/ranking_sale', 'DashboardController@ranking_sale');
+    // Dashboard DonutChart
+    Route::post('dashboard/ranking_aktivitas', 'DashboardController@ranking_aktivitas');
+    Route::post('dashboard/ranking_pencapaian', 'DashboardController@ranking_pencapaian');
+    // Dashboard Presenssi
+    Route::post('dashboard/presensi', 'DashboardController@presensi');
 
     // MASTER LOCATION
     // nasional
