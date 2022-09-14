@@ -33,6 +33,7 @@ Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
 Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
 Route::get('cronjob/pencapaianasmen', 'CronjobController@PencapaianAsmen');
+Route::get('cronjob/tesQuery', 'CronjobController@Testing');
 
 Route::group(['middleware' => ['checkLogin']], function () {
     // MASTER DASHBORAD
