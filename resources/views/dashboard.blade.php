@@ -355,11 +355,10 @@
                             <form>
                                 <div class="form-row">
                                     <div class="col mt-2 mt-sm-0">
-                                        <select name="" id="" class="form-control default-select">
-                                            <option selected value="0">Area</option>
-                                            <option value="1">Spreading</option>
-                                            <option value="2">UB</option>
-                                            <option value="3">UBLP</option>
+                                        <select name="" id="SelectAREAPresensi" class="form-control default-select">
+                                            @Foreach($area as $item)
+                                            <option value="{{$item->ID_AREA}}">{{$item->NAME_AREA}}</option>
+                                            @endForeach
                                         </select>
                                     </div>
                                     <div class="col mt-2 mt-sm-0">
@@ -477,7 +476,7 @@
             success: function(response) {
                 var trHTML_asmen = '';
                 var trHTML_rpo = '';
-                var trHTML_apo = '';                
+                var trHTML_apo = '';
                 var no_asmen = 0
                 var no_rpo = 0
                 var no_apo = 0
@@ -1237,6 +1236,7 @@
             })
         ],
         onChange: date => {
+            $('#datatable_presensi').DataTable().destroy();
             presensi(convert(date))
         }
     });
@@ -1247,6 +1247,11 @@
             day = ("0" + date.getDate()).slice(-2);
         return [date.getFullYear(), mnth].join("-");
     }
+
+    $('#SelectAREAPresensi').change(function() {
+        $('#datatable_presensi').DataTable().destroy();
+        presensi($('#datePresensi').val());
+    });
 
     // TABEL PRESENSI
     presensi('<?= date("Y-m"); ?>')
@@ -1272,8 +1277,8 @@
                     request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
                 },
                 'data': function(data) {
-                    // data.searchTrans = $('#SelectTrans').val();
                     data.filter_date = date
+                    data.filter_area = $('#SelectAREAPresensi').val()
                 }
             },
             "columns": [{
