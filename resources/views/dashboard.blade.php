@@ -1248,6 +1248,7 @@
         return [date.getFullYear(), mnth].join("-");
     }
 
+    $('#SelectAREAPresensi').select2();
     $('#SelectAREAPresensi').change(function() {
         $('#datatable_presensi').DataTable().destroy();
         presensi($('#datePresensi').val());
