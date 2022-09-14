@@ -9,10 +9,13 @@ use Symfony\Component\Console\Input\Input;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $req)
     {
         $data['title']      = "Dashboard";
         $data['sidebar']    = "dashboard";
+
+        $id_regional        = $req->session()->get('regional');
+        ($req->session()->get('role') == 2) ? $data['area'] = DB::table('md_area')->get() : $data['area'] = DB::table('md_area')->where('md_area.ID_REGIONAL', '=', $id_regional)->get();
         return view('dashboard', $data);
     }
 
@@ -167,7 +170,8 @@ class DashboardController extends Controller
     {
         $id_role  = $req->session()->get('role');
         $id_regional  = $req->session()->get('regional');
-        $tgl_presence  = $req->input('tglSearchPresence');
+        $tgl_presence  = $req->input('filter_date');
+        $area  = $req->input('filter_area');
 
         if ($id_role != 2) {
             $data_presence      = DB::table('presence')
@@ -180,6 +184,7 @@ class DashboardController extends Controller
                 ->orderBy('presence.DATE_PRESENCE', 'DESC')
                 ->groupByRaw("MONTH(presence.DATE_PRESENCE), YEAR(presence.DATE_PRESENCE), presence.ID_USER")
                 ->where('md_regional.ID_REGIONAL', '=', $id_regional)
+                ->where('md_area.ID_AREA', '=', $area)
                 ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
                 ->get();
         } else {
@@ -193,6 +198,7 @@ class DashboardController extends Controller
                 ->orderBy('presence.DATE_PRESENCE', 'DESC')
                 ->groupByRaw("MONTH(presence.DATE_PRESENCE), YEAR(presence.DATE_PRESENCE), presence.ID_USER")
                 ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
+                ->where('md_area.ID_AREA', '=', $area)
                 ->get();
         }
 
