@@ -112,6 +112,10 @@ class CronjobController extends Controller
         // app(ReportTrend::class)->generate_trend_rpo();
     }
 
+    public function Testing(ReportQuery $reportQuery){
+        dd($reportQuery->PencapaianAsmen());
+    }
+
     public function updateDailyRanking()
     {
         date_default_timezone_set("Asia/Bangkok");
