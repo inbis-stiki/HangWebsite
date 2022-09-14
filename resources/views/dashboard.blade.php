@@ -431,22 +431,28 @@
                 var trHTML_asmen = '';
                 var trHTML_rpo = '';
                 var trHTML_apo = '';
+                var no_asmen = 0
+                var no_rpo = 0
+                var no_apo = 0
                 $.each(response, function(key, value) {
                     if (value.ID_ROLE == 3) {
+                        no_asmen++
                         trHTML_asmen +=
-                            '<tr><td>' + value.ID_USER_RANKACTIVITY +
+                            '<tr><td>' + no_asmen +
                             '</td><td>' + value.NAME_USER +
                             '</td><td>' + Number(value.AVERAGE.toFixed(2)) + "%"
                         '</td></tr>';
                     } else if (value.ID_ROLE == 4) {
+                        no_rpo++
                         trHTML_rpo +=
-                            '<tr><td>' + value.ID_USER_RANKACTIVITY +
+                            '<tr><td>' + no_rpo +
                             '</td><td>' + value.NAME_USER +
                             '</td><td>' + Number(value.AVERAGE.toFixed(2)) + "%"
                         '</td></tr>';
                     } else if (value.ID_ROLE == 5) {
+                        no_apo++
                         trHTML_apo +=
-                            '<tr><td>' + value.ID_USER_RANKACTIVITY +
+                            '<tr><td>' + no_apo +
                             '</td><td>' + value.NAME_USER +
                             '</td><td>' + Number(value.AVERAGE.toFixed(2)) + "%"
                         '</td></tr>';
@@ -471,23 +477,29 @@
             success: function(response) {
                 var trHTML_asmen = '';
                 var trHTML_rpo = '';
-                var trHTML_apo = '';
+                var trHTML_apo = '';                
+                var no_asmen = 0
+                var no_rpo = 0
+                var no_apo = 0
                 $.each(response, function(key, value) {
                     if (value.ID_ROLE == 3) {
+                        no_asmen++
                         trHTML_asmen +=
-                            '<tr><td>' + value.ID_USER_RANKSALE +
+                            '<tr><td>' + no_asmen +
                             '</td><td>' + value.NAME_USER +
                             '</td><td>' + Number(value.AVERAGE.toFixed(2)) + "%"
                         '</td></tr>';
                     } else if (value.ID_ROLE == 4) {
+                        no_rpo++
                         trHTML_rpo +=
-                            '<tr><td>' + value.ID_USER_RANKSALE +
+                            '<tr><td>' + no_rpo +
                             '</td><td>' + value.NAME_USER +
                             '</td><td>' + Number(value.AVERAGE.toFixed(2)) + "%"
                         '</td></tr>';
                     } else if (value.ID_ROLE == 5) {
+                        no_apo++
                         trHTML_apo +=
-                            '<tr><td>' + value.ID_USER_RANKSALE +
+                            '<tr><td>' + no_apo +
                             '</td><td>' + value.NAME_USER +
                             '</td><td>' + Number(value.AVERAGE.toFixed(2)) + "%"
                         '</td></tr>';
