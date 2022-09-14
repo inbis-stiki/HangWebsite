@@ -32,7 +32,7 @@
                         <div class="row">
                             <div class="col">
                                 <h4 class="card-title">Tanggal Presensi</h4>
-                                <input name="datepicker" class="datepicker-default form-control">
+                                <input placeholder="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker" class="datepicker-default form-control">
                             </div>
                         </div>
                     </div>
@@ -166,6 +166,16 @@
         $('#mdlLocation').modal('show')
     }
 
+    var tgl_presence = "<?= date("Y-m-d"); ?>";
+    $(".datepicker-default").pickadate({
+        format: 'd\ mmmm yyyy',
+        onSet: function() {
+            tgl_presence = this.get('select', 'yyyy-mm-dd');
+            $('#datatable').DataTable().destroy();
+            filterData();
+        }
+    });
+
     filterData();
 
     function filterData() {
@@ -208,14 +218,4 @@
             ],
         }).draw()
     }
-
-    var tgl_presence = "";
-    $(".datepicker-default").pickadate({
-        format: 'd\ mmmm yyyy',
-        onSet: function() {
-            tgl_presence = this.get('select', 'yyyy-mm-dd');
-            $('#datatable').DataTable().destroy();
-            filterData();
-        }
-    });
 </script>

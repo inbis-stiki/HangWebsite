@@ -32,7 +32,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <h4 class="card-title">Tanggal Transaksi</h4>
-                                <input name="datepicker" class="datepicker-default form-control">
+                                <input placeholder ="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker" class="datepicker-default form-control">
                             </div>
                             <div class="col-6">
                                 <h4 class="card-title">Jenis Transaksi</h4>
@@ -87,7 +87,7 @@
 @include('template/footer')
 
 <script>
-    var tgl_trans = "";
+    var tgl_trans = "<?= date("Y-m-d"); ?>";
     var type = "";
     filterData();
 
@@ -95,10 +95,10 @@
         $('#datatables').DataTable({
             "processing": true,
             "language": {
-                "processing"    : '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                "processing": '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
                 "loadingRecords": "Loading...",
-                "emptyTable"    : "  ",
-                "infoEmpty"     : "No Data to Show",
+                "emptyTable": "  ",
+                "infoEmpty": "No Data to Show",
             },
             "serverMethod": 'POST',
             "ajax": {

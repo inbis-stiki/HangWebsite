@@ -86,13 +86,9 @@
                         <li><a href="{{ url('master/regional-price') }}">Harga Regional</a></li>
                         <li><a href="{{ url('master/target-activity') }}">Target Aktivitas</a></li>
                         <li><a href="{{ url('master/target-sale') }}">Target Penjualan</a></li>
-                        <li><a href="#">Konversi</a></li>
                     @endif
                     @if (Session::get('role') < 5)
                         <li><a href="{{ url('master/user') }}">User</a></li>
-                    @endif
-                    @if (Session::get('role') == 1 || Session::get('role') == 2)
-                        <li><a href="{{ url('master/user-target') }}">User Target</a></li>
                     @endif
                     @if (Session::get('role') == 1)
                         <li><a href="{{ url('master/role') }}">Role</a></li>

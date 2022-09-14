@@ -72,8 +72,8 @@ class TargetSaleController extends Controller
             $target_sale->ID_PRODUCT      = $product->ID_PRODUCT;
             $target_sale->ID_REGIONAL     = $regional->ID_REGIONAL;
             $target_sale->QUANTITY        = $arr[3];
-            $target_sale->START_PP        = Carbon::createFromFormat('m/d/Y', $arr[4])->format('Y-m-d');
-            $target_sale->END_PP          = Carbon::createFromFormat('m/d/Y', $arr[5])->format('Y-m-d');
+            $target_sale->START_PP        = Carbon::createFromFormat('d/m/Y', $arr[4])->format('Y-m-d');
+            $target_sale->END_PP          = Carbon::createFromFormat('d/m/Y', $arr[5])->format('Y-m-d');
             $target_sale->save();
         }
         // Excel::import(new RegionalPriceImport, $file->getRealPath());
@@ -211,7 +211,7 @@ class TargetSaleController extends Controller
         $sheet->setCellValue('E8', 'START DATE')->getStyle('E8')->applyFromArray($styleTitle);
         $sheet->setCellValue('F8', 'END DATE')->getStyle('F8')->applyFromArray($styleTitle);
         $products      = Product::all();
-        $arrs_product= [];
+        $arrs_product = [];
         foreach ($products as $product) {
             array_push($arrs_product, $product->CODE_PRODUCT);
         }
@@ -244,7 +244,7 @@ class TargetSaleController extends Controller
             $lstProduct = $sheet->getCell('F' . $rowStart)->getDataValidation();
             $lstProduct->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_DATE);
 
-            
+
             $rowStart++;
         }
         $fileName = 'TEMPLATE_TARGET_PENJUALAN_' . ((int)date('Y') + 1);
