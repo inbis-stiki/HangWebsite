@@ -514,7 +514,7 @@
 
     //Chart Trend
     var options = {
-        colors: ["#EC1D25", "#F26F21", "#F8C460"],
+        // colors: ["#EC1D25", "#F26F21", "#F8C460"],
         series: [{
                 name: "ASMEN 1",
                 data: [12, 31, 38, 58, 48, 68, 69, 91, 148, 12, 76, 40]
