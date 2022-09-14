@@ -203,7 +203,7 @@ class ReportQuery
             ");
     
             $temp['NAME_USER']          = $user_area->NAME_USER;
-            $temp['NAME_AREA']          = $user_area->NAME_AREA;
+            $temp['NAME_AREA']          = $user_area->NAME_REGIONAL;
             $temp['TARGET_UST']         = !empty($pcpRpoDapul[0]->TARGET_UST) ? $pcpRpoDapul[0]->TARGET_UST : "-";
             $temp['REAL_UST']           = !empty($pcpRpoDapul[0]->REAL_UST) ? $pcpRpoDapul[0]->REAL_UST : "-";
             $temp['VSTARGET_UST']       = $temp['REAL_UST'] != "-" && $temp['TARGET_UST'] != "-" ? ($temp['REAL_UST'] / $temp['TARGET_UST']) * 100 : "-";
@@ -341,6 +341,125 @@ class ReportQuery
         });
         foreach ($data as $key => $value) {
             $data[$key]['ID_USER_RANKSALE'] = $key + 1;
+        }
+        return $data;
+    }
+
+    public function PencapaianRPOLapul()
+    {
+        $month = date('n');
+        $data = array();
+        $user_areas = DB::select("
+        SELECT
+        (
+            SELECT
+                u.NAME_USER
+            FROM
+                `user` u
+            WHERE
+                u.ID_ROLE = 4 
+                AND u.ID_REGIONAL = mr.ID_REGIONAL
+                LIMIT 1
+        ) AS NAME_USER,
+        mr.NAME_REGIONAL,
+        mr.ID_REGIONAL
+        FROM
+            md_regional mr,
+            md_location ml
+        WHERE
+            ml.ISINSIDE_LOCATION = 0
+            AND mr.ID_LOCATION = ml.ID_LOCATION
+        ");
+    
+        foreach ($user_areas as $user_area) {
+            $pcpRpoLapul = DB::select("
+            SELECT
+            (
+            SELECT
+                QUANTITY 
+            FROM
+                target_sale ts,
+                md_product mp 
+            WHERE
+                mp.ID_PC = 12 
+                AND ts.ID_PRODUCT = mp.ID_PRODUCT 
+                AND ID_REGIONAL = urs.ID_REGIONAL 
+                LIMIT 1 
+            ) AS TARGET_UST,
+            SUM( urs.REAL_UST ) AS REAL_UST,
+            urs.VSTARGET_UST,
+            (
+            SELECT
+                QUANTITY 
+            FROM
+                target_sale ts,
+                md_product mp 
+            WHERE
+                mp.ID_PC = 2 
+                AND ts.ID_PRODUCT = mp.ID_PRODUCT 
+                AND ID_REGIONAL = urs.ID_REGIONAL 
+                LIMIT 1 
+            ) AS TARGET_NONUST,
+            SUM( urs.REAL_NONUST ) AS REAL_NONUST,
+            urs.VSTARGET_NONUST,
+            (
+            SELECT
+                QUANTITY 
+            FROM
+                target_sale ts,
+                md_product mp 
+            WHERE
+                mp.ID_PC = 3 
+                AND ts.ID_PRODUCT = mp.ID_PRODUCT 
+                AND ID_REGIONAL = urs.ID_REGIONAL 
+                LIMIT 1 
+            ) AS TARGET_SELERAKU,
+            SUM( urs.REAL_SELERAKU ) AS REAL_SELERAKU,
+            urs.VSTARGET_SELERAKU,
+            urs.AVERAGE,
+            urs.ID_USER_RANKSALE 
+            FROM
+                user_ranking_sale AS urs,
+                md_regional AS mr 
+            WHERE
+                urs.ID_REGIONAL = ".$user_area->ID_REGIONAL." 
+                AND urs.ID_REGIONAL = mr.ID_REGIONAL 
+                AND MONTH (
+                DATE( urs.created_at )) = ".$month." 
+            GROUP BY
+                urs.ID_REGIONAL
+            ");
+    
+            $temp['NAME_USER']          = $user_area->NAME_USER;
+            $temp['NAME_AREA']          = $user_area->NAME_REGIONAL;
+            $temp['TARGET_UST']         = !empty($pcpRpoLapul[0]->TARGET_UST) ? $pcpRpoLapul[0]->TARGET_UST : "-";
+            $temp['REAL_UST']           = !empty($pcpRpoLapul[0]->REAL_UST) ? $pcpRpoLapul[0]->REAL_UST : "-";
+            $temp['VSTARGET_UST']       = $temp['REAL_UST'] != "-" && $temp['TARGET_UST'] != "-" ? ($temp['REAL_UST'] / $temp['TARGET_UST']) * 100 : "-";
+            $temp['TARGET_NONUST']      = !empty($pcpRpoLapul[0]->TARGET_NONUST) ? $pcpRpoLapul[0]->TARGET_NONUST : "-";
+            $temp['REAL_NONUST']        = !empty($pcpRpoLapul[0]->REAL_NONUST) ? $pcpRpoLapul[0]->REAL_NONUST : "-";
+            $temp['VSTARGET_NONUST']    = $temp['REAL_NONUST'] != "-" && $temp['TARGET_NONUST'] != "-" ? ($temp['REAL_NONUST'] / $temp['TARGET_NONUST']) * 100 : "-";
+            $temp['TARGET_SELERAKU']    = !empty($pcpRpoLapul[0]->TARGET_SELERAKU) ? $pcpRpoLapul[0]->TARGET_SELERAKU : "-";
+            $temp['REAL_SELERAKU']      = !empty($pcpRpoLapul[0]->REAL_SELERAKU) ? $pcpRpoLapul[0]->REAL_SELERAKU : "-";
+            $temp['VSTARGET_SELERAKU']  = $temp['REAL_SELERAKU'] != "-" && $temp['TARGET_SELERAKU'] != "-" ? ($temp['REAL_SELERAKU'] / $temp['TARGET_SELERAKU']) * 100 : "-";
+    
+            $weightProdCat = CategoryProduct::where('deleted_at', NULL)->get()->toArray();
+            $avgCount = 0;
+            if ($weightProdCat[0]["PERCENTAGE_PC"] != 0) $avgCount++;
+            if ($weightProdCat[1]["PERCENTAGE_PC"] != 0) $avgCount++;
+            if ($weightProdCat[2]["PERCENTAGE_PC"] != 0) $avgCount++;
+    
+            $temp['AVERAGE'] = (((float)$temp['VSTARGET_UST'] / 100) * ((float)$weightProdCat[0]["PERCENTAGE_PC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_NONUST'] / 100) * ((float)$weightProdCat[1]["PERCENTAGE_PC"] / 100));
+            $temp['AVERAGE'] += (((float)$temp['VSTARGET_SELERAKU'] / 100) * ((float)$weightProdCat[2]["PERCENTAGE_PC"] / 100));
+            $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
+    
+            $data[] = $temp;
+        }
+        usort($data, function($a, $b){
+            return strnatcmp($b['AVERAGE'], $a['AVERAGE']);
+        });
+        foreach($data as $key => $value){
+            $data[$key]['ID_USER_RANKSALE'] = $key+1;
         }
         return $data;
     }
