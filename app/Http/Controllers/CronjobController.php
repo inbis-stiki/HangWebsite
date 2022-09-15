@@ -100,12 +100,12 @@ class CronjobController extends Controller
 
     public function TestTemplate(ReportQuery $reportQuery)
     {
-        // app(ReportRanking::class)->generate_ranking_rpo($reportQuery->AktivitasRPOLapul(), $reportQuery->AktivitasRPODapul());
-        app(ReportRanking::class)->generate_ranking_asmen($reportQuery->AktivitasAsmen(), $reportQuery->PencapaianAsmen());
+        // app(ReportRanking::class)->generate_ranking_rpo($reportQuery->AktivitasRPOLapul(), $reportQuery->AktivitasRPODapul(), $reportQuery->PencapaianRPOLapul(), $reportQuery->PencapaianRPODapul());
+        // app(ReportRanking::class)->generate_ranking_asmen($reportQuery->AktivitasAsmen(), $reportQuery->PencapaianAsmen());
         // app(ReportRanking::class)->generate_ranking_apo_spg();
 
         // app(ReportTransaction::class)->set_data_transaction();
-        // app(ReportTransaction::class)->generate_transaksi_harian();
+        app(ReportTransaction::class)->generate_transaksi_harian();
         
         // app(ReportTrend::class)->set_data_trend();
         // app(ReportTrend::class)->generate_trend_asmen();

@@ -343,6 +343,14 @@ class DashboardController extends Controller
 
     public function trend_asmen()
     {
-        
+        $data_trend    = DB::table('user_ranking_sale')
+            ->selectRaw("user_ranking_sale.NAME_USER, user.NAME_USER, MONTH(user_ranking_sale.created_at) as month, YEAR(user_ranking_sale.created_at) as year, COUNT(user_ranking_sale.ID_user) as TotalSales")
+            ->join('user', 'user.ID_USER', '=', 'user_ranking_sale.ID_USER')
+            ->orderBy('user_ranking_sale.created_at', 'DESC')
+            ->groupByRaw("MONTH(user_ranking_sale.created_at), YEAR(user_ranking_sale.created_at), user_ranking_sale.ID_USER")
+            // ->where('user_ranking_sale.ID_ROLE', '=', 3)
+            ->get();
+
+        dd($data_trend);exit;
     }
 }

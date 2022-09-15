@@ -41,7 +41,7 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('dashboard/ranking_activity', 'DashboardController@ranking_activity');
     Route::get('dashboard/ranking_sale', 'DashboardController@ranking_sale');
     // Dashboard LineChart
-    Route::post('dashboard/trend_asmen', 'DashboardController@trend_asmen');
+    Route::get('dashboard/trend_asmen', 'DashboardController@trend_asmen');
     // Dashboard DonutChart
     Route::post('dashboard/ranking_aktivitas', 'DashboardController@ranking_aktivitas');
     Route::post('dashboard/ranking_pencapaian', 'DashboardController@ranking_pencapaian');
