@@ -113,7 +113,7 @@ class CronjobController extends Controller
     }
 
     public function Testing(ReportQuery $reportQuery){
-        dd($reportQuery->PencapaianRPOLapul());
+        dd($reportQuery->TrendAsmen());
     }
 
     public function updateDailyRanking()
