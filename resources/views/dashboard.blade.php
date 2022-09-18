@@ -16,17 +16,17 @@
                         <div class="card-action revenue-tabs mt-3 mt-sm-0 ml-5">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active fs-12" data-toggle="tab" href="#" role="tab" aria-selected="false">
+                                    <a class="nav-link active fs-12" data-toggle="tab" href="" role="tab" aria-selected="false" id="UST" onclick="SetTypeTrend(this.id)">
                                         UST
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link fs-12" data-toggle="tab" href="#" role="tab" aria-selected="false">
+                                    <a class="nav-link fs-12" data-toggle="tab" href="" role="tab" aria-selected="false" id="NONUST" onclick="SetTypeTrend(this.id)">
                                         Non UST
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link fs-12" data-toggle="tab" href="#" role="tab" aria-selected="false">
+                                    <a class="nav-link fs-12" data-toggle="tab" href="" role="tab" aria-selected="false" id="SELERAKU" onclick="SetTypeTrend(this.id)">
                                         Seleraku
                                     </a>
                                 </li>
@@ -444,245 +444,137 @@
 {{-- Flatpickr --}}
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        //Chart Trend
-        var options_asmen = {
-            // colors: ["#EC1D25", "#F26F21", "#F8C460"],
-            series: [{
-                    name: "ASMEN 1",
-                    data: [12, 31, 38, 58, 48, 68, 69, 91, 148, 12, 76, 40]
-                },
-                {
-                    name: "ASMEN 2",
-                    data: [15, 21, 39, 55, 45, 76, 73, 57, 12, 36, 19, 87]
-                },
-                {
-                    name: "ASMEN 3",
-                    data: [9, 41, 32, 52, 42, 91, 41, 64, 47, 16, 29, 38]
-                }
-            ],
-            chart: {
-                height: 350,
-                type: 'line',
-                zoom: {
-                    enabled: false
-                }
-            },
-            dataLabels: {
+    //Chart Trend
+    var options_asmen = {
+        // colors: ["#EC1D25", "#F26F21", "#F8C460"],
+        series: [],
+        chart: {
+            height: 350,
+            type: 'line',
+            zoom: {
                 enabled: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        grid: {
+            row: {
+                colors: ['#f3f3f3', 'transparent'],
+                opacity: 0.5
             },
-            stroke: {
-                curve: 'smooth'
+        },
+        xaxis: {
+            categories: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+        },
+        legend: {
+            position: 'bottom',
+            horizontalAlign: 'left',
+        },
+    };
+
+    var chart_asmen = new ApexCharts(document.querySelector("#LineChart_asmen"), options_asmen);
+    chart_asmen.render();
+
+    // AJAX Trend asmen
+    var data_trend_asmen = [];
+    trend_asmen('<?= date("Y"); ?>')
+
+    function callback(response) {
+        data_trend_asmen.push(response)
+    }
+
+    function trend_asmen(date) {
+        $.ajax({
+            url: "{{ url('dashboard/trend_asmen') }}",
+            type: "POST",
+            beforeSend: function(request) {
+                request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
             },
-            grid: {
-                row: {
-                    colors: ['#f3f3f3', 'transparent'],
-                    opacity: 0.5
-                },
-            },
-            xaxis: {
-                categories: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-            },
-            legend: {
-                position: 'bottom',
-                horizontalAlign: 'left',
-            },
-        };
+            // data: {
+            //     filter_date: date,
+            //     filter_area: $('#SelectAREAAktivitas').val()
+            // },
+            dataType: "json",
+            success: function(response) {
+                callback(response)
+                SetTypeTrend("UST")
+            }
+        });
+    }
 
-        var chart_asmen = new ApexCharts(document.querySelector("#LineChart_asmen"), options_asmen);
-        chart_asmen.render();
-
-        // AJAX Trend asmen
-        activity_ranking('<?= date("Y-m"); ?>')
-
-        function activity_ranking(date) {
-            $.ajax({
-                url: "{{ url('dashboard/trend_asmen') }}",
-                type: "POST",
-                beforeSend: function(request) {
-                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
-                },
-                // data: {
-                //     filter_date: date,
-                //     filter_area: $('#SelectAREAAktivitas').val()
-                // },
-                dataType: "json",
-                success: function(response) {
-                    $('#tgt_ub').html(response.TGT_UB);
-                    $('#real_ub').html(response.REAL_UB);
-                    $('#vstgt_ub').html(response.VSTARGET_UB);
-                    aktivUB.updateOptions({
-                        series: [parseInt(response.REAL_UB), parseInt(response.TGT_UB)],
-                        labels: ["Real", "TGT"],
-                        plotOptions: {
-                            pie: {
-                                expandOnClick: false,
-                                size: 200,
-                                donut: {
-                                    size: '65%',
-                                    labels: {
-                                        show: true,
-                                        name: {
-                                            show: true,
-                                            fontSize: '16px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: undefined,
-                                            offsetY: 11,
-                                            offsetX: 0,
-                                            formatter: function(val) {
-                                                return val
-                                            }
-                                        },
-                                        total: {
-                                            show: true,
-                                            showAlways: true,
-                                            label: response.VSTARGET_UB,
-                                            fontSize: '30px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: "#F26F21",
-                                            formatter: () => ''
-                                        },
-                                    }
-                                }
-                            }
-                        },
-                    })
-
-                    $('#tgt_pdgSayur').html(response.TGT_PDGSAYUR);
-                    $('#real_pdgSayur').html(response.REAL_PDGSAYUR);
-                    $('#vstgt_pdgSayur').html(response.VSTARGET_PDGSAYUR);
-                    PedagangSayur.updateOptions({
-                        series: [parseInt(response.REAL_PDGSAYUR), parseInt(response.TGT_PDGSAYUR)],
-                        labels: ["Real", "TGT"],
-                        plotOptions: {
-                            pie: {
-                                expandOnClick: false,
-                                size: 200,
-                                donut: {
-                                    size: '65%',
-                                    labels: {
-                                        show: true,
-                                        name: {
-                                            show: true,
-                                            fontSize: '16px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: undefined,
-                                            offsetY: 11,
-                                            offsetX: 0,
-                                            formatter: function(val) {
-                                                return val
-                                            }
-                                        },
-                                        total: {
-                                            show: true,
-                                            showAlways: true,
-                                            label: response.VSTARGET_PDGSAYUR,
-                                            fontSize: '30px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: "#F26F21",
-                                            formatter: () => ''
-                                        },
-                                    }
-                                }
-                            }
-                        },
-                    })
-
-                    $('#tgt_retail').html(response.TGT_RETAIL);
-                    $('#real_retail').html(response.REAL_RETAIL);
-                    $('#vstgt_retail').html(response.VSTARGET_RETAIL);
-                    Retail.updateOptions({
-                        series: [parseInt(response.REAL_RETAIL), parseInt(response.TGT_RETAIL)],
-                        labels: ["Real", "TGT"],
-                        plotOptions: {
-                            pie: {
-                                expandOnClick: false,
-                                size: 200,
-                                donut: {
-                                    size: '65%',
-                                    labels: {
-                                        show: true,
-                                        name: {
-                                            show: true,
-                                            fontSize: '16px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: undefined,
-                                            offsetY: 11,
-                                            offsetX: 0,
-                                            formatter: function(val) {
-                                                return val
-                                            }
-                                        },
-                                        total: {
-                                            show: true,
-                                            showAlways: true,
-                                            label: response.VSTARGET_RETAIL,
-                                            fontSize: '30px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: "#F26F21",
-                                            formatter: () => ''
-                                        },
-                                    }
-                                }
-                            }
-                        }
-                    })
-                }
-            });
+    function SetTypeTrend(type) {
+        chart_asmen.updateSeries([])
+        for (let i = 0; i < data_trend_asmen[0].length; i++) {
+            if (type == "UST") {
+                chart_asmen.appendSeries({
+                    name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
+                    data: data_trend_asmen[0][i].UST
+                }, true)
+            } else if (type == "NONUST") {
+                chart_asmen.appendSeries({
+                    name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
+                    data: data_trend_asmen[0][i].NONUST
+                }, true)
+            } else if (type == "SELERAKU") {
+                chart_asmen.appendSeries({
+                    name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
+                    data: data_trend_asmen[0][i].SELERAKU
+                }, true)
+            }
         }
+    }
 
-        var options_rpo = {
-            // colors: ["#EC1D25", "#F26F21", "#F8C460"],
-            series: [{
-                    name: "RPO 1",
-                    data: [12, 31, 38, 58, 48, 68, 69, 91, 148, 12, 76, 40]
-                },
-                {
-                    name: "RPO 2",
-                    data: [15, 21, 39, 55, 45, 76, 73, 57, 12, 36, 19, 87]
-                },
-                {
-                    name: "RPO 3",
-                    data: [9, 41, 32, 52, 42, 91, 41, 64, 47, 16, 29, 38]
-                }
-            ],
-            chart: {
-                height: 350,
-                type: 'line',
-                zoom: {
-                    enabled: false
-                }
+    var options_rpo = {
+        // colors: ["#EC1D25", "#F26F21", "#F8C460"],
+        series: [{
+                name: "RPO 1",
+                data: [12, 31, 38, 58, 48, 68, 69, 91, 148, 12, 76, 40]
             },
-            dataLabels: {
+            {
+                name: "RPO 2",
+                data: [15, 21, 39, 55, 45, 76, 73, 57, 12, 36, 19, 87]
+            },
+            {
+                name: "RPO 3",
+                data: [9, 41, 32, 52, 42, 91, 41, 64, 47, 16, 29, 38]
+            }
+        ],
+        chart: {
+            height: 350,
+            type: 'line',
+            zoom: {
                 enabled: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        grid: {
+            row: {
+                colors: ['#f3f3f3', 'transparent'],
+                opacity: 0.5
             },
-            stroke: {
-                curve: 'smooth'
-            },
-            grid: {
-                row: {
-                    colors: ['#f3f3f3', 'transparent'],
-                    opacity: 0.5
-                },
-            },
-            xaxis: {
-                categories: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-            },
-            legend: {
-                position: 'bottom',
-                horizontalAlign: 'left',
-            },
-        };
+        },
+        xaxis: {
+            categories: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+        },
+        legend: {
+            position: 'bottom',
+            horizontalAlign: 'left',
+        },
+    };
 
-        var chart_rpo = new ApexCharts(document.querySelector("#LineChart_rpo"), options_rpo);
-        chart_rpo.render();
+    var chart_rpo = new ApexCharts(document.querySelector("#LineChart_rpo"), options_rpo);
+    chart_rpo.render();
 
+    $(document).ready(function() {
         // AJAX Jquery ranking
         load_data_ranking()
         $('#tab-aktivity').click(function() {

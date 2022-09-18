@@ -343,14 +343,92 @@ class DashboardController extends Controller
 
     public function trend_asmen()
     {
-        $data_trend    = DB::table('user_ranking_sale')
-            ->selectRaw("user_ranking_sale.NAME_USER, user.NAME_USER, MONTH(user_ranking_sale.created_at) as month, YEAR(user_ranking_sale.created_at) as year, COUNT(user_ranking_sale.ID_user) as TotalSales")
-            ->join('user', 'user.ID_USER', '=', 'user_ranking_sale.ID_USER')
-            ->orderBy('user_ranking_sale.created_at', 'DESC')
-            ->groupByRaw("MONTH(user_ranking_sale.created_at), YEAR(user_ranking_sale.created_at), user_ranking_sale.ID_USER")
-            // ->where('user_ranking_sale.ID_ROLE', '=', 3)
-            ->get();
+        $year = date('Y');
+        $regional_targets = DB::select("
+        SELECT
+            mr.ID_REGIONAL,
+            mr.NAME_REGIONAL,
+            (
+                SELECT 
+                    SUM(ts.QUANTITY) 
+                FROM target_sale ts
+                WHERE ts.ID_REGIONAL = mr.ID_REGIONAL
+            ) AS QUANTITY
+        FROM
+            md_regional mr
+        GROUP BY mr.ID_REGIONAL
+        ");
 
-        dd($data_trend);exit;
+        
+        $data_trend = array();
+        foreach ($regional_targets as $regional_target) {
+            $trend_asmen = DB::select("
+            SELECT
+                urs.NAME_REGIONAL ,
+                MONTH(created_at) as bulan,
+                SUM(urs.REAL_UST) as total_ust,
+                SUM(urs.REAL_NONUST) as total_non_ust,
+                SUM(urs.REAL_SELERAKU) as total_seleraku
+            FROM user_ranking_sale urs
+            WHERE 
+                YEAR(DATE(urs.created_at)) = 2022
+                AND urs.ID_ROLE = 3
+                AND urs.ID_REGIONAL = " . $regional_target->ID_REGIONAL . "
+            GROUP BY MONTH(urs.created_at), urs.NAME_REGIONAL
+            ORDER BY MONTH(urs.created_at) ASC
+            ");
+
+            array_push(
+                $data_trend,
+                array(
+                    "NAME_AREA" => $regional_target->NAME_REGIONAL,
+                    "TARGET" => $regional_target->QUANTITY,
+                    "UST" => array(
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 1 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 2 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 3 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 4 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 5 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 6 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 7 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 8 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 9 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 10 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 11 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 12 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0
+                    ),
+                    "NONUST" => array(
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 1 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 2 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 3 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 4 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 5 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 6 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 7 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 8 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 9 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 10 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 11 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 12 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0
+                    ),
+                    "SELERAKU" => array(
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 1 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 2 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 3 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 4 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 5 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 6 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 7 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 8 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 9 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 10 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 11 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
+                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 12 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0
+                    )
+                )
+            );
+        }
+
+        return $data_trend;
     }
 }
