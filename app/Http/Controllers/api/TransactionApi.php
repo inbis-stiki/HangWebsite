@@ -13,6 +13,7 @@ use App\Regional;
 use App\Area;
 use App\District;
 use App\Pickup;
+use App\Shop;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
 
@@ -120,6 +121,8 @@ class TransactionApi extends Controller
                             ]
                         ]);
                     }
+
+                    Shop::where(['ID_SHOP' => $req->input('id_shop')])->update(['ISRECOMMEND_SHOP' => '0', 'LASTTRANS_SHOP' => date('Y-m-d H:i:s')]);
     
                     return response([
                         "status_code"       => 200,
