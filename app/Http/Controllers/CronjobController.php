@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Cronjob;
 use App\Http\Controllers\Controller;
 use App\Product;
 use App\Recomendation;
@@ -29,6 +30,42 @@ class CronjobController extends Controller
             return response([
                 "status_code"       => 200,
                 "status_message"    => 'Data berhasil diubah!'
+            ], 200);
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
+    }
+    public function updateDashboardMobile(){
+        try {
+            DB::table('dashboard_mobile')->delete();
+
+            $date       = date('j', strtotime('-1 days'));
+            $month      = date('n', strtotime('-1 days'));
+            $year       = date('Y', strtotime('-1 days'));
+            $updated_at = date('Y-m-d H:i:s');
+            $datas      = Cronjob::queryGetDashboardMobile($date, $month, $year);
+            
+            foreach ($datas as $data) {
+                DB::table('dashboard_mobile')->insert([
+                    'ID_USER'           => $data->ID_USER,
+                    'UBUBLP_DM'         => $data->UBUBLP_DM,
+                    'SPREADING_DM'      => $data->SPREADING_DM,
+                    'LASTSALE_DM'       => $data->LASTSALE_DM,
+                    'AVERAGESALE_DM'    => $data->AVERAGESALE_DM,
+                    'DAYLASTSALE_DM'    => $data->DAYLASTSALE_DM,
+                    'OFFTARGET_DM'      => $data->OFFTARGET_DM,
+                    'PROGRESS_DM'       => $data->PROGRESS_DM,
+                    'updated_at'        => $updated_at
+                ]);
+            }
+
+            return response([
+                "status_code"       => 200,
+                "status_message"    => 'Data berhasil diinsert!',
+                "data"  => $datas
             ], 200);
         } catch (Exception $exp) {
             return response([
