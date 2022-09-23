@@ -27,7 +27,7 @@ Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 Route::get('cronjob/update-shop-recommendation', 'CronjobController@updateRecommendShop');
 Route::get('cronjob/rangking', 'CronjobController@cronjob_template_rangking');
-Route::get('cronjob/update-daily-rangking', 'CronjobController@updateDailyRanking');
+Route::get('cronjob/update-daily-rangking-achievement', 'CronjobController@updateDailyRankingAchievement');
 Route::get('cronjob/update-daily-rangking-activity', 'CronjobController@updateDailyRankingActivity');
 Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
