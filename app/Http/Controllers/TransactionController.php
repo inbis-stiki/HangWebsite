@@ -40,9 +40,9 @@ class TransactionController extends Controller
                 ->leftjoin('md_district', 'md_district.ID_DISTRICT', '=', 'md_shop.ID_DISTRICT')
                 ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
-                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
-                ->orderBy('transaction.DATE_TRANS', 'DESC')
                 ->where('transaction.DATE_TRANS', 'like', $tgl_trans.'%')
+                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
+                ->orderBy('md_area.NAME_AREA', 'ASC')
                 ->get();
         } else {
             $dataTrans     = DB::table('transaction')
@@ -54,10 +54,10 @@ class TransactionController extends Controller
                 ->leftjoin('md_district', 'md_district.ID_DISTRICT', '=', 'md_shop.ID_DISTRICT')
                 ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
-                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
                 ->where('transaction.ID_TYPE', '=', $id_type)
                 ->where('transaction.DATE_TRANS', 'like', $tgl_trans.'%')
-                ->orderBy('transaction.DATE_TRANS', 'DESC')
+                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
+                ->orderBy('md_area.NAME_AREA', 'ASC')
                 ->get();
         }
 

@@ -56,13 +56,13 @@ class CronjobController extends Controller
         return $reportQuery->TrendRpo();
     }
 
-    public function updateDailyRanking()
+    public function updateDailyRankingAchievement()
     {
         date_default_timezone_set("Asia/Bangkok");
-        $currDate       = date('Y-m-d');
+        $currDate       = date('Y-m-d', strtotime('-1 days'));
         $currDateTime   = date('Y-m-d H:i:s');
-        $formData = [];
 
+        $formData = [];
         $targetRegionals = $this->queryGetTargetRegional($currDate);
 
         foreach ($targetRegionals as $targetRegional) {
@@ -132,14 +132,13 @@ class CronjobController extends Controller
         if ($formData != null) {
             UserRankingSale::insert($formData);
         }
-        dd($formData);
     }
 
     //ACTIVITY RANK
     public function updateDailyRankingActivity()
     {
         date_default_timezone_set("Asia/Bangkok");
-        $currDate       = date('Y-m-d');
+        $currDate       = date('Y-m-d', strtotime('-1 days'));
         $currDateTime   = date('Y-m-d H:i:s');
         $formData = [];
 
