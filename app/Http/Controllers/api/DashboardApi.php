@@ -205,32 +205,8 @@ class DashboardApi extends Controller
         try {
             date_default_timezone_set("Asia/Bangkok");
 
-            $AllData = array();
-
-            $DataHarian = DB::table("transaction")
-                ->select(DB::raw("SUM(transaction.QTY_TRANS) as Harian"))
-                ->whereDate('transaction.DATE_TRANS', '=', date('Y-m-d'))
-                ->where('transaction.ID_USER', '=', $req->input("id_user"))
-                ->first();
-
-            $DataBulanan = DB::table("transaction")
-                ->select(DB::raw("SUM(transaction.QTY_TRANS) as Bulanan"))
-                ->where('transaction.DATE_TRANS', 'like', date('Y-m') . '%')
-                ->where('transaction.ID_USER', '=', $req->input("id_user"))
-                ->first();
-
-            $DataTransSpread = DB::table("transaction")
-                ->selectRaw('COUNT(transaction.ID_TRANS) as Spread')
-                ->where('transaction.DATE_TRANS', 'like', date('Y-m') . '%')
-                ->where('transaction.ID_USER', '=', $req->input("id_user"))
-                ->where('transaction.ID_TYPE', '=', 1)
-                ->first();
-
-            $DataTransNonSpread = DB::table("transaction")
-                ->selectRaw('COUNT(transaction.ID_TRANS) as NonSpread')
-                ->where('transaction.DATE_TRANS', 'like', date('Y-m') . '%')
-                ->where('transaction.ID_USER', '=', $req->input("id_user"))
-                ->where('transaction.ID_TYPE', '<>', 1)
+            $AllData_temp = DB::table("dashboard_mobile")
+                ->where('dashboard_mobile.ID_USER', '=', $req->input("id_user"))
                 ->first();
 
             $firstDay = Carbon::now()->firstOfMonth();
@@ -238,74 +214,23 @@ class DashboardApi extends Controller
             $dateFrom = Carbon::createFromFormat('Y-m-d', $firstDay->toDateString());
             $dateTo = Carbon::createFromFormat('Y-m-d', $DateNow->toDateString());
 
-            $Average = $DataBulanan->Bulanan / ($dateFrom->diffInDays($dateTo) + 1);
-            
-            $DataTarget = DB::table("user_target")
-                ->where('user_target.ID_USER', '=', $req->input("id_user"))
-                ->latest("user_target.ID_USER")->first();
-
-            $day = $DataHarian->Harian;
-            $month = $DataBulanan->Bulanan;
-            if ($DataBulanan->Bulanan == null) {
-                $day = 0;
-                $month = 0;
-            } else if ($DataHarian->Harian == null) {
-                $day = 0;
-            }
-
-            $DataMonth = array(
-                "LAST_DAYS" => ($dateFrom->diffInDays($dateTo) + 1),
-                "TOTAL" => $month
-            );
-
-            if (!empty($DataTarget)) {
-                $Progress = ($DataBulanan->Bulanan / ($DataTarget->TOTALSALES_UT * 25)) * 100;
-
-                $DataHarian2 = DB::table("transaction")
-                    ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, SUM(transaction.QTY_TRANS) as TotalPenjualan")
-                    ->where('transaction.ID_USER', '=', $req->input("id_user"))
-                    ->groupByRaw('DATE(transaction.DATE_TRANS)')
-                    ->orderBy('CnvrtDate', 'ASC')
-                    ->get();
-
-                $TotalHari = 0;
-                foreach ($DataHarian2 as $Data) {
-                    if ($Data->TotalPenjualan < $DataTarget->TOTALSALES_UT) {
-                        $TotalHari++;
-                    }
-                }
-
-                array_push(
-                    $AllData,
-                    array(
-                        'SPREADNIG' => $DataTransSpread->Spread,
-                        'UB_UBLP' => $DataTransNonSpread->NonSpread,
-                        'DAYS' => $day,
-                        'MONTH' => $DataMonth,
-                        'AVERAGE' => round($Average),
-                        'PROGRESS' => number_format((float)$Progress, 1, '.', ''),
-                        'OFF_TARGET' => $TotalHari
-                    )
-                );
-            } else {
-                array_push(
-                    $AllData,
-                    array(
-                        'SPREADNIG' => $DataTransSpread->Spread,
-                        'UB_UBLP' => $DataTransNonSpread->NonSpread,
-                        'DAYS' => $day,
-                        'MONTH' => $DataMonth,
-                        'AVERAGE' => round($Average),
-                        'PROGRESS' => 0,
-                        'OFF_TARGET' => 0
-                    )
-                );
-            }
+            $AllData = array(
+                'SPREADNIG' => ($AllData_temp <> null) ? (($AllData_temp->SPREADING_DM <> null) ? $AllData_temp->SPREADING_DM : 0) : 0,
+                'UB_UBLP' => ($AllData_temp <> null) ? (($AllData_temp->UBUBLP_DM <> null) ? $AllData_temp->UBUBLP_DM : 0) : 0,
+                'DAYS' => ($AllData_temp <> null) ? (($AllData_temp->LASTSALE_DM <> null) ? $AllData_temp->DAYLASTSALE_DM : 0) : 0,
+                'MONTH' => [
+                    "LAST_DAYS" => ($dateFrom->diffInDays($dateTo) + 1),
+                    "TOTAL" => ($AllData_temp <> null) ? (($AllData_temp->DAYLASTSALE_DM <> null) ? $AllData_temp->LASTSALE_DM : 0) : 0
+                ],
+                'AVERAGE' => ($AllData_temp <> null) ? ((round($AllData_temp->AVERAGESALE_DM) <> null) ? round($AllData_temp->AVERAGESALE_DM) : 0) : 0,
+                'PROGRESS' => ($AllData_temp <> null) ? ((number_format((float)$AllData_temp->PROGRESS_DM, 1, '.', '') <> null) ? number_format((float)$AllData_temp->PROGRESS_DM, 1, '.', '') : 0) : 0,
+                'OFF_TARGET' => ($AllData_temp <> null) ? (($AllData_temp->OFFTARGET_DM <> null) ? $AllData_temp->OFFTARGET_DM : 0) : 0
+            );            
 
             return response([
                 "status_code"       => 200,
                 "status_message"    => 'Data berhasil Diambil!',
-                "data"              => $AllData
+                "data"              => [$AllData]
             ], 200);
         } catch (HttpResponseException $exp) {
             return response([

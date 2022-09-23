@@ -75,4 +75,5 @@ Route::middleware(['checkAuthApi'])->group(function(){
 
     // API RANKING
     Route::get("ranking/sale", 'api\RankingApi@rankingSale');
+    Route::get("ranking/activity", 'api\RankingApi@rankingActivity');
 });
