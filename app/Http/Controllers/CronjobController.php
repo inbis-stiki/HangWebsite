@@ -39,26 +39,30 @@ class CronjobController extends Controller
         }
     }
     public function updateDashboardMobile(){
+        date_default_timezone_set("Asia/Bangkok");
         try {
             DB::table('dashboard_mobile')->delete();
 
             $date       = date('j', strtotime('-1 days'));
             $month      = date('n', strtotime('-1 days'));
             $year       = date('Y', strtotime('-1 days'));
-            $updated_at = date('Y-m-d H:i:s');
+            $updated_at = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
             $datas      = Cronjob::queryGetDashboardMobile($date, $month, $year);
             
             foreach ($datas as $data) {
                 DB::table('dashboard_mobile')->insert([
-                    'ID_USER'           => $data->ID_USER,
-                    'UBUBLP_DM'         => $data->UBUBLP_DM,
-                    'SPREADING_DM'      => $data->SPREADING_DM,
-                    'LASTSALE_DM'       => $data->LASTSALE_DM,
-                    'AVERAGESALE_DM'    => $data->AVERAGESALE_DM,
-                    'DAYLASTSALE_DM'    => $data->DAYLASTSALE_DM,
-                    'OFFTARGET_DM'      => $data->OFFTARGET_DM,
-                    'PROGRESS_DM'       => $data->PROGRESS_DM,
-                    'updated_at'        => $updated_at
+                    'ID_USER'               => $data->ID_USER,
+                    'UBUBLP_DM'             => $data->UBUBLP_DM,
+                    'SPREADING_DM'          => $data->SPREADING_DM,
+                    'LASTSALE_DM'           => $data->LASTSALE_DM,
+                    'AVERAGESALE_DM'        => $data->AVERAGESALE_DM,
+                    'DAYLASTSALE_DM'        => $data->DAYLASTSALE_DM,
+                    'OFFTARGET_DM'          => $data->OFFTARGET_DM,
+                    'PROGRESS_DM'           => $data->PROGRESS_DM,
+                    'PROGRESSUST_DM'        => $data->PROGRESSUST_DM,
+                    'PROGRESSNONUST_DM'     => $data->PROGRESSNONUST_DM,
+                    'PROGRESSSELERAKU_DM'   => $data->PROGRESSSELERAKU_DM,
+                    'updated_at'            => $updated_at
                 ]);
             }
 
@@ -97,7 +101,7 @@ class CronjobController extends Controller
     {
         date_default_timezone_set("Asia/Bangkok");
         $currDate       = date('Y-m-d', strtotime('-1 days'));
-        $currDateTime   = date('Y-m-d H:i:s');
+        $currDateTime   = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
 
         $formData = [];
         $targetRegionals = $this->queryGetTargetRegional($currDate);
@@ -176,7 +180,7 @@ class CronjobController extends Controller
     {
         date_default_timezone_set("Asia/Bangkok");
         $currDate       = date('Y-m-d', strtotime('-1 days'));
-        $currDateTime   = date('Y-m-d H:i:s');
+        $currDateTime   = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
         $formData = [];
 
         $targetRegionals = $this->queryGetTargetRegionalActivity($currDate);
