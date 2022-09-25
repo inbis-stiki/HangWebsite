@@ -208,7 +208,11 @@ class DashboardApi extends Controller
             $AllData_temp = DB::table("dashboard_mobile")
                 ->where('dashboard_mobile.ID_USER', '=', $req->input("id_user"))
                 ->first();
-
+            $DataHarian = DB::table("transaction")
+                ->select(DB::raw("SUM(transaction.QTY_TRANS) as Harian"))
+                ->whereDate('transaction.DATE_TRANS', '=', date('Y-m-d'))
+                ->where('transaction.ID_USER', '=', $req->input("id_user"))
+                ->first();
             $firstDay = Carbon::now()->firstOfMonth();
             $DateNow = Carbon::now();
             $dateFrom = Carbon::createFromFormat('Y-m-d', $firstDay->toDateString());
@@ -217,10 +221,10 @@ class DashboardApi extends Controller
             $AllData = array(
                 'SPREADNIG' => ($AllData_temp <> null) ? (($AllData_temp->SPREADING_DM <> null) ? $AllData_temp->SPREADING_DM : 0) : 0,
                 'UB_UBLP' => ($AllData_temp <> null) ? (($AllData_temp->UBUBLP_DM <> null) ? $AllData_temp->UBUBLP_DM : 0) : 0,
-                'DAYS' => ($AllData_temp <> null) ? (($AllData_temp->LASTSALE_DM <> null) ? $AllData_temp->DAYLASTSALE_DM : 0) : 0,
+                'DAYS' => ($DataHarian <> null) ? (($DataHarian->Harian <> null) ? $DataHarian->Harian : 0) : 0,
                 'MONTH' => [
-                    "LAST_DAYS" => ($dateFrom->diffInDays($dateTo) + 1),
-                    "TOTAL" => ($AllData_temp <> null) ? (($AllData_temp->DAYLASTSALE_DM <> null) ? $AllData_temp->LASTSALE_DM : 0) : 0
+                    "LAST_DAYS" => ($AllData_temp <> null) ? (($AllData_temp->DAYLASTSALE_DM <> null) ? $AllData_temp->DAYLASTSALE_DM : 0) : 0,
+                    "TOTAL" => ($AllData_temp <> null) ? (($AllData_temp->LASTSALE_DM <> null) ? $AllData_temp->LASTSALE_DM : 0) : 0
                 ],
                 'AVERAGE' => ($AllData_temp <> null) ? ((round($AllData_temp->AVERAGESALE_DM) <> null) ? round($AllData_temp->AVERAGESALE_DM) : 0) : 0,
                 'OFF_TARGET' => ($AllData_temp <> null) ? (($AllData_temp->OFFTARGET_DM <> null) ? $AllData_temp->OFFTARGET_DM : 0) : 0,
