@@ -223,9 +223,14 @@ class DashboardApi extends Controller
                     "TOTAL" => ($AllData_temp <> null) ? (($AllData_temp->DAYLASTSALE_DM <> null) ? $AllData_temp->LASTSALE_DM : 0) : 0
                 ],
                 'AVERAGE' => ($AllData_temp <> null) ? ((round($AllData_temp->AVERAGESALE_DM) <> null) ? round($AllData_temp->AVERAGESALE_DM) : 0) : 0,
+                'OFF_TARGET' => ($AllData_temp <> null) ? (($AllData_temp->OFFTARGET_DM <> null) ? $AllData_temp->OFFTARGET_DM : 0) : 0,
                 'PROGRESS' => ($AllData_temp <> null) ? ((number_format((float)$AllData_temp->PROGRESS_DM, 1, '.', '') <> null) ? number_format((float)$AllData_temp->PROGRESS_DM, 1, '.', '') : 0) : 0,
-                'OFF_TARGET' => ($AllData_temp <> null) ? (($AllData_temp->OFFTARGET_DM <> null) ? $AllData_temp->OFFTARGET_DM : 0) : 0
-            );            
+                'PROGRESS_DETAIL' => [
+                    'UST' => ($AllData_temp <> null) ? ((number_format((float)$AllData_temp->PROGRESSUST_DM, 1, '.', '') <> null) ? number_format((float)$AllData_temp->PROGRESSUST_DM, 1, '.', '') : 0) : 0,
+                    'NON_UST' => ($AllData_temp <> null) ? ((number_format((float)$AllData_temp->PROGRESSNONUST_DM, 1, '.', '') <> null) ? number_format((float)$AllData_temp->PROGRESSNONUST_DM, 1, '.', '') : 0) : 0,
+                    'SELERAKU' => ($AllData_temp <> null) ? ((number_format((float)$AllData_temp->PROGRESSSELERAKU_DM, 1, '.', '') <> null) ? number_format((float)$AllData_temp->PROGRESSSELERAKU_DM, 1, '.', '') : 0) : 0,
+                ]
+            );
 
             return response([
                 "status_code"       => 200,
