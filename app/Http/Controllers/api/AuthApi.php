@@ -7,7 +7,7 @@ use App\Users;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+ 
 class AuthApi extends Controller
 {
     public function login(Request $req){

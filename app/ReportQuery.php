@@ -686,4 +686,174 @@ class ReportQuery
         }
         return $data;
     }
+
+    public function TrendRpo(){
+        $year = date('Y');
+        $regional_targets = DB::select("
+        SELECT
+            mr.ID_REGIONAL,
+            mr.NAME_REGIONAL,
+            (
+                SELECT 
+                    SUM(ts.QUANTITY) 
+                FROM target_sale ts
+                WHERE ts.ID_REGIONAL = mr.ID_REGIONAL
+            ) AS QUANTITY
+        FROM
+            md_regional mr
+        GROUP BY mr.ID_REGIONAL
+        ");
+        
+        foreach ($regional_targets as $regional_target) {
+            $trend_asmen = DB::select("
+            SELECT
+                urs.NAME_REGIONAL ,
+                MONTH(created_at) as bulan,
+                SUM(urs.REAL_UST) as total_ust,
+                SUM(urs.REAL_NONUST) as total_non_ust,
+                SUM(urs.REAL_SELERAKU) as total_seleraku
+            FROM user_ranking_sale urs
+            WHERE 
+                YEAR(DATE(urs.created_at)) = 2022
+                AND urs.ID_ROLE = 4
+                AND urs.ID_REGIONAL = ".$regional_target->ID_REGIONAL."
+            GROUP BY MONTH(urs.created_at), urs.NAME_REGIONAL
+            ORDER BY MONTH(urs.created_at) ASC
+            ");
+
+
+            $temp['NAME_AREA'] = $regional_target->NAME_REGIONAL;
+            $temp['TARGET'] = $regional_target->QUANTITY;
+            if (!empty($trend_asmen[0]->bulan)) {
+                $bulan_ust = $this->PerBulanLaporan($trend_asmen, "UST");
+                $bulan_non_ust = $this->PerBulanLaporan($trend_asmen, "NON_UST");
+                $bulan_seleraku = $this->PerBulanLaporan($trend_asmen, "SELERAKU");
+
+                $temp["UST"] = $bulan_ust;
+                $temp["NON_UST"] = $bulan_non_ust;
+                $temp["SELERAKU"] = $bulan_seleraku;
+            }else{
+                $bulan["JANUARI"] = "-";
+                $bulan["FEBRUARI"] = "-";
+                $bulan["MARET"] = "-";
+                $bulan["APRIL"] = "-";
+                $bulan["MEI"] = "-";
+                $bulan["JUNI"] = "-";
+                $bulan["JULI"] = "-";
+                $bulan["AGUSTUS"] = "-";
+                $bulan["SEPTEMBER"] = "-";
+                $bulan["OKTOBER"] = "-";
+                $bulan["NOVEMBER"] = "-";
+                $bulan["DESEMBER"] = "-";
+
+                $temp["UST"] = $bulan;
+                $temp["NON_UST"] = $bulan;
+                $temp["SELERAKU"] = $bulan;
+            }
+             
+            $data[] = $temp;
+        }
+
+        return $data;    
+    }
+
+    public function TrendAsmen(){
+        $year = date('Y');
+        $regional_targets = DB::select("
+        SELECT
+            mr.ID_REGIONAL,
+            mr.NAME_REGIONAL,
+            (
+                SELECT 
+                    SUM(ts.QUANTITY) 
+                FROM target_sale ts
+                WHERE ts.ID_REGIONAL = mr.ID_REGIONAL
+            ) AS QUANTITY
+        FROM
+            md_regional mr
+        GROUP BY mr.ID_REGIONAL
+        ");
+        
+        foreach ($regional_targets as $regional_target) {
+            $trend_asmen = DB::select("
+            SELECT
+                urs.NAME_REGIONAL ,
+                MONTH(created_at) as bulan,
+                SUM(urs.REAL_UST) as total_ust,
+                SUM(urs.REAL_NONUST) as total_non_ust,
+                SUM(urs.REAL_SELERAKU) as total_seleraku
+            FROM user_ranking_sale urs
+            WHERE 
+                YEAR(DATE(urs.created_at)) = 2022
+                AND urs.ID_ROLE = 3
+                AND urs.ID_REGIONAL = ".$regional_target->ID_REGIONAL."
+            GROUP BY MONTH(urs.created_at), urs.NAME_REGIONAL
+            ORDER BY MONTH(urs.created_at) ASC
+            ");
+
+
+            $temp['NAME_AREA'] = $regional_target->NAME_REGIONAL;
+            $temp['TARGET'] = $regional_target->QUANTITY;
+            if (!empty($trend_asmen[0]->bulan)) {
+                $bulan_ust = $this->PerBulanLaporan($trend_asmen, "UST");
+                $bulan_non_ust = $this->PerBulanLaporan($trend_asmen, "NON_UST");
+                $bulan_seleraku = $this->PerBulanLaporan($trend_asmen, "SELERAKU");
+
+                $temp["UST"] = $bulan_ust;
+                $temp["NON_UST"] = $bulan_non_ust;
+                $temp["SELERAKU"] = $bulan_seleraku;
+            }
+            else{
+                $bulan["JANUARI"] = "-";
+                $bulan["FEBRUARI"] = "-";
+                $bulan["MARET"] = "-";
+                $bulan["APRIL"] = "-";
+                $bulan["MEI"] = "-";
+                $bulan["JUNI"] = "-";
+                $bulan["JULI"] = "-";
+                $bulan["AGUSTUS"] = "-";
+                $bulan["SEPTEMBER"] = "-";
+                $bulan["OKTOBER"] = "-";
+                $bulan["NOVEMBER"] = "-";
+                $bulan["DESEMBER"] = "-";
+
+                $temp["UST"] = $bulan;
+                $temp["NON_UST"] = $bulan;
+                $temp["SELERAKU"] = $bulan;
+            }
+             
+            $data[] = $temp;
+        }
+
+        return $data;    
+    }
+
+    public function PerBulanLaporan($trend_asmen, $kategori){
+        $ust = $trend_asmen[0]->total_ust;
+        $non_ust = $trend_asmen[0]->total_non_ust;
+        $seleraku = $trend_asmen[0]->total_seleraku;
+
+        if ($kategori == "UST") {
+            $value = $ust;
+        }elseif ($kategori == "NON_UST") {
+            $value = $non_ust;
+        }elseif ($kategori == "SELERAKU") {
+            $value = $seleraku;
+        }
+
+        $bulan["JANUARI"] = ($trend_asmen[0]->bulan == 1) ? $value : "-";
+        $bulan["FEBRUARI"] = ($trend_asmen[0]->bulan == 2) ? $value : "-";
+        $bulan["MARET"] = ($trend_asmen[0]->bulan == 3) ? $value : "-";
+        $bulan["APRIL"] = ($trend_asmen[0]->bulan == 4) ? $value : "-";
+        $bulan["MEI"] = ($trend_asmen[0]->bulan == 5) ? $value : "-";
+        $bulan["JUNI"] = ($trend_asmen[0]->bulan == 6) ? $value : "-";
+        $bulan["JULI"] = ($trend_asmen[0]->bulan == 7) ? $value : "-";
+        $bulan["AGUSTUS"] = ($trend_asmen[0]->bulan == 8) ? $value : "-";
+        $bulan["SEPTEMBER"] = ($trend_asmen[0]->bulan == 9) ? $value : "-";
+        $bulan["OKTOBER"] = ($trend_asmen[0]->bulan == 10) ? $value : "-";
+        $bulan["NOVEMBER"] = ($trend_asmen[0]->bulan == 11) ? $value : "-";
+        $bulan["DESEMBER"] = ($trend_asmen[0]->bulan == 12) ? $value : "-";
+
+        return $bulan;
+    }
 }

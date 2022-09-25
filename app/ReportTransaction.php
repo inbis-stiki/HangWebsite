@@ -23,7 +23,6 @@ class ReportTransaction
             "USB" => 22,
             "USK" => 20,
             "USR" => 21,
-            "UBNG" => 20,
             "FSU" => 19,
             "FSB" => 20,
             "TOTAL_DISPLAY" => 80,
@@ -88,26 +87,26 @@ class ReportTransaction
         $ObjSheet->getColumnDimension('G')->setWidth('10');
         $ObjSheet->getColumnDimension('H')->setWidth('10');
 
-        $ObjSheet->getColumnDimension('I')->setWidth('10');
-        $ObjSheet->getColumnDimension('J')->setWidth('10');
-        $ObjSheet->getColumnDimension('K')->setWidth('10');
-        $ObjSheet->getColumnDimension('L')->setWidth('10');
-        $ObjSheet->getColumnDimension('M')->setWidth('10');
-        $ObjSheet->getColumnDimension('N')->setWidth('10');
-        $ObjSheet->getColumnDimension('O')->setWidth('10');
-        $ObjSheet->getColumnDimension('P')->setWidth('10');
-        $ObjSheet->getColumnDimension('Q')->setWidth('10');
-        $ObjSheet->getColumnDimension('R')->setWidth('10');
-        $ObjSheet->getColumnDimension('S')->setWidth('10');
+        $ObjSheet->getColumnDimension('I')->setWidth('15');
+        $ObjSheet->getColumnDimension('J')->setWidth('15');
+        $ObjSheet->getColumnDimension('K')->setWidth('15');
+        $ObjSheet->getColumnDimension('L')->setWidth('15');
+        $ObjSheet->getColumnDimension('M')->setWidth('15');
+        $ObjSheet->getColumnDimension('N')->setWidth('15');
+        $ObjSheet->getColumnDimension('O')->setWidth('15');
+        $ObjSheet->getColumnDimension('P')->setWidth('15');
+        $ObjSheet->getColumnDimension('Q')->setWidth('15');
+        $ObjSheet->getColumnDimension('R')->setWidth('15');
 
+        $ObjSheet->getColumnDimension('S')->setWidth('20');
         $ObjSheet->getColumnDimension('T')->setWidth('20');
         $ObjSheet->getColumnDimension('U')->setWidth('20');
         $ObjSheet->getColumnDimension('V')->setWidth('35');
 
         $ObjSheet->setAutoFilter('A7:V' . (count($this->dataTransaksiHarian) + 7));
 
-        $ObjSheet->mergeCells('A1:V2')->setCellValue('A1', "REKAP HARIAN REGIONAL PROMOTION OFFICER")->getStyle('A1:V2')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
-        $ObjSheet->mergeCells('A3:V4')->setCellValue('A3', "*Uleg dalam satuan Inner dan Pars dalam satuan paket")->getStyle('A3:V4')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FFFF0000'));
+        $ObjSheet->mergeCells('A1:U2')->setCellValue('A1', "REKAP HARIAN REGIONAL PROMOTION OFFICER")->getStyle('A1:U2')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
+        $ObjSheet->mergeCells('A3:U4')->setCellValue('A3', "*Uleg dalam satuan Inner dan Pars dalam satuan paket")->getStyle('A3:U4')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FFFF0000'));
 
         $ObjSheet->mergeCells('A5:A7')->setCellValue('A5', 'TANGGAL')->getStyle('A5:A7')->applyFromArray($this->styling_title_template('FF00B0F0', 'FF000000'));
         $ObjSheet->mergeCells('B5:B7')->setCellValue('B5', 'NAMA')->getStyle('B5:B7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
@@ -116,7 +115,7 @@ class ReportTransaction
         $ObjSheet->mergeCells('E5:E7')->setCellValue('E5', 'AKTIFITAS')->getStyle('E5:E7')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('F5:H7')->setCellValue('F5', 'LOKASI')->getStyle('F5:H7')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
 
-        $ObjSheet->mergeCells('I5:S5')->setCellValue('I5', 'ITEM TERJUAL')->getStyle('I5:S5')->applyFromArray($this->styling_title_template('FFFFC000', 'FFFF0000'));
+        $ObjSheet->mergeCells('I5:R5')->setCellValue('I5', 'ITEM TERJUAL')->getStyle('I5:R5')->applyFromArray($this->styling_title_template('FFFFC000', 'FFFF0000'));
         $ObjSheet->setCellValue('I6', 'UST')->getStyle('I6')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
         $ObjSheet->setCellValue('J6', 'USU')->getStyle('J6')->applyFromArray($this->styling_title_template('FFFFC000', 'FF000000'));
         $ObjSheet->setCellValue('K6', 'USP')->getStyle('K6')->applyFromArray($this->styling_title_template('FFE26B0A', 'FF000000'));
@@ -125,9 +124,8 @@ class ReportTransaction
         $ObjSheet->setCellValue('N6', 'USB')->getStyle('N6')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->setCellValue('O6', 'USK')->getStyle('O6')->applyFromArray($this->styling_title_template('FFC0504D', 'FF000000'));
         $ObjSheet->setCellValue('P6', 'USR')->getStyle('P6')->applyFromArray($this->styling_title_template('FFFFC000', 'FFFFFFFF'));
-        $ObjSheet->setCellValue('Q6', 'UBNG')->getStyle('Q6')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
-        $ObjSheet->setCellValue('R6', 'FSU')->getStyle('R6')->applyFromArray($this->styling_title_template('FFF79646', 'FF000000'));
-        $ObjSheet->setCellValue('S6', 'FSB')->getStyle('S6')->applyFromArray($this->styling_title_template('FF00B050', 'FF000000'));
+        $ObjSheet->setCellValue('Q6', 'FSU')->getStyle('Q6')->applyFromArray($this->styling_title_template('FFF79646', 'FF000000'));
+        $ObjSheet->setCellValue('R6', 'FSB')->getStyle('R6')->applyFromArray($this->styling_title_template('FF00B050', 'FF000000'));
 
         $ObjSheet->getStyle('I7')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
         $ObjSheet->getStyle('J7')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
@@ -141,10 +139,10 @@ class ReportTransaction
         $ObjSheet->getStyle('R7')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
         $ObjSheet->getStyle('S7')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
 
-        $ObjSheet->mergeCells('T5:T6')->setCellValue('T5', 'TOTAL DISPLAY')->getStyle('T5:T6')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+        $ObjSheet->mergeCells('S5:S6')->setCellValue('S5', 'TOTAL DISPLAY')->getStyle('S5:S6')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
         $ObjSheet->getStyle('T7')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
-        $ObjSheet->mergeCells('U5:U7')->setCellValue('U5', 'TOTAL OMSET')->getStyle('U5:U7')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
-        $ObjSheet->mergeCells('V5:V7')->setCellValue('V5', 'KETERANGAN')->getStyle('V5:V7')->applyFromArray($this->styling_title_template('FFBFBFBF', 'FF000000'));
+        $ObjSheet->mergeCells('T5:T7')->setCellValue('T5', 'TOTAL OMSET')->getStyle('T5:T7')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+        $ObjSheet->mergeCells('U5:U7')->setCellValue('U5', 'KETERANGAN')->getStyle('U5:U7')->applyFromArray($this->styling_title_template('FFBFBFBF', 'FF000000'));
 
         $rowStart = 8;
         for ($i = 0; $i < count($this->dataTransaksiHarian); $i++) {
@@ -162,12 +160,11 @@ class ReportTransaction
             $ObjSheet->setCellValue('N' . $rowStart, $this->dataTransaksiHarian[$i]['USB'])->getStyle('N' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->setCellValue('O' . $rowStart, $this->dataTransaksiHarian[$i]['USK'])->getStyle('O' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->setCellValue('P' . $rowStart, $this->dataTransaksiHarian[$i]['USR'])->getStyle('P' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('Q' . $rowStart, $this->dataTransaksiHarian[$i]['UBNG'])->getStyle('Q' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('R' . $rowStart, $this->dataTransaksiHarian[$i]['FSU'])->getStyle('R' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('S' . $rowStart, $this->dataTransaksiHarian[$i]['FSB'])->getStyle('S' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('T' . $rowStart, $this->dataTransaksiHarian[$i]['TOTAL_DISPLAY'])->getStyle('T' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('U' . $rowStart, $this->dataTransaksiHarian[$i]['TOTAL_OMSET'])->getStyle('U' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->getStyle('V' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('Q' . $rowStart, $this->dataTransaksiHarian[$i]['FSU'])->getStyle('Q' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('R' . $rowStart, $this->dataTransaksiHarian[$i]['FSB'])->getStyle('R' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('S' . $rowStart, $this->dataTransaksiHarian[$i]['TOTAL_DISPLAY'])->getStyle('S' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('T' . $rowStart, $this->dataTransaksiHarian[$i]['TOTAL_OMSET'])->getStyle('T' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->getStyle('U' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
 
             $rowStart++;
         }

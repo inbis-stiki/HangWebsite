@@ -1,7 +1,7 @@
-name : Deploy to prod finna
+name : Deploy to testing finna
 on:
   push:
-    branches: [ development ]
+    branches: [ testing ]
 
 jobs:
   first:
@@ -16,6 +16,6 @@ jobs:
         key: ${{ secrets.MY_KEY }}
         port: ${{ secrets.PORT }}
         script: |
-          cd ${{ secrets.DIR }}
-          git pull origin development && composer install && composer update && php artisan optimize
+          cd ${{ secrets.DIR_TESTING }}
+          git pull origin testing && composer install && composer update && php artisan optimize
           php artisan config:clear

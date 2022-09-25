@@ -26,6 +26,7 @@
                             <?php
                             $no = 0;
                             $coords = array();
+                            $other_coords = array();
                             foreach ($transaction as $data_ublp) :
                             ?>
                                 <div class="accordion__item">
@@ -95,6 +96,15 @@
                                     $coords,
                                     array('loc' => $data_ublp['LOCATION'], 'lat' => $data_ublp['LAT_TRANS'], 'lng' => $data_ublp['LONG_TRANS'])
                                 );
+
+                                foreach ($shop_no_trans as $other_shop) {
+                                    if ($other_shop->ID_SHOP <> $data_ublp['ID_SHOP']) {
+                                        array_push(
+                                            $other_coords,
+                                            array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)
+                                        );
+                                    }
+                                }
                                 $no++;
                             endforeach;
                             ?>
@@ -143,59 +153,70 @@
                         });
                         map.on('load', () => {
                             map.loadImage(
-                            '<?= asset('images/icon/map-marker-green.png'); ?>',
-                            (error, image) => {
-                                if (error) throw error;
-                                map.addImage('custom-marker', image);
-                                map.setRenderWorldCopies(false);
-                                map.resize();
-                                map.addControl(new mapboxgl.FullscreenControl());
+                                '<?= asset('images/icon/map-marker-green.png'); ?>',
+                                (error, image) => {
+                                    if (error) throw error;
+                                    map.addImage('custom-marker', image);
 
-                                map.addSource('canvas-source', {
-                                    type: 'canvas',
-                                    canvas: 'canvasID',
-                                    coordinates: [
-                                        [91.4461, 21.5006],
-                                        [100.3541, 21.5006],
-                                        [100.3541, 13.9706],
-                                        [91.4461, 13.9706]
-                                    ],
-                                    // Set to true if the canvas source is animated. If the canvas is static, animate should be set to false to improve performance.
-                                    animate: false
-                                });
+                                    const image2 = new Image(35, 35);
+                                    image2.src = '<?= asset('images/icon/map-marker-red.png'); ?>';
+                                    map.addImage('custom-marker-2', image2);
 
-                                map.addLayer({
-                                    id: 'canvas-layer',
-                                    type: 'raster',
-                                    source: 'canvas-source'
-                                });
-                                // Add a GeoJSON source with 2 points
-                                <?php for ($i = 0; $i < count($coords); $i++) { ?>
-                                    map.addSource('points<?= $i; ?>', {
-                                        'type': 'geojson',
-                                        'data': {
-                                            'type': 'FeatureCollection',
-                                            'features': [{
-                                                'type': 'Feature',
-                                                'geometry': {
-                                                    'type': 'Point',
-                                                    // 'coordinates': [Longitude, Latitude]
-                                                    'coordinates': [<?= $coords[$i]['lng']; ?>, <?= $coords[$i]['lat']; ?>]
-                                                },
-                                                'properties': {
-                                                    'title': "<?= $coords[$i]['loc']; ?>"
-                                                }
-                                            }]
-                                        }
-                                    });
+                                    map.setRenderWorldCopies(false);
+                                    map.resize();
+                                    map.addControl(new mapboxgl.FullscreenControl());
 
                                     // Add a symbol layer
                                     map.addLayer({
-                                        'id': 'points<?= $i; ?>',
+                                        'id': 'places',
                                         'type': 'symbol',
-                                        'source': 'points<?= $i; ?>',
+                                        'source': { //now we are adding the source to the layer more directly and cleanly 
+                                            type: "geojson",
+                                            data: {
+                                                'type': 'FeatureCollection',
+                                                'features': [
+                                                    <?php for ($i = 0; $i < count($coords); $i++) { ?> {
+                                                            'type': 'Feature',
+                                                            'geometry': {
+                                                                'type': 'Point',
+                                                                // 'coordinates': [Longitude, Latitude]
+                                                                'coordinates': [<?= $coords[$i]['lng']; ?>, <?= $coords[$i]['lat']; ?>]
+                                                            },
+                                                            'properties': {
+                                                                "title": "<?= $coords[$i]['loc']; ?>",
+                                                                "description": "<strong>Make it Mount Pleasant</strong><p>Make it Mount Pleasant is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>"
+                                                            },
+                                                            'layout': {
+                                                                "icon-image": "custom-marker", // the name of image file we used above
+                                                                "icon-allow-overlap": false,
+                                                                "icon-size": 1 //this is a multiplier applied to the standard size. So if you want it half the size put ".5"
+                                                            }
+                                                        },
+                                                    <?php } ?>
+                                                    <?php for ($i = 0; $i < count($other_coords); $i++) { ?> {
+                                                            'type': 'Feature',
+                                                            'geometry': {
+                                                                'type': 'Point',
+                                                                // 'coordinates': [Longitude, Latitude]
+                                                                'coordinates': [<?= $other_coords[$i]['lng']; ?>, <?= $other_coords[$i]['lat']; ?>]
+                                                            },
+                                                            'properties': {
+                                                                "title": "<?= $other_coords[$i]['loc']; ?>",
+                                                                "description": "<strong>Make it Mount Pleasant</strong><p>Make it Mount Pleasant is a handmade and vintage market and afternoon of live entertainment and kids activities. 12:00-6:00 p.m.</p>"
+                                                            },
+                                                            'layout': {
+                                                                "icon-image": "custom-marker", // the name of image file we used above
+                                                                "icon-allow-overlap": false,
+                                                                "icon-size": 1 //this is a multiplier applied to the standard size. So if you want it half the size put ".5"
+                                                            }
+                                                        },
+                                                    <?php } ?>
+                                                ]
+                                            } // CHANGE THIS TO REFLECT WHERE YOUR DATA IS COMING FROM
+                                        },
                                         'layout': {
                                             'icon-image': 'custom-marker',
+                                            'icon-allow-overlap': true,
                                             'text-field': ['get', 'title'],
                                             'text-font': [
                                                 'Open Sans Semibold',
@@ -205,9 +226,37 @@
                                             'text-anchor': 'top'
                                         }
                                     });
+                                    // Create a popup, but don't add it to the map yet.
+                                    const popup = new mapboxgl.Popup({
+                                        closeButton: false,
+                                        closeOnClick: false
+                                    });
 
-                                <?php } ?>
-                            })
+                                    map.on('mouseenter', 'places', (e) => {
+                                        // Change the cursor style as a UI indicator.
+                                        map.getCanvas().style.cursor = 'pointer';
+
+                                        // Copy coordinates array.
+                                        const coordinates = e.features[0].geometry.coordinates.slice();
+                                        const description = e.features[0].properties.description;
+
+                                        // Ensure that if the map is zoomed out such that multiple
+                                        // copies of the feature are visible, the popup appears
+                                        // over the copy being pointed to.
+                                        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                                            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                                        }
+
+                                        // Populate the popup and set its coordinates
+                                        // based on the feature found.
+                                        popup.setLngLat(coordinates).setHTML(description).addTo(map);
+                                    });
+
+                                    map.on('mouseleave', 'places', () => {
+                                        map.getCanvas().style.cursor = '';
+                                        popup.remove();
+                                    });
+                                })
                         });
                     </script>
                 </div>

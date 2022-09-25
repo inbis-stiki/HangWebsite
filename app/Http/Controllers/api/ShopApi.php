@@ -184,6 +184,7 @@ class ShopApi extends Controller
                         "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
                         "LONG_SHOP" => $shopData->LONG_SHOP,
                         "LAT_SHOP" => $shopData->LAT_SHOP,
+                        "LASTTRANS_SHOP" => $shopData->LASTTRANS_SHOP,
                         "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', '')
                     )
                 );
@@ -259,62 +260,15 @@ class ShopApi extends Controller
                     point('$longitude', '$latitude'),
                     point(md_shop.LONG_SHOP, md_shop.LAT_SHOP)
                 )  AS DISTANCE_SHOP")
-                ->where('md_shop.ID_DISTRICT', '=', $id_district)
+                ->where([
+                        ['md_shop.ID_DISTRICT', '=', $id_district],
+                        ['md_shop.ISRECOMMEND_SHOP', '=', 1]
+                    ]
+                )
                 ->orderBy('DISTANCE_SHOP', 'asc')
                 ->get();
 
-            $dataRespon = array();
-            $temp = array();
-            foreach ($shop as $shopData) {
-                $recom = DB::table("recomendation")
-                    ->select("recomendation.*")
-                    ->selectRaw("ST_DISTANCE_SPHERE(
-                        point('$longitude', '$latitude'),
-                        point(recomendation.LONG_SHOP, recomendation.LAT_SHOP)
-                    )  AS DISTANCE_SHOP")
-                    ->where("recomendation.ID_USER", "=", $req->input("id_user"))
-                    ->where("recomendation.ID_SHOP", "=", $shopData->ID_SHOP)
-                    ->orderBy('IDLE_RECOM', 'ASC')
-                    ->first();
-
-                if ($recom != null){
-                    array_push(
-                        $dataRespon,
-                        array(
-                            "ID_SHOP" => $shopData->ID_SHOP,
-                            "PHOTO_SHOP" => $shopData->PHOTO_SHOP,
-                            "NAME_SHOP" => $shopData->NAME_SHOP,
-                            "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
-                            "LONG_SHOP" => $shopData->LONG_SHOP,
-                            "LAT_SHOP" => $shopData->LAT_SHOP,
-                            "LAST_VISITED" => $recom->IDLE_RECOM." Days Ago",
-                            "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', '')
-                        )
-                    );
-                } else {
-                    array_push(
-                        $temp,
-                        array(
-                            "ID_SHOP" => $shopData->ID_SHOP,
-                            "PHOTO_SHOP" => $shopData->PHOTO_SHOP,
-                            "NAME_SHOP" => $shopData->NAME_SHOP,
-                            "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
-                            "LONG_SHOP" => $shopData->LONG_SHOP,
-                            "LAT_SHOP" => $shopData->LAT_SHOP,
-                            "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', '')
-                        )
-                    );
-                }
-            }
-
-            for ($i=0; $i < count($temp); $i++) { 
-                array_push(
-                    $dataRespon,
-                    $temp[$i]
-                );
-            }
-
-            $dataPaginate = $this->paginate($dataRespon);
+            $dataPaginate = $this->paginate($shop);
             $dataPagination = array();
             array_push(
                 $dataPagination,

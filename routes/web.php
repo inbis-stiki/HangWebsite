@@ -25,10 +25,11 @@ Route::get('/', 'AuthController@login');
 Route::get('/', 'AuthController@login')->name('login');
 Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
-Route::get('cronjob/shop/recomendation', 'CronjobController@cronjob_store_rekomendasi');
+Route::get('cronjob/update-shop-recommendation', 'CronjobController@updateRecommendShop');
 Route::get('cronjob/rangking', 'CronjobController@cronjob_template_rangking');
-Route::get('cronjob/update-daily-rangking', 'CronjobController@updateDailyRanking');
+Route::get('cronjob/update-daily-rangking-achievement', 'CronjobController@updateDailyRankingAchievement');
 Route::get('cronjob/update-daily-rangking-activity', 'CronjobController@updateDailyRankingActivity');
+Route::get('cronjob/update-dashboard-mobile', 'CronjobController@updateDashboardMobile');
 Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
 Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
@@ -41,7 +42,7 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('dashboard/ranking_activity', 'DashboardController@ranking_activity');
     Route::get('dashboard/ranking_sale', 'DashboardController@ranking_sale');
     // Dashboard LineChart
-    Route::post('dashboard/trend_asmen', 'DashboardController@trend_asmen');
+    Route::get('dashboard/trend_asmen', 'DashboardController@trend_asmen');
     // Dashboard DonutChart
     Route::post('dashboard/ranking_aktivitas', 'DashboardController@ranking_aktivitas');
     Route::post('dashboard/ranking_pencapaian', 'DashboardController@ranking_pencapaian');
