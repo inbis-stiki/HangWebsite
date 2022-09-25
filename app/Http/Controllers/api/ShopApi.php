@@ -184,6 +184,7 @@ class ShopApi extends Controller
                         "DETLOC_SHOP" => $shopData->DETLOC_SHOP,
                         "LONG_SHOP" => $shopData->LONG_SHOP,
                         "LAT_SHOP" => $shopData->LAT_SHOP,
+                        "LASTTRANS_SHOP" => $shopData->LASTTRANS_SHOP,
                         "DISTANCE_SHOP" => number_format($shopData->DISTANCE_SHOP, 2, '.', '')
                     )
                 );
