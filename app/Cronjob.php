@@ -30,7 +30,7 @@ class Cronjob extends Model
                 ), 0) as LASTSALE_DM,
                 "'.$date.'" as DAYLASTSALE_DM,
                 COALESCE((
-                    SELECT SUM(t2.QTY_TRANS) / '.$date.' 
+                    SELECT SUM(t2.QTY_TRANS) / '.$date.'
                     FROM `transaction` t2
                     WHERE t2.ID_USER = t.ID_USER 
                 ), 0) as AVERAGESALE_DM,
@@ -46,8 +46,9 @@ class Cronjob extends Model
                     FROM `transaction` t2
                     WHERE t2.ID_USER = t.ID_USER
                 ), 0) as PROGRESS_DM,
+                ut.SALESUST_UT as TGTUST_DM,
                 COALESCE((
-                    SELECT ((SUM(td.QTY_TD) / (ut.SALESUST_UT  * 25)) * 100)
+                    SELECT SUM(td.QTY_TD)
                     FROM 
                         `transaction` t2, 
                         transaction_detail td,
@@ -57,9 +58,10 @@ class Cronjob extends Model
                         AND t2.ID_TRANS = td.ID_TRANS
                         AND td.ID_PRODUCT = mp.ID_PRODUCT
                         AND mp.ID_PC = 12 -- 12 == CATEGORY UST in md_product_category
-                ), 0) as PROGRESSUST_DM,
+                ), 0) as REALUST_DM,
+                ut.SALESNONUST_UT as TGTNONUST_DM,
                 COALESCE((
-                    SELECT ((SUM(td.QTY_TD) / (ut.SALESNONUST_UT * 25)) * 100)
+                    SELECT SUM(td.QTY_TD)
                     FROM 
                         `transaction` t2, 
                         transaction_detail td,
@@ -69,9 +71,10 @@ class Cronjob extends Model
                         AND t2.ID_TRANS = td.ID_TRANS
                         AND td.ID_PRODUCT = mp.ID_PRODUCT
                         AND mp.ID_PC = 2 -- 2 == CATEGORY NON UST in md_product_category
-                ), 0) as PROGRESSNONUST_DM,
+                ), 0) as REALNONUST_DM,
+                ut.SALESSELERAKU_UT as TGTSELERAKU_DM,
                 COALESCE((
-                    SELECT ((SUM(td.QTY_TD) / (ut.SALESSELERAKU_UT * 25)) * 100)
+                    SELECT SUM(td.QTY_TD)
                     FROM 
                         `transaction` t2, 
                         transaction_detail td,
@@ -81,10 +84,10 @@ class Cronjob extends Model
                         AND t2.ID_TRANS = td.ID_TRANS
                         AND td.ID_PRODUCT = mp.ID_PRODUCT
                         AND mp.ID_PC = 3 -- 3 == CATEGORY SELERAKU in md_product_category
-                ), 0) as PROGRESSSELERAKU_DM
+                ), 0) as REALSELERAKU_DM
             FROM `transaction` t, user_target ut
             WHERE 
-                YEAR(t.DATE_TRANS) = '.$year.' 
+                YEAR(t.DATE_TRANS) = '.$year.'
                 AND MONTH(t.DATE_TRANS) = '.$month.'
                 AND ut.ID_USER = t.ID_USER
             GROUP BY t.ID_USER 
