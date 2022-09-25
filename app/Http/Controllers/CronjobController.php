@@ -59,9 +59,15 @@ class CronjobController extends Controller
                     'DAYLASTSALE_DM'        => $data->DAYLASTSALE_DM,
                     'OFFTARGET_DM'          => $data->OFFTARGET_DM,
                     'PROGRESS_DM'           => $data->PROGRESS_DM,
-                    'PROGRESSUST_DM'        => $data->PROGRESSUST_DM,
-                    'PROGRESSNONUST_DM'     => $data->PROGRESSNONUST_DM,
-                    'PROGRESSSELERAKU_DM'   => $data->PROGRESSSELERAKU_DM,
+                    'TGTUST_DM'             => $data->TGTUST_DM,
+                    'REALUST_DM'            => $data->REALUST_DM,
+                    'TGTNONUST_DM'          => $data->TGTNONUST_DM,
+                    'REALNONUST_DM'         => $data->REALNONUST_DM,
+                    'TGTSELERAKU_DM'        => $data->TGTSELERAKU_DM,
+                    'REALSELERAKU_DM'       => $data->REALSELERAKU_DM,
+                    'PROGRESSUST_DM'        => ($data->REALUST_DM / ($data->TGTUST_DM * 25)) * 100,
+                    'PROGRESSNONUST_DM'     => ($data->REALNONUST_DM / ($data->TGTNONUST_DM * 25)) * 100,
+                    'PROGRESSSELERAKU_DM'   => ($data->REALSELERAKU_DM / ($data->TGTSELERAKU_DM * 25)) * 100,
                     'updated_at'            => $updated_at
                 ]);
             }
