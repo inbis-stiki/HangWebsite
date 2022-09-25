@@ -229,6 +229,16 @@ class DashboardApi extends Controller
                     'UST' => ($AllData_temp <> null) ? ((number_format((float)$AllData_temp->PROGRESSUST_DM, 1, '.', '') <> null) ? number_format((float)$AllData_temp->PROGRESSUST_DM, 1, '.', '') : 0) : 0,
                     'NON_UST' => ($AllData_temp <> null) ? ((number_format((float)$AllData_temp->PROGRESSNONUST_DM, 1, '.', '') <> null) ? number_format((float)$AllData_temp->PROGRESSNONUST_DM, 1, '.', '') : 0) : 0,
                     'SELERAKU' => ($AllData_temp <> null) ? ((number_format((float)$AllData_temp->PROGRESSSELERAKU_DM, 1, '.', '') <> null) ? number_format((float)$AllData_temp->PROGRESSSELERAKU_DM, 1, '.', '') : 0) : 0,
+                ],
+                'REAL_DETAIL' => [
+                    'UST' => ($AllData_temp <> null) ? (($AllData_temp->REALUST_DM <> null) ? $AllData_temp->REALUST_DM : 0) : 0,
+                    'NON_UST' => ($AllData_temp <> null) ? (($AllData_temp->REALNONUST_DM <> null) ? $AllData_temp->REALNONUST_DM : 0) : 0,
+                    'SELERAKU' => ($AllData_temp <> null) ? (($AllData_temp->REALSELERAKU_DM <> null) ? $AllData_temp->REALSELERAKU_DM : 0) : 0
+                ],
+                'TGT_DETAIL' => [
+                    'UST' => ($AllData_temp <> null) ? (($AllData_temp->TGTUST_DM <> null) ? $AllData_temp->TGTUST_DM : 0) : 0,
+                    'NON_UST' => ($AllData_temp <> null) ? (($AllData_temp->TGTNONUST_DM <> null) ? $AllData_temp->TGTNONUST_DM : 0) : 0,
+                    'SELERAKU' => ($AllData_temp <> null) ? (($AllData_temp->TGTSELERAKU_DM <> null) ? $AllData_temp->TGTSELERAKU_DM : 0) : 0
                 ]
             );
 
