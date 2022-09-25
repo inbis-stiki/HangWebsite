@@ -12,12 +12,14 @@ class DetailTransController extends Controller
         $data['title']          = "Detail Spreading";
         $data['sidebar']        = "transaksi";
 
-        $id_user  = $req->input('id_user');
-        $date     = $req->input('date');
-        $type     = $req->input('type');
+        $id_user        = $req->input('id_user');
+        $date           = $req->input('date');
+        $type           = $req->input('type');
+        // dd($req);exit;
+        // $id_district    = $req->input('type');
 
         $transaction = DB::table('transaction')
-            ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER', 'md_shop.*')
+            ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP')
             ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
             ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
@@ -59,6 +61,7 @@ class DetailTransController extends Controller
             array_push(
                 $data['transaction'],
                 array(
+                    "ID_SHOP" => $Item_ts->ID_SHOP,
                     "LOCATION" => $Item_ts->NAME_SHOP,
                     "LAT_TRANS" => $Item_ts->LAT_SHOP,
                     "LONG_TRANS" => $Item_ts->LONG_SHOP,
@@ -69,6 +72,13 @@ class DetailTransController extends Controller
                 )
             );
         }
+
+        $data['shop_no_trans'] = DB::table('md_shop')
+            ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP')
+            ->selectRaw('COUNT(transaction.ID_TRANS) as TOT_TRANS')
+            ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
+            ->groupBy('md_shop.ID_SHOP')
+            ->get();
 
         // dump(count($data['transaction'][0]['IMAGE'][0]));exit;
 
