@@ -15,8 +15,6 @@ class DetailTransController extends Controller
         $id_user        = $req->input('id_user');
         $date           = $req->input('date');
         $type           = $req->input('type');
-        // dd($req);exit;
-        // $id_district    = $req->input('type');
 
         $transaction = DB::table('transaction')
             ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP')
@@ -38,7 +36,9 @@ class DetailTransController extends Controller
                 ->where('transaction_detail.ID_TRANS', $Item_ts->ID_TRANS)
                 ->get();
 
+            $TOT_PRODUCT = 0;
             foreach ($transaction_detail as $ts_detail) {
+                $TOT_PRODUCT += $ts_detail->QTY_TD;
                 array_push(
                     $data_ts_detail,
                     $ts_detail
@@ -68,6 +68,7 @@ class DetailTransController extends Controller
                     "DATE_TRANS" => $Item_ts->DATE_TRANS,
                     "NAME_USER" => $Item_ts->NAME_USER,
                     "IMAGE" => $data_image_trans,
+                    "TOTAL" => $TOT_PRODUCT,
                     "DETAIL" => $data_ts_detail
                 )
             );
