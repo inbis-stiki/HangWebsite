@@ -107,7 +107,6 @@ class DetailTransController extends Controller
 
         $data['transaction'] = array();
         foreach ($transaction as $Item_ts) {
-            $data_ts_detail = array();
             $transaction_detail       = DB::table('transaction_detail')
                 ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT')
                 ->join('transaction', 'transaction_detail.ID_TRANS', '=', 'transaction.ID_TRANS')
@@ -115,12 +114,16 @@ class DetailTransController extends Controller
                 ->where('transaction_detail.ID_TRANS', $Item_ts->ID_TRANS)
                 ->get();
 
+            $data_ts_detail = array();
+            $TOT_PRODUCT = 0;
             foreach ($transaction_detail as $ts_detail) {
+                $TOT_PRODUCT += $ts_detail->QTY_TD;
                 array_push(
                     $data_ts_detail,
                     $ts_detail
                 );
             }
+            // dd($data_ts_detail);exit;
 
             $data_image_trans = array();
             $transaction_image       = DB::table('transaction_image')
@@ -147,6 +150,7 @@ class DetailTransController extends Controller
                     "DATE_TRANS" => $Item_ts->DATE_TRANS,
                     "NAME_USER" => $Item_ts->NAME_USER,
                     "IMAGE" => $data_image_trans,
+                    "TOTAL" => $TOT_PRODUCT,
                     "DETAIL" => $data_ts_detail
                 )
             );
@@ -186,7 +190,9 @@ class DetailTransController extends Controller
                 ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT')
                 ->get();
 
+            $TOT_PRODUCT = 0;
             foreach ($transaction_detail as $ts_detail) {
+                $TOT_PRODUCT += $ts_detail->QTY_TD;
                 array_push(
                     $data_ts_detail,
                     $ts_detail
@@ -218,6 +224,7 @@ class DetailTransController extends Controller
                     "DATE_TRANS" => $Item_ts->DATE_TRANS,
                     "NAME_USER" => $Item_ts->NAME_USER,
                     "IMAGE" => $data_image_trans,
+                    "TOTAL" => $TOT_PRODUCT,
                     "DETAIL" => $data_ts_detail
                 )
             );

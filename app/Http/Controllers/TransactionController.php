@@ -20,8 +20,8 @@ class TransactionController extends Controller
     {
         $id_type    = $req->input('searchTrans');
         $tgl_trans  = $req->input('tglSearchtrans');
-        $id_user    = $req->input('id_user');
-        $id_role    = $req->input('id_role');
+        $id_user    = $req->session()->get('id_user');
+        $id_role    = $req->session()->get('role');
 
         $data_loc     = DB::table('user')
             ->where('user.ID_USER', $id_user)
@@ -40,7 +40,7 @@ class TransactionController extends Controller
                 ->leftjoin('md_district', 'md_district.ID_DISTRICT', '=', 'md_shop.ID_DISTRICT')
                 ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
-                ->where('transaction.DATE_TRANS', 'like', $tgl_trans.'%')
+                ->where('transaction.DATE_TRANS', 'like', $tgl_trans . '%')
                 ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
                 ->orderBy('md_area.NAME_AREA', 'ASC')
                 ->get();
@@ -55,7 +55,7 @@ class TransactionController extends Controller
                 ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
                 ->where('transaction.ID_TYPE', '=', $id_type)
-                ->where('transaction.DATE_TRANS', 'like', $tgl_trans.'%')
+                ->where('transaction.DATE_TRANS', 'like', $tgl_trans . '%')
                 ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
                 ->orderBy('md_area.NAME_AREA', 'ASC')
                 ->get();
@@ -64,12 +64,12 @@ class TransactionController extends Controller
         $NewData_asmen = array();
         $NewData_rpo = array();
         $NewData_all = array();
-        $i = 0;
+        $counter_asmen = 0;
+        $counter_rpo = 0;
+        $counter_all = 0;
         foreach ($dataTrans as $key => $item) {
-            $i++;
 
             $data = array(
-                "NO" => $i,
                 "NAME_USER" => $item->NAME_USER,
                 "ID_TRANS" => $item->ID_TRANS,
                 "AREA_TRANS" => $item->AREA_TRANS,
@@ -81,18 +81,25 @@ class TransactionController extends Controller
             );
 
             if ($item->ID_TYPE == 1) {
-                $data['ACTION_BUTTON'] = '<a href="' . url("transaction/spread/?id_user=$item->ID_USER&date=".date_format(date_create($item->DATE_TRANS), 'Y-m-d') ."&type=$item->ID_TYPE") . '"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
+                $data['ACTION_BUTTON'] = '<a href="' . url("transaction/spread/?id_user=$item->ID_USER&date=" . date_format(date_create($item->DATE_TRANS), 'Y-m-d') . "&type=$item->ID_TYPE") . '"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             } else if ($item->ID_TYPE == 2) {
-                $data['ACTION_BUTTON'] = '<a href="' . url("transaction/ub/?id_user=$item->ID_USER&date=".date_format(date_create($item->DATE_TRANS), 'Y-m-d') ."&type=$item->ID_TYPE").'"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
+                $data['ACTION_BUTTON'] = '<a href="' . url("transaction/ub/?id_user=$item->ID_USER&date=" . date_format(date_create($item->DATE_TRANS), 'Y-m-d') . "&type=$item->ID_TYPE") . '"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             } else {
-                $data['ACTION_BUTTON'] = '<a href="' . url("transaction/ublp/?id_user=$item->ID_USER&date=".date_format(date_create($item->DATE_TRANS), 'Y-m-d') ."&type=$item->ID_TYPE") . '"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
+                $data['ACTION_BUTTON'] = '<a href="' . url("transaction/ublp/?id_user=$item->ID_USER&date=" . date_format(date_create($item->DATE_TRANS), 'Y-m-d') . "&type=$item->ID_TYPE") . '"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             }
 
-            if ($id_role == 3 && ($key == 'REGIONAL_TRANS' || $item->REGIONAL_TRANS == $data_loc->NAME_REGIONAL)) {
+
+            if ($id_role == 3 && $item->REGIONAL_TRANS == $data_loc->NAME_REGIONAL) {
+                $counter_asmen++;
+                $data['NO'] = $counter_asmen;
                 array_push($NewData_asmen, $data);
-            } else if ($id_role == 4 && ($key == 'AREA_TRANS' || $item->AREA_TRANS == $data_loc->NAME_AREA)) {
+            } else if ($id_role == 4 && $item->AREA_TRANS == $data_loc->NAME_AREA) {
+                $counter_rpo++;
+                $data['NO'] = $counter_rpo;
                 array_push($NewData_rpo, $data);
             } else {
+                $counter_all++;
+                $data['NO'] = $counter_all;
                 array_push($NewData_all, $data);
             }
         }
