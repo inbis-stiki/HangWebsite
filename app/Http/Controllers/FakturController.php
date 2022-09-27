@@ -10,17 +10,35 @@ use Illuminate\Support\Facades\DB;
 
 class FakturController extends Controller
 {
-    public function index()
+    public function index(Request $req)
     {
         $data['title']          = "Faktur";
         $data['sidebar']        = "faktur";
         $data['sidebar2']       = "";
-        $data['fakturs']        = DB::table('transaction_daily')
-            ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
-            ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
-            ->orderBy('transaction_daily.DATE_TD', 'DESC')
-            ->select('transaction_daily.*', 'user.NAME_USER', 'md_type.NAME_TYPE')
-            ->get();
+        $id_user    = $req->session()->get('id_user');
+        $data_user     = DB::table('user')
+            ->where('user.ID_USER', $id_user)
+            ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
+            ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
+            ->leftjoin('md_location', 'md_location.ID_LOCATION', '=', 'user.ID_LOCATION')
+            ->select('user.*', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
+            ->first();
+        if ($data_user->ID_ROLE == 3 || $data_user->ID_ROLE == 4) {
+            $data['fakturs']        = DB::table('transaction_daily')
+                ->where('transaction_daily.LOCATION_TD', $data_user->NAME_LOCATION)
+                ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
+                ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
+                ->orderBy('transaction_daily.DATE_TD', 'DESC')
+                ->select('transaction_daily.*', 'user.NAME_USER', 'md_type.NAME_TYPE')
+                ->get();
+        } else {
+            $data['fakturs']        = DB::table('transaction_daily')
+                ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
+                ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
+                ->orderBy('transaction_daily.DATE_TD', 'DESC')
+                ->select('transaction_daily.*', 'user.NAME_USER', 'md_type.NAME_TYPE')
+                ->get();
+        }
 
         return view('master.faktur.faktur', $data);
     }
