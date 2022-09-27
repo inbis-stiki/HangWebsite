@@ -105,7 +105,7 @@
                             <?php
                                 array_push(
                                     $coords,
-                                    array('loc' => $data_ublp['LOCATION'], 'lat' => $data_ublp['LAT_TRANS'], 'lng' => $data_ublp['LONG_TRANS'])
+                                    array('loc' => $data_ublp['LOCATION'], 'lat' => $data_ublp['LAT_TRANS'], 'lng' => $data_ublp['LONG_TRANS'], 'total' => $data_ublp['TOTAL'])
                                 );
                                 $no++;
                             endforeach;
@@ -144,83 +144,201 @@
                         return array($lat * 180 / pi(), $lon * 180 / pi());
                     }
                     ?>
-                    <script>
-                        mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2aXNhcCIsImEiOiJjbDZ5aHY1bzUwdmh2M2JwZG1zNDhkaXRlIn0.Wl1xSypefSjvpjdL7iGb7Q';
+                    <style>
+                        #map {
+                            width: 100%;
+                            height: 480px;
+                        }
 
+                        @media screen and (max-width: 600px) {
+                            #map {
+                                max-height: 70vh;
+                            }
+                        }
+
+                        .filter-control label {
+                            display: flex;
+                            padding: 10px;
+                            font-weight: 600;
+                            color: #fff;
+                            text-transform: uppercase;
+                            cursor: pointer;
+                            background-color: #f26f21;
+                            border-radius: 3px;
+                            box-shadow: 0 0 2px rgba(255, 205, 56, 0.5);
+                        }
+
+                        .filter-control input[type="checkbox"]:checked:after {
+                            background-color: #5BB318;
+                        }
+                    </style>
+                    <script>
+                        const MAPBOX_API_KEY = 'pk.eyJ1IjoiZGV2aXNhcCIsImEiOiJjbDZ5aHY1bzUwdmh2M2JwZG1zNDhkaXRlIn0.Wl1xSypefSjvpjdL7iGb7Q';
+                        const MAPBOX_STYLE = 'mapbox://styles/mapbox/streets-v11';
+
+                        mapboxgl.accessToken = MAPBOX_API_KEY;
+                        let features = {
+                            'type': 'FeatureCollection',
+                            'features': [
+                                <?php for ($i = 0; $i < count($coords); $i++) { ?> {
+                                        'type': 'Feature',
+                                        'geometry': {
+                                            'type': 'Point',
+                                            // 'coordinates': [Longitude, Latitude]
+                                            'coordinates': [<?= $coords[$i]['lng']; ?>, <?= $coords[$i]['lat']; ?>]
+                                        },
+                                        'properties': {
+                                            "title": "<?= $coords[$i]['loc']; ?>",
+                                            "description": "<strong><?= $coords[$i]['loc']; ?></strong><p>Total Penjualan : <?= $coords[$i]['total']; ?></p>",
+                                            "availability": 'Available',
+                                            "iconSize": [40, 40]
+                                        }
+                                    },
+                                <?php } ?>
+                            ]
+                        };
+
+                        // Initialize map
                         const map = new mapboxgl.Map({
                             container: 'map',
-                            style: 'mapbox://styles/mapbox/outdoors-v11',
+                            style: MAPBOX_STYLE,
                             center: [<?= $centerCord[1] ?>, <?= $centerCord[0] ?>],
                             zoom: 15.5
                         });
-                        map.on('load', () => {
-                            map.loadImage(
-                                '<?= asset('images/icon/map-marker-green.png'); ?>',
-                                (error, image) => {
-                                    if (error) throw error;
-                                    map.addImage('custom-marker', image);
-                                    map.setRenderWorldCopies(false);
-                                    map.resize();
-                                    map.addControl(new mapboxgl.FullscreenControl());
 
-                                    map.addSource('canvas-source', {
-                                        type: 'canvas',
-                                        canvas: 'canvasID',
-                                        coordinates: [
-                                            [91.4461, 21.5006],
-                                            [100.3541, 21.5006],
-                                            [100.3541, 13.9706],
-                                            [91.4461, 13.9706]
-                                        ],
-                                        // Set to true if the canvas source is animated. If the canvas is static, animate should be set to false to improve performance.
-                                        animate: false
-                                    });
-
-                                    map.addLayer({
-                                        id: 'canvas-layer',
-                                        type: 'raster',
-                                        source: 'canvas-source'
-                                    });
-                                    // Add a GeoJSON source with 2 points
-                                    <?php for ($i = 0; $i < count($coords); $i++) { ?>
-                                        map.addSource('points<?= $i; ?>', {
-                                            'type': 'geojson',
-                                            'data': {
-                                                'type': 'FeatureCollection',
-                                                'features': [{
-                                                    'type': 'Feature',
-                                                    'geometry': {
-                                                        'type': 'Point',
-                                                        // 'coordinates': [Longitude, Latitude]
-                                                        'coordinates': [<?= $coords[$i]['lng']; ?>, <?= $coords[$i]['lat']; ?>]
-                                                    },
-                                                    'properties': {
-                                                        'title': "<?= $coords[$i]['loc']; ?>"
-                                                    }
-                                                }]
-                                            }
-                                        });
-
-                                        // Add a symbol layer
-                                        map.addLayer({
-                                            'id': 'points<?= $i; ?>',
-                                            'type': 'symbol',
-                                            'source': 'points<?= $i; ?>',
-                                            'layout': {
-                                                'icon-image': 'custom-marker',
-                                                'text-field': ['get', 'title'],
-                                                'text-font': [
-                                                    'Open Sans Semibold',
-                                                    'Arial Unicode MS Bold'
-                                                ],
-                                                'text-offset': [0, 1.25],
-                                                'text-anchor': 'top'
-                                            }
-                                        });
-
-                                    <?php } ?>
-                                })
+                        // Set up Popup
+                        const popup = new mapboxgl.Popup({
+                            closeButton: false,
+                            closeOnClick: false
                         });
+
+                        // Get marker image
+                        map.loadImage('<?= asset('images/icon/map-marker-green.png'); ?>', (err, image) => {
+                            if (err) console.error(err);
+                            map.addImage('marker', image);
+                        });
+
+                        map.setRenderWorldCopies(false);
+                        map.resize();
+                        // Add map controls
+                        map.addControl(new mapboxgl.NavigationControl({
+                            showCompass: false,
+                        }));
+                        map.addControl(new mapboxgl.AttributionControl({
+                            compact: true,
+                        }));
+                        map.addControl(new mapboxgl.FullscreenControl());
+
+                        map.on('load', createMapMarkers);
+
+                        // Add markers to map
+                        function createMapMarkers() {
+                            // Add source data
+                            map.addSource('properties', {
+                                type: 'geojson',
+                                data: {
+                                    type: "FeatureCollection",
+                                    features: features.features.filter((property) => property.properties.availability === 'Available')
+                                },
+                                cluster: true,
+                                clusterMaxZoom: 11,
+                                clusterRadius: 40,
+                            });
+
+                            // Add markers
+                            map.addLayer({
+                                id: 'property-layer',
+                                type: 'symbol',
+                                source: 'properties',
+                                filter: ['!has', 'point_count'],
+                                layout: {
+                                    'symbol-placement': 'point',
+                                    'icon-image': 'marker',
+                                    'icon-size': 1,
+                                    'icon-anchor': 'bottom',
+                                    'icon-allow-overlap': true,
+                                    'text-field': ['get', 'title'],
+                                    'text-font': [
+                                        'Open Sans Semibold',
+                                        'Arial Unicode MS Bold'
+                                    ],
+                                    'text-offset': [0, 0],
+                                    'text-anchor': 'top'
+                                }
+                            });
+
+                            // Add clusters
+                            map.addLayer({
+                                id: 'cluster-circles',
+                                type: 'circle',
+                                source: 'properties',
+                                filter: ['has', 'point_count'],
+                                paint: {
+                                    'circle-color': '#ffcd38',
+                                    'circle-radius': [
+                                        'step',
+                                        ['get', 'point_count'], 15, 10, 20, 25, 30, 50, 35, 75, 50,
+                                    ],
+                                    'circle-opacity': 0.85,
+                                    'circle-stroke-width': 3,
+                                    'circle-stroke-color': '#fff',
+                                    'circle-stroke-opacity': 0.5,
+                                }
+                            });
+
+                            // Add cluster counter
+                            map.addLayer({
+                                id: 'cluster-count',
+                                type: 'symbol',
+                                source: 'properties',
+                                filter: ['has', 'point_count'],
+                                layout: {
+                                    'text-field': '{point_count_abbreviated}',
+                                    'text-size': 12,
+                                },
+                                paint: {
+                                    'text-color': '#111'
+                                }
+                            });
+
+                            // Set Popup
+                            map.on('mouseenter', 'other-property-layer', (e) => {
+                                // Change the cursor style as a UI indicator.
+                                map.getCanvas().style.cursor = 'pointer';
+
+                                // Copy coordinates array.
+                                const coordinates = e.features[0].geometry.coordinates.slice();
+                                const description = e.features[0].properties.description;
+                                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                                }
+                                popup.setLngLat(coordinates).setHTML(description).addTo(map);
+                            });
+
+                            map.on('mouseleave', 'other-property-layer', () => {
+                                map.getCanvas().style.cursor = '';
+                                popup.remove();
+                            });
+
+                            // Set Popup 2
+                            map.on('mouseenter', 'property-layer', (e) => {
+                                // Change the cursor style as a UI indicator.
+                                map.getCanvas().style.cursor = 'pointer';
+
+                                // Copy coordinates array.
+                                const coordinates = e.features[0].geometry.coordinates.slice();
+                                const description = e.features[0].properties.description;
+                                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                                }
+                                popup.setLngLat(coordinates).setHTML(description).addTo(map);
+                            });
+
+                            map.on('mouseleave', 'property-layer', () => {
+                                map.getCanvas().style.cursor = '';
+                                popup.remove();
+                            });
+                        }
                     </script>
                 </div>
             </div>
