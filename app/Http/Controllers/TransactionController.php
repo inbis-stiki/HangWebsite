@@ -64,12 +64,12 @@ class TransactionController extends Controller
         $NewData_asmen = array();
         $NewData_rpo = array();
         $NewData_all = array();
-        $i = 0;
+        $counter_asmen = 0;
+        $counter_rpo = 0;
+        $counter_all = 0;
         foreach ($dataTrans as $key => $item) {
-            $i++;
 
             $data = array(
-                "NO" => $i,
                 "NAME_USER" => $item->NAME_USER,
                 "ID_TRANS" => $item->ID_TRANS,
                 "AREA_TRANS" => $item->AREA_TRANS,
@@ -90,10 +90,16 @@ class TransactionController extends Controller
 
 
             if ($id_role == 3 && $item->REGIONAL_TRANS == $data_loc->NAME_REGIONAL) {
+                $counter_asmen++;
+                $data['NO'] = $counter_asmen;
                 array_push($NewData_asmen, $data);
             } else if ($id_role == 4 && $item->AREA_TRANS == $data_loc->NAME_AREA) {
+                $counter_rpo++;
+                $data['NO'] = $counter_rpo;
                 array_push($NewData_rpo, $data);
             } else {
+                $counter_all++;
+                $data['NO'] = $counter_all;
                 array_push($NewData_all, $data);
             }
         }
