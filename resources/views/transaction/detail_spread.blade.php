@@ -75,16 +75,22 @@
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
                                                 <div class="col-md-12 d-flex">
-                                                    <div class="form-group col-md-6">
-                                                        <label for="">Foto 1</label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
-                                                    </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for="">Foto 2</label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
-                                                    </div>
+                                                    <?php if (!empty($data_ublp['IMAGE'])) { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">Foto 1</label>
+                                                            <br>
+                                                            <img src="<?= $data_ublp['IMAGE'][0][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">Foto 2</label>
+                                                            <br>
+                                                            <img src="<?= $data_ublp['IMAGE'][0][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
+                                                    <?php } else { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">NO IMAGE</label>
+                                                        </div>
+                                                    <?php } ?>
                                                 </div>
                                             </div>
                                         </div>
