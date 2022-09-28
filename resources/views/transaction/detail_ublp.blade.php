@@ -73,30 +73,36 @@
                                             @endforeach
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
-                                                <div class="col-md-12 d-flex">
-                                                    <div class="form-group col-md-6">
-                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                <?php if (!empty($data_ublp['IMAGE'])) { ?>
+                                                    <div class="col-md-12 d-flex">
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
+                                                            <br>
+                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
+                                                            <br>
+                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
                                                     </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                    <div class="col-md-12 d-flex">
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][2]; ?></label>
+                                                            <br>
+                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][3]; ?></label>
+                                                            <br>
+                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-12 d-flex">
-                                                    <div class="form-group col-md-6">
-                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][2]; ?></label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                <?php } else { ?>
+                                                    <div class="form-group col-md-12">
+                                                        <label for="">NO IMAGE</label>
                                                     </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][3]; ?></label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
-                                                    </div>
-                                                </div>
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </div>
