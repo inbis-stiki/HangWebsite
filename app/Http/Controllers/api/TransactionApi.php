@@ -163,7 +163,8 @@ class TransactionApi extends Controller
                 'name_district'             => 'required',
                 'lat_trans'                 => 'required',
                 'long_trans'                => 'required',
-                'detail_loc'                => 'required'
+                'detail_loc'                => 'required',
+                'is_trans'                  => 'required'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
             ]);
@@ -247,6 +248,7 @@ class TransactionApi extends Controller
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
                     $transaction->LONG_TRANS        = $req->input('long_trans');
                     $transaction->DETAIL_LOCATION   = $req->input('detail_loc');
+                    $transaction->ISTRANS_TRANS     = $req->input('is_trans');
                     $transaction->save();
 
                     foreach ($req->input('product') as $item) {
