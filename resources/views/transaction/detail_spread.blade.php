@@ -27,12 +27,12 @@
                             $no = 0;
                             $coords = array();
                             $other_coords = array();
-                            foreach ($transaction as $data_ublp) :
+                            foreach ($transaction as $data_spread) :
                             ?>
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false">
-                                        <span class="accordion__header--text"><?= $data_ublp['LOCATION']; ?></span>
-                                        <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_ublp['DATE_TRANS']), 'H:i'); ?></span>
+                                        <span class="accordion__header--text"><?= $data_spread['LOCATION']; ?></span>
+                                        <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_spread['DATE_TRANS']), 'H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
                                     <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body">
@@ -43,30 +43,30 @@
                                                     <p class="fs-18 ml-3">Nama</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= $data_ublp['NAME_USER']; ?></p>
+                                                    <p class="fs-18 float-right"><?= $data_spread['NAME_USER']; ?></p>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <p class="fs-18 ml-3">Tanggal</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= date_format(date_create($data_ublp['DATE_TRANS']), 'j F Y H:i'); ?></p>
+                                                    <p class="fs-18 float-right"><?= date_format(date_create($data_spread['DATE_TRANS']), 'j F Y H:i'); ?></p>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <p class="fs-18 ml-3">Alamat</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= $data_ublp['LOCATION']; ?></p>
+                                                    <p class="fs-18 float-right"><?= $data_spread['LOCATION']; ?></p>
                                                 </div>
                                             </div>
                                             <span class="fs-20 text-black d-block mb-3">Produk Terjual</span>
-                                            @foreach ($data_ublp['DETAIL'] as $data_ublp_detail)
+                                            @foreach ($data_spread['DETAIL'] as $data_spread_detail)
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <p class="fs-18 ml-3"><?= $data_ublp_detail->NAME_PRODUCT; ?></p>
+                                                    <p class="fs-18 ml-3"><?= $data_spread_detail->NAME_PRODUCT; ?></p>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="fs-18 mr-3 float-right text-center">
-                                                        <?= $data_ublp_detail->QTY_TD; ?>
+                                                        <?= $data_spread_detail->QTY_TD; ?>
                                                         <hr style="border-top: 3px solid #bbb; margin: 0px; width: 30px;">
                                                     </div>
                                                 </div>
@@ -75,16 +75,22 @@
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
                                                 <div class="col-md-12 d-flex">
-                                                    <div class="form-group col-md-6">
-                                                        <label for="">Foto 1</label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
-                                                    </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for="">Foto 2</label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
-                                                    </div>
+                                                    <?php if (!empty($data_spread['IMAGE'])) { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">Foto 1</label>
+                                                            <br>
+                                                            <img src="<?= $data_spread['IMAGE'][0][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">Foto 2</label>
+                                                            <br>
+                                                            <img src="<?= $data_spread['IMAGE'][0][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
+                                                    <?php } else { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">NO IMAGE</label>
+                                                        </div>
+                                                    <?php } ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -94,11 +100,11 @@
                             <?php
                                 array_push(
                                     $coords,
-                                    array('loc' => $data_ublp['LOCATION'], 'lat' => $data_ublp['LAT_TRANS'], 'lng' => $data_ublp['LONG_TRANS'], 'total' => $data_ublp['TOTAL'])
+                                    array('loc' => $data_spread['LOCATION'], 'lat' => $data_spread['LAT_TRANS'], 'lng' => $data_spread['LONG_TRANS'], 'total' => $data_spread['TOTAL'])
                                 );
 
                                 foreach ($shop_no_trans as $other_shop) {
-                                    if ($other_shop->ID_SHOP <> $data_ublp['ID_SHOP']) {
+                                    if ($other_shop->ID_SHOP <> $data_spread['ID_SHOP']) {
                                         array_push(
                                             $other_coords,
                                             array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)

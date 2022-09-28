@@ -26,12 +26,12 @@
                             <?php
                             $no = 0;
                             $coords = array();
-                            foreach ($transaction as $data_ublp) :
+                            foreach ($transaction as $data_ub) :
                             ?>
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false">
-                                        <span class="accordion__header--text"><?= $data_ublp['LOCATION']; ?></span>
-                                        <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_ublp['DATE_TRANS']), 'H:i'); ?></span>
+                                        <span class="accordion__header--text"><?= $data_ub['LOCATION']; ?></span>
+                                        <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_ub['DATE_TRANS']), 'H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
                                     <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body">
@@ -42,30 +42,30 @@
                                                     <p class="fs-18 ml-3">Nama</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= $data_ublp['NAME_USER']; ?></p>
+                                                    <p class="fs-18 float-right"><?= $data_ub['NAME_USER']; ?></p>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <p class="fs-18 ml-3">Tanggal</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= date_format(date_create($data_ublp['DATE_TRANS']), 'j F Y H:i'); ?></p>
+                                                    <p class="fs-18 float-right"><?= date_format(date_create($data_ub['DATE_TRANS']), 'j F Y H:i'); ?></p>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <p class="fs-18 ml-3">Alamat</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= $data_ublp['LOCATION']; ?></p>
+                                                    <p class="fs-18 float-right"><?= $data_ub['LOCATION']; ?></p>
                                                 </div>
                                             </div>
                                             <span class="fs-20 text-black d-block mb-3">Produk Terjual</span>
-                                            @foreach ($data_ublp['DETAIL'] as $data_ublp_detail)
+                                            @foreach ($data_ub['DETAIL'] as $data_ub_detail)
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <p class="fs-18 ml-3"><?= $data_ublp_detail->NAME_PRODUCT; ?></p>
+                                                    <p class="fs-18 ml-3"><?= $data_ub_detail->NAME_PRODUCT; ?></p>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="fs-18 mr-3 float-right text-center">
-                                                        <?= $data_ublp_detail->QTY_TD; ?>
+                                                        <?= $data_ub_detail->QTY_TD; ?>
                                                         <hr style="border-top: 3px solid #bbb; margin: 0px; width: 30px;">
                                                     </div>
                                                 </div>
@@ -73,30 +73,36 @@
                                             @endforeach
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
-                                                <div class="col-md-12 d-flex">
-                                                    <div class="form-group col-md-6">
-                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                <?php if (!empty($data_ub['IMAGE'])) { ?>
+                                                    <div class="col-md-12 d-flex">
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ub['IMAGE'][0]['desc'][0]; ?></label>
+                                                            <br>
+                                                            <img src="<?= $data_ub['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ub['IMAGE'][0]['desc'][1]; ?></label>
+                                                            <br>
+                                                            <img src="<?= $data_ub['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
                                                     </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                    <div class="col-md-12 d-flex">
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ub['IMAGE'][0]['desc'][2]; ?></label>
+                                                            <br>
+                                                            <img src="<?= $data_ub['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ub['IMAGE'][0]['desc'][3]; ?></label>
+                                                            <br>
+                                                            <img src="<?= $data_ub['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-12 d-flex">
-                                                    <div class="form-group col-md-6">
-                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][2]; ?></label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                <?php } else { ?>
+                                                    <div class="form-group col-md-12">
+                                                        <label for="">NO IMAGE</label>
                                                     </div>
-                                                    <div class="form-group col-md-6">
-                                                        <label for=""><?= $data_ublp['IMAGE'][0]['desc'][3]; ?></label>
-                                                        <br>
-                                                        <img src="<?= $data_ublp['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
-                                                    </div>
-                                                </div>
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </div>
@@ -105,7 +111,7 @@
                             <?php
                                 array_push(
                                     $coords,
-                                    array('loc' => $data_ublp['LOCATION'], 'lat' => $data_ublp['LAT_TRANS'], 'lng' => $data_ublp['LONG_TRANS'], 'total' => $data_ublp['TOTAL'])
+                                    array('loc' => $data_ub['LOCATION'], 'lat' => $data_ub['LAT_TRANS'], 'lng' => $data_ub['LONG_TRANS'], 'total' => $data_ub['TOTAL'])
                                 );
                                 $no++;
                             endforeach;
