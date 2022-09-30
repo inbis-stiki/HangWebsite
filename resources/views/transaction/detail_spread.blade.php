@@ -232,13 +232,13 @@
                         });
 
                         // Get marker image
-                        map.loadImage('<?= asset('images/icon/map-marker-red.png'); ?>', (err, image) => {
+                        map.loadImage('<?= asset('images/icon/marker-red.png'); ?>', (err, image) => {
                             if (err) console.error(err);
                             map.addImage('marker', image);
                         });
 
                         // Get marker image-2
-                        map.loadImage('<?= asset('images/icon/map-marker-green.png'); ?>', (err, image2) => {
+                        map.loadImage('<?= asset('images/icon/marker-green.png'); ?>', (err, image2) => {
                             if (err) console.error(err);
                             map.addImage('marker-2', image2);
                         });

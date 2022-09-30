@@ -219,7 +219,7 @@
                         });
 
                         // Get marker image
-                        map.loadImage('<?= asset('images/icon/map-marker-green.png'); ?>', (err, image) => {
+                        map.loadImage('<?= asset('images/icon/marker-green.png'); ?>', (err, image) => {
                             if (err) console.error(err);
                             map.addImage('marker', image);
                         });
