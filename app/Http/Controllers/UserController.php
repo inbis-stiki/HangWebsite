@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Users;
 use App\Role;
 use App\Area;
+use App\Location;
+use App\Regional;
 use App\UserTarget;
 use App\TargetSale;
 use App\TargetActivity;
@@ -36,6 +38,13 @@ class UserController extends Controller
             ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
             ->where('md_location.ID_LOCATION', '=' , $location)
             ->whereNull('md_area.deleted_at')->get();
+
+            $data['location']   = DB::table('md_location')
+            ->whereNull('deleted_at')->get();
+
+            $data['regional']   = DB::table('md_regional')
+            ->whereNull('deleted_at')->get();
+
         }else if($role == 4){
             $regional = SESSION::get('regional');
             $data['users']  = DB::table('user')
@@ -53,6 +62,12 @@ class UserController extends Controller
             ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
             ->where('md_regional.ID_REGIONAL', '=' , $regional)
             ->whereNull('md_area.deleted_at')->get();
+
+            $data['location']   = DB::table('md_location')
+            ->whereNull('deleted_at')->get();
+
+            $data['regional']   = DB::table('md_regional')
+            ->whereNull('deleted_at')->get();
         }
         // else if($role == 5){
         //     $regional = SESSION::get('regional');
@@ -77,6 +92,8 @@ class UserController extends Controller
             $data['users']      = DB::table('user')->join('md_role', 'user.ID_ROLE', '=', 'md_role.ID_ROLE')->select('*')->get();
             $data['roles']      = Role::whereNull('deleted_at')->get();
             $data['areas']      = Area::whereNull('deleted_at')->get();
+            $data['location']      = Location::whereNull('deleted_at')->get();
+            $data['regional']      = Regional::whereNull('deleted_at')->get();
         }
         
         $data['title']      = "User";
