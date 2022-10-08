@@ -115,7 +115,6 @@
                         </div>
                     </div>
                     <?php
-                    var_dump(count($other_coords));
                     $centerCord = get_center($coords);
 
                     function get_center($coords)
