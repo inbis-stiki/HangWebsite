@@ -490,7 +490,7 @@
     function trend_asmen(date) {
         $.ajax({
             url: "{{ url('dashboard/trend_asmen') }}",
-            type: "POST",
+            type: "GET",
             beforeSend: function(request) {
                 request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
             },
