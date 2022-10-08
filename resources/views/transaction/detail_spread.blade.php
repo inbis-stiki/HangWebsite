@@ -102,21 +102,20 @@
                                     $coords,
                                     array('loc' => $data_spread['LOCATION'], 'lat' => $data_spread['LAT_TRANS'], 'lng' => $data_spread['LONG_TRANS'], 'total' => $data_spread['TOTAL'])
                                 );
-
-                                foreach ($shop_no_trans as $other_shop) {
-                                    if ($other_shop->ID_SHOP <> $data_spread['ID_SHOP']) {
-                                        array_push(
-                                            $other_coords,
-                                            array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)
-                                        );
-                                    }
-                                }
                                 $no++;
                             endforeach;
+
+                            foreach ($shop_no_trans as $other_shop) {
+                                array_push(
+                                    $other_coords,
+                                    array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)
+                                );
+                            }
                             ?>
                         </div>
                     </div>
                     <?php
+                    var_dump(count($other_coords));
                     $centerCord = get_center($coords);
 
                     function get_center($coords)
