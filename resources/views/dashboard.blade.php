@@ -1204,7 +1204,7 @@
         }
 
         $('#SelectAREAPencapaian').change(function() {
-            activity_ranking($('#datePencapaian').val());
+            pencapaian_ranking($('#datePencapaian').val());
         });
 
         // AJAX SET DATA PENCAPAIAN
