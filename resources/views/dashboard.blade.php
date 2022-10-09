@@ -192,78 +192,81 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-12">
                         <div class="card text-black mb-3">
-                            <div class="card-body mb-4">
-                                <h5 class="card-title fs-14 mb-4">Aktivitas UB</h5>
+                            <div class="card-body">
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="aktivUB" role="tabpanel">
-                                        {{-- <canvas id="" class="chart"></canvas> --}}
-                                    </div>
-                                </div>
-                                <div class="basic-form mt-4">
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
-                                            <div class="col text-black text-center tgt" id="tgt_ub"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
-                                            <div class="col text-black text-center real" id="real_ub"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
-                                            <div class="col text-primary text-center vstgt" id="vstgt_ub"></div>
-                                        </div>
+                                    <div class="tab-pane fade show active" id="RankAktivitas" role="tabpanel">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="card text-white mb-3">
-                            <div class="card-body mb-4">
-                                <h5 class="card-title fs-14 mb-4">Pedagang Sayur</h5>
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="PedagangSayur" role="tabpanel">
-                                        {{-- <canvas id="" class="chart"></canvas> --}}
-                                    </div>
-                                </div>
-                                <div class="basic-form mt-4 ">
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
-                                            <div class="col text-black text-center tgt" id="tgt_pdgSayur"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
-                                            <div class="col text-black text-center real" id="real_pdgSayur"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
-                                            <div class="col text-primary text-center vstgt" id="vstgt_pdgSayur"></div>
+                    <div class="col-sm-12">
+                        <div class="card text-black">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="card text-black mb-3">
+                                            <div class="card-body mb-4">
+                                                <h5 class="card-title fs-14 mb-4">Aktivitas UB</h5>
+                                                <div class="basic-form mt-4">
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                                            <div class="col text-black text-center tgt" id="tgt_ub"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                                            <div class="col text-black text-center real" id="real_ub"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                                            <div class="col text-primary text-center vstgt" id="vstgt_ub"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="card text-white mb-3">
-                            <div class="card-body mb-4">
-                                <h5 class="card-title fs-14 mb-4">Retail</h5>
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="Retail" role="tabpanel">
-                                        {{-- <canvas id="" class="chart"></canvas> --}}
+                                    <div class="col-sm-4">
+                                        <div class="card text-white mb-3">
+                                            <div class="card-body mb-4">
+                                                <h5 class="card-title fs-14 mb-4">Pedagang Sayur</h5>
+                                                <div class="basic-form mt-4">
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                                            <div class="col text-black text-center tgt" id="tgt_pdgSayur"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                                            <div class="col text-black text-center real" id="real_pdgSayur"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                                            <div class="col text-primary text-center vstgt" id="vstgt_pdgSayur"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="basic-form mt-4">
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
-                                            <div class="col text-black text-center tgt" id="tgt_retail"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
-                                            <div class="col text-black text-center real" id="real_retail"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
-                                            <div class="col text-primary text-center vstgt" id="vstgt_retail"></div>
+                                    <div class="col-sm-4">
+                                        <div class="card text-white mb-3">
+                                            <div class="card-body mb-4">
+                                                <h5 class="card-title fs-14 mb-4">Retail</h5>
+                                                <div class="basic-form mt-4">
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                                            <div class="col text-black text-center tgt" id="tgt_retail"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                                            <div class="col text-black text-center real" id="real_retail"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                                            <div class="col text-primary text-center vstgt" id="vstgt_retail"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -308,78 +311,81 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-12">
                         <div class="card text-black mb-3">
-                            <div class="card-body mb-4">
-                                <h5 class="card-title fs-14 mb-4">Non UST</h5>
+                            <div class="card-body">
                                 <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="NonUST" role="tabpanel">
-                                        {{-- <canvas id="" class="chart"></canvas> --}}
-                                    </div>
-                                </div>
-                                <div class="basic-form mt-4">
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
-                                            <div class="col text-black text-center tgt" id="tgt_nonUST"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
-                                            <div class="col text-black text-center real" id="real_nonUST"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
-                                            <div class="col text-primary text-center vstgt" id="vstgt_nonUST"></div>
-                                        </div>
+                                    <div class="tab-pane fade show active" id="RankPencapaian" role="tabpanel">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="card text-white mb-3">
-                            <div class="card-body mb-4">
-                                <h5 class="card-title fs-14 mb-4">UST</h5>
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="Ust" role="tabpanel">
-                                        {{-- <canvas id="" class="chart"></canvas> --}}
-                                    </div>
-                                </div>
-                                <div class="basic-form mt-4">
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
-                                            <div class="col text-black text-center tgt" id="tgt_UST"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
-                                            <div class="col text-black text-center real" id="real_UST"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
-                                            <div class="col text-primary text-center vstgt" id="vstgt_UST"></div>
+                    <div class="col-sm-12">
+                        <div class="card text-black">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="card text-black mb-3">
+                                            <div class="card-body mb-4">
+                                                <h5 class="card-title fs-14 mb-4">NON UST</h5>
+                                                <div class="basic-form mt-4">
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                                            <div class="col text-black text-center tgt" id="tgt_nonUST"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                                            <div class="col text-black text-center real" id="real_nonUST"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                                            <div class="col text-primary text-center vstgt" id="vstgt_nonUST"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="card text-white mb-3">
-                            <div class="card-body mb-4">
-                                <h5 class="card-title fs-14 mb-4">Seleraku</h5>
-                                <div class="tab-content">
-                                    <div class="tab-pane fade show active" id="Seleraku" role="tabpanel">
-                                        {{-- <canvas id="" class="chart"></canvas> --}}
+                                    <div class="col-sm-4">
+                                        <div class="card text-white mb-3">
+                                            <div class="card-body mb-4">
+                                                <h5 class="card-title fs-14 mb-4">UST</h5>
+                                                <div class="basic-form mt-4">
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                                            <div class="col text-black text-center tgt" id="tgt_UST"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                                            <div class="col text-black text-center real" id="real_UST"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                                            <div class="col text-primary text-center vstgt" id="vstgt_UST"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="basic-form mt-4">
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
-                                            <div class="col text-black text-center tgt" id="tgt_SELERAKU"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
-                                            <div class="col text-black text-center real" id="real_SELERAKU"></div>
-                                            <div class="w-100"></div>
-                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
-                                            <div class="col text-primary text-center vstgt" id="vstgt_SELERAKU"></div>
+                                    <div class="col-sm-4">
+                                        <div class="card text-white mb-3">
+                                            <div class="card-body mb-4">
+                                                <h5 class="card-title fs-14 mb-4">Seleraku</h5>
+                                                <div class="basic-form mt-4">
+                                                    <div class="container">
+                                                        <div class="row">
+                                                            <div class="col text-white text-center bg-dark-custom ">TGT</div>
+                                                            <div class="col text-black text-center tgt" id="tgt_SELERAKU"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">REAL</div>
+                                                            <div class="col text-black text-center real" id="real_SELERAKU"></div>
+                                                            <div class="w-100"></div>
+                                                            <div class="col text-white text-center bg-dark-custom">% VS TGT</div>
+                                                            <div class="col text-primary text-center vstgt" id="vstgt_SELERAKU"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -444,7 +450,7 @@
 {{-- Flatpickr --}}
 
 <script type="text/javascript">
-    //Chart Trend
+    // Chart Trend
     var options_asmen = {
         // colors: ["#EC1D25", "#F26F21", "#F8C460"],
         series: [],
@@ -494,10 +500,6 @@
             beforeSend: function(request) {
                 request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
             },
-            // data: {
-            //     filter_date: date,
-            //     filter_area: $('#SelectAREAAktivitas').val()
-            // },
             dataType: "json",
             success: function(response) {
                 callback(response)
@@ -686,329 +688,54 @@
             });
         }
 
-        //Aktivitas UB
-        var aktivUB = {
-            series: [50, 50],
-            labels: ["Real", "TGT"],
-            colors: ["#F26F21", "#3F3D56"],
+        // Ranking Aktivitas
+        var RankAktivitas = {
+            series: [{
+                name: 'Target',
+                data: [0, 0, 0]
+            }, {
+                name: 'Real',
+                data: [0, 0, 0]
+            }],
+            colors: ['#3f3d56', '#f26f21'],
             chart: {
-                type: 'donut',
-                height: 280,
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            plotOptions: {
-                pie: {
-                    expandOnClick: false,
-                    size: 200,
-                    donut: {
-                        size: '65%',
-                        labels: {
-                            show: true,
-                            name: {
-                                show: true,
-                                fontSize: '16px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: undefined,
-                                offsetY: 11,
-                                offsetX: 0,
-                                formatter: function(val) {
-                                    return val
-                                }
-                            },
-                            total: {
-                                show: true,
-                                showAlways: true,
-                                label: '50%',
-                                fontSize: '30px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: "#F26F21",
-                                formatter: () => ''
-                            },
-                        }
-                    }
+                type: 'bar',
+                height: 350,
+                stacked: true,
+                toolbar: {
+                    show: true
                 }
             },
-            legend: {
-                show: false
-            }
-        }
-
-        var aktivUB = new ApexCharts(document.querySelector('#aktivUB'), aktivUB);
-        aktivUB.render();
-
-        // PDGSAYUR
-        var PedagangSayur = {
-            series: [50, 50],
-            labels: ["Real", "TGT"],
-            colors: ["#F26F21", "#3F3D56"],
-            chart: {
-                type: 'donut',
-                height: 280,
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            plotOptions: {
-                pie: {
-                    expandOnClick: false,
-                    size: 200,
-                    donut: {
-                        size: '65%',
-                        labels: {
-                            show: true,
-                            name: {
-                                show: true,
-                                fontSize: '16px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: undefined,
-                                offsetY: 11,
-                                offsetX: 0,
-                                formatter: function(val) {
-                                    return val
-                                }
-                            },
-                            total: {
-                                show: true,
-                                showAlways: true,
-                                label: '50%',
-                                fontSize: '30px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: "#F26F21",
-                                formatter: () => ''
-                            },
-                        }
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    legend: {
+                        position: 'bottom',
+                        offsetX: -10,
+                        offsetY: 0
                     }
                 }
-            },
-            legend: {
-                show: false
-            }
-        }
-
-        var PedagangSayur = new ApexCharts(document.querySelector('#PedagangSayur'), PedagangSayur);
-        PedagangSayur.render();
-
-        var Retail = {
-            series: [50, 50],
-            labels: ["Real", "TGT"],
-            colors: ["#F26F21", "#3F3D56"],
-            chart: {
-                type: 'donut',
-                height: 280,
-            },
-            dataLabels: {
-                enabled: false,
-            },
+            }],
             plotOptions: {
-                pie: {
-                    expandOnClick: false,
-                    size: 200,
-                    donut: {
-                        size: '65%',
-                        labels: {
-                            show: true,
-                            name: {
-                                show: true,
-                                fontSize: '16px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: undefined,
-                                offsetY: 11,
-                                offsetX: 0,
-                                formatter: function(val) {
-                                    return val
-                                }
-                            },
-                            total: {
-                                show: true,
-                                showAlways: true,
-                                label: '50%',
-                                fontSize: '30px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: "#F26F21",
-                                formatter: () => ''
-                            },
-                        }
-                    }
-                }
+                bar: {
+                    horizontal: false,
+                    borderRadius: 10
+                },
+            },
+            xaxis: {
+                categories: ['Aktivitas UB', 'Pedagang Sayur', 'Retail'],
             },
             legend: {
-                show: false
+                position: 'right',
+                offsetY: 40
+            },
+            fill: {
+                opacity: 1
             }
-        }
+        };
 
-        // RETAIL
-        var Retail = new ApexCharts(document.querySelector('#Retail'), Retail);
-        Retail.render();
-
-        // NonUST
-        var NonUST = {
-            series: [50, 50],
-            labels: ["Real", "TGT"],
-            colors: ["#F26F21", "#3F3D56"],
-            chart: {
-                type: 'donut',
-                height: 280,
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            plotOptions: {
-                pie: {
-                    expandOnClick: false,
-                    size: 200,
-                    donut: {
-                        size: '65%',
-                        labels: {
-                            show: true,
-                            name: {
-                                show: true,
-                                fontSize: '16px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: undefined,
-                                offsetY: 11,
-                                offsetX: 0,
-                                formatter: function(val) {
-                                    return val
-                                }
-                            },
-                            total: {
-                                show: true,
-                                showAlways: true,
-                                label: '50%',
-                                fontSize: '30px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: "#F26F21",
-                                formatter: () => ''
-                            },
-                        }
-                    }
-                }
-            },
-            legend: {
-                show: false
-            }
-        }
-
-        var NonUST = new ApexCharts(document.querySelector('#NonUST'), NonUST);
-        NonUST.render();
-
-        // UST
-        var Ust = {
-            series: [50, 50],
-            labels: ["Real", "TGT"],
-            colors: ["#F26F21", "#3F3D56"],
-            chart: {
-                type: 'donut',
-                height: 280,
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            plotOptions: {
-                pie: {
-                    expandOnClick: false,
-                    size: 200,
-                    donut: {
-                        size: '65%',
-                        labels: {
-                            show: true,
-                            name: {
-                                show: true,
-                                fontSize: '16px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: undefined,
-                                offsetY: 11,
-                                offsetX: 0,
-                                formatter: function(val) {
-                                    return val
-                                }
-                            },
-                            total: {
-                                show: true,
-                                showAlways: true,
-                                label: ' 50%',
-                                fontSize: '30px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: "#F26F21",
-                                formatter: () => ''
-                            },
-                        }
-                    }
-                }
-            },
-            legend: {
-                show: false
-            }
-        }
-
-        var Ust = new ApexCharts(document.querySelector('#Ust'), Ust);
-        Ust.render();
-
-        // Seleraku
-        var Seleraku = {
-            series: [50, 50],
-            labels: ["Real", "TGT"],
-            colors: ["#F26F21", "#3F3D56"],
-            chart: {
-                type: 'donut',
-                height: 280,
-            },
-            dataLabels: {
-                enabled: false,
-            },
-            plotOptions: {
-                pie: {
-                    expandOnClick: false,
-                    size: 200,
-                    donut: {
-                        size: '65%',
-                        labels: {
-                            show: true,
-                            name: {
-                                show: true,
-                                fontSize: '16px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: undefined,
-                                offsetY: 11,
-                                offsetX: 0,
-                                formatter: function(val) {
-                                    return val
-                                }
-                            },
-                            total: {
-                                show: true,
-                                showAlways: true,
-                                label: ' 50%',
-                                fontSize: '30px',
-                                fontFamily: 'Helvetica, Arial, sans-serif',
-                                fontWeight: 400,
-                                color: "#F26F21",
-                                formatter: () => ''
-                            },
-                        }
-                    }
-                }
-            },
-            legend: {
-                show: false
-            }
-        }
-
-        var Seleraku = new ApexCharts(document.querySelector('#Seleraku'), Seleraku);
-        Seleraku.render();
+        var RankAktivitas = new ApexCharts(document.querySelector('#RankAktivitas'), RankAktivitas);
+        RankAktivitas.render();
 
         //AKTIVITAS FILTER
         flatpickr(dateAktivitas, {
@@ -1055,131 +782,75 @@
                     $('#tgt_ub').html(response.TGT_UB);
                     $('#real_ub').html(response.REAL_UB);
                     $('#vstgt_ub').html(response.VSTARGET_UB);
-                    aktivUB.updateOptions({
-                        series: [parseInt(response.REAL_UB), parseInt(response.TGT_UB)],
-                        labels: ["Real", "TGT"],
-                        plotOptions: {
-                            pie: {
-                                expandOnClick: false,
-                                size: 200,
-                                donut: {
-                                    size: '65%',
-                                    labels: {
-                                        show: true,
-                                        name: {
-                                            show: true,
-                                            fontSize: '16px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: undefined,
-                                            offsetY: 11,
-                                            offsetX: 0,
-                                            formatter: function(val) {
-                                                return val
-                                            }
-                                        },
-                                        total: {
-                                            show: true,
-                                            showAlways: true,
-                                            label: response.VSTARGET_UB,
-                                            fontSize: '30px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: "#F26F21",
-                                            formatter: () => ''
-                                        },
-                                    }
-                                }
-                            }
-                        },
-                    })
-
                     $('#tgt_pdgSayur').html(response.TGT_PDGSAYUR);
                     $('#real_pdgSayur').html(response.REAL_PDGSAYUR);
                     $('#vstgt_pdgSayur').html(response.VSTARGET_PDGSAYUR);
-                    PedagangSayur.updateOptions({
-                        series: [parseInt(response.REAL_PDGSAYUR), parseInt(response.TGT_PDGSAYUR)],
-                        labels: ["Real", "TGT"],
-                        plotOptions: {
-                            pie: {
-                                expandOnClick: false,
-                                size: 200,
-                                donut: {
-                                    size: '65%',
-                                    labels: {
-                                        show: true,
-                                        name: {
-                                            show: true,
-                                            fontSize: '16px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: undefined,
-                                            offsetY: 11,
-                                            offsetX: 0,
-                                            formatter: function(val) {
-                                                return val
-                                            }
-                                        },
-                                        total: {
-                                            show: true,
-                                            showAlways: true,
-                                            label: response.VSTARGET_PDGSAYUR,
-                                            fontSize: '30px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: "#F26F21",
-                                            formatter: () => ''
-                                        },
-                                    }
-                                }
-                            }
-                        },
-                    })
-
                     $('#tgt_retail').html(response.TGT_RETAIL);
                     $('#real_retail').html(response.REAL_RETAIL);
                     $('#vstgt_retail').html(response.VSTARGET_RETAIL);
-                    Retail.updateOptions({
-                        series: [parseInt(response.REAL_RETAIL), parseInt(response.TGT_RETAIL)],
-                        labels: ["Real", "TGT"],
-                        plotOptions: {
-                            pie: {
-                                expandOnClick: false,
-                                size: 200,
-                                donut: {
-                                    size: '65%',
-                                    labels: {
-                                        show: true,
-                                        name: {
-                                            show: true,
-                                            fontSize: '16px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: undefined,
-                                            offsetY: 11,
-                                            offsetX: 0,
-                                            formatter: function(val) {
-                                                return val
-                                            }
-                                        },
-                                        total: {
-                                            show: true,
-                                            showAlways: true,
-                                            label: response.VSTARGET_RETAIL,
-                                            fontSize: '30px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: "#F26F21",
-                                            formatter: () => ''
-                                        },
-                                    }
-                                }
-                            }
-                        }
+
+                    RankAktivitas.updateOptions({
+                        series: [{
+                            name: 'Target',
+                            data: [response.TGT_UB, response.TGT_PDGSAYUR, response.TGT_RETAIL]
+                        }, {
+                            name: 'Real',
+                            data: [response.REAL_UB, response.REAL_PDGSAYUR, response.REAL_RETAIL]
+                        }],
+                        colors: ['#3f3d56', '#f26f21']
                     })
                 }
             });
         }
+
+        // Ranking Pencapaian
+        var RankPencapaian = {
+            series: [{
+                name: 'Target',
+                data: [0, 0, 0]
+            }, {
+                name: 'Real',
+                data: [0, 0, 0]
+            }],
+            colors: ['#3f3d56', '#f26f21'],
+            chart: {
+                type: 'bar',
+                height: 350,
+                stacked: true,
+                toolbar: {
+                    show: true
+                }
+            },
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    legend: {
+                        position: 'bottom',
+                        offsetX: -10,
+                        offsetY: 0
+                    }
+                }
+            }],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    borderRadius: 10
+                },
+            },
+            xaxis: {
+                categories: ['Non UST', 'UST', 'Seleraku'],
+            },
+            legend: {
+                position: 'right',
+                offsetY: 40
+            },
+            fill: {
+                opacity: 1
+            }
+        }
+
+        var RankPencapaian = new ApexCharts(document.querySelector('#RankPencapaian'), RankPencapaian);
+        RankPencapaian.render();
 
         //PENCAPAIAN FILTER
         flatpickr(datePencapaian, {
@@ -1226,127 +897,22 @@
                     $('#tgt_nonUST').html(response.TGT_NONUST);
                     $('#real_nonUST').html(response.REAL_NONUST);
                     $('#vstgt_nonUST').html(response.VSTARGET_NONUST);
-                    NonUST.updateOptions({
-                        series: [parseInt(response.REAL_NONUST), parseInt(response.TGT_NONUST)],
-                        labels: ["Real", "TGT"],
-                        plotOptions: {
-                            pie: {
-                                expandOnClick: false,
-                                size: 200,
-                                donut: {
-                                    size: '65%',
-                                    labels: {
-                                        show: true,
-                                        name: {
-                                            show: true,
-                                            fontSize: '16px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: undefined,
-                                            offsetY: 11,
-                                            offsetX: 0,
-                                            formatter: function(val) {
-                                                return val
-                                            }
-                                        },
-                                        total: {
-                                            show: true,
-                                            showAlways: true,
-                                            label: response.VSTARGET_NONUST,
-                                            fontSize: '30px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: "#F26F21",
-                                            formatter: () => ''
-                                        },
-                                    }
-                                }
-                            }
-                        },
-                    })
-
                     $('#tgt_UST').html(response.TGT_UST);
                     $('#real_UST').html(response.REAL_UST);
                     $('#vstgt_UST').html(response.VSTARGET_UST);
-                    Ust.updateOptions({
-                        series: [parseInt(response.REAL_UST), parseInt(response.TGT_UST)],
-                        labels: ["Real", "TGT"],
-                        plotOptions: {
-                            pie: {
-                                expandOnClick: false,
-                                size: 200,
-                                donut: {
-                                    size: '65%',
-                                    labels: {
-                                        show: true,
-                                        name: {
-                                            show: true,
-                                            fontSize: '16px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: undefined,
-                                            offsetY: 11,
-                                            offsetX: 0,
-                                            formatter: function(val) {
-                                                return val
-                                            }
-                                        },
-                                        total: {
-                                            show: true,
-                                            showAlways: true,
-                                            label: response.VSTARGET_UST,
-                                            fontSize: '30px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: "#F26F21",
-                                            formatter: () => ''
-                                        },
-                                    }
-                                }
-                            }
-                        },
-                    })
-
                     $('#tgt_SELERAKU').html(response.TGT_SELERAKU);
                     $('#real_SELERAKU').html(response.REAL_SELERAKU);
                     $('#vstgt_SELERAKU').html(response.VSTARGET_SELERAKU);
-                    Seleraku.updateOptions({
-                        series: [parseInt(response.REAL_SELERAKU), parseInt(response.TGT_SELERAKU)],
-                        labels: ["Real", "TGT"],
-                        plotOptions: {
-                            pie: {
-                                expandOnClick: false,
-                                size: 200,
-                                donut: {
-                                    size: '65%',
-                                    labels: {
-                                        show: true,
-                                        name: {
-                                            show: true,
-                                            fontSize: '16px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: undefined,
-                                            offsetY: 11,
-                                            offsetX: 0,
-                                            formatter: function(val) {
-                                                return val
-                                            }
-                                        },
-                                        total: {
-                                            show: true,
-                                            showAlways: true,
-                                            label: response.VSTARGET_SELERAKU,
-                                            fontSize: '30px',
-                                            fontFamily: 'Helvetica, Arial, sans-serif',
-                                            fontWeight: 400,
-                                            color: "#F26F21",
-                                            formatter: () => ''
-                                        },
-                                    }
-                                }
-                            }
-                        }
+                   
+                    RankPencapaian.updateOptions({
+                        series: [{
+                            name: 'Target',
+                            data: [response.TGT_NONUST, response.TGT_UST, response.TGT_SELERAKU]
+                        }, {
+                            name: 'Real',
+                            data: [response.REAL_NONUST, response.REAL_UST, response.REAL_SELERAKU]
+                        }],
+                        colors: ['#3f3d56', '#f26f21']
                     })
                 }
             });
@@ -1427,30 +993,30 @@
                 ],
             }).draw()
 
-            // $('#ranking_presensi').html('');
-            // $.ajax({
-            //     url: "{{ url('dashboard/presensi') }}",
-            //     type: "POST",
-            //     beforeSend: function(request) {
-            //         request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
-            //     },
-            //     data: {
-            //         filter_date: date
-            //     },
-            //     dataType: "json",
-            //     success: function(response) {
-            //         var trHTML_presence = '';
-            //         $.each(response, function(key, value) {
-            //             trHTML_presence +=
-            //                     '<tr><td>' + value.NAME_USER +
-            //                     '</td><td>' + value.NAME_AREA +
-            //                     '</td><td>' + value.JML_PRESENCE +
-            //                     '</td><td>' + value.DATE_PRESENCE + 
-            //                 '</td></tr>';
-            //         });
-            //         $('#ranking_presensi').append(trHTML_presence);
-            //     }
-            // });
+            $('#ranking_presensi').html('');
+            $.ajax({
+                url: "{{ url('dashboard/presensi') }}",
+                type: "POST",
+                beforeSend: function(request) {
+                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                },
+                data: {
+                    filter_date: date
+                },
+                dataType: "json",
+                success: function(response) {
+                    var trHTML_presence = '';
+                    $.each(response, function(key, value) {
+                        trHTML_presence +=
+                                '<tr><td>' + value.NAME_USER +
+                                '</td><td>' + value.NAME_AREA +
+                                '</td><td>' + value.JML_PRESENCE +
+                                '</td><td>' + value.DATE_PRESENCE + 
+                            '</td></tr>';
+                    });
+                    $('#ranking_presensi').append(trHTML_presence);
+                }
+            });
         }
     });
 </script>
