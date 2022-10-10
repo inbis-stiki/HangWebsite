@@ -17,7 +17,7 @@ class DetailTransController extends Controller
         $type           = $req->input('type');
 
         $transaction = DB::table('transaction')
-            ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP')
+            ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'md_shop.ID_SHOP', 'md_shop.DETLOC_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP')
             ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
             ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
@@ -62,7 +62,8 @@ class DetailTransController extends Controller
                 $data['transaction'],
                 array(
                     "ID_SHOP" => $Item_ts->ID_SHOP,
-                    "LOCATION" => $Item_ts->NAME_SHOP,
+                    "NAME_SHOP" => $Item_ts->NAME_SHOP,
+                    "DETLOC_SHOP" => $Item_ts->DETLOC_SHOP,
                     "LAT_TRANS" => $Item_ts->LAT_SHOP,
                     "LONG_TRANS" => $Item_ts->LONG_SHOP,
                     "DATE_TRANS" => $Item_ts->DATE_TRANS,
