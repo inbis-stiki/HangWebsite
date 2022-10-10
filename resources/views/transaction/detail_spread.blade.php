@@ -31,7 +31,7 @@
                             ?>
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false">
-                                        <span class="accordion__header--text"><?= $data_spread['LOCATION']; ?></span>
+                                        <span class="accordion__header--text"><?= $data_spread['NAME_SHOP']; ?></span>
                                         <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_spread['DATE_TRANS']), 'H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
@@ -43,7 +43,7 @@
                                                     <p class="fs-18 ml-3">Nama</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= $data_spread['NAME_USER']; ?></p>
+                                                    <p class="fs-18 float-right"><?= $data_spread['NAME_SHOP']; ?></p>
                                                 </div>
                                                 <div class="col-md-8">
                                                     <p class="fs-18 ml-3">Tanggal</p>
@@ -55,7 +55,7 @@
                                                     <p class="fs-18 ml-3">Alamat</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= $data_spread['LOCATION']; ?></p>
+                                                    <p class="fs-18 float-right"><?= $data_spread['DETLOC_SHOP']; ?></p>
                                                 </div>
                                             </div>
                                             <span class="fs-20 text-black d-block mb-3">Produk Terjual</span>
@@ -100,19 +100,17 @@
                             <?php
                                 array_push(
                                     $coords,
-                                    array('loc' => $data_spread['LOCATION'], 'lat' => $data_spread['LAT_TRANS'], 'lng' => $data_spread['LONG_TRANS'], 'total' => $data_spread['TOTAL'])
+                                    array('loc' => $data_spread['NAME_SHOP'], 'lat' => $data_spread['LAT_TRANS'], 'lng' => $data_spread['LONG_TRANS'], 'total' => $data_spread['TOTAL'])
                                 );
-
-                                foreach ($shop_no_trans as $other_shop) {
-                                    if ($other_shop->ID_SHOP <> $data_spread['ID_SHOP']) {
-                                        array_push(
-                                            $other_coords,
-                                            array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)
-                                        );
-                                    }
-                                }
                                 $no++;
                             endforeach;
+
+                            foreach ($shop_no_trans as $other_shop) {
+                                array_push(
+                                    $other_coords,
+                                    array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)
+                                );
+                            }
                             ?>
                         </div>
                     </div>
