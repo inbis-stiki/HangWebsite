@@ -126,14 +126,14 @@ class MarketController extends Controller
             return redirect('master/location/market')->withErrors($validator);
         }
 
-        $dist = District::where([
-            ['NAME_DISTRICT', '=', $req->input('district')],
-            ['ISMARKET_DISTRICT', '=', '1']
-        ])->exists();
+        // $dist = District::where([
+        //     ['NAME_DISTRICT', '=', $req->input('district')],
+        //     ['ISMARKET_DISTRICT', '=', '1']
+        // ])->exists();
 
-        if($dist == true){
-            return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
-        }
+        // if($dist == true){
+        //     return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
+        // }
 
         date_default_timezone_set("Asia/Bangkok");
         
