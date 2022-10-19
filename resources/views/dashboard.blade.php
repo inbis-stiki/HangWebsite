@@ -170,11 +170,9 @@
                                     <div class="col mt-2 mt-sm-0">
                                         <select name="" id="SelectAREAAktivitas" class="form-control default-select">
                                             <option selected value="0">Area</option>
-                                            <option value="1">SUMATERA</option>
-                                            <option value="2">WEST</option>
-                                            <option value="3">CENTRAL</option>
-                                            <option value="4">WEST DAPUL</option>
-                                            <option value="5">EAST DAPUL</option>
+                                            @foreach($location as $item)
+                                            <option value="{{ $item->ID_LOCATION }}"> {{ $item->NAME_LOCATION }} </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="col mt-2 mt-sm-0">
@@ -289,11 +287,9 @@
                                     <div class="col mt-2 mt-sm-0">
                                         <select name="" id="SelectAREAPencapaian" class="form-control default-select">
                                             <option selected value="0">Area</option>
-                                            <option value="1">SUMATERA</option>
-                                            <option value="2">WEST</option>
-                                            <option value="3">CENTRAL</option>
-                                            <option value="4">WEST DAPUL</option>
-                                            <option value="5">EAST DAPUL</option>
+                                            @foreach($location as $item)
+                                            <option value="{{ $item->ID_LOCATION }}"> {{ $item->NAME_LOCATION }} </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="col mt-2 mt-sm-0">
@@ -903,7 +899,7 @@
                     $('#tgt_SELERAKU').html(response.TGT_SELERAKU);
                     $('#real_SELERAKU').html(response.REAL_SELERAKU);
                     $('#vstgt_SELERAKU').html(response.VSTARGET_SELERAKU);
-                   
+
                     RankPencapaian.updateOptions({
                         series: [{
                             name: 'Target',
@@ -1008,10 +1004,10 @@
                     var trHTML_presence = '';
                     $.each(response, function(key, value) {
                         trHTML_presence +=
-                                '<tr><td>' + value.NAME_USER +
-                                '</td><td>' + value.NAME_AREA +
-                                '</td><td>' + value.JML_PRESENCE +
-                                '</td><td>' + value.DATE_PRESENCE + 
+                            '<tr><td>' + value.NAME_USER +
+                            '</td><td>' + value.NAME_AREA +
+                            '</td><td>' + value.JML_PRESENCE +
+                            '</td><td>' + value.DATE_PRESENCE +
                             '</td></tr>';
                     });
                     $('#ranking_presensi').append(trHTML_presence);
