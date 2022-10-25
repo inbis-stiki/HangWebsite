@@ -121,55 +121,48 @@ class PickupApi extends Controller
 
     public function cekPickup(Request $req){
         try {
-            $cekData = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP')
+            $currDate = date('Y-m-d');
+            $cekData = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP', 'TIME_PICKUP')
             ->where([
                 ['ID_USER', '=', $req->input('id_user')],
                 ['ISFINISHED_PICKUP', '=', 0]
             ])->latest('ID_PICKUP')->first();
             
             if ($cekData == null) {
-                return response([
-                    'status_code'       => 200,
-                    'status_message'    => 'User belum pickup!',
-                    'status_success'    => 1,
-                    'data'              => []
-                ], 200);
-            }else{
-                $pick = Pickup::where([
+                $cekDataToday = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP', 'TIME_PICKUP')
+                ->where([
+                    ['DATE(TIME_PICKUP)', '=', $currDate],
                     ['ID_USER', '=', $req->input('id_user')]
-                ])
-                ->whereDate('TIME_PICKUP', '<', date('Y-m-d'))
-                ->latest('ID_PICKUP')->first();
+                ])->latest('ID_PICKUP')->first();
                 
-                $cekPick = Pickup::where([
-                    ['ID_USER', '=', $req->input('id_user')]
-                ])
-                ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
-                ->latest('ID_PICKUP')->first();
-
-
-                $success = "";
-                if (empty($pick) || $pick->ISFINISHED_PICKUP == 0) {
-                    $msg        = 'Data terakhir pickup!';
-                    $success    = 0;
-                    $pickup     = $pick;
-                }else{
-                    if ($cekPick == null) {
-                        $msg    = 'Anda bisa pickup barang!';
-                        $success    = 1;
-                        $pickup = [];
-                    }else{
-                        $msg    = 'Anda sudah pickup hari ini!';
-                        $success    = 0;
-                        $pickup = $cekPick;
-                    }
+                if($cekDataToday == null){
+                    $succ   = 1;
+                    $msg    = 'Anda bisa melakukan pengambilan produk!';
+                }else {
+                    $succ   = 0;
+                    $msg    = 'Anda telah melakukan pengambilan produk hari ini!';
                 }
-    
+
                 return response([
                     'status_code'       => 200,
                     'status_message'    => $msg,
-                    'status_success'    => $success,
-                    'data'              => $pickup
+                    'status_success'    => $succ,
+                    'data'              => []
+                ], 200);
+            }else{
+                if(strtotime($currDate) > strtotime($cekData->TIME_PICKUP)){
+                    $succ   = 0;
+                    $msg    = 'Anda telat faktur, mohon untuk menghubungi RPO anda!';
+                }else{
+                    $succ   = 0;
+                    $msg    = 'Anda telah melakukan pengambilan produk hari ini!';
+                }
+
+                return response([
+                    'status_code'       => 200,
+                    'status_message'    => $msg,
+                    'status_success'    => $succ,
+                    'data'              => []
                 ], 200);
             }
         } catch (Exception $exp) {

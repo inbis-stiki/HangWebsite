@@ -247,41 +247,51 @@ class InvoiceApi extends Controller
     
     public function cekFaktur(Request $req){
         try {
+            $currDate = date('Y-m-d H:i:s');
             date_default_timezone_set("Asia/Bangkok");
-            $ID_USER = $req->input("id_user");
 
             $cektd = TransactionDaily::where([
-                ['ID_USER', '=', $req->input('id_user')]
+                ['ID_USER', '=', $req->input('id_user')],
+                ['ISFINISHED_TD', '=', 0]
             ])->latest('ID_TD')->first();
 
-            $td = [];
             if($cektd == null){
-                $msg        = 'Anda belum Pickup Barang!';
-                $success    = 0;
-            }else{
-                if ($cektd['ISFINISHED_TD'] == 0) {
-                    if (date_format(date_create($cektd['DATE_TD']), 'Y-m-d') == date('Y-m-d')){
-                        $msg        = 'Anda bisa input faktur!';
-                        $success    = 1;
-                        $td         = [];
-                    }else{
-                        $msg        = 'Anda telat input faktur!';
-                        $success    = 2;
-                        $td         = $cektd;
-                    }
+                $cektdtoday = TransactionDaily::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP', 'TIME_PICKUP')
+                ->where([
+                    ['DATE(TIME_PICKUP)', '=', $currDate],
+                    ['ID_USER', '=', $req->input('id_user')]
+                ])->latest('ID_PICKUP')->first();
+                
+                if($cektdtoday == null){
+                    $succ   = 1;
+                    $msg    = 'Anda bisa melakukan faktur!';
                 }else{
-                    $msg        = 'Anda sudah Mengirimkan Faktur!';
-                    $success    = 0;
-                    $td         = $cektd;
+                    $succ   = 0;
+                    $msg    = 'Anda telah melakukan faktur pada hari ini!';
                 }
-            }
 
-            return response([
-                'status_code'       => 200,
-                'status_message'    => $msg,
-                'status_success'    => $success,
-                'data'              => $td
-            ], 200);
+                return response([
+                    'status_code'       => 200,
+                    'status_message'    => $msg,
+                    'status_success'    => $succ,
+                    'data'              => []
+                ], 200);
+            }else{
+                if(strtotime($currDate) > strtotime($cektd->DATE_TD)){
+                    $succ   = 0;
+                    $msg    = 'Anda telat faktur, mohon untuk menghubungi RPO anda!';
+                }else{
+                    $succ   = 0;
+                    $msg    = 'Anda telah melakukan faktur pada hari ini!';
+                }
+
+                return response([
+                    'status_code'       => 200,
+                    'status_message'    => $msg,
+                    'status_success'    => $succ,
+                    'data'              => []
+                ], 200);
+            }
         } catch (Exception $exp) {
             return response([
                 'status_code'       => 500,
