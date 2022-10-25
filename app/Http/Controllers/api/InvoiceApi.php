@@ -247,7 +247,7 @@ class InvoiceApi extends Controller
     
     public function cekFaktur(Request $req){
         try {
-            $currDate = date('Y-m-d H:i:s');
+            $currDate = date('Y-m-d');
             date_default_timezone_set("Asia/Bangkok");
 
             $cektd = TransactionDaily::where([
@@ -257,15 +257,15 @@ class InvoiceApi extends Controller
 
             if($cektd == null){
                 $cektdtoday = TransactionDaily::select('ID_TD')
+                ->whereDate('DATE_TD', '=', $currDate)
                 ->where([
-                    ['DATE(DATE_TD)', '=', $currDate],
                     ['ID_USER', '=', $req->input('id_user')]
                 ])->latest('ID_TD')->first();
                 
                 if($cektdtoday == null){
                     $cekPickupToday = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP', 'TIME_PICKUP')
+                    ->whereDate('TIME_PICKUP', '=', $currDate)
                     ->where([
-                        ['DATE(TIME_PICKUP)', '=', $currDate],
                         ['ID_USER', '=', $req->input('id_user')]
                     ])->latest('ID_PICKUP')->first();
 

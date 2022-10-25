@@ -130,8 +130,8 @@ class PickupApi extends Controller
             
             if ($cekData == null) {
                 $cekDataToday = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP', 'TIME_PICKUP')
+                ->whereDate('TIME_PICKUP', '=', $currDate)
                 ->where([
-                    ['DATE(TIME_PICKUP)', '=', $currDate],
                     ['ID_USER', '=', $req->input('id_user')]
                 ])->latest('ID_PICKUP')->first();
                 
