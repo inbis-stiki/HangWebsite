@@ -248,8 +248,6 @@ class InvoiceApi extends Controller
     public function cekFaktur(Request $req){
         try {
             $currDate = date('Y-m-d');
-            date_default_timezone_set("Asia/Bangkok");
-
             $cekFactur = TransactionDaily::whereDate('DATE_TD', '=', $currDate)
             ->where([
                 ['ID_USER', '=', $req->input('id_user')]
