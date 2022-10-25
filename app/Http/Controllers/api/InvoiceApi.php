@@ -256,15 +256,26 @@ class InvoiceApi extends Controller
             ])->latest('ID_TD')->first();
 
             if($cektd == null){
-                $cektdtoday = TransactionDaily::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP', 'TIME_PICKUP')
+                $cektdtoday = TransactionDaily::select('ID_TD')
                 ->where([
-                    ['DATE(TIME_PICKUP)', '=', $currDate],
+                    ['DATE(DATE_TD)', '=', $currDate],
                     ['ID_USER', '=', $req->input('id_user')]
-                ])->latest('ID_PICKUP')->first();
+                ])->latest('ID_TD')->first();
                 
                 if($cektdtoday == null){
-                    $succ   = 1;
-                    $msg    = 'Anda bisa melakukan faktur!';
+                    $cekPickupToday = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP', 'TIME_PICKUP')
+                    ->where([
+                        ['DATE(TIME_PICKUP)', '=', $currDate],
+                        ['ID_USER', '=', $req->input('id_user')]
+                    ])->latest('ID_PICKUP')->first();
+
+                    if($cekPickupToday == null){
+                        $succ   = 0;
+                        $msg    = 'Anda belum melakukan pengambilan produk!';
+                    }else{
+                        $succ   = 1;
+                        $msg    = 'Anda bisa melakukan faktur!';
+                    }
                 }else{
                     $succ   = 0;
                     $msg    = 'Anda telah melakukan faktur pada hari ini!';
