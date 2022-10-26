@@ -15,7 +15,7 @@ class TransactionImageApi extends Controller
     public function store(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
             $validator = Validator::make($req->all(), [
                 'id_trans'                  => 'required|exists:transaction,ID_TRANS',
                 'image_display'             => 'required|image',
@@ -64,7 +64,7 @@ class TransactionImageApi extends Controller
     public function ublp(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
             $validator = Validator::make($req->all(), [
                 'id_trans'                  => 'required|exists:transaction,ID_TRANS',
                 'image_booth'               => 'required|image',
@@ -133,7 +133,7 @@ class TransactionImageApi extends Controller
     public function ubImage(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
             $validator = Validator::make($req->all(), [
                 'id_trans'                  => 'required|exists:transaction,ID_TRANS',
                 'image_booth'               => 'required|image',
@@ -204,7 +204,7 @@ class TransactionImageApi extends Controller
     public function newImage(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
             $validator = Validator::make($req->all(), [
                 'id_trans'                  => 'required|exists:transaction,ID_TRANS',
                 'image'                     => 'required|image',

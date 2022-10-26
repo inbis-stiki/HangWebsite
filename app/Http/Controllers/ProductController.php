@@ -34,7 +34,7 @@ class ProductController extends Controller
             return redirect('master/product')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
 
         $cek = Product::where('CODE_PRODUCT', '=', $req->input('code_product'))->exists();
         if ($cek == true) {
@@ -68,7 +68,7 @@ class ProductController extends Controller
             return redirect('master/product')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $path = $req->file('image')->store('images', 's3');
         $product = Product::find($req->input('id'));
         $cek = $product->CODE_PRODUCT == strtoupper($req->input('code_product')); 

@@ -31,7 +31,7 @@ class PresenceApi extends Controller
     }
 
     public function detail(Request $req){
-        date_default_timezone_set("Asia/Bangkok");
+        
         try {
             $idUser = $req->input("id_user");
             $presence = Presence::whereDate('DATE_PRESENCE', date('Y-m-d'))->where('ID_USER',  $idUser)->get();
@@ -78,7 +78,7 @@ class PresenceApi extends Controller
                     "status_message"    => $validator->errors()->first()
                 ], 400);
             }
-            date_default_timezone_set("Asia/Bangkok");
+            
             $path = $req->file('image')->store('images', 's3');
 
             $cek = Presence::where('ID_USER', '=', ''.$req->input('id_user').'')

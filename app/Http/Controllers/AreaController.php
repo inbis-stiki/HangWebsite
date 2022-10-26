@@ -62,7 +62,7 @@ class AreaController extends Controller
         }
 
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $area = new Area();
         $area->ID_REGIONAL      = $req->input('regional');
         $area->NAME_AREA        = $req->input('area');
@@ -86,7 +86,7 @@ class AreaController extends Controller
             return redirect('master/location/area')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $area = Area::find($req->input('id'));
         $area->ID_REGIONAL   = $req->input('regional');
         $area->NAME_AREA = $req->input('area');

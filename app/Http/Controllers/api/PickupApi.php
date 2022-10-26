@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 class PickupApi extends Controller
 {
     public function store(Request $req){
-        date_default_timezone_set("Asia/Bangkok");
+        
         try {
             $validator = Validator::make($req->all(), [
                 'id_user'                   => 'required',
@@ -74,16 +74,28 @@ class PickupApi extends Controller
 
     public function pickup(Request $req){
         try {
+            $currDate = date('Y-m-d');
             $pick = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP','NAMEPRODUCT_PICKUP')
+            ->whereDate('TIME_PICKUP', '=', $currDate)
             ->where([
                 ['ID_USER', '=', $req->input('id_user')],
-                ['ISFINISHED_PICKUP', '=', 0]
-            ])->latest('ID_PICKUP')->first();
+            ])->first();
             
+            $cekFactur = TransactionDaily::whereDate('DATE_TD', '=', $currDate)
+            ->where([
+                ['ID_USER', '=', $req->input('id_user')]
+            ])->first();
+
             if($pick == null){
                 return response([
                     'status_code'       => 200,
                     'status_message'    => 'User belum pickup!',
+                    'data'              => []
+                ], 200);
+            }else if($cekFactur->ISFINISHED_TD == '1'){
+                return response([
+                    'status_code'       => 200,
+                    'status_message'    => 'Anda telah melakukan faktur pada hari ini!',
                     'data'              => []
                 ], 200);
             }
@@ -121,57 +133,35 @@ class PickupApi extends Controller
 
     public function cekPickup(Request $req){
         try {
-            $cekData = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP')
+            $currDate = date('Y-m-d');
+            $cekPickup = Pickup::select('ID_PICKUP', 'ID_PRODUCT','REMAININGSTOCK_PICKUP', 'TIME_PICKUP')
+            ->whereDate('TIME_PICKUP', '=', $currDate)
             ->where([
-                ['ID_USER', '=', $req->input('id_user')],
-                ['ISFINISHED_PICKUP', '=', 0]
-            ])->latest('ID_PICKUP')->first();
+                ['ID_USER', '=', $req->input('id_user')]
+            ])->first();
+
+            $cekFactur = TransactionDaily::whereDate('DATE_TD', '=', $currDate)
+            ->where([
+                ['ID_USER', '=', $req->input('id_user')]
+            ])->first();
             
-            if ($cekData == null) {
-                return response([
-                    'status_code'       => 200,
-                    'status_message'    => 'User belum pickup!',
-                    'status_success'    => 1,
-                    'data'              => []
-                ], 200);
+            if ($cekPickup == null) {
+                $succ   = 1;
+                $msg    = 'Anda bisa melakukan pengambilan produk!';
+            }else if($cekFactur->ISFINISHED_TD == '1'){
+                $succ   = 0;
+                $msg    = 'Anda telah melakukan faktur pada hari ini!';
             }else{
-                $pick = Pickup::where([
-                    ['ID_USER', '=', $req->input('id_user')]
-                ])
-                ->whereDate('TIME_PICKUP', '<', date('Y-m-d'))
-                ->latest('ID_PICKUP')->first();
-                
-                $cekPick = Pickup::where([
-                    ['ID_USER', '=', $req->input('id_user')]
-                ])
-                ->whereDate('TIME_PICKUP', '=', date('Y-m-d'))
-                ->latest('ID_PICKUP')->first();
-
-
-                $success = "";
-                if (empty($pick) || $pick->ISFINISHED_PICKUP == 0) {
-                    $msg        = 'Data terakhir pickup!';
-                    $success    = 0;
-                    $pickup     = $pick;
-                }else{
-                    if ($cekPick == null) {
-                        $msg    = 'Anda bisa pickup barang!';
-                        $success    = 1;
-                        $pickup = [];
-                    }else{
-                        $msg    = 'Anda sudah pickup hari ini!';
-                        $success    = 0;
-                        $pickup = $cekPick;
-                    }
-                }
-    
-                return response([
-                    'status_code'       => 200,
-                    'status_message'    => $msg,
-                    'status_success'    => $success,
-                    'data'              => $pickup
-                ], 200);
+                $succ   = 0;
+                $msg    = 'Anda telah selesai melakukan pengambilan poduk pada hari ini!';
             }
+
+            return response([
+                'status_code'       => 200,
+                'status_message'    => $msg,
+                'status_success'    => $succ,
+                'data'              => []
+            ], 200);
         } catch (Exception $exp) {
             return response([
                 'status_code'       => 500,
