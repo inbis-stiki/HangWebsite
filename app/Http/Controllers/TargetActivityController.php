@@ -105,7 +105,7 @@ class TargetActivityController extends Controller
         if ($validator->fails()) {
             return redirect('master/target-activity')->withErrors($validator);
         }
-        date_default_timezone_set("Asia/Bangkok");
+        
         $target_activity = TargetActivity::find($request->input('id'));
         $target_activity->ID_ACTIVITY        = $request->input('aktivitas_edit');
         $target_activity->ID_REGIONAL        = $request->input('regional_edit');
@@ -133,7 +133,7 @@ class TargetActivityController extends Controller
         if ($validator->fails()) {
             return redirect('master/target-activity')->withErrors($validator);
         }
-        date_default_timezone_set("Asia/Bangkok");
+        
         $target_activity = TargetActivity::find($request->input('id'));
         $target_activity->delete();
         // dd($regional_price);

@@ -22,7 +22,7 @@ class TransactionApi extends Controller
     public function store(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
             $validator = Validator::make($req->all(), [
                 'id_shop'                   => 'required',
                 'id_type'                   => 'required',
@@ -156,7 +156,7 @@ class TransactionApi extends Controller
     public function ublp(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
             $validator = Validator::make($req->all(), [
                 'id_type'                   => 'required',
                 'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
@@ -294,7 +294,7 @@ class TransactionApi extends Controller
     public function ubTransaction(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
             $validator = Validator::make($req->all(), [
                 'id_type'                   => 'required',
                 'id_district'               => 'required',

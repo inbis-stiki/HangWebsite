@@ -30,7 +30,7 @@ class LocationController extends Controller
         }
 
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $location = new Location();
         $location->NAME_LOCATION = $req->input('name');
         $location->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
@@ -52,7 +52,7 @@ class LocationController extends Controller
             return redirect('master/location/national')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $location = Location::find($req->input('id'));
         $location->NAME_LOCATION = $req->input('name');
         $location->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');

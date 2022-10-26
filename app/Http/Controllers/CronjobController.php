@@ -39,7 +39,7 @@ class CronjobController extends Controller
         }
     }
     public function updateDashboardMobile(){
-        date_default_timezone_set("Asia/Bangkok");
+        
         try {
             DB::table('dashboard_mobile')->delete();
 
@@ -105,7 +105,7 @@ class CronjobController extends Controller
 
     public function updateDailyRankingAchievement()
     {
-        date_default_timezone_set("Asia/Bangkok");
+        
         $currDate       = date('Y-m-d', strtotime('-1 days'));
         $currDateTime   = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
 
@@ -184,7 +184,7 @@ class CronjobController extends Controller
     //ACTIVITY RANK
     public function updateDailyRankingActivity()
     {
-        date_default_timezone_set("Asia/Bangkok");
+        
         $currDate       = date('Y-m-d', strtotime('-1 days'));
         $currDateTime   = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
         $formData = [];

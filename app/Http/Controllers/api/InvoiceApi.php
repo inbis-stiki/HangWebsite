@@ -176,7 +176,7 @@ class InvoiceApi extends Controller
                 ], 400);
             }
 
-            date_default_timezone_set("Asia/Bangkok");
+            
             $path_faktur1 = $req->file('photo_faktur_1')->store('images', 's3');
             $path_faktur2 = $req->file('photo_faktur_2')->store('images', 's3');
 

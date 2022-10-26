@@ -50,7 +50,7 @@ class RegionalController extends Controller
         }
 
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $regional = new Regional();
         $regional->ID_LOCATION   = $req->input('location');
         $regional->NAME_REGIONAL = $req->input('regional');
@@ -74,7 +74,7 @@ class RegionalController extends Controller
             return redirect('master/location/regional')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $regional = Regional::find($req->input('id'));
         $regional->ID_LOCATION   = $req->input('location');
         $regional->NAME_REGIONAL = $req->input('regional');
