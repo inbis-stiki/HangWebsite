@@ -60,7 +60,7 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <button onclick="showMdlEdit('{{ $market->ID_DISTRICT }}', '{{ $market->NAME_DISTRICT }}', '{{ $market->ID_AREA }}', '{{ $market->ISFOCUS_DISTRICT }}', '{{ $market->deleted_at }}')" class="btn btn-primary btn-sm">
+                                                <button onclick="showMdlEdit('{{ $market->ID_DISTRICT }}', '{{ $market->NAME_DISTRICT }}', '{{ $market->ID_AREA }}', '{{ $market->ISFOCUS_DISTRICT }}', '{{ $market->deleted_at }}', '{{ $market->PARENT_DISTRICT }}')" class="btn btn-primary btn-sm">
                                                     <i class="flaticon-381-edit-1"></i>
                                                 </button>
                                                 <button onclick="showMdlDelete('{{ $market->ID_DISTRICT }}')" class="btn btn-primary btn-sm">
@@ -231,11 +231,11 @@
         $('#mdlAdd_select').val("").change()
         $('#mdlAdd_selectD').val("").change()
     })
-    function showMdlEdit(id, name, location, district, statusMarket, status){
+    function showMdlEdit(id, name, location, statusMarket, status, parent){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
         $('#mdlEdit_area').val(location).change()
-        $('#mdlEdit_district').val(district).change()
+        $('#mdlEdit_district').val(parent).change()
         if (status == null || status == '') {
             $('#status_enable').prop('checked', true)
         } else {
