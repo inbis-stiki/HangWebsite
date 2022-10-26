@@ -86,17 +86,14 @@ class PickupApi extends Controller
                 ['ID_USER', '=', $req->input('id_user')]
             ])->first();
 
-            if($pick == null){
-                return response([
-                    'status_code'       => 200,
-                    'status_message'    => 'User belum pickup!',
-                    'data'              => []
-                ], 200);
-            }else if($cekFactur->ISFINISHED_TD == '1'){
+            if($cekFactur->ISFINISHED_TD == '1'){
                 return response([
                     'status_code'       => 200,
                     'status_message'    => 'Anda telah melakukan faktur pada hari ini!',
-                    'data'              => []
+                    'data'              => [
+                        "id_pickup" => $pick->ID_PICKUP,
+                        "product"   => []
+                    ]
                 ], 200);
             }
 
@@ -147,7 +144,7 @@ class PickupApi extends Controller
             
             if ($cekPickup == null) {
                 $succ   = 1;
-                $msg    = 'Anda bisa melakukan pengambilan produk!';
+                $msg    = 'Anda belum melakukan pengambilan produk!';
             }else if($cekFactur->ISFINISHED_TD == '1'){
                 $succ   = 0;
                 $msg    = 'Anda telah melakukan faktur pada hari ini!';
