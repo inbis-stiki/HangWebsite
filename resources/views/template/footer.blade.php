@@ -125,6 +125,24 @@
  		document.all ? k = e.keyCode : k = e.which;
  		return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57));
  	}
+ 	function alphaNumSpace(e) {
+		var charCode = (e.which) ? e.which : e.keyCode;
+			if(charCode == 32){
+			return false
+		}
+
+ 		var k;
+ 		document.all ? k = e.keyCode : k = e.which;
+ 		return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57));
+ 	}
+	 function preventSpace(evt){
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if(charCode == 32){
+            return false
+            }
+            return true
+        }
  </script>
  </body>
 
