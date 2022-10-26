@@ -31,7 +31,7 @@ class ActivityCategoryController extends Controller
             return redirect('master/activity-category')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $total   =   ActivityCategory::where('deleted_at', null)
         ->whereNotIn('ID_AC', [$req->input('id')])
         ->sum('PERCENTAGE_AC');

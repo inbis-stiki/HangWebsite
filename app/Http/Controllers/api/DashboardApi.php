@@ -14,7 +14,7 @@ class DashboardApi extends Controller
     // public function ProductSold(Request $req)
     // {
     //     try {
-    //         date_default_timezone_set("Asia/Bangkok");
+    //         
 
     //         $AllData = array();
 
@@ -73,7 +73,7 @@ class DashboardApi extends Controller
     // public function AverageProductSold(Request $req)
     // {
     //     try {
-    //         date_default_timezone_set("Asia/Bangkok");
+    //         
 
     //         $AllData = array();
     //         $firstDay = Carbon::now()->firstOfMonth();
@@ -109,7 +109,7 @@ class DashboardApi extends Controller
     // public function SalesProgress(Request $req)
     // {
     //     try {
-    //         date_default_timezone_set("Asia/Bangkok");
+    //         
 
     //         $AllData = array();
 
@@ -153,7 +153,7 @@ class DashboardApi extends Controller
     // public function NotReachTarget(Request $req)
     // {
     //     try {
-    //         date_default_timezone_set("Asia/Bangkok");
+    //         
 
     //         $AllData = array();
 
@@ -203,7 +203,7 @@ class DashboardApi extends Controller
     public function AllApi(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
 
             $AllData_temp = DB::table("dashboard_mobile")
                 ->where('dashboard_mobile.ID_USER', '=', $req->input("id_user"))

@@ -100,7 +100,7 @@ class MarketController extends Controller
         //     return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
         // }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $district = new District();
         $district->ID_AREA              = $req->input('area');
         $district->NAME_DISTRICT        = $req->input('district');
@@ -135,7 +135,7 @@ class MarketController extends Controller
         //     return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
         // }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         
         $district = District::find($req->input('id'));
         $district->ID_AREA          = $req->input('area');

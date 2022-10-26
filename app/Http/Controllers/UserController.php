@@ -130,7 +130,7 @@ class UserController extends Controller
         ->select('md_regional.ID_REGIONAL', 'md_location.ID_LOCATION')
         ->get();
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $user                   = new Users();
         $user->ID_USER          = substr(md5(time().rand(10, 99)), 0, 8);
         $user->USERNAME_USER    = $req->input('username');
@@ -220,7 +220,7 @@ class UserController extends Controller
             return redirect('master/user')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $user   = Users::find($req->input('id'));
 
         if($user->ID_AREA != $req->input('area')){

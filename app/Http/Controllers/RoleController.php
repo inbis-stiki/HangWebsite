@@ -29,7 +29,7 @@ class RoleController extends Controller
             return redirect('master/role')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $role                   = new Role();
         $role->NAME_ROLE        = $req->input('nama_role');
         $role->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
@@ -50,7 +50,7 @@ class RoleController extends Controller
             return redirect('master/role')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $role                   = Role::find($req->input('id'));
         $role->NAME_ROLE        = $req->input('nama_role');
         $role->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');

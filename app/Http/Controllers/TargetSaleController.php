@@ -105,7 +105,7 @@ class TargetSaleController extends Controller
         if ($validator->fails()) {
             return redirect('master/target-sale')->withErrors($validator);
         }
-        date_default_timezone_set("Asia/Bangkok");
+        
         $target_sale = TargetSale::find($request->input('id'));
         $target_sale->ID_PRODUCT         = $request->input('product_edit');
         $target_sale->ID_REGIONAL        = $request->input('regional_edit');
@@ -133,7 +133,7 @@ class TargetSaleController extends Controller
         if ($validator->fails()) {
             return redirect('master/target-sale')->withErrors($validator);
         }
-        date_default_timezone_set("Asia/Bangkok");
+        
         $target_sale = TargetSale::find($request->input('id'));
         $target_sale->delete();
         // dd($regional_price);

@@ -31,7 +31,7 @@ class CategoryProductController extends Controller
             return redirect('master/category-product')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
 
         $data['total_persen']   =   CategoryProduct::where('deleted_at', null)->sum('PERCENTAGE_PC');
         $total  = $data['total_persen']+$req->input('percentage_product');
@@ -72,7 +72,7 @@ class CategoryProductController extends Controller
             return redirect('master/category-product')->withErrors($validator);
         }
 
-        date_default_timezone_set("Asia/Bangkok");
+        
         $total   =   CategoryProduct::where('deleted_at', null)
         ->whereNotIn('ID_PC', [$req->input('id')])
         ->sum('PERCENTAGE_PC');

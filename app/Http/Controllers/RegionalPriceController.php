@@ -106,7 +106,7 @@ class RegionalPriceController extends Controller
         if ($validator->fails()) {
             return redirect('master/regional-price')->withErrors($validator);
         }
-        date_default_timezone_set("Asia/Bangkok");
+        
         $regional_price = RegionalPrice::find($request->input('id'));
         $regional_price->ID_PRODUCT         = $request->input('product_edit');
         $regional_price->ID_REGIONAL        = $request->input('regional_edit');
@@ -134,7 +134,7 @@ class RegionalPriceController extends Controller
         if ($validator->fails()) {
             return redirect('master/regional-price')->withErrors($validator);
         }
-        date_default_timezone_set("Asia/Bangkok");
+        
         $regional_price = RegionalPrice::find($request->input('id'));
         $regional_price->delete();
         // dd($regional_price);

@@ -84,7 +84,7 @@ class ShopApi extends Controller
                     "status_message"    => $validator->errors()->first()
                 ], 400);
             }
-            date_default_timezone_set("Asia/Bangkok");
+            
             $path = $req->file('photo_shop')->store('images', 's3');
 
             $cek = Shop::where('NAME_SHOP', '=', '' . $req->input('name_shop') . '')
@@ -127,7 +127,7 @@ class ShopApi extends Controller
     public function list_store(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
             $validator = Validator::make($req->all(), [
                 'lat_user'           => 'required|numeric',
                 'lng_user'             => 'required|numeric'
@@ -219,7 +219,7 @@ class ShopApi extends Controller
     public function list_store_rekomendasi(Request $req)
     {
         try {
-            date_default_timezone_set("Asia/Bangkok");
+            
             $validator = Validator::make($req->all(), [
                 'lat_user'           => 'required|numeric',
                 'lng_user'             => 'required|numeric'
