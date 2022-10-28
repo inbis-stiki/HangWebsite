@@ -1015,4 +1015,7 @@
             });
         }
     });
+
+    $.fn.dataTable.ext.errMode = 'throw';
+    
 </script>
