@@ -28,13 +28,6 @@ class MarketController extends Controller
             ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
             ->where('md_location.ID_LOCATION', '=' , $location)
             ->whereNull('md_area.deleted_at')->get();
-            $data['district']  = DB::table('md_district')
-            ->join('md_area', 'md_area.ID_AREA', '=','md_district.ID_AREA')
-            ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
-            ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
-            ->where('md_location.ID_LOCATION', '=' , $location)
-            ->where('md_district.ISMARKET_DISTRICT', '=', '0')
-            ->whereNull('md_district.deleted_at')->get();
         }else if($role == 4){
             $regional = SESSION::get('regional');
             $data['markets']  = DB::table('md_district')
@@ -50,12 +43,6 @@ class MarketController extends Controller
             ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
             ->where('md_regional.ID_REGIONAL', '=' , $regional)
             ->whereNull('md_area.deleted_at')->get();
-            $data['district']  = DB::table('md_district')
-            ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
-            ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
-            ->where('md_regional.ID_REGIONAL', '=' , $regional)
-            ->where('ISMARKET_DISTRICT', '0')
-            ->whereNull('md_district.deleted_at')->get();
         }else{
             $data['markets']  = DB::table('md_district')
             ->where('ISMARKET_DISTRICT', '1')
@@ -68,9 +55,6 @@ class MarketController extends Controller
             ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
             ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
             ->whereNull('md_area.deleted_at')->get();
-            $data['district']  = DB::table('md_district')
-            ->where('ISMARKET_DISTRICT', '0')
-            ->whereNull('md_district.deleted_at')->get();
         }
         $data['title']          = "Pasar";
         $data['sidebar']        = "master";
@@ -78,6 +62,40 @@ class MarketController extends Controller
 
         return view('master.location.market', $data);
     }
+
+    public function get_district_by_area(Request $req)
+    {
+        $ID_AREA = $req->input('id_area');
+        $role = SESSION::get('role');
+        if($role == 3){
+            $location = SESSION::get('location');
+            $data['district']  = DB::table('md_district')
+            ->join('md_area', 'md_area.ID_AREA', '=','md_district.ID_AREA')
+            ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+            ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
+            ->where('md_district.ID_AREA', '=' , $ID_AREA)
+            ->where('md_location.ID_LOCATION', '=' , $location)
+            ->where('md_district.ISMARKET_DISTRICT', '=', '0')
+            ->whereNull('md_district.deleted_at')->get();
+        }else if($role == 4){
+            $regional = SESSION::get('regional');
+            $data['district']  = DB::table('md_district')
+            ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
+            ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+            ->where('md_regional.ID_REGIONAL', '=' , $regional)
+            ->where('md_district.ID_AREA', '=' , $ID_AREA)
+            ->where('ISMARKET_DISTRICT', '0')
+            ->whereNull('md_district.deleted_at')->get();
+        }else{
+            $data['district']  = DB::table('md_district')
+            ->where('ISMARKET_DISTRICT', '0')
+            ->where('md_district.ID_AREA', '=' , $ID_AREA)
+            ->whereNull('md_district.deleted_at')->get();
+        }
+
+        return $data['district'];
+    }
+
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
             'district'      => 'required',
