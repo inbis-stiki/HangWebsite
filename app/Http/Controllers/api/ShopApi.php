@@ -87,24 +87,36 @@ class ShopApi extends Controller
             
             $path = $req->file('photo_shop')->store('images', 's3');
 
-            $shop = new Shop();
-            $shop->ID_DISTRICT          = $req->input('id_district');
-            $shop->NAME_SHOP            = $req->input('name_shop');
-            $shop->OWNER_SHOP           = $req->input('owner_shop');
-            $shop->ISINSIDEMARKET_SHOP  = $req->input('isinside_market');
-            $shop->TYPE_SHOP            = $req->input('type_shop');
-            $shop->DETLOC_SHOP          = $req->input('detloc_shop');
-            $shop->TELP_SHOP            = $req->input('telp_shop');
-            $shop->LONG_SHOP            = $req->input('long_shop');
-            $shop->LAT_SHOP             = $req->input('lat_shop');
-            $shop->PHOTO_SHOP           = Storage::disk('s3')->url($path);
-            $shop->save();
+            $cek = Shop::where('NAME_SHOP', '=', '' . $req->input('name_shop') . '')
+                ->where('OWNER_SHOP', '=', $req->input('owner_shop'))
+                ->where('TELP_SHOP', '=', $req->input('telp_shop'))
+                ->exists();
 
-            return response([
-                "status_code"       => 200,
-                "status_message"    => 'Data berhasil disimpan!',
-                "data"              => ['ID_SHOP' => $shop->ID_SHOP]
-            ], 200);
+            if ($cek == true) {
+                return response([
+                    "status_code"       => 400,
+                    "status_message"    => 'Data toko sudah terpakai'
+                ], 400);
+            } else {
+                $shop = new Shop();
+                $shop->ID_DISTRICT          = $req->input('id_district');
+                $shop->NAME_SHOP            = $req->input('name_shop');
+                $shop->OWNER_SHOP           = $req->input('owner_shop');
+                $shop->ISINSIDEMARKET_SHOP  = $req->input('isinside_market');
+                $shop->TYPE_SHOP            = $req->input('type_shop');
+                $shop->DETLOC_SHOP          = $req->input('detloc_shop');
+                $shop->TELP_SHOP            = $req->input('telp_shop');
+                $shop->LONG_SHOP            = $req->input('long_shop');
+                $shop->LAT_SHOP             = $req->input('lat_shop');
+                $shop->PHOTO_SHOP           = Storage::disk('s3')->url($path);
+                $shop->save();
+
+                return response([
+                    "status_code"       => 200,
+                    "status_message"    => 'Data berhasil disimpan!',
+                    "data"              => ['ID_SHOP' => $shop->ID_SHOP]
+                ], 200);
+            }
         } catch (HttpResponseException $exp) {
             return response([
                 'status_code'       => $exp->getCode(),
