@@ -99,7 +99,7 @@
                     <div class="row form-group">
                         <div class="col-md-6">
                             <label for="">Username</label>
-                            <input type="text" name="username" class="form-control" onkeypress="return alphaNum(event)" placeholder="Username" required>
+                            <input type="text" name="username" class="form-control" onkeypress="return alphaNumSpace(event)" placeholder="Username" required>
                         </div>
                         <div class="col-md-6">
                             <label for="">Nama User</label>
@@ -179,7 +179,7 @@
                     <div class="row form-group">
                         <div class="col-md-6">
                             <label for="">Username</label>
-                            <input type="text" id="username_edit" name="username" class="form-control" onkeypress="return alphaNum(event)" placeholder="Username" required>
+                            <input type="text" id="username_edit" name="username" class="form-control" onkeypress="return alphaNumSpace(event)" placeholder="Username" required>
                         </div>
                         <div class="col-md-6">
                             <label for="">Nama User</label>

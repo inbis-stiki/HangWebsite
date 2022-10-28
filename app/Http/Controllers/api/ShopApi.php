@@ -89,11 +89,12 @@ class ShopApi extends Controller
 
             $cek = Shop::where('NAME_SHOP', '=', '' . $req->input('name_shop') . '')
                 ->where('OWNER_SHOP', '=', $req->input('owner_shop'))
+                ->where('TELP_SHOP', '=', $req->input('telp_shop'))
                 ->exists();
 
             if ($cek == true) {
                 return response([
-                    "status_code"       => 200,
+                    "status_code"       => 400,
                     "status_message"    => 'Data toko sudah terpakai'
                 ], 200);
             } else {

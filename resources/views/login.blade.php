@@ -36,7 +36,7 @@
                     <div class="form-row">
                         <div class="col-md-9 mb-4">
                             <label class="mb-1 ">Username</label>
-                            <input type="text" name="username" id="input_username" class="form-control border border-primary" placeholder="Username" required>
+                            <input type="text" onkeypress="return preventSpace(event)" name="username" id="input_username" class="form-control border border-primary" placeholder="Username" required>
                         </div>
                     </div>
                     <div class="form-row">
@@ -130,6 +130,14 @@
                 carouselReview();
             }, 1000);
         });
+        function preventSpace(evt){
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if(charCode == 32){
+            return false
+            }
+            return true
+        }
     </script>
 </body>
 

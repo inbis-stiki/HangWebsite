@@ -76,6 +76,8 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::post('master/location/market/update', 'MarketController@update');
     Route::post('master/location/market/destroy', 'MarketController@destroy');
 
+    Route::get('master/location/market/getDistrict', 'MarketController@get_district_by_area');
+
     // MASTER HARGA REGIONAL
     Route::get('master/regional-price', 'RegionalPriceController@index');
     Route::post('master/regional-price/store', 'RegionalPriceController@store');
