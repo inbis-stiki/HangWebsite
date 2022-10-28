@@ -94,9 +94,9 @@ class ShopApi extends Controller
 
             if ($cek == true) {
                 return response([
-                    "status_code"       => 400,
+                    "status_code"       => 401,
                     "status_message"    => 'Data toko sudah terpakai'
-                ], 400);
+                ], 401);
             } else {
                 $shop = new Shop();
                 $shop->ID_DISTRICT          = $req->input('id_district');
