@@ -24,29 +24,12 @@ class Cronjob extends Model
                     GROUP BY DATE(t.DATE_TRANS)
                 ), 0) as SPREADING_DM,
                 COALESCE((
-                    SELECT SUM(t2.QTY_TRANS)
-                    FROM `transaction` t2
-                    WHERE t2.ID_USER = t.ID_USER
-                ), 0) as LASTSALE_DM,
-                "'.$date.'" as DAYLASTSALE_DM,
-                COALESCE((
-                    SELECT SUM(t2.QTY_TRANS) / '.$date.'
-                    FROM `transaction` t2
-                    WHERE t2.ID_USER = t.ID_USER 
-                ), 0) as AVERAGESALE_DM,
-                COALESCE((
                     SELECT ('.$date.' - COUNT(*) OVER())
                     FROM `transaction` t2
                     WHERE t2.ID_USER = t.ID_USER
                     GROUP BY DATE(t.DATE_TRANS)
                     HAVING COUNT(t2.QTY_TRANS) < ut.TOTALSALES_UT 
                 ), 0) as OFFTARGET_DM,
-                COALESCE((
-                    SELECT ((SUM(t2.QTY_TRANS) / (ut.TOTALSALES_UT * 25)) * 100)
-                    FROM `transaction` t2
-                    WHERE t2.ID_USER = t.ID_USER
-                ), 0) as PROGRESS_DM,
-                ut.SALESUST_UT as TGTUST_DM,
                 COALESCE((
                     SELECT SUM(td.QTY_TD)
                     FROM 
@@ -59,7 +42,6 @@ class Cronjob extends Model
                         AND td.ID_PRODUCT = mp.ID_PRODUCT
                         AND mp.ID_PC = 12 -- 12 == CATEGORY UST in md_product_category
                 ), 0) as REALUST_DM,
-                ut.SALESNONUST_UT as TGTNONUST_DM,
                 COALESCE((
                     SELECT SUM(td.QTY_TD)
                     FROM 
@@ -72,7 +54,6 @@ class Cronjob extends Model
                         AND td.ID_PRODUCT = mp.ID_PRODUCT
                         AND mp.ID_PC = 2 -- 2 == CATEGORY NON UST in md_product_category
                 ), 0) as REALNONUST_DM,
-                ut.SALESSELERAKU_UT as TGTSELERAKU_DM,
                 COALESCE((
                     SELECT SUM(td.QTY_TD)
                     FROM 
