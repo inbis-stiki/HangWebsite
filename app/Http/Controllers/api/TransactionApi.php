@@ -14,6 +14,7 @@ use App\Area;
 use App\District;
 use App\Pickup;
 use App\Shop;
+use App\TransactionDetailToday;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
 
@@ -120,6 +121,17 @@ class TransactionApi extends Controller
                                 'ID_PRODUCT'    => $item['id_product'],
                                 'QTY_TD'        => $item['qty_product'],
                                 'DATE_TD'       => date('Y-m-d H:i:s'),
+                            ]
+                        ]);
+
+                        TransactionDetailToday::insert([
+                            [
+                                'ID_TRANS'      => "TRANS_" . $unik,
+                                'ID_PRODUCT'    => $item['id_product'],
+                                'ID_PC'         => $item['id_pc'],
+                                'QTY_TD'        => $item['qty_product'],
+                                'DATE_TD'       => date('Y-m-d H:i:s'),
+                                'ID_USER'       => $req->input('id_user')
                             ]
                         ]);
                     }
@@ -261,6 +273,17 @@ class TransactionApi extends Controller
                             'DATE_TD'       => date('Y-m-d H:i:s'),
                         );
                         TransactionDetail::insert($dataDetailTrans);
+
+                        TransactionDetailToday::insert([
+                            [
+                                'ID_TRANS'      => "TRANS_" . $unik,
+                                'ID_PRODUCT'    => $item['id_product'],
+                                'ID_PC'         => $item['id_pc'],
+                                'QTY_TD'        => $item['qty_product'],
+                                'DATE_TD'       => date('Y-m-d H:i:s'),
+                                'ID_USER'       => $req->input('id_user')
+                            ]
+                        ]);
                     }
 
                     return response([
@@ -398,6 +421,17 @@ class TransactionApi extends Controller
                                 'ID_PRODUCT'    => $item['id_product'],
                                 'QTY_TD'        => $item['qty_product'],
                                 'DATE_TD'       => date('Y-m-d H:i:s'),
+                            ]
+                        ]);
+
+                        TransactionDetailToday::insert([
+                            [
+                                'ID_TRANS'      => "TRANS_" . $unik,
+                                'ID_PRODUCT'    => $item['id_product'],
+                                'ID_PC'         => $item['id_pc'],
+                                'QTY_TD'        => $item['qty_product'],
+                                'DATE_TD'       => date('Y-m-d H:i:s'),
+                                'ID_USER'       => $req->input('id_user')
                             ]
                         ]);
                     }
