@@ -249,7 +249,7 @@ class DashboardApi extends Controller
                 'UB_UBLP' => ($AllData_temp <> null) ? (($AllData_temp->UBUBLP_DM <> null) ? $AllData_temp->UBUBLP_DM : 0) : 0,
                 'DAYS' => $transToday,
                 'AVERAGE' => [
-                    'UST '      => number_format((float)$avgUST, 1, '.', ''),
+                    'UST'      => number_format((float)$avgUST, 1, '.', ''),
                     'NON_UST '  => number_format((float)$avgNONUST, 1, '.', ''),
                     'SELERAKU ' => number_format((float)$avgSeleraku, 1, '.', '')
                 ],
