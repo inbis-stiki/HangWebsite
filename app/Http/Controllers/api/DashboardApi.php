@@ -250,8 +250,8 @@ class DashboardApi extends Controller
                 'DAYS' => $transToday,
                 'AVERAGE' => [
                     'UST'      => number_format((float)$avgUST, 1, '.', ''),
-                    'NON_UST '  => number_format((float)$avgNONUST, 1, '.', ''),
-                    'SELERAKU ' => number_format((float)$avgSeleraku, 1, '.', '')
+                    'NON_UST'  => number_format((float)$avgNONUST, 1, '.', ''),
+                    'SELERAKU' => number_format((float)$avgSeleraku, 1, '.', '')
                 ],
                 'OFF_TARGET' => ($AllData_temp <> null) ? (($AllData_temp->OFFTARGET_DM <> null) ? $AllData_temp->OFFTARGET_DM : 0) : 0,
                 'PROGRESS' => number_format((float)$progTotal, 1, '.', ''),
