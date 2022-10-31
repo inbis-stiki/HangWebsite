@@ -493,6 +493,7 @@
         $.ajax({
             url: "{{ url('dashboard/trend_asmen') }}",
             type: "GET",
+            'crossDomain': true,
             beforeSend: function(request) {
                 request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
             },
@@ -597,6 +598,7 @@
             $.ajax({
                 url: "{{ url('dashboard/ranking_activity') }}",
                 type: "GET",
+                'crossDomain': true,
                 dataType: "json",
                 success: function(response) {
                     var trHTML_asmen = '';
@@ -644,6 +646,7 @@
             $.ajax({
                 url: "{{ url('dashboard/ranking_sale') }}",
                 type: "GET",
+                'crossDomain': true,
                 dataType: "json",
                 success: function(response) {
                     var trHTML_asmen = '';
@@ -1017,5 +1020,4 @@
     });
 
     $.fn.dataTable.ext.errMode = 'throw';
-    
 </script>

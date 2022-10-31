@@ -103,6 +103,7 @@
             "serverMethod": 'POST',
             "ajax": {
                 'url': "{{ url('master/transaction/Alltransaction') }}",
+                'crossDomain': true,
                 'beforeSend': function(request) {
                     request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
                 },
