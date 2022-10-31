@@ -39,6 +39,9 @@
 
     {{-- FlatPicker --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script>
+        $.fn.dataTable.ext.errMode = 'throw';
+    </script>
 </head>
 
 <body>
