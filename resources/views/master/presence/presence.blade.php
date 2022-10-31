@@ -30,9 +30,18 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col">
+                            <div class="col-6">
                                 <h4 class="card-title">Tanggal Presensi</h4>
                                 <input placeholder="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker" class="datepicker-default form-control">
+                            </div>
+                            <div class="col-6">
+                                <h4 class="card-title">Regioanl Presensi</h4>
+                                <select name="transaksi" id="SelectRegional" class="form-control default-select">
+                                    <option selected value="0">All Regional</option>
+                                    @foreach($data_regional as $item)
+                                    <option value="{{$item->ID_AREA}}">{{$item->NAME_AREA}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -167,6 +176,8 @@
     }
 
     var tgl_presence = "<?= date("Y-m-d"); ?>";
+    var RegionalSearch = 0;
+
     $(".datepicker-default").pickadate({
         format: 'd\ mmmm yyyy',
         onSet: function() {
@@ -182,10 +193,10 @@
         $("#datatable").DataTable({
             "processing": true,
             "language": {
-                "processing"    : '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                "processing": '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
                 "loadingRecords": "Loading...",
-                "emptyTable"    : "  ",
-                "infoEmpty"     : "No Data to Show",
+                "emptyTable": "  ",
+                "infoEmpty": "No Data to Show",
             },
             "serverMethod": 'POST',
             "ajax": {
@@ -195,6 +206,7 @@
                 },
                 'data': function(data) {
                     data.tglSearchPresence = tgl_presence;
+                    data.regionalSearch = RegionalSearch;
                 }
             },
             "columns": [{
@@ -218,4 +230,10 @@
             ],
         }).draw()
     }
+    
+    $('#SelectRegional').change(function() {
+        $('#datatable').DataTable().destroy();
+        RegionalSearch = $('#SelectRegional').val()
+        filterData();
+    });
 </script>

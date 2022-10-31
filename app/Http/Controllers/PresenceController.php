@@ -9,11 +9,19 @@ use Session;
 
 class PresenceController extends Controller
 {
-    public function index()
+    public function index(Request $req)
     {
         $data['title']          = "Presensi";
         $data['sidebar']        = "presence";
         $data['sidebar2']       = "";
+
+        $id_role  = $req->session()->get('role');
+        $id_regional    = $req->session()->get('regional');
+        if ($id_role != 2) {
+            $data['data_regional']  = DB::table('md_area')->where('md_area.ID_REGIONAL', '=', $id_regional)->get();
+        } else {
+            $data['data_regional']  = DB::table('md_area')->get();
+        }
 
         return view('master.presence.presence', $data);
     }
@@ -23,29 +31,58 @@ class PresenceController extends Controller
         $id_role  = $req->session()->get('role');
         $id_regional  = $req->session()->get('regional');
         $tgl_presence  = $req->input('tglSearchPresence');
+        $id_regional_search  = $req->input('regionalSearch');
 
-        if ($id_role != 2) {
-            $data_presence      = DB::table('presence')
-                ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
-                ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
-                ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
-                ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
-                ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
-                ->orderBy('presence.DATE_PRESENCE', 'DESC')
-                ->where('md_regional.ID_REGIONAL', '=', $id_regional)
-                ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
-                ->get();
+        if ($id_regional_search == 0) {
+            if ($id_role != 2) {
+                $data_presence      = DB::table('presence')
+                    ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_area.ID_REGIONAL', 'md_regional.NAME_REGIONAL')
+                    ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
+                    ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
+                    ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
+                    ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+                    ->orderBy('presence.DATE_PRESENCE', 'DESC')
+                    ->where('md_regional.ID_REGIONAL', '=', $id_regional)
+                    ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
+                    ->get();
+            } else {
+                $data_presence      = DB::table('presence')
+                    ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_area.ID_REGIONAL', 'md_regional.NAME_REGIONAL')
+                    ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
+                    ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
+                    ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
+                    ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+                    ->orderBy('presence.DATE_PRESENCE', 'DESC')
+                    ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
+                    ->get();
+            }
         } else {
-            $data_presence      = DB::table('presence')
-                ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
-                ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
-                ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
-                ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
-                ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
-                ->orderBy('presence.DATE_PRESENCE', 'DESC')
-                ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
-                ->get();
+            if ($id_role != 2) {
+                $data_presence      = DB::table('presence')
+                    ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_area.ID_REGIONAL', 'md_regional.NAME_REGIONAL')
+                    ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
+                    ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
+                    ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
+                    ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+                    ->orderBy('presence.DATE_PRESENCE', 'DESC')
+                    ->where('md_district.ID_AREA', '=', $id_regional_search)
+                    ->where('md_regional.ID_REGIONAL', '=', $id_regional)
+                    ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
+                    ->get();
+            } else {
+                $data_presence      = DB::table('presence')
+                    ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_area.ID_REGIONAL', 'md_regional.NAME_REGIONAL')
+                    ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
+                    ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
+                    ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
+                    ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+                    ->orderBy('presence.DATE_PRESENCE', 'DESC')
+                    ->where('md_district.ID_AREA', '=', $id_regional_search)
+                    ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
+                    ->get();
+            }
         }
+
 
         $NewData_all = array();
         $i = 0;
