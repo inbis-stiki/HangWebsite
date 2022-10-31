@@ -14,16 +14,31 @@
                 </button> --}}
             </div>
         </div>
-        
+
         @if ($errors->any())
-            <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
+        <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
         @endif
         @if (session('succ_msg'))
-            <div class="alert alert-success">{{ session('succ_msg') }}</div>
+        <div class="alert alert-success">{{ session('succ_msg') }}</div>
         @endif
         @if (session('err_msg'))
-            <div class="alert alert-danger">{{ session('err_msg') }}</div>
+        <div class="alert alert-danger">{{ session('err_msg') }}</div>
         @endif
+
+        <div class="row">
+            <div class="col-12" style="margin-bottom: 5px;">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <h4 class="card-title">Tanggal Transaksi</h4>
+                                <input placeholder="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker" class="datepicker-default form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Add Order -->
         <div class="row">
@@ -34,40 +49,17 @@
                     </div> --}}
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="datatable" class="display min-w850">
+                            <table id="datatable_faktur" class="display min-w850">
                                 <thead>
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
                                         <th>Regional</th>
                                         <th>Area</th>
-                                        <th>Kuantitas</th>
-                                        <th>Jumlah</th>
-                                        <th>Tipe</th>
                                         <th>Tanggal</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @php
-                                        $no = 1;
-                                    @endphp
-                                    @foreach ($fakturs as $faktur)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>    
-                                        <td>{{ $faktur->NAME_USER }}</td>
-                                        <td>{{ $faktur->REGIONAL_TD }}</td>
-                                        <td>{{ $faktur->AREA_TD }}</td>
-                                        <td>{{ $faktur->TOTQTY_TD }}</td>
-                                        <td>{{ $faktur->TOTAL_TD }}</td>
-                                        <td>{{ $faktur->NAME_TYPE }}</td>
-                                        <td>{{ $faktur->DATEFACTUR_TD ? date_format(date_create($faktur->DATEFACTUR_TD), 'j F Y H:i') : "" }}</td>
-                                        <td>
-                                            <a href="<?='detail/faktur?id_td='.$faktur->ID_TD.'&id_user='.$faktur->ID_USER.'&date='.date_format(date_create($faktur->DATEFACTUR_TD), 'Y-m-d') ?>"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -86,7 +78,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group" >
+                <div class="form-group">
                     <label for="">Foto</label>
                     <br>
                     <div style="text-align: center;">
@@ -152,17 +144,8 @@
                 </button>
             </div>
             <div class="modal-body" style="text-align: center;">
-                <iframe 
-                    width="600" 
-                    height="400" 
-                    frameborder="0" 
-                    scrolling="no" 
-                    marginheight="0" 
-                    marginwidth="0" 
-                    id="mdlLocation_src"
-                    src=""
-                    >
-                    </iframe>
+                <iframe width="600" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="mdlLocation_src" src="">
+                </iframe>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Tutup</button>
@@ -175,7 +158,6 @@
 ***********************************-->
 @include('template/footer')
 <script>
-    $('#datatable').DataTable()
     const showPresence = (src, name, district, date, area, target, regional) => {
         $('#mdlPresence_src').attr('src', src);
         $('#mdlPresence_name').val(name);
@@ -190,4 +172,57 @@
         $('#mdlLocation_src').attr('src', `https://maps.google.com/maps?q=${lat},${long}&hl=es&z=14&amp;output=embed`);
         $('#mdlLocation').modal('show')
     }
+
+    var tgl_trans = "<?= date("Y-m-d"); ?>";
+    filterData();
+
+    function filterData() {
+        $('#datatable_faktur').DataTable({
+            "processing": true,
+            "language": {
+                "processing": '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                "loadingRecords": "Loading...",
+                "emptyTable": "  ",
+                "infoEmpty": "No Data to Show",
+            },
+            "serverMethod": 'POST',
+            "ajax": {
+                'url': "{{ url('master/faktur/AllFaktur') }}",
+                'beforeSend': function(request) {
+                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                },
+                'data': function(data) {
+                    data.tglSearchtrans = tgl_trans;
+                }
+            },
+            "columns": [{
+                    data: 'NO'
+                },
+                {
+                    data: 'NAME_USER'
+                },
+                {
+                    data: 'REGIONAL'
+                },
+                {
+                    data: 'AREA'
+                },
+                {
+                    data: 'DATE'
+                },
+                {
+                    data: 'ACTION_BUTTON'
+                }
+            ],
+        }).draw()
+    }
+
+    $(".datepicker-default").pickadate({
+        format: 'd\ mmmm yyyy',
+        onSet: function() {
+            tgl_trans = this.get('select', 'yyyy-mm-dd');
+            $('#datatable_faktur').DataTable().destroy();
+            filterData();
+        }
+    });
 </script>

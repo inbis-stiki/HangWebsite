@@ -15,7 +15,14 @@ class FakturController extends Controller
         $data['title']          = "Faktur";
         $data['sidebar']        = "faktur";
         $data['sidebar2']       = "";
+
+        return view('master.faktur.faktur', $data);
+    }
+
+    public function getAllFaktur(Request $req)
+    {
         $id_user    = $req->session()->get('id_user');
+        $tgl_trans  = $req->input('tglSearchtrans');
         $data_user     = DB::table('user')
             ->where('user.ID_USER', $id_user)
             ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
@@ -24,15 +31,17 @@ class FakturController extends Controller
             ->select('user.*', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
             ->first();
         if ($data_user->ID_ROLE == 3 || $data_user->ID_ROLE == 4) {
-            $data['fakturs']        = DB::table('transaction_daily')
+            $data_fakturs        = DB::table('transaction_daily')
                 ->where('transaction_daily.LOCATION_TD', $data_user->NAME_LOCATION)
+                ->where('transaction_daily.DATEFACTUR_TD', 'like', $tgl_trans . '%')
                 ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
                 ->orderBy('transaction_daily.DATE_TD', 'DESC')
                 ->select('transaction_daily.*', 'user.NAME_USER', 'md_type.NAME_TYPE')
                 ->get();
         } else {
-            $data['fakturs']        = DB::table('transaction_daily')
+            $data_fakturs        = DB::table('transaction_daily')
+                ->where('transaction_daily.DATEFACTUR_TD', 'like', $tgl_trans . '%')
                 ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
                 ->orderBy('transaction_daily.DATE_TD', 'DESC')
@@ -40,7 +49,26 @@ class FakturController extends Controller
                 ->get();
         }
 
-        return view('master.faktur.faktur', $data);
+        $NewData_faktur = array();
+        $counter_faktur = 0;
+        foreach ($data_fakturs as $item) {
+            $data = array(
+                "NAME_USER" => $item->NAME_USER,
+                "AREA" => $item->AREA_TD,
+                "REGIONAL" => $item->REGIONAL_TD,
+                "DATE" => date_format(date_create($item->DATE_TD), 'j F Y'),
+                "ACTION_BUTTON" => "<a href='detail/faktur?id_td=" . $item->ID_TD . "&id_user=" . $item->ID_USER . "&date=" . date_format(date_create($item->DATEFACTUR_TD), 'Y-m-d') . "><button class='btn light btn-success'><i class='fa fa-circle-info'></i></button></a>"
+            );
+
+            $counter_faktur++;
+            $data['NO'] = $counter_faktur;
+            array_push($NewData_faktur, $data);
+        }
+        return response([
+            'status_code'       => 200,
+            'status_message'    => 'Data berhasil diambil!',
+            'data'              => $NewData_faktur
+        ], 200);
     }
 
     public function DetailFaktur(Request $req)
