@@ -42,6 +42,7 @@ class CronjobController extends Controller
         
         try {
             DB::table('dashboard_mobile')->delete();
+            DB::table('transaction_detail_today')->delete();
 
             $date       = date('j', strtotime('-1 days'));
             $month      = date('n', strtotime('-1 days'));
@@ -54,20 +55,10 @@ class CronjobController extends Controller
                     'ID_USER'               => $data->ID_USER,
                     'UBUBLP_DM'             => $data->UBUBLP_DM,
                     'SPREADING_DM'          => $data->SPREADING_DM,
-                    'LASTSALE_DM'           => $data->LASTSALE_DM,
-                    'AVERAGESALE_DM'        => $data->AVERAGESALE_DM,
-                    'DAYLASTSALE_DM'        => $data->DAYLASTSALE_DM,
                     'OFFTARGET_DM'          => $data->OFFTARGET_DM,
-                    'PROGRESS_DM'           => $data->PROGRESS_DM,
-                    'TGTUST_DM'             => $data->TGTUST_DM,
                     'REALUST_DM'            => $data->REALUST_DM,
-                    'TGTNONUST_DM'          => $data->TGTNONUST_DM,
                     'REALNONUST_DM'         => $data->REALNONUST_DM,
-                    'TGTSELERAKU_DM'        => $data->TGTSELERAKU_DM,
                     'REALSELERAKU_DM'       => $data->REALSELERAKU_DM,
-                    'PROGRESSUST_DM'        => ($data->TGTUST_DM <> 0) ? (($data->REALUST_DM / ($data->TGTUST_DM * 25)) * 100) : 0,
-                    'PROGRESSNONUST_DM'     => ($data->TGTNONUST_DM <> 0) ? (($data->REALNONUST_DM / ($data->TGTNONUST_DM * 25)) * 100) : 0,
-                    'PROGRESSSELERAKU_DM'   => ($data->TGTSELERAKU_DM <> 0) ? (($data->REALSELERAKU_DM / ($data->TGTSELERAKU_DM * 25)) * 100) : 0,
                     'updated_at'            => $updated_at
                 ]);
             }
