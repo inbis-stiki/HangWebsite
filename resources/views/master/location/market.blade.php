@@ -220,6 +220,8 @@
 @include('template/footer')
 <script>
     $('#datatable').DataTable()
+    $('#mdlAdd_selectD').append('<option selected disabled value="">Silahkan Pilih Area Terlebih Dahulu</option>').trigger('change');
+
     $('#mdlAdd').on('hidden.bs.modal', function() {
         $('#formAdd').trigger('reset')
         $('#mdlAdd_select').val("").change()
