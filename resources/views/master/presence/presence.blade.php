@@ -35,8 +35,8 @@
                                 <input placeholder="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker" class="datepicker-default form-control">
                             </div>
                             <div class="col-6">
-                                <h4 class="card-title">Regioanl Presensi</h4>
-                                <select name="transaksi" id="SelectRegional" class="form-control default-select">
+                                <h4 class="card-title">Regional Presensi</h4>
+                                <select name="transaksi" id="SelectRegional" class="select2">
                                     <option selected value="0">All Regional</option>
                                     @foreach($data_regional as $item)
                                     <option value="{{$item->ID_AREA}}">{{$item->NAME_AREA}}</option>
