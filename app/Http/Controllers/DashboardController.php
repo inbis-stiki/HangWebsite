@@ -292,7 +292,7 @@ class DashboardController extends Controller
         $tgl_presence  = $req->input('filter_date');
         $area  = $req->input('filter_area');
 
-        if ($id_role != 2) {
+        if ($id_role != 2 && $id_role != 1) {
             $data_presence      = DB::table('presence')
                 ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
                 ->selectRaw("MONTH(presence.DATE_PRESENCE) as month, YEAR(presence.DATE_PRESENCE) as year, COUNT(presence.ID_PRESENCE) as TotalPresence")
