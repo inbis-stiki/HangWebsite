@@ -83,7 +83,9 @@ class CronjobController extends Controller
         // app(ReportRanking::class)->generate_ranking_apo_spg();
 
         // app(ReportTransaction::class)->set_data_transaction();
-        app(ReportTransaction::class)->generate_transaksi_harian();
+        // app(ReportTransaction::class)->generate_transaksi_harian();
+
+        dd(date("Y-m-d H:i:s")); // returns a date in UTC timezone
         
         // app(ReportTrend::class)->set_data_trend();
         // app(ReportTrend::class)->generate_trend_asmen();
