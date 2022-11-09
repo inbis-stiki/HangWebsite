@@ -97,6 +97,8 @@ class TransactionApi extends Controller
             $transDaily = TransactionDaily::whereDate('DATE_TD', '=', date('Y-m-d'))
                 ->where('ID_USER', '=', $req->input('id_user'))
                 ->first();
+
+            
     
             if ($cekLokasi->isNotEmpty()) {
                 if ($tdkLolos == 0) {
@@ -108,6 +110,7 @@ class TransactionApi extends Controller
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
                     $transaction->ID_TD             = $transDaily->ID_TD;
                     $transaction->ID_USER           = $req->input('id_user');
+                    $transaction->KECAMATAN         = $cekLokasi[0]->NAME_DISTRICT;
                     $transaction->ID_SHOP           = $req->input('id_shop');
                     $transaction->ID_TYPE           = $req->input('id_type');
                     $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
@@ -262,6 +265,7 @@ class TransactionApi extends Controller
                     $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
                     $transaction->ID_TD             = $transDaily->ID_TD;
+                    $transaction->KECAMATAN         = $req->input('name_district');
                     $transaction->ID_USER           = $req->input('id_user');
                     $transaction->ID_TYPE           = $req->input('id_type');
                     $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
@@ -412,10 +416,13 @@ class TransactionApi extends Controller
                     $updatePickup = Pickup::find($cekData->ID_PICKUP);
                     $updatePickup->REMAININGSTOCK_PICKUP      = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                     $updatePickup->save();
+
+                    $kecamatan = District::where('ID_DISTRICT', '=', $id_district)->first();
     
                     $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
                     $transaction->ID_TD             = $transDaily->ID_TD;
+                    $transaction->KECAMATAN         = $kecamatan->NAME_DISTRICT;
                     $transaction->ID_USER           = $req->input('id_user');
                     $transaction->ID_TYPE           = $req->input('id_type');
                     $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
