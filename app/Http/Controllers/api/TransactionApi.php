@@ -14,6 +14,7 @@ use App\Area;
 use App\District;
 use App\Pickup;
 use App\Shop;
+use App\TransactionDaily;
 use App\TransactionDetailToday;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Validator;
@@ -92,6 +93,12 @@ class TransactionApi extends Controller
                 ['ID_AREA', '=', $req->input("id_area")],
                 ['ID_DISTRICT', '=', $id_district]
             ])->whereNull('deleted_at')->get();
+
+            $transDaily = TransactionDaily::whereDate('DATE_TD', '=', date('Y-m-d'))
+                ->where('ID_USER', '=', $req->input('id_user'))
+                ->first();
+
+            
     
             if ($cekLokasi->isNotEmpty()) {
                 if ($tdkLolos == 0) {
@@ -101,7 +108,9 @@ class TransactionApi extends Controller
     
                     $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
+                    $transaction->ID_TD             = $transDaily->ID_TD;
                     $transaction->ID_USER           = $req->input('id_user');
+                    $transaction->KECAMATAN         = strtoupper($cekLokasi[0]->NAME_DISTRICT);
                     $transaction->ID_SHOP           = $req->input('id_shop');
                     $transaction->ID_TYPE           = $req->input('id_type');
                     $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
@@ -201,6 +210,10 @@ class TransactionApi extends Controller
                 ->where('deleted_at', '=', NULL)
                 ->first();
 
+            $transDaily = TransactionDaily::whereDate('DATE_TD', '=', date('Y-m-d'))
+            ->where('ID_USER', '=', $req->input('id_user'))
+            ->first();
+
             if ($cekArea != null) {
 
                 $cekData    = Pickup::select('ID_PICKUP', 'ID_PRODUCT', 'REMAININGSTOCK_PICKUP')
@@ -251,6 +264,8 @@ class TransactionApi extends Controller
 
                     $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
+                    $transaction->ID_TD             = $transDaily->ID_TD;
+                    $transaction->KECAMATAN         = strtoupper($req->input('name_district'));
                     $transaction->ID_USER           = $req->input('id_user');
                     $transaction->ID_TYPE           = $req->input('id_type');
                     $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
@@ -391,15 +406,23 @@ class TransactionApi extends Controller
                 ['ID_DISTRICT', '=', $id_district]
             ])->whereNull('deleted_at')->get();
 
+            $transDaily = TransactionDaily::whereDate('DATE_TD', '=', date('Y-m-d'))
+            ->where('ID_USER', '=', $req->input('id_user'))
+            ->first();
+
             if ($cekLokasi->isNotEmpty()) {
                 if ($tdkLolos == 0) {
 
                     $updatePickup = Pickup::find($cekData->ID_PICKUP);
                     $updatePickup->REMAININGSTOCK_PICKUP      = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                     $updatePickup->save();
+
+                    $kecamatan = District::where('ID_DISTRICT', '=', $id_district)->first();
     
                     $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
+                    $transaction->ID_TD             = $transDaily->ID_TD;
+                    $transaction->KECAMATAN         = strtoupper($kecamatan->NAME_DISTRICT);
                     $transaction->ID_USER           = $req->input('id_user');
                     $transaction->ID_TYPE           = $req->input('id_type');
                     $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;

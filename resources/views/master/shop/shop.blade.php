@@ -47,35 +47,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php
-                                        $no = 1;
-                                    @endphp
-                                    @foreach ($shop as $item)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>
-                                        <td>{{ $item->NAME_DISTRICT }}</td>
-                                        <td>{{ $item->NAME_SHOP }}</td>
-                                        <td>{{ $item->OWNER_SHOP }}</td>
-                                        <td>{{ $item->TYPE_SHOP }}</td>
-                                        <td>
-                                            @if ($item->deleted_at == NULL)
-                                                <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
-                                                Enable
-                                            @else
-                                                <i class="fa-solid fa-circle mr-2" style="color:#C13B3B;"></i>
-                                                Disable
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <button onclick="showMdlEdit('{{ $item->ID_PRODUCT }}', '{{ $item->NAME_PRODUCT }}', '{{ $item->CODE_PRODUCT }}', '{{ $item->ID_PC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
-                                                <i class="flaticon-381-edit-1"></i>
-                                            </button>
-                                            <button onclick="showMdlDelete('{{ $item->ID_PRODUCT }}')" class="btn btn-primary btn-sm">
-                                                <i class="flaticon-381-trash-1"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -91,5 +62,50 @@
 ***********************************-->
 @include('template/footer')
 <script>
-    $('#datatable').DataTable()
+    // $('#datatable').DataTable()
+    filterData();
+
+    $("#datatable").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "language": {
+                "processing": '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> ',
+                "loadingRecords": "Loading...",
+                "emptyTable": "  ",
+                "infoEmpty": "No Data to Show",
+            },
+            "serverMethod": 'POST',
+            "ajax": {
+                'url': "{{ url('master/shop/AllShop') }}",
+                'beforeSend': function(request) {
+                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                }
+            },
+            "columns": [{
+                    data: 'NO'
+                },
+                {
+                    data: 'NAME_DISTRICT'
+                },
+                {
+                    data: 'NAME_SHOP'
+                },
+                {
+                    data: 'OWNER_SHOP'
+                },
+                {
+                    data: 'TYPE_SHOP'
+                },
+                {
+                    data: 'ISACTIVE'
+                },
+                {
+                    data: 'ACTION_BUTTON'
+                }
+            ],
+        })
+
+    function filterData() {
+        
+    }
 </script>
