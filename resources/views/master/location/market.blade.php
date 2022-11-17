@@ -36,6 +36,7 @@
                                 <thead>
                                     <tr>
                                         <th>Pasar</th>
+                                        <th>Kecamatan</th>
                                         <th>Area</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
@@ -45,6 +46,7 @@
                                     @foreach ($markets as $market)
                                     <tr>
                                         <td>{{ $market->NAME_DISTRICT }}</td>
+                                        <td><?= ($market->NEW_PARENT != NULL) ? $market->NEW_PARENT : "-" ?></td>
                                         <td>{{ $market->NAME_AREA }}</td>
                                         <td>
                                             @if ($market->ISFOCUS_DISTRICT == '1')
