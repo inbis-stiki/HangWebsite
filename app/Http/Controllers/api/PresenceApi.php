@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Datefunc;
 use App\District;
 use App\Http\Controllers\Controller;
 use App\Presence;
@@ -100,6 +101,9 @@ class PresenceApi extends Controller
                         "status_message"    => 'Anda sudah absen'
                     ], 200);
                 }else{
+                    $dateFunc = new Datefunc();
+                    $currDate = $dateFunc->currDate($req->input('longitude'), $req->input('latitude'));
+
                     $presence = new Presence();
                     $presence->ID_USER              = $req->input('id_user');
                     // $presence->ID_TYPE              = $req->input('id_type');
@@ -107,12 +111,12 @@ class PresenceApi extends Controller
                     $presence->LONG_PRESENCE        = $req->input('longitude');
                     $presence->LAT_PRESENCE         = $req->input('latitude');
                     $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
-                    $presence->DATE_PRESENCE        = date('Y-m-d H:i:s');
+                    $presence->DATE_PRESENCE        = $currDate;
                     $presence->save();
     
                     // $transDaily = new TransactionDaily();
                     // $transDaily->ID_USER = $req->input('id_user');
-                    // $transDaily->DATE_TD = date("Y-m-d H:i:s");
+                    // $transDaily->DATE_TD = $currDate;
                     // $transDaily->save();
     
                     return response([

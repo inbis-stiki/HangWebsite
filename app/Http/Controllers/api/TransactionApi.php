@@ -11,6 +11,7 @@ use App\TransactionImage;
 use App\Location;
 use App\Regional;
 use App\Area;
+use App\Datefunc;
 use App\District;
 use App\Pickup;
 use App\Shop;
@@ -31,7 +32,9 @@ class TransactionApi extends Controller
                 'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
                 'qty_trans'                 => 'required',
                 'total_trans'               => 'required',
-                'is_trans'                  => 'required'
+                'is_trans'                  => 'required',
+                'long_trans'                => 'required',
+                'lat_trans'                 => 'required'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
             ]);
@@ -42,6 +45,9 @@ class TransactionApi extends Controller
                     "status_message"    => $validator->errors()->first()
                 ], 400);
             }
+
+            $dateFunc = new Datefunc();
+            $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
             $transaction        = new Transaction();
             $location           = new Location();
@@ -106,7 +112,7 @@ class TransactionApi extends Controller
                     $updatePickup->REMAININGSTOCK_PICKUP      = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                     $updatePickup->save();
     
-                    $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
+                    $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
                     $transaction->ID_TD             = $transDaily->ID_TD;
                     $transaction->ID_USER           = $req->input('id_user');
@@ -117,7 +123,9 @@ class TransactionApi extends Controller
                     $transaction->REGIONAL_TRANS    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
                     $transaction->QTY_TRANS     = $req->input('qty_trans');
                     $transaction->TOTAL_TRANS   = $req->input('total_trans');
-                    $transaction->DATE_TRANS    = date('Y-m-d H:i:s');
+                    $transaction->DATE_TRANS    = $currDate;
+                    $transaction->LONG_TRANS    = $req->input('long_trans');
+                    $transaction->LAT_TRANS    = $req->input('lat_trans');
                     $transaction->AREA_TRANS    = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
                     $transaction->save();
@@ -129,7 +137,7 @@ class TransactionApi extends Controller
                                 'ID_SHOP'       => $req->input('id_shop'),
                                 'ID_PRODUCT'    => $item['id_product'],
                                 'QTY_TD'        => $item['qty_product'],
-                                'DATE_TD'       => date('Y-m-d H:i:s'),
+                                'DATE_TD'       => $currDate,
                             ]
                         ]);
 
@@ -139,13 +147,13 @@ class TransactionApi extends Controller
                                 'ID_PRODUCT'    => $item['id_product'],
                                 'ID_PC'         => $item['id_pc'],
                                 'QTY_TD'        => $item['qty_product'],
-                                'DATE_TD'       => date('Y-m-d H:i:s'),
+                                'DATE_TD'       => $currDate,
                                 'ID_USER'       => $req->input('id_user')
                             ]
                         ]);
                     }
 
-                    Shop::where(['ID_SHOP' => $req->input('id_shop')])->update(['ISRECOMMEND_SHOP' => '0', 'LASTTRANS_SHOP' => date('Y-m-d H:i:s')]);
+                    Shop::where(['ID_SHOP' => $req->input('id_shop')])->update(['ISRECOMMEND_SHOP' => '0', 'LASTTRANS_SHOP' => $currDate]);
     
                     return response([
                         "status_code"       => 200,
@@ -198,6 +206,9 @@ class TransactionApi extends Controller
                     "status_message"    => $validator->errors()->first()
                 ], 400);
             }
+            
+            $dateFunc = new Datefunc();
+            $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
             $cekDistrict = District::select('md_district.*')
                 ->where('NAME_DISTRICT', '=', $req->input('name_district'))
@@ -262,7 +273,7 @@ class TransactionApi extends Controller
                     $updatePickup->REMAININGSTOCK_PICKUP = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                     $updatePickup->save();
 
-                    $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
+                    $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
                     $transaction->ID_TD             = $transDaily->ID_TD;
                     $transaction->KECAMATAN         = strtoupper($req->input('name_district'));
@@ -272,7 +283,7 @@ class TransactionApi extends Controller
                     $transaction->REGIONAL_TRANS    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
                     $transaction->QTY_TRANS         = $req->input('qty_trans');
                     $transaction->TOTAL_TRANS       = $req->input('total_trans');
-                    $transaction->DATE_TRANS        = date('Y-m-d H:i:s');
+                    $transaction->DATE_TRANS        = $currDate;
                     $transaction->AREA_TRANS        = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
                     $transaction->LONG_TRANS        = $req->input('long_trans');
@@ -285,7 +296,7 @@ class TransactionApi extends Controller
                             'ID_TRANS'      => "TRANS_" . $unik,
                             'ID_PRODUCT'    => $item['id_product'],
                             'QTY_TD'        => $item['qty_product'],
-                            'DATE_TD'       => date('Y-m-d H:i:s'),
+                            'DATE_TD'       => $currDate,
                         );
                         TransactionDetail::insert($dataDetailTrans);
 
@@ -295,7 +306,7 @@ class TransactionApi extends Controller
                                 'ID_PRODUCT'    => $item['id_product'],
                                 'ID_PC'         => $item['id_pc'],
                                 'QTY_TD'        => $item['qty_product'],
-                                'DATE_TD'       => date('Y-m-d H:i:s'),
+                                'DATE_TD'       => $currDate,
                                 'ID_USER'       => $req->input('id_user')
                             ]
                         ]);
@@ -353,6 +364,9 @@ class TransactionApi extends Controller
                     "status_message"    => $validator->errors()->first()
                 ], 400);
             }
+
+            $dateFunc = new Datefunc();
+            $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
             $transaction        = new Transaction();
             $location           = new Location();
@@ -419,7 +433,7 @@ class TransactionApi extends Controller
 
                     $kecamatan = District::where('ID_DISTRICT', '=', $id_district)->first();
     
-                    $unik                           = md5($req->input('id_user') . "_" . date('Y-m-d H:i:s'));
+                    $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
                     $transaction->ID_TD             = $transDaily->ID_TD;
                     $transaction->KECAMATAN         = strtoupper($kecamatan->NAME_DISTRICT);
@@ -429,7 +443,7 @@ class TransactionApi extends Controller
                     $transaction->REGIONAL_TRANS    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
                     $transaction->QTY_TRANS         = $req->input('qty_trans');
                     $transaction->TOTAL_TRANS       = $req->input('total_trans');
-                    $transaction->DATE_TRANS        = date('Y-m-d H:i:s');
+                    $transaction->DATE_TRANS        = $currDate;
                     $transaction->AREA_TRANS        = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
                     $transaction->DISTRICT          = $district::select('NAME_DISTRICT')->where('ID_DISTRICT', $req->input('id_district'))->first()->NAME_DISTRICT;
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
@@ -443,7 +457,7 @@ class TransactionApi extends Controller
                                 'ID_TRANS'      => "TRANS_" . $unik,
                                 'ID_PRODUCT'    => $item['id_product'],
                                 'QTY_TD'        => $item['qty_product'],
-                                'DATE_TD'       => date('Y-m-d H:i:s'),
+                                'DATE_TD'       => $currDate,
                             ]
                         ]);
 
@@ -453,7 +467,7 @@ class TransactionApi extends Controller
                                 'ID_PRODUCT'    => $item['id_product'],
                                 'ID_PC'         => $item['id_pc'],
                                 'QTY_TD'        => $item['qty_product'],
-                                'DATE_TD'       => date('Y-m-d H:i:s'),
+                                'DATE_TD'       => $currDate,
                                 'ID_USER'       => $req->input('id_user')
                             ]
                         ]);

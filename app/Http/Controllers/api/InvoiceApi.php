@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Datefunc;
 use App\Http\Controllers\Controller;
 use App\TransactionDaily;
 use App\Pickup;
@@ -161,7 +162,9 @@ class InvoiceApi extends Controller
                 'photo_faktur_1'   => 'required|image',
                 'photo_faktur_2'   => 'required|image',
                 'total_qty'        => 'required|numeric',
-                'total_hrg'        => 'required|numeric'
+                'total_hrg'        => 'required|numeric',
+                'long_trans'       => 'required',
+                'lat_trans'        => 'required'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
                 'string'    => 'Parameter :attribute harus bertipe string!',
@@ -176,6 +179,8 @@ class InvoiceApi extends Controller
                 ], 400);
             }
 
+            $dateFunc = new Datefunc();
+            $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
             
             $path_faktur1 = $req->file('photo_faktur_1')->store('images', 's3');
             $path_faktur2 = $req->file('photo_faktur_2')->store('images', 's3');
@@ -218,7 +223,7 @@ class InvoiceApi extends Controller
                     $TransactionDaily->AREA_TD         = $ID_LOCATION->NAME_AREA;
                     $TransactionDaily->TOTQTY_TD       = $req->input('total_qty');
                     $TransactionDaily->TOTAL_TD        = $req->input('total_hrg');
-                    $TransactionDaily->DATEFACTUR_TD   = date('Y-m-d H:i:s');
+                    $TransactionDaily->DATEFACTUR_TD   = $currDate;
                     $TransactionDaily->FACTUR_TD       = $url;
                     $TransactionDaily->REGIONAL_TD     = $ID_LOCATION->NAME_REGIONAL;
                     $TransactionDaily->ISFINISHED_TD   = '1';
