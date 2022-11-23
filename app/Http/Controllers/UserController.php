@@ -265,4 +265,23 @@ class UserController extends Controller
         return redirect('master/user')->with('succ_msg', 'Berhasil menghapus data user!');
     }
 
+    public function changePass(Request $req){
+        $validator = Validator::make($req->all(), [
+            'id'        => 'required',
+            'pass'        => 'required',
+        ], [
+            'required' => 'Data tidak boleh kosong!',
+        ]);
+
+        if($validator->fails()){
+            return redirect('master/user')->withErrors($validator);
+        }
+
+        $user = Users::find($req->input('id'));
+        $user->PASS_USER = hash('sha256', md5($req->input('pass')));
+        $user->save();
+
+        return redirect('master/user')->with('succ_msg', 'Berhasil mengubah password user!');
+    }
+
 }
