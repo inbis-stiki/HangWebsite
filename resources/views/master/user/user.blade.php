@@ -65,6 +65,9 @@
                                             @endif
                                         </td>
                                         <td>
+                                            <button onclick="showMdlChangePass('{{ $item->ID_USER }}', '{{ $item->USERNAME_USER }}', '{{ $item->ID_ROLE }}', '{{ $item->ID_AREA }}', '{{ $item->KTP_USER }}', '{{ $item->NAME_USER }}', '{{ $item->EMAIL_USER }}', '{{ $item->TELP_USER }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                                <i class="flaticon-381-key"></i>
+                                            </button>
                                             <button onclick="showMdlEdit('{{ $item->ID_USER }}', '{{ $item->USERNAME_USER }}', '{{ $item->ID_ROLE }}', '{{ $item->ID_AREA }}', '{{ $item->KTP_USER }}', '{{ $item->NAME_USER }}', '{{ $item->EMAIL_USER }}', '{{ $item->TELP_USER }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
@@ -266,6 +269,32 @@
         </div>
     </div>
 </div>
+<!-- Modal Change Password  -->
+<div class="modal fade" id="mdlChangePass">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ubah Password</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url('master/user/changePass') }}" method="POST">
+                @csrf
+                    <div class="form-group">
+                    <label for="">Password Baru</label>
+                    <input type="text" class="form-control" name="pass">
+                </div>
+            </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="id" id="mdlChangePass_id">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
+                    <button type="submit" class="btn btn-primary">Ubah</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 <!--**********************************
@@ -316,5 +345,9 @@
     function showMdlDelete(id) {
         $('#mdlDelete_id').val(id)
         $('#mdlDelete').modal('show');
+    }
+    function showMdlChangePass(id) {
+        $('#mdlChangePass_id').val(id)
+        $('#mdlChangePass').modal('show');
     }
 </script>
