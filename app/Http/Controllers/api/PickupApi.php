@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Datefunc;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Pickup;
@@ -20,8 +21,10 @@ class PickupApi extends Controller
                 'id_user'                   => 'required',
                 // 'id_district'               => 'required',
                 // 'id_type'                   => 'required',
+                'lat_trans'                 => 'required',
+                'long_trans'                => 'required',
                 'product.*.id_product'      => 'required|exists:md_product,ID_PRODUCT',
-                'product.*.name_product'    => 'required',
+                'product.*.name_product'    => 'required'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
             ]);
@@ -33,12 +36,15 @@ class PickupApi extends Controller
                 ], 400);
             }
 
+            $dateFunc = new Datefunc();
+            $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
+
             $pickup = new Pickup();
             $pickup->ID_USER                = $req->input('id_user');
             // $pickup->ID_DISTRICT            = $req->input('id_district');
             // $pickup->DETAILLOKASI_PICKUP    = $req->input('detail_lokasi');
             // $pickup->ID_TYPE                = $req->input('id_type');
-            $pickup->TIME_PICKUP            = date("Y-m-d");
+            $pickup->TIME_PICKUP            = $currDate;
 
             $idproduct = array();
             $nameproduct = array();
@@ -57,7 +63,7 @@ class PickupApi extends Controller
 
             $transDaily = new TransactionDaily();
             $transDaily->ID_USER = $req->input('id_user');
-            $transDaily->DATE_TD = date("Y-m-d H:i:s");
+            $transDaily->DATE_TD = $currDate;
             $transDaily->save();
 
             return response([

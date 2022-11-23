@@ -19,6 +19,8 @@ Route::post('testimage', 'ImageController@store');
 Route::get('testimage/{image}', 'ImageController@show');
 Route::get('testTemplate', 'CronjobController@TestTemplate');
 Route::get('tesQuery', 'CronjobController@tesQuery');
+Route::get('listDatePresence', 'CronjobController@listDatePresence');
+Route::get('tes', 'CronjobController@TestTemplate');
 
 //Login
 Route::get('/', 'AuthController@login');
@@ -121,6 +123,7 @@ Route::group(['middleware' => ['checkLogin']], function () {
     // MASTER USER
     Route::get('master/user', 'UserController@index');
     Route::post('master/user/store', 'UserController@store');
+    Route::post('master/user/changePass', 'UserController@changePass');
     Route::get('master/user/update', 'UserController@update');
     Route::get('master/user/destroy', 'UserController@destroy');
 
