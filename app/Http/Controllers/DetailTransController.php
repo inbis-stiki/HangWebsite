@@ -80,7 +80,6 @@ class DetailTransController extends Controller
                 array_push($shop_id_trans, $Item_ts->ID_SHOP);
             }
         }
-        DB::enableQueryLog();
         $data['shop_trans'] = DB::table('md_shop')
             ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'transaction.ISTRANS_TRANS')
             ->selectRaw('(SELECT COUNT(t.ID_TRANS) FROM `transaction` t WHERE t.ID_TYPE = 1 AND t.ID_SHOP = `md_shop`.`ID_SHOP` GROUP BY t.ID_SHOP ) as TOT_TRANS, (SELECT SUM(td.QTY_TD) FROM `transaction` t LEFT JOIN transaction_detail td ON td.ID_TRANS = t.ID_TRANS WHERE td.ID_SHOP = `md_shop`.`ID_SHOP` AND t.ID_USER = "' . $id_user . '" GROUP BY t.ID_SHOP) as TOTAL')
@@ -88,7 +87,6 @@ class DetailTransController extends Controller
             ->whereIn('md_shop.ID_SHOP', $shop_id_trans)
             ->groupBy('md_shop.ID_SHOP')
             ->get();
-            dd(DB::getQueryLog());exit;
 
         $data['shop_no_trans'] = DB::table('md_shop')
         ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'transaction.ISTRANS_TRANS')
