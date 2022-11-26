@@ -54,9 +54,9 @@
  <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
  <script src="{{ asset('vendor/select2/js/select2.full.min.js') }}"></script>
  <!-- pickdate -->
- <script src="./vendor/pickadate/picker.js"></script>
- <script src="./vendor/pickadate/picker.time.js"></script>
- <script src="./vendor/pickadate/picker.date.js"></script>
+ <script src="{{ asset('vendor/pickadate/picker.js') }}"></script>
+ <script src="{{ asset('vendor/pickadate/picker.time.js') }}"></script>
+ <script src="{{ asset('vendor/pickadate/picker.date.js') }}"></script>
 
  <script>
  	$(document).ready(function() {
