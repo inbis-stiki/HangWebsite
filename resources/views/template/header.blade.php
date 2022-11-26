@@ -28,8 +28,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
 
     <!-- Pick date -->
-    <link rel="stylesheet" href="./vendor/pickadate/themes/default.css">
-    <link rel="stylesheet" href="./vendor/pickadate/themes/default.date.css">
+    <link rel="stylesheet" href="{{ asset('vendor/pickadate/themes/default.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendor/pickadate/themes/default.date.css') }}">
 
     <!-- Mapbox -->
     <!-- <link href="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css" rel="stylesheet"> -->
@@ -39,9 +39,9 @@
 
     {{-- FlatPicker --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script>
+    <!-- <script>
         $.fn.dataTable.ext.errMode = 'throw';
-    </script>
+    </script> -->
 </head>
 
 <body>

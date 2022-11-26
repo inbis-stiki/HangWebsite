@@ -27,6 +27,7 @@
                             $no = 0;
                             $coords = array();
                             $other_coords = array();
+                            $other_coords_con2 = array();
                             foreach ($transaction as $data_spread) :
                             ?>
                                 <div class="accordion__item">
@@ -98,16 +99,26 @@
                                 </div>
 
                             <?php
-                                array_push(
-                                    $coords,
-                                    array('loc' => $data_spread['NAME_SHOP'], 'lat' => $data_spread['LAT_TRANS'], 'lng' => $data_spread['LONG_TRANS'], 'total' => $data_spread['TOTAL'])
-                                );
                                 $no++;
                             endforeach;
+
+                            foreach ($shop_trans as $other_shop) {
+                                array_push(
+                                    $coords,
+                                    array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP, 'total' => $other_shop->TOTAL)
+                                );
+                            }
 
                             foreach ($shop_no_trans as $other_shop) {
                                 array_push(
                                     $other_coords,
+                                    array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)
+                                );
+                            }
+
+                            foreach ($shop_no_con2_trans as $other_shop) {
+                                array_push(
+                                    $other_coords_con2,
                                     array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)
                                 );
                             }
@@ -207,7 +218,22 @@
                                         },
                                         'properties': {
                                             "title": "<?= $other_coords[$i]['loc']; ?>",
-                                            "description": "<strong><?= $other_coords[$i]['loc']; ?></strong>",
+                                            "description": "<strong><?= $other_coords[$i]['loc']; ?></strong><p>Toko dengan transaksi lain</p>",
+                                            "iconSize": [40, 40]
+                                        }
+                                    },
+                                <?php } ?>
+                                <?php for ($i = 0; $i < count($other_coords_con2); $i++) { ?> {
+                                        'type': 'Feature',
+                                        'geometry': {
+                                            'type': 'Point',
+                                            // 'coordinates': [Longitude, Latitude]
+                                            'coordinates': [<?= $other_coords_con2[$i]['lng']; ?>, <?= $other_coords_con2[$i]['lat']; ?>]
+                                        },
+                                        'properties': {
+                                            "title": "<?= $other_coords_con2[$i]['loc']; ?>",
+                                            "description": "<strong><?= $other_coords_con2[$i]['loc']; ?></strong><p>Toko tidak melakukan transaksi</p>",
+                                            "availability": 'Available-con2',
                                             "iconSize": [40, 40]
                                         }
                                     },
@@ -229,16 +255,22 @@
                             closeOnClick: false
                         });
 
-                        // Get marker image
+                        // Get marker image TotalTrans = 0
                         map.loadImage('<?= asset('images/icon/marker-red.png'); ?>', (err, image) => {
                             if (err) console.error(err);
                             map.addImage('marker', image);
                         });
 
-                        // Get marker image-2
+                        // Get marker image isTrans = 0
+                        map.loadImage('<?= asset('images/icon/marker-blue.png'); ?>', (err, image3) => {
+                            if (err) console.error(err);
+                            map.addImage('marker-2', image3);
+                        });
+
+                        // Get marker image
                         map.loadImage('<?= asset('images/icon/marker-green.png'); ?>', (err, image2) => {
                             if (err) console.error(err);
-                            map.addImage('marker-2', image2);
+                            map.addImage('marker-3', image2);
                         });
 
                         map.setRenderWorldCopies(false);
@@ -263,7 +295,7 @@
                                 <label>
                                     <input type="checkbox" id="filterToggle">
                                     <span class="checkmark"></span>
-                                    &nbsp&nbspShow All Shop
+                                    &nbsp&nbspShow Shop With Other Transaction
                                 </label>
                                 </div>
                             `;
@@ -285,7 +317,7 @@
 
                         // Add markers to map
                         function createMapMarkers() {
-                            // Add source data
+                            // Add source data TotalTrans = 0
                             map.addSource('properties', {
                                 type: 'geojson',
                                 data: {
@@ -297,7 +329,7 @@
                                 clusterRadius: 40,
                             });
 
-                            // Add markers
+                            // Add markers TotalTrans = 0
                             map.addLayer({
                                 id: 'property-layer',
                                 type: 'symbol',
@@ -319,23 +351,23 @@
                                 }
                             });
 
-                            // Add source data
-                            map.addSource('other-properties', {
+                            // Add source data isTrans = 0
+                            map.addSource('properties-con2', {
                                 type: 'geojson',
                                 data: {
                                     type: "FeatureCollection",
-                                    features: features.features.filter((property) => property.properties.availability === 'Available')
+                                    features: features.features.filter((property) => property.properties.availability === 'Available-con2')
                                 },
                                 cluster: true,
                                 clusterMaxZoom: 11,
                                 clusterRadius: 40,
                             });
 
-                            // Add markers
+                            // Add markers isTrans = 0
                             map.addLayer({
-                                id: 'other-property-layer',
+                                id: 'property-layer-con2',
                                 type: 'symbol',
-                                source: 'other-properties',
+                                source: 'properties-con2',
                                 filter: ['!has', 'point_count'],
                                 layout: {
                                     'symbol-placement': 'point',
@@ -353,56 +385,62 @@
                                 }
                             });
 
-                            // Add clusters
-                            map.addLayer({
-                                id: 'cluster-circles',
-                                type: 'circle',
-                                source: 'properties',
-                                filter: ['has', 'point_count'],
-                                paint: {
-                                    'circle-color': '#ffcd38',
-                                    'circle-radius': [
-                                        'step',
-                                        ['get', 'point_count'], 15, 10, 20, 25, 30, 50, 35, 75, 50,
-                                    ],
-                                    'circle-opacity': 0.85,
-                                    'circle-stroke-width': 3,
-                                    'circle-stroke-color': '#fff',
-                                    'circle-stroke-opacity': 0.5,
-                                }
+                            // Add source data no condition
+                            map.addSource('other-properties', {
+                                type: 'geojson',
+                                data: {
+                                    type: "FeatureCollection",
+                                    features: features.features.filter((property) => property.properties.availability === 'Available')
+                                },
+                                cluster: true,
+                                clusterMaxZoom: 11,
+                                clusterRadius: 40,
                             });
 
-                            // Add cluster counter
+                            // Add markers no condition
                             map.addLayer({
-                                id: 'cluster-count',
+                                id: 'other-property-layer',
                                 type: 'symbol',
-                                source: 'properties',
-                                filter: ['has', 'point_count'],
+                                source: 'other-properties',
+                                filter: ['!has', 'point_count'],
                                 layout: {
-                                    'text-field': '{point_count_abbreviated}',
-                                    'text-size': 12,
-                                },
-                                paint: {
-                                    'text-color': '#111'
+                                    'symbol-placement': 'point',
+                                    'icon-image': 'marker-3',
+                                    'icon-size': 1,
+                                    'icon-anchor': 'bottom',
+                                    'icon-allow-overlap': true,
+                                    'text-field': ['get', 'title'],
+                                    'text-font': [
+                                        'Open Sans Semibold',
+                                        'Arial Unicode MS Bold'
+                                    ],
+                                    'text-offset': [0, 0],
+                                    'text-anchor': 'top'
                                 }
                             });
 
                             // Set up filtering
                             const filterToggle = document.getElementById('filterToggle');
+                            map.getSource('properties').setData({
+                                type: "FeatureCollection",
+                                features: features.features.filter((property) => property.properties.availability === 'Available-con2')
+                            });
                             filterToggle.addEventListener('change', function(e) {
-                                let properties;
+                                let properties_data;
                                 if (this.checked) {
-                                    properties = features;
+                                    properties_data = features;
                                 } else {
-                                    properties = {
+                                    properties_data = {
                                         type: "FeatureCollection",
-                                        features: features.features.filter((property) => property.properties.availability === 'Available')
+                                        features: features.features.filter((property) => property.properties.availability === 'Available-con2')
                                     }
                                 }
-                                map.getSource('properties').setData(properties);
+                                map.getSource('properties').setData(properties_data);
                             });
+                            // End Filtering
 
-                            // Set Popup
+                            // POPUP
+                            // Set Popup TotalTrans = 0
                             map.on('mouseenter', 'other-property-layer', (e) => {
                                 // Change the cursor style as a UI indicator.
                                 map.getCanvas().style.cursor = 'pointer';
@@ -421,7 +459,7 @@
                                 popup.remove();
                             });
 
-                            // Set Popup 2
+                            // Set Popup no condition
                             map.on('mouseenter', 'property-layer', (e) => {
                                 // Change the cursor style as a UI indicator.
                                 map.getCanvas().style.cursor = 'pointer';
@@ -438,6 +476,59 @@
                             map.on('mouseleave', 'property-layer', () => {
                                 map.getCanvas().style.cursor = '';
                                 popup.remove();
+                            });
+
+                            // Set Popup no condition
+                            map.on('mouseenter', 'property-layer-con2', (e) => {
+                                // Change the cursor style as a UI indicator.
+                                map.getCanvas().style.cursor = 'pointer';
+
+                                // Copy coordinates array.
+                                const coordinates = e.features[0].geometry.coordinates.slice();
+                                const description = e.features[0].properties.description;
+                                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                                }
+                                popup.setLngLat(coordinates).setHTML(description).addTo(map);
+                            });
+
+                            map.on('mouseleave', 'property-layer-con2', () => {
+                                map.getCanvas().style.cursor = '';
+                                popup.remove();
+                            });
+                            // END POPUP
+
+                            // Add clusters
+                            map.addLayer({
+                                id: 'cluster-circles',
+                                type: 'circle',
+                                source: 'properties',
+                                filter: ['has', 'point_count'],
+                                paint: {
+                                    'circle-color': '#f26f21',
+                                    'circle-radius': [
+                                        'step',
+                                        ['get', 'point_count'], 15, 10, 20, 25, 30, 50, 35, 75, 50,
+                                    ],
+                                    'circle-opacity': 1,
+                                    'circle-stroke-width': 1,
+                                    'circle-stroke-color': '#fff',
+                                    'circle-stroke-opacity': 0.5,
+                                }
+                            });
+                            // Add cluster counter
+                            map.addLayer({
+                                id: 'cluster-count',
+                                type: 'symbol',
+                                source: 'properties',
+                                filter: ['has', 'point_count'],
+                                layout: {
+                                    'text-field': '{point_count_abbreviated}',
+                                    'text-size': 12,
+                                },
+                                paint: {
+                                    'text-color': '#fff'
+                                }
                             });
                         }
                     </script>
