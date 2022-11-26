@@ -80,121 +80,79 @@ class DetailTransController extends Controller
                 array_push($shop_id_trans, $Item_ts->ID_SHOP);
             }
         }
-
-        $data['shop_trans'] = array();
-        $data['shop_no_trans'] = array();
-        $data['shop_no_con2_trans'] = array();
-
-        foreach ($shop_id_trans as $item) {
-            $shop_trans = DB::table('md_shop')
-                ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'transaction.ISTRANS_TRANS')
-                ->selectRaw('(
-                        SELECT
-                            COUNT(t.ID_TRANS)
-                        FROM
-                            `transaction` t
-                        WHERE
-                            t.ID_TYPE = 1
-                            AND t.ID_SHOP = `md_shop`.`ID_SHOP`
-                        GROUP BY
-                            t.ID_SHOP
-                        ) as TOT_TRANS,
-                        (
-                            SELECT
-                                SUM(td.QTY_TD)
-                            FROM
-                                `transaction` t
-                            LEFT JOIN transaction_detail td ON
-                                    td.ID_TRANS = t.ID_TRANS
-                            WHERE
-                                td.ID_SHOP = `md_shop`.`ID_SHOP`
-                                AND t.ID_USER = "' . $id_user . '"
-                            GROUP BY
-                                t.ID_SHOP
-                        ) as TOTAL')
-                ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
-                ->where('md_shop.ID_SHOP', $item)
-                ->groupBy('md_shop.ID_SHOP')
-                ->first();
-            array_push($data['shop_trans'], $shop_trans);
-        }
-
-        $shop_id_no_trans = array();
-        $shop_no_trans = DB::table('md_shop')
+        DB::enableQueryLog();
+        $data['shop_trans'] = DB::table('md_shop')
             ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'transaction.ISTRANS_TRANS')
-            ->selectRaw('(
-                SELECT
-                    COUNT(t.ID_TRANS)
-                FROM
-                    `transaction` t
-                WHERE
-                    t.ID_TYPE = 1
-                    AND t.ID_SHOP = `md_shop`.`ID_SHOP`
-                GROUP BY
-                    t.ID_SHOP
-                ) as TOT_TRANS,
-                (
-                    SELECT
-                        SUM(td.QTY_TD)
-                    FROM
-                        `transaction` t
-                    LEFT JOIN transaction_detail td ON
-                            td.ID_TRANS = t.ID_TRANS
-                    WHERE
-                        td.ID_SHOP = `md_shop`.`ID_SHOP`
-                        AND t.ID_USER = "' . $id_user . '"
-                    GROUP BY
-                        t.ID_SHOP
-                ) as TOTAL')
+            ->selectRaw('(SELECT COUNT(t.ID_TRANS) FROM `transaction` t WHERE t.ID_TYPE = 1 AND t.ID_SHOP = `md_shop`.`ID_SHOP` GROUP BY t.ID_SHOP ) as TOT_TRANS, (SELECT SUM(td.QTY_TD) FROM `transaction` t LEFT JOIN transaction_detail td ON td.ID_TRANS = t.ID_TRANS WHERE td.ID_SHOP = `md_shop`.`ID_SHOP` AND t.ID_USER = "' . $id_user . '" GROUP BY t.ID_SHOP) as TOTAL')
             ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
-            ->where('transaction.ISTRANS_TRANS', 1)
+            ->whereIn('md_shop.ID_SHOP', $shop_id_trans)
             ->groupBy('md_shop.ID_SHOP')
             ->get();
+            dd(DB::getQueryLog());exit;
 
-        for ($i = 0; $i < count($shop_no_trans); $i++) {
-            if (!in_array($shop_no_trans[$i]->ID_SHOP, $shop_id_trans)) {
-                array_push($data['shop_no_trans'], $shop_no_trans[$i]);
-                array_push($shop_id_no_trans, $shop_no_trans[$i]->ID_SHOP);
-            }
-        }
-
-        $shop_no_con2_trans = DB::table('md_shop')
-            ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'transaction.ISTRANS_TRANS')
-            ->selectRaw('(
+        $data['shop_no_trans'] = DB::table('md_shop')
+        ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'transaction.ISTRANS_TRANS')
+        ->selectRaw('(
+            SELECT
+                COUNT(t.ID_TRANS)
+            FROM
+                `transaction` t
+            WHERE
+                t.ID_TYPE = 1
+                AND t.ID_SHOP = `md_shop`.`ID_SHOP`
+            GROUP BY
+                t.ID_SHOP
+            ) as TOT_TRANS,
+            (
                 SELECT
-                    COUNT(t.ID_TRANS)
+                    SUM(td.QTY_TD)
                 FROM
                     `transaction` t
+                LEFT JOIN transaction_detail td ON
+                        td.ID_TRANS = t.ID_TRANS
                 WHERE
-                    t.ID_TYPE = 1
-                    AND t.ID_SHOP = `md_shop`.`ID_SHOP`
+                    td.ID_SHOP = `md_shop`.`ID_SHOP`
+                    AND t.ID_USER = "' . $id_user . '"
                 GROUP BY
                     t.ID_SHOP
-                ) as TOT_TRANS,
-                (
-                    SELECT
-                        SUM(td.QTY_TD)
-                    FROM
-                        `transaction` t
-                    LEFT JOIN transaction_detail td ON
-                            td.ID_TRANS = t.ID_TRANS
-                    WHERE
-                        td.ID_SHOP = `md_shop`.`ID_SHOP`
-                        AND t.ID_USER = "' . $id_user . '"
-                    GROUP BY
-                        t.ID_SHOP
-                ) as TOTAL')
-            ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
-            ->where('transaction.ISTRANS_TRANS', 0)
-            ->orWhereRaw('transaction.ISTRANS_TRANS IS NULL')
-            ->groupBy('md_shop.ID_SHOP')
-            ->get();
+            ) as TOTAL')
+        ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
+        ->where('transaction.ISTRANS_TRANS', 1)
+        ->whereNotIn('md_shop.ID_SHOP', $shop_id_trans)
+        ->groupBy('md_shop.ID_SHOP')
+        ->get();
 
-        for ($i = 0; $i < count($shop_no_con2_trans); $i++) {
-            if (!in_array($shop_no_con2_trans[$i]->ID_SHOP, $shop_id_no_trans)) {
-                array_push($data['shop_no_con2_trans'], $shop_no_con2_trans[$i]);
-            }
-        }
+        $data['shop_no_con2_trans'] = DB::table('md_shop')
+        ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'transaction.ISTRANS_TRANS')
+        ->selectRaw('(
+            SELECT
+                COUNT(t.ID_TRANS)
+            FROM
+                `transaction` t
+            WHERE
+                t.ID_TYPE = 1
+                AND t.ID_SHOP = `md_shop`.`ID_SHOP`
+            GROUP BY
+                t.ID_SHOP
+            ) as TOT_TRANS,
+            (
+                SELECT
+                    SUM(td.QTY_TD)
+                FROM
+                    `transaction` t
+                LEFT JOIN transaction_detail td ON
+                        td.ID_TRANS = t.ID_TRANS
+                WHERE
+                    td.ID_SHOP = `md_shop`.`ID_SHOP`
+                    AND t.ID_USER = "' . $id_user . '"
+                GROUP BY
+                    t.ID_SHOP
+            ) as TOTAL')
+        ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
+        ->whereRaw("transaction.ISTRANS_TRANS = 0 OR transaction.ISTRANS_TRANS IS NULL")
+        ->whereNotIn('md_shop.ID_SHOP', $shop_id_trans)
+        ->groupBy('md_shop.ID_SHOP')
+        ->get();
 
         return view('transaction/detail_spread', $data);
     }
