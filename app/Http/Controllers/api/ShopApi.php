@@ -108,6 +108,7 @@ class ShopApi extends Controller
                 $shop->TELP_SHOP            = $req->input('telp_shop');
                 $shop->LONG_SHOP            = $req->input('long_shop');
                 $shop->LAT_SHOP             = $req->input('lat_shop');
+                $shop->ISRECOMMEND_SHOP     = "1";
                 $shop->PHOTO_SHOP           = Storage::disk('s3')->url($path);
                 $shop->save();
 
