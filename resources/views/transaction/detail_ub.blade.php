@@ -31,7 +31,7 @@
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false">
                                         <span class="accordion__header--text"><?= $data_ub['LOCATION']; ?></span>
-                                        <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_ub['DATE_TRANS']), 'H:i'); ?></span>
+                                        <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_ub['DATE_TRANS']), 'j F Y - H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
                                     <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body">

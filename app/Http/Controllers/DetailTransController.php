@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\CategoryProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,6 +17,10 @@ class DetailTransController extends Controller
         $date           = $req->input('date');
         $type           = $req->input('type');
         $area           = $req->input('area');
+        
+        $data['all_sell']       = 0;
+        $data['prodCats']       = CategoryProduct::where('deleted_at', null)->get();
+        $data['transDetails']   = array();
 
         $transaction = DB::table('transaction')
             ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'md_shop.ID_SHOP', 'md_shop.DETLOC_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP')
@@ -39,7 +44,7 @@ class DetailTransController extends Controller
         foreach ($transaction as $Item_ts) {
             $data_ts_detail = array();
             $transaction_detail       = DB::table('transaction_detail')
-                ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT')
+                ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT', 'md_product.ID_PC')
                 ->join('transaction', 'transaction_detail.ID_TRANS', '=', 'transaction.ID_TRANS')
                 ->join('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
                 ->where('transaction_detail.ID_TRANS', $Item_ts->ID_TRANS)
@@ -52,7 +57,12 @@ class DetailTransController extends Controller
                     $data_ts_detail,
                     $ts_detail
                 );
+
+                if(empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
+                if(empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
+                $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] += $ts_detail->QTY_TD;
             }
+            $data['all_sell'] += $TOT_PRODUCT;
 
             $data_image_trans = array();
             $transaction_image       = DB::table('transaction_image')
@@ -125,7 +135,8 @@ class DetailTransController extends Controller
             ) as TOTAL')
             ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
             ->whereIn('md_shop.ID_DISTRICT', $data_area)
-            ->where('transaction.ISTRANS_TRANS', 1)
+            ->where('transaction.DATE_TRANS', '!=', $date)
+            // ->where('transaction.ISTRANS_TRANS', 1)
             ->whereNotIn('md_shop.ID_SHOP', $shop_id_trans)
             ->groupBy('md_shop.ID_SHOP')
             ->get();
@@ -158,7 +169,8 @@ class DetailTransController extends Controller
                 ) as TOTAL')
             ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
             ->whereIn('md_shop.ID_DISTRICT', $data_area)
-            ->where('transaction.ISTRANS_TRANS', NULL)
+            ->where('transaction.DATE_TRANS', 'like', $date . '%')
+            ->where('transaction.ISTRANS_TRANS', 0)
             ->whereNotIn('md_shop.ID_SHOP', $shop_id_trans)
             ->groupBy('md_shop.ID_SHOP')
             ->get();
