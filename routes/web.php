@@ -156,6 +156,9 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('master/activity-category/update', 'ActivityCategoryController@update');
     
     //LAPORAN
+    Route::get('laporan/lpr-shop', 'ReportShopController@index');
+    Route::post('laporan/lpr-shop/download', 'ReportShopController@download');
+    Route::get('laporan/lpr-shop/{any}', 'ReportShopController@get');
     Route::get('laporan/lpr-ranking', 'ReportRankingController@index');
     Route::get('laporan/lpr-trend', 'ReportTrendController@index');
     Route::get('laporan/lpr-transaction', 'ReportTransactionController@index');
