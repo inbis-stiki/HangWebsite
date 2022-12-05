@@ -35,6 +35,7 @@
                     </div>
                 </a>
                 <ul class="" aria-expanded="false">
+                    <li><a href="{{ url('laporan/lpr-shop') }}">Toko</a></li>
                     <li><a href="{{ url('laporan/lpr-ranking') }}">Ranking</a></li>
                     <li><a href="{{ url('laporan/lpr-trend') }}">Trend</a></li>
                     <li><a href="{{ url('laporan/lpr-transaction') }}">Transaksi Harian</a></li>
@@ -79,7 +80,7 @@
                             </li>
                         </ul>
                     </li>
-                    @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 4)
+                    @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 3 || Session::get('role') == 4)
                         <li><a href="{{ url('master/shop') }}">Toko</a></li>
                     @endif
                     @if (Session::get('role') == 1 || Session::get('role') == 2)

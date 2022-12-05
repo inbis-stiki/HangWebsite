@@ -174,6 +174,13 @@
                                             </div>
                                             <span class="fs-20 text-black d-block mb-3">Produk Terjual</span>
                                             @foreach ($data_spread['DETAIL'] as $data_spread_detail)
+                                            @if ($data_spread_detail == NULL)
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <p class="fs-18 ml-3">Anda Belum Transaksi</p>
+                                                </div>
+                                            </div>
+                                            @else
                                             <div class="row">
                                                 <div class="col-md-8">
                                                     <p class="fs-18 ml-3"><?= $data_spread_detail->NAME_PRODUCT; ?></p>
@@ -185,6 +192,8 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
+
                                             @endforeach
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
