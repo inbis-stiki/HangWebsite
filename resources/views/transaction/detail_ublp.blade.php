@@ -30,7 +30,7 @@
                             ?>
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false">
-                                        <span class="accordion__header--text"><?= $data_ublp['LOCATION']; ?></span>
+                                        <span class="accordion__header--text"><?= (!empty($data_ublp['LOCATION'])) ? $data_ublp['LOCATION'] : "Tidak Ada Detail Lokasi"; ?></span>
                                         <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_ublp['DATE_TRANS']), 'j F Y - H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
@@ -54,7 +54,7 @@
                                                     <p class="fs-18 ml-3">Alamat</p>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <p class="fs-18 float-right"><?= $data_ublp['LOCATION']; ?></p>
+                                                    <p class="fs-18 float-right"><?= (!empty($data_ublp['LOCATION'])) ? $data_ublp['LOCATION'] : "Tidak Ada Detail Lokasi"; ?></p>
                                                 </div>
                                             </div>
                                             <span class="fs-20 text-black d-block mb-3">Produk Terjual</span>
@@ -73,36 +73,56 @@
                                             @endforeach
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
-                                                <?php if (!empty($data_ublp['IMAGE'])) { ?>
-                                                    <div class="col-md-12 d-flex">
+                                                <div class="col-md-12 d-flex">
+                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][0]) || !empty($data_ublp['IMAGE'][0]['desc'][0])) { ?>
                                                         <div class="form-group col-md-6">
                                                             <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
                                                             <br>
                                                             <img src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                         </div>
+                                                    <?php } else { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">NO IMAGE</label>
+                                                        </div>
+                                                    <?php } ?>
+
+                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][1]) || !empty($data_ublp['IMAGE'][0]['desc'][1])) { ?>
                                                         <div class="form-group col-md-6">
                                                             <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
                                                             <br>
                                                             <img src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-12 d-flex">
+                                                    <?php } else { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">NO IMAGE</label>
+                                                        </div>
+                                                    <?php } ?>
+                                                </div>
+                                                <div class="col-md-12 d-flex">
+                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][2]) || !empty($data_ublp['IMAGE'][0]['desc'][2])) { ?>
                                                         <div class="form-group col-md-6">
                                                             <label for=""><?= $data_ublp['IMAGE'][0]['desc'][2]; ?></label>
                                                             <br>
                                                             <img src="<?= $data_ublp['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                         </div>
+                                                    <?php } else { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">NO IMAGE</label>
+                                                        </div>
+                                                    <?php } ?>
+
+                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][3]) || !empty($data_ublp['IMAGE'][0]['desc'][3])) { ?>
                                                         <div class="form-group col-md-6">
                                                             <label for=""><?= $data_ublp['IMAGE'][0]['desc'][3]; ?></label>
                                                             <br>
                                                             <img src="<?= $data_ublp['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                         </div>
-                                                    </div>
-                                                <?php } else { ?>
-                                                    <div class="form-group col-md-12">
-                                                        <label for="">NO IMAGE</label>
-                                                    </div>
-                                                <?php } ?>
+                                                    <?php } else { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="">NO IMAGE</label>
+                                                        </div>
+                                                    <?php } ?>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -111,7 +131,7 @@
                             <?php
                                 array_push(
                                     $coords,
-                                    array('loc' => $data_ublp['LOCATION'], 'lat' => $data_ublp['LAT_TRANS'], 'lng' => $data_ublp['LONG_TRANS'], 'total' => $data_ublp['TOTAL'])
+                                    array('loc' => ((!empty($data_ublp['LOCATION'])) ? $data_ublp['LOCATION'] : "Tidak Ada Detail Lokasi"), 'lat' => $data_ublp['LAT_TRANS'], 'lng' => $data_ublp['LONG_TRANS'], 'total' => $data_ublp['TOTAL'])
                                 );
                                 $no++;
                             endforeach;

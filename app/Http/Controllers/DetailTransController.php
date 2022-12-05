@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\CategoryProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Session;
 
 class DetailTransController extends Controller
 {
@@ -16,14 +17,13 @@ class DetailTransController extends Controller
         $id_user        = $req->input('id_user');
         $date           = $req->input('date');
         $type           = $req->input('type');
-        $area           = $req->input('area');
-        
+                
         $data['all_sell']       = 0;
         $data['prodCats']       = CategoryProduct::where('deleted_at', null)->get();
         $data['transDetails']   = array();
 
         $transaction = DB::table('transaction')
-            ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'md_shop.ID_SHOP', 'md_shop.DETLOC_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP')
+            ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'user.ID_AREA', 'md_shop.ID_SHOP', 'md_shop.DETLOC_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP')
             ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
             ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
@@ -33,10 +33,12 @@ class DetailTransController extends Controller
             ->orderBy('transaction.DATE_TRANS', 'DESC')
             ->get();
 
+        $area = $transaction[0]->ID_AREA;
+        
         $data_area = DB::table('md_district')
             ->select('md_district.ID_DISTRICT')
             ->leftJoin('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
-            ->where('md_area.NAME_AREA', $area)
+            ->where('md_area.ID_AREA', $area)
             ->get()->pluck('ID_DISTRICT')->toArray();
 
         $data['transaction'] = array();
@@ -301,7 +303,6 @@ class DetailTransController extends Controller
                     )
                 );
             }
-
             array_push(
                 $data['transaction'],
                 array(

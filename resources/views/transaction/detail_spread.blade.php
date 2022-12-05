@@ -69,7 +69,7 @@
                                             $isActive = "active";
                                             @endphp
                                             @foreach ($prodCats as $prodCat)
-                                            <div id="navpills2-{{ $prodCat->ID_PC }}" class="tab-pane {{ $isActive }}">
+                                            <div id="navpills2-{{ $prodCat->ID_PC }}" class="tab-pane {{ $isActive }}" style="height: 290px;overflow: hidden;overflow-y: scroll;">
                                                 <div class="table-responsive">
                                                     <table class="table table-bordered">
                                                         <thead>
@@ -115,7 +115,7 @@
                         <div class="row">
                             <div class="col-lg-8 overflow-hidden">
                                 <div id='map'></div>
-                                <canvas id="canvasID" style="border-radius: 10px" height="480">Canvas not supported</canvas>
+                                <canvas id="canvasID" style="border-radius: 10px" height="780">Canvas not supported</canvas>
                             </div>
                             <div class="col-4">
                                 <div class="row">
@@ -198,16 +198,23 @@
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
                                                 <div class="col-md-12 d-flex">
-                                                    <?php if (!empty($data_spread['IMAGE'])) { ?>
+                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][0]) || !empty($data_ublp['IMAGE'][0]['desc'][0])) { ?>
                                                         <div class="form-group col-md-6">
-                                                            <label for="">Foto 1</label>
+                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
                                                             <br>
-                                                            <img src="<?= $data_spread['IMAGE'][0][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                         </div>
+                                                    <?php } else { ?>
                                                         <div class="form-group col-md-6">
-                                                            <label for="">Foto 2</label>
+                                                            <label for="">NO IMAGE</label>
+                                                        </div>
+                                                    <?php } ?>
+
+                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][1]) || !empty($data_ublp['IMAGE'][0]['desc'][1])) { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
                                                             <br>
-                                                            <img src="<?= $data_spread['IMAGE'][0][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
@@ -282,7 +289,7 @@
                     <style>
                         #map {
                             width: 100%;
-                            height: 480px;
+                            height: 640px;
                             border-radius: 10px;
                         }
 
