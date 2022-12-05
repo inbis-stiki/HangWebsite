@@ -37,7 +37,7 @@
                                 $totNoTrans = count($shop_no_con2_trans);
                                 $totAllTrans = $totTrans + $totNoTrans;
                                 @endphp
-                                <h1 class="text-primary">{{ ($totNoTrans != 0 ? number_format(($totTrans / $totNoTrans)*100, 0) : "100") }}%</h1>
+                                <h1 class="text-primary">{{ ($totNoTrans != 0 ? number_format(($totNoTrans / $totTrans)*100, 0) : "100") }}%</h1>
                                 <small class="text-default">{{ $totTrans }} Transaksi dari {{ $totAllTrans }} Kunjungan</small>
                             </div>
                         </div>
