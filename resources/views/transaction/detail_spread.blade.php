@@ -33,11 +33,11 @@
                             </div>
                             <div class="card-body text-center">
                                 @php
-                                    $totTrans       = count($transaction);
-                                    $totNoTrans     = count($shop_no_con2_trans);
-                                    $totAllTrans    = $totTrans + $totNoTrans;
+                                $totTrans = count($transaction);
+                                $totNoTrans = count($shop_no_con2_trans);
+                                $totAllTrans = $totTrans + $totNoTrans;
                                 @endphp
-                                <h1 class="text-primary">{{ ($totNoTrans != 0 ? number_format(($totTrans / $totNoTrans)*100, 0) : "100") }}%</h1>
+                                <h1 class="text-primary">{{ ($totNoTrans != 0 ? number_format(($totTrans / $totAllTrans)*100, 0) : "100") }}%</h1>
                                 <small class="text-default">{{ $totTrans }} Transaksi dari {{ $totAllTrans }} Kunjungan</small>
                             </div>
                         </div>
@@ -54,48 +54,48 @@
                                     <div class="card-body">
                                         <ul class="nav nav-pills justify-content-center mb-2">
                                             @php
-                                                $isActive = "active";
+                                            $isActive = "active";
                                             @endphp
                                             @foreach ($prodCats as $prodCat)
-                                                <li class=" nav-item">
-                                                    <a href="#navpills2-{{ $prodCat->ID_PC }}" class="nav-link {{ $isActive }}" style="font-size: 10px;" data-toggle="tab" aria-expanded="false">{{ $prodCat->NAME_PC }}</a>
-                                                </li>
-                                                
-                                                @php $isActive = "";@endphp
+                                            <li class=" nav-item">
+                                                <a href="#navpills2-{{ $prodCat->ID_PC }}" class="nav-link {{ $isActive }}" style="font-size: 10px;" data-toggle="tab" aria-expanded="false">{{ $prodCat->NAME_PC }}</a>
+                                            </li>
+
+                                            @php $isActive = "";@endphp
                                             @endforeach
                                         </ul>
                                         <div class="tab-content">
                                             @php
-                                                $isActive = "active";
+                                            $isActive = "active";
                                             @endphp
-                                            @foreach ($prodCats as $prodCat)    
-                                                <div id="navpills2-{{ $prodCat->ID_PC }}" class="tab-pane {{ $isActive }}">
-                                                    <div class="table-responsive">
-                                                        <table class="table table-bordered">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th class="fs-12" scope="col">Nama</th>
-                                                                    <th class="fs-12" scope="col" width="10%">Qty</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @if (!empty($transDetails[$prodCat->ID_PC]))
-                                                                    @foreach ($transDetails[$prodCat->ID_PC] as $name => $total)    
-                                                                        <tr class="alert alert-dismissible fs-12">
-                                                                            <td>{{  $name }} </td>
-                                                                            <td>{{ $total }}</td>
-                                                                        </tr>
-                                                                    @endforeach    
-                                                                @else
-                                                                        <tr>
-                                                                            <td colspan="2" class="text-center fs-12">Tidak ada transaksi</td>
-                                                                        </tr>
-                                                                @endif
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
+                                            @foreach ($prodCats as $prodCat)
+                                            <div id="navpills2-{{ $prodCat->ID_PC }}" class="tab-pane {{ $isActive }}" style="height: 290px;overflow: hidden;overflow-y: scroll;">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="fs-12" scope="col">Nama</th>
+                                                                <th class="fs-12" scope="col" width="10%">Qty</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if (!empty($transDetails[$prodCat->ID_PC]))
+                                                            @foreach ($transDetails[$prodCat->ID_PC] as $name => $total)
+                                                            <tr class="alert alert-dismissible fs-12">
+                                                                <td>{{ $name }} </td>
+                                                                <td>{{ $total }}</td>
+                                                            </tr>
+                                                            @endforeach
+                                                            @else
+                                                            <tr>
+                                                                <td colspan="2" class="text-center fs-12">Tidak ada transaksi</td>
+                                                            </tr>
+                                                            @endif
+                                                        </tbody>
+                                                    </table>
                                                 </div>
-                                                @php $isActive = "";@endphp
+                                            </div>
+                                            @php $isActive = "";@endphp
                                             @endforeach
                                         </div>
                                     </div>
@@ -115,7 +115,7 @@
                         <div class="row">
                             <div class="col-lg-8 overflow-hidden">
                                 <div id='map'></div>
-                                <canvas id="canvasID" style="border-radius: 10px" height="480">Canvas not supported</canvas>
+                                <canvas id="canvasID" style="border-radius: 10px" height="780">Canvas not supported</canvas>
                             </div>
                             <div class="col-4">
                                 <div class="row">
@@ -174,6 +174,13 @@
                                             </div>
                                             <span class="fs-20 text-black d-block mb-3">Produk Terjual</span>
                                             @foreach ($data_spread['DETAIL'] as $data_spread_detail)
+                                            @if ($data_spread_detail == NULL)
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <p class="fs-18 ml-3">Anda Belum Transaksi</p>
+                                                </div>
+                                            </div>
+                                            @else
                                             <div class="row">
                                                 <div class="col-md-8">
                                                     <p class="fs-18 ml-3"><?= $data_spread_detail->NAME_PRODUCT; ?></p>
@@ -185,20 +192,29 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
+
                                             @endforeach
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
                                                 <div class="col-md-12 d-flex">
-                                                    <?php if (!empty($data_spread['IMAGE'])) { ?>
+                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][0]) || !empty($data_ublp['IMAGE'][0]['desc'][0])) { ?>
                                                         <div class="form-group col-md-6">
-                                                            <label for="">Foto 1</label>
+                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
                                                             <br>
-                                                            <img src="<?= $data_spread['IMAGE'][0][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                         </div>
+                                                    <?php } else { ?>
                                                         <div class="form-group col-md-6">
-                                                            <label for="">Foto 2</label>
+                                                            <label for="">NO IMAGE</label>
+                                                        </div>
+                                                    <?php } ?>
+
+                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][1]) || !empty($data_ublp['IMAGE'][0]['desc'][1])) { ?>
+                                                        <div class="form-group col-md-6">
+                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
                                                             <br>
-                                                            <img src="<?= $data_spread['IMAGE'][0][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
@@ -273,7 +289,7 @@
                     <style>
                         #map {
                             width: 100%;
-                            height: 480px;
+                            height: 640px;
                             border-radius: 10px;
                         }
 
