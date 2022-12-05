@@ -12,6 +12,9 @@ class AuthController extends Controller
 {
     public function login()
     {
+        if(!empty(session('role'))){
+            return redirect('dashboard');
+        }
         return view("login");
     }
 
