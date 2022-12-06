@@ -61,10 +61,10 @@ class PickupApi extends Controller
             $pickup->REMAININGSTOCK_PICKUP = $pickup->TOTAL_PICKUP;
             $pickup->save();
 
-            $transDaily = new TransactionDaily();
-            $transDaily->ID_USER = $req->input('id_user');
-            $transDaily->DATE_TD = $currDate;
-            $transDaily->save();
+            // $transDaily = new TransactionDaily();
+            // $transDaily->ID_USER = $req->input('id_user');
+            // $transDaily->DATE_TD = $currDate;
+            // $transDaily->save();
 
             return response([
                 "status_code"       => 200,

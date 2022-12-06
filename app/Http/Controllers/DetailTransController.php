@@ -13,6 +13,7 @@ class DetailTransController extends Controller
     {
         $data['title']          = "Detail Spreading";
         $data['sidebar']        = "transaksi";
+        $data['sidebar2']       = "transaksi";
 
         $id_user        = $req->input('id_user');
         $date           = $req->input('date');
@@ -169,7 +170,7 @@ class DetailTransController extends Controller
             ->groupBy('md_shop.ID_SHOP')
             ->get();
 
-        return view('transaction/detail_spread', $data);
+        return view('transaction.detail_spread', $data);
     }
 
     public function DetailUB(Request $req)
