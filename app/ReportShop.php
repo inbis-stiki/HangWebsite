@@ -65,7 +65,7 @@ class ReportShop
         $ObjSheet->getColumnDimension('G')->setWidth('20');
         $ObjSheet->getColumnDimension('H')->setWidth('20');
 
-        $ObjSheet->mergeCells('B2:H2')->setCellValue('B2', "NASIONAL")->getStyle('B2:H2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+        $ObjSheet->mergeCells('B2:H2')->setCellValue('B2', $param['location']->NAME_LOCATION)->getStyle('B2:H2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
         $ObjSheet->mergeCells('B3:B5')->setCellValue('B3', "NO")->getStyle('B3:B5')->applyFromArray($this->styling_title_template('FF66FF33', 'FF000000'));
         $ObjSheet->mergeCells('C3:C5')->setCellValue('C3', "Area")->getStyle('C3:C5')->applyFromArray($this->styling_title_template('FF66FF33', 'FF000000'));
         
