@@ -44,7 +44,8 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('dashboard/ranking_activity', 'DashboardController@ranking_activity');
     Route::get('dashboard/ranking_sale', 'DashboardController@ranking_sale');
     // Dashboard LineChart
-    Route::get('dashboard/trend_asmen', 'DashboardController@trend_asmen');
+    Route::post('dashboard/trend_asmen', 'DashboardController@trend_asmen');
+    Route::post('dashboard/trend_rpo', 'DashboardController@trend_rpo');
     // Dashboard DonutChart
     Route::post('dashboard/ranking_aktivitas', 'DashboardController@ranking_aktivitas');
     Route::post('dashboard/ranking_pencapaian', 'DashboardController@ranking_pencapaian');
@@ -134,6 +135,10 @@ Route::group(['middleware' => ['checkLogin']], function () {
         Route::get('master/role/update', 'RoleController@update');
         Route::get('master/role/destroy', 'RoleController@destroy');
     });
+
+    // MASTER MONITORING
+    Route::get('monitoring', 'MonitoringController@index');
+    Route::post('monitoring/monitoring-data', 'MonitoringController@monitoring_data');
 
     // PRESENCE
     Route::get('presence', 'PresenceController@index');
