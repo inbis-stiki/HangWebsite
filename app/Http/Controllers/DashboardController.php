@@ -16,8 +16,8 @@ class DashboardController extends Controller
         $data['title']      = "Dashboard";
         $data['sidebar']    = "dashboard";
         $data['location']   = DB::table('md_location')
-        ->where('md_location.deleted_at', '=' , NULL)
-        ->get();
+            ->where('md_location.deleted_at', '=', NULL)
+            ->get();
         $id_regional        = $req->session()->get('regional');
         ($req->session()->get('role') == 2) ? $data['area'] = DB::table('md_area')->get() : $data['area'] = DB::table('md_area')->where('md_area.ID_REGIONAL', '=', $id_regional)->get();
         return view('dashboard', $data);
@@ -28,34 +28,34 @@ class DashboardController extends Controller
         $month = date('n');
         $data = array();
         $user_regionals = DB::select("
-        SELECT
-        (
             SELECT
-                u.NAME_USER
+            (
+                SELECT
+                    u.NAME_USER
+                FROM
+                    `user` u
+                WHERE
+                    u.ID_ROLE = 4 
+                    AND u.ID_REGIONAL = mr.ID_REGIONAL
+                    LIMIT 1
+            ) AS NAME_USER,
+            (
+                SELECT
+                    u.ID_ROLE
+                FROM
+                    `user` u
+                WHERE
+                    u.ID_ROLE = 4 
+                    AND u.ID_REGIONAL = mr.ID_REGIONAL
+                    LIMIT 1
+            ) AS ROLE_USER,
+            mr.NAME_REGIONAL,
+            mr.ID_REGIONAL
             FROM
-                `user` u
+                md_regional mr,
+                md_location ml
             WHERE
-                u.ID_ROLE = 4 
-                AND u.ID_REGIONAL = mr.ID_REGIONAL
-                LIMIT 1
-        ) AS NAME_USER,
-        (
-            SELECT
-                u.ID_ROLE
-            FROM
-                `user` u
-            WHERE
-                u.ID_ROLE = 4 
-                AND u.ID_REGIONAL = mr.ID_REGIONAL
-                LIMIT 1
-        ) AS ROLE_USER,
-        mr.NAME_REGIONAL,
-        mr.ID_REGIONAL
-        FROM
-            md_regional mr,
-            md_location ml
-        WHERE
-            mr.ID_LOCATION = ml.ID_LOCATION           
+                mr.ID_LOCATION = ml.ID_LOCATION           
         ");
 
         foreach ($user_regionals as $user_regional) {
@@ -144,7 +144,12 @@ class DashboardController extends Controller
 
     public function ranking_activity()
     {
-        $ranking_activity = $this->AktivitasRPO();
+        $currDate = date('Y-m-d');
+        $ranking_activity = UserRankingActivity::select('NAME_USER', 'NAME_REGIONAL', 'NAME_AREA', 'AVERAGE')
+                ->whereDate('created_at', '=', $currDate)
+                ->orderBy('AVERAGE', 'DESC')
+                ->get();
+
         return json_encode($ranking_activity);
     }
 
@@ -285,65 +290,7 @@ class DashboardController extends Controller
         return json_encode($ranking_sale);
     }
 
-    public function presensi(Request $req)
-    {
-        $id_role  = $req->session()->get('role');
-        $id_regional  = $req->session()->get('regional');
-        $tgl_presence  = $req->input('filter_date');
-        $area  = $req->input('filter_area');
-
-        if ($id_role != 2 && $id_role != 1) {
-            $data_presence      = DB::table('presence')
-                ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
-                ->selectRaw("MONTH(presence.DATE_PRESENCE) as month, YEAR(presence.DATE_PRESENCE) as year, COUNT(presence.ID_PRESENCE) as TotalPresence")
-                ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
-                ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
-                ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
-                ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
-                ->orderBy('presence.DATE_PRESENCE', 'DESC')
-                ->groupByRaw("MONTH(presence.DATE_PRESENCE), YEAR(presence.DATE_PRESENCE), presence.ID_USER")
-                ->where('md_regional.ID_REGIONAL', '=', $id_regional)
-                ->where('md_area.ID_AREA', '=', $area)
-                ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
-                ->get();
-        } else {
-            $data_presence      = DB::table('presence')
-                ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL')
-                ->selectRaw("MONTH(presence.DATE_PRESENCE) as month, YEAR(presence.DATE_PRESENCE) as year, COUNT(presence.ID_PRESENCE) as TotalPresence")
-                ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
-                ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
-                ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
-                ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
-                ->orderBy('presence.DATE_PRESENCE', 'DESC')
-                ->groupByRaw("MONTH(presence.DATE_PRESENCE), YEAR(presence.DATE_PRESENCE), presence.ID_USER")
-                ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
-                ->where('md_area.ID_AREA', '=', $area)
-                ->get();
-        }
-
-        $NewData_all = array();
-        $i = 0;
-        foreach ($data_presence as $presence) {
-            $i++;
-
-            $data = array(
-                "NO" => $i,
-                "NAME_USER" => $presence->NAME_USER,
-                "NAME_AREA" => $presence->NAME_AREA,
-                "JML_PRESENCE" => $presence->TotalPresence,
-                "DATE_PRESENCE" => date_format(date_create($presence->year . '-' . $presence->month), 'F Y'),
-            );
-            array_push($NewData_all, $data);
-        }
-
-        return response([
-            'status_code'       => 200,
-            'status_message'    => 'Data berhasil diambil!',
-            'data'              => $NewData_all
-        ], 200);
-    }
-
-    public function trend_asmen()
+    public function trend_rpo()
     {
         $year = date('Y');
         $regional_targets = DB::select("
@@ -361,7 +308,7 @@ class DashboardController extends Controller
         GROUP BY mr.ID_REGIONAL
         ");
 
-        
+
         $data_trend = array();
         foreach ($regional_targets as $regional_target) {
             $trend_asmen = DB::select("
@@ -374,7 +321,6 @@ class DashboardController extends Controller
             FROM user_ranking_sale urs
             WHERE 
                 YEAR(DATE(urs.created_at)) = 2022
-                AND urs.ID_ROLE = 3
                 AND urs.ID_REGIONAL = " . $regional_target->ID_REGIONAL . "
             GROUP BY MONTH(urs.created_at), urs.NAME_REGIONAL
             ORDER BY MONTH(urs.created_at) ASC
@@ -427,6 +373,66 @@ class DashboardController extends Controller
                         (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 11 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
                         (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 12 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0
                     )
+                )
+            );
+        }
+        echo json_encode($data_trend);
+        die;
+        return $data_trend;
+    }
+
+    public function trend_asmen()
+    {
+        $year = $_POST['date'];
+        $role = $_POST['role'];
+        $regional_targets = DB::select("
+            SELECT
+                ml.*
+            FROM
+                md_location ml
+        ");
+
+        $data_trend = array();
+        foreach ($regional_targets as $regional_target) {
+            $data['UST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['NONUST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['SELERAKU'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $trend_asmen = DB::select("
+                SELECT
+                    ml.ID_LOCATION,
+                    MONTH(urs.created_at) as bulan,
+                    SUM(urs.REAL_UST) as total_ust,
+                    SUM(urs.REAL_NONUST) as total_non_ust,
+                    SUM(urs.REAL_SELERAKU) as total_seleraku
+                FROM
+                    user_ranking_sale urs
+                LEFT JOIN md_regional mr ON
+                    mr.ID_REGIONAL = urs.ID_REGIONAL
+                LEFT JOIN md_location ml ON
+                    ml.ID_LOCATION = mr.ID_LOCATION
+                WHERE
+                    YEAR(DATE(urs.created_at)) LIKE '%" . $year . "%'
+                    AND ml.ID_LOCATION = " . $regional_target->ID_LOCATION . "
+                GROUP BY
+                    MONTH(urs.created_at),
+                    ml.ID_LOCATION
+                ORDER BY
+                    MONTH(urs.created_at) ASC
+            ");
+
+            foreach ($trend_asmen as $item) {
+                $data['UST'][($item->bulan - 1)] += ((!empty($item->total_ust)) ? $item->total_ust : 0);
+                $data['NONUST'][($item->bulan - 1)] = ((!empty($item->total_non_ust)) ? $item->total_non_ust : 0);
+                $data['SELERAKU'][($item->bulan - 1)] = ((!empty($item->total_seleraku)) ? $item->total_seleraku : 0);
+            }
+            array_push(
+                $data_trend,
+                array(
+                    "NAME_AREA" => $regional_target->NAME_LOCATION,
+                    "TARGET" => 0,
+                    "UST" => $data['UST'],
+                    "NONUST" => $data['NONUST'],
+                    "SELERAKU" => $data['SELERAKU']
                 )
             );
         }
