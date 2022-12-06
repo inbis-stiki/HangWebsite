@@ -93,7 +93,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <span class="col-md-12 d-flex justify-content-start">
-                                <h5 class="text-success ">
+                                <h5 class="text-primary ">
                                     < 10</h5>
                             </span>
                             <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="trans_1">
@@ -106,7 +106,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <span class="col-md-12 d-flex justify-content-start">
-                                <h5 class="text-success ">
+                                <h5 class="text" style="color: #FFB743 !important;">
                                     11-20</h5>
                             </span>
                             <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="trans_2">
@@ -120,7 +120,7 @@
                         <div class="card-body text-center">
                             <span class="col-md-12 d-flex justify-content-start">
                                 <h5 class="text-success ">
-                                    11-30</h5>
+                                    21-30</h5>
                             </span>
                             <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="trans_3">
                                 <img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>
@@ -188,10 +188,10 @@
                 $('#presence_2').html(response.data.PRESENCE[0].PRESENCE_2)
                 $('#presence_3').html(response.data.PRESENCE[0].PRESENCE_3)
 
-                $('#trans_1').html((response.data.TRANS[0].TRANS_1 != null) ? response.data.TRANS[0].TRANS_1 : 0)
-                $('#trans_2').html((response.data.TRANS[0].TRANS_2 != null) ? response.data.TRANS[0].TRANS_2 : 0)
-                $('#trans_3').html((response.data.TRANS[0].TRANS_3 != null) ? response.data.TRANS[0].TRANS_3 : 0)
-                $('#trans_4').html((response.data.TRANS[0].TRANS_4 != null) ? response.data.TRANS[0].TRANS_4 : 0)
+                $('#trans_1').html((response.data.TRANS.TRANS_1[0].TOT_TRANS != null) ? response.data.TRANS.TRANS_1[0].TOT_TRANS : 0)
+                $('#trans_2').html((response.data.TRANS.TRANS_2[0].TOT_TRANS != null) ? response.data.TRANS.TRANS_2[0].TOT_TRANS : 0)
+                $('#trans_3').html((response.data.TRANS.TRANS_3[0].TOT_TRANS != null) ? response.data.TRANS.TRANS_3[0].TOT_TRANS : 0)
+                $('#trans_4').html((response.data.TRANS.TRANS_4[0].TOT_TRANS != null) ? response.data.TRANS.TRANS_4[0].TOT_TRANS : 0)
             }
         });
     }
