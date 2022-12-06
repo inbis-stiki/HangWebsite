@@ -34,7 +34,8 @@ class Shop extends Model
                 ON md.ISMARKET_DISTRICT = 0 AND md.ID_AREA = ma.ID_AREA 
             INNER JOIN md_shop ms 
                 ON ms.ID_DISTRICT = md.ID_DISTRICT 
-            GROUP BY ms.TYPE_SHOP 
+            GROUP BY ms.TYPE_SHOP
+            ORDER BY FIELD(ms.TYPE_SHOP, 'Pedagang Sayur', 'Retail', 'Loss', 'Permanen')
         ");
     }
     public function getTotTypeByArea($idArea){
