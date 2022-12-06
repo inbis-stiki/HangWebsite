@@ -149,85 +149,10 @@ class MonitoringController extends Controller
 
             $temp_regional_trans = $data_regional_trans[0]->NAME_REGIONAL;
 
-            $data['TRANS'] = DB::select("
-                SELECT
-                    (
-                        SELECT
-                            COUNT(t.ID_TRANS) AS TOT_TRANS
-                        FROM
-                            `user` u
-                        LEFT JOIN `transaction` t ON
-                            t.ID_USER = u.ID_USER
-                        WHERE
-                            t.DATE_TRANS LIKE '" . $date . "%'
-                            AND t.REGIONAL_TRANS = '" . $temp_regional_trans . "'
-                        GROUP BY
-                            DATE_FORMAT(t.DATE_TRANS, '%Y-%m-%d') 
-                        HAVING
-                            TOT_TRANS < 10
-                        ORDER BY
-                            t.DATE_TRANS DESC
-                    ) AS TRANS_1,
-                    (
-                        SELECT
-                            COUNT(t.ID_TRANS) AS TOT_TRANS
-                        FROM
-                            `user` u
-                        LEFT JOIN `transaction` t ON
-                            t.ID_USER = u.ID_USER
-                        WHERE
-                            t.DATE_TRANS LIKE '" . $date . "%'
-                            AND t.REGIONAL_TRANS = '" . $temp_regional_trans . "'
-                        GROUP BY
-                            DATE_FORMAT(t.DATE_TRANS, '%Y-%m-%d')
-                        HAVING
-                            TOT_TRANS >= 11
-                            AND 
-                            TOT_TRANS <= 20
-                        ORDER BY
-                            t.DATE_TRANS DESC
-                    ) AS TRANS_2,
-                    (
-                        SELECT
-                            COUNT(t.ID_TRANS) AS TOT_TRANS
-                        FROM
-                            `user` u
-                        LEFT JOIN `transaction` t ON
-                            t.ID_USER = u.ID_USER
-                        WHERE
-                            t.DATE_TRANS LIKE '" . $date . "%'
-                            AND t.REGIONAL_TRANS = '" . $temp_regional_trans . "'
-                        GROUP BY
-                            DATE_FORMAT(t.DATE_TRANS, '%Y-%m-%d')
-                        HAVING
-                            TOT_TRANS >= 11
-                            AND 
-                            TOT_TRANS <= 30
-                        ORDER BY
-                            t.DATE_TRANS DESC
-                    ) AS TRANS_3,
-                    (
-                        SELECT
-                            COUNT(t.ID_TRANS) AS TOT_TRANS
-                        FROM
-                            `user` u
-                        LEFT JOIN `transaction` t ON
-                            t.ID_USER = u.ID_USER
-                        WHERE
-                            t.DATE_TRANS LIKE '" . $date . "%'
-                            AND t.REGIONAL_TRANS = '" . $temp_regional_trans . "'
-                        GROUP BY
-                            DATE_FORMAT(t.DATE_TRANS, '%Y-%m-%d')
-                        HAVING
-                            TOT_TRANS > 30
-                        ORDER BY
-                            t.DATE_TRANS DESC
-                    ) AS TRANS_4
-            ");
-        } else {
-            $data['TRANS'] = DB::select("
-            SELECT
-                (
+            $data['TRANS']['TRANS_1'] = DB::select('
+                SELECT 
+                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
+                FROM (
                     SELECT
                         COUNT(t.ID_TRANS) AS TOT_TRANS
                     FROM
@@ -235,15 +160,20 @@ class MonitoringController extends Controller
                     LEFT JOIN `transaction` t ON
                         t.ID_USER = u.ID_USER
                     WHERE
-                        t.DATE_TRANS LIKE '" . $date . "%'
+                        t.DATE_TRANS LIKE "'.$date.'%"
+                        AND t.REGIONAL_TRANS = "' . $temp_regional_trans . '"
                     GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, '%Y-%m-%d') 
+                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
                     HAVING
                         TOT_TRANS < 10
                     ORDER BY
                         t.DATE_TRANS DESC
-                ) AS TRANS_1,
-                (
+                ) AS NEW_DATA
+            ');
+            $data['TRANS']['TRANS_2'] = DB::select('
+                SELECT 
+                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
+                FROM (
                     SELECT
                         COUNT(t.ID_TRANS) AS TOT_TRANS
                     FROM
@@ -251,17 +181,22 @@ class MonitoringController extends Controller
                     LEFT JOIN `transaction` t ON
                         t.ID_USER = u.ID_USER
                     WHERE
-                        t.DATE_TRANS LIKE '" . $date . "%'
+                        t.DATE_TRANS LIKE "'.$date.'%"
+                        AND t.REGIONAL_TRANS = "' . $temp_regional_trans . '"
                     GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, '%Y-%m-%d')
+                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
                     HAVING
                         TOT_TRANS >= 11
                         AND 
                         TOT_TRANS <= 20
                     ORDER BY
                         t.DATE_TRANS DESC
-                ) AS TRANS_2,
-                (
+                ) AS NEW_DATA
+            ');
+            $data['TRANS']['TRANS_3'] = DB::select('
+                SELECT 
+                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
+                FROM (
                     SELECT
                         COUNT(t.ID_TRANS) AS TOT_TRANS
                     FROM
@@ -269,17 +204,22 @@ class MonitoringController extends Controller
                     LEFT JOIN `transaction` t ON
                         t.ID_USER = u.ID_USER
                     WHERE
-                        t.DATE_TRANS LIKE '" . $date . "%'
+                        t.DATE_TRANS LIKE "'.$date.'%"
                     GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, '%Y-%m-%d')
+                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d")
+                        AND t.REGIONAL_TRANS = "' . $temp_regional_trans . '" 
                     HAVING
-                        TOT_TRANS >= 11
+                        TOT_TRANS >= 21
                         AND 
                         TOT_TRANS <= 30
                     ORDER BY
                         t.DATE_TRANS DESC
-                ) AS TRANS_3,
-                (
+                ) AS NEW_DATA
+            ');
+            $data['TRANS']['TRANS_4'] = DB::select('
+                SELECT 
+                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
+                FROM (
                     SELECT
                         COUNT(t.ID_TRANS) AS TOT_TRANS
                     FROM
@@ -287,16 +227,101 @@ class MonitoringController extends Controller
                     LEFT JOIN `transaction` t ON
                         t.ID_USER = u.ID_USER
                     WHERE
-                        t.DATE_TRANS LIKE '" . $date . "%'
+                        t.DATE_TRANS LIKE "'.$date.'%"
+                        AND t.REGIONAL_TRANS = "' . $temp_regional_trans . '"
                     GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, '%Y-%m-%d')
+                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
                     HAVING
                         TOT_TRANS > 30
                     ORDER BY
                         t.DATE_TRANS DESC
-                ) AS TRANS_4
-            
-            ");
+                ) AS NEW_DATA
+            ');
+        } else {
+            $data['TRANS']['TRANS_1'] = DB::select('
+                SELECT 
+                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
+                FROM (
+                    SELECT
+                        COUNT(t.ID_TRANS) AS TOT_TRANS
+                    FROM
+                        `user` u
+                    LEFT JOIN `transaction` t ON
+                        t.ID_USER = u.ID_USER
+                    WHERE
+                        t.DATE_TRANS LIKE "'.$date.'%"
+                    GROUP BY
+                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
+                    HAVING
+                        TOT_TRANS < 10
+                    ORDER BY
+                        t.DATE_TRANS DESC
+                ) AS NEW_DATA
+            ');
+            $data['TRANS']['TRANS_2'] = DB::select('
+                SELECT 
+                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
+                FROM (
+                    SELECT
+                        COUNT(t.ID_TRANS) AS TOT_TRANS
+                    FROM
+                        `user` u
+                    LEFT JOIN `transaction` t ON
+                        t.ID_USER = u.ID_USER
+                    WHERE
+                        t.DATE_TRANS LIKE "'.$date.'%"
+                    GROUP BY
+                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
+                    HAVING
+                        TOT_TRANS >= 11
+                        AND 
+                        TOT_TRANS <= 20
+                    ORDER BY
+                        t.DATE_TRANS DESC
+                ) AS NEW_DATA
+            ');
+            $data['TRANS']['TRANS_3'] = DB::select('
+                SELECT 
+                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
+                FROM (
+                    SELECT
+                        COUNT(t.ID_TRANS) AS TOT_TRANS
+                    FROM
+                        `user` u
+                    LEFT JOIN `transaction` t ON
+                        t.ID_USER = u.ID_USER
+                    WHERE
+                        t.DATE_TRANS LIKE "'.$date.'%"
+                    GROUP BY
+                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
+                    HAVING
+                        TOT_TRANS >= 21
+                        AND 
+                        TOT_TRANS <= 30
+                    ORDER BY
+                        t.DATE_TRANS DESC
+                ) AS NEW_DATA
+            ');
+            $data['TRANS']['TRANS_4'] = DB::select('
+                SELECT 
+                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
+                FROM (
+                    SELECT
+                        COUNT(t.ID_TRANS) AS TOT_TRANS
+                    FROM
+                        `user` u
+                    LEFT JOIN `transaction` t ON
+                        t.ID_USER = u.ID_USER
+                    WHERE
+                        t.DATE_TRANS LIKE "'.$date.'%"
+                    GROUP BY
+                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
+                    HAVING
+                        TOT_TRANS > 30
+                    ORDER BY
+                        t.DATE_TRANS DESC
+                ) AS NEW_DATA
+            ');
         }
 
 
