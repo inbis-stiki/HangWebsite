@@ -16,7 +16,9 @@
             <li class="active">
                 <a href="{{ url('monitoring') }}" class="ai-icon" aria-expanded="false">
                     <div class="{{ request()->is('monitoring') ? '' : 'img-grey' }} ">
-                        <img src="{{ asset('images/icon/transaksi.svg') }}" alt="">&nbsp;
+                        <!-- <img src="{{ asset('images/icon/transaksi.svg') }}" alt=""> -->
+                        <i class="flaticon-381-television"></i>
+                        &nbsp;
                         <span class="nav-text mt-1">Monitoring</span>
                     </div>
                 </a>
@@ -24,7 +26,7 @@
             @endif
             <li class="active">
                 <a href="{{ url('transaction') }}" class="ai-icon" aria-expanded="false">
-                    <div class="{{ request()->is('transaction') ? '' : 'img-grey' }} ">
+                    <div class="{{ request()->is('transaction','transaction/spread','transaction/ub','transaction/ublp') ? '' : 'img-grey' }} ">
                         <img src="{{ asset('images/icon/transaksi.svg') }}" alt="">&nbsp;
                         <span class="nav-text mt-1">Transaksi</span>
                     </div>
@@ -32,7 +34,7 @@
             </li>
             <li class="active">
                 <a href="{{ url('faktur') }}" class="ai-icon" aria-expanded="false">
-                    <div class="{{ request()->is('faktur') ? '' : 'img-grey' }}">
+                    <div class="{{ request()->is('faktur','detail/faktur') ? '' : 'img-grey' }}">
                         <img src="{{ asset('images/icon/faktur.svg') }}" alt="">&nbsp;
                         <span class="nav-text">Faktur</span>
                     </div>

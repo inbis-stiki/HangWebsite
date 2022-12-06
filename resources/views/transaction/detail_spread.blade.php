@@ -149,7 +149,7 @@
                                         <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_spread['DATE_TRANS']), 'j F Y - H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
-                                    <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body">
+                                    <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body" data-parent="#accordion-two">
                                         <div class="accordion__body--text">
                                             <span class="fs-20 text-black d-block mb-3">Detail Informasi</span>
                                             <div class="row">
