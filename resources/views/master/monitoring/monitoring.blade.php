@@ -8,142 +8,74 @@
     <div class="container-fluid">
         <div class="col-xl-12">
             <div class="row">
-                <div class="col-md-6 flex-column mb-3">
-                    <h5 class="font-weight-bold">Date</h5>
-                    <div class="card border mb-0 px-0">
-                        <input class="datepicker-monitoring form-control" placeholder="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker">
-                    </div>
-                </div>
-                <div class="col-md-6 flex-column mb-3">
-                    <h5 class="font-weight-bold">Regional</h5>
-                    <div class="card border mb-0 px-0">
-                        <select name="transaksi" id="SelectRegional" class="select2">
-                            <option selected value="0">All Regional</option>
-                            @foreach($data_regional as $item)
-                            <option value="{{$item->ID_REGIONAL}}">{{$item->NAME_REGIONAL}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
                 <div class="col-md-6">
-                    <h5 class="font-weight-bold">Presensi</h5>
+                    <div class="event-tabs mb-3 ml-3">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link default-tab" data-toggle="tab" href="Javascript:void(0)" role="tab" aria-selected="false" onclick="show_tb_trans()">
+                                    Transaksi
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="Javascript:void(0)" role="tab" aria-selected="false" onclick="show_tb_presence()">
+                                    Presence
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-md-6 d-flex justify-content-end">
-                    <a class="text-primary" href="javascript:void(0)">Lihat Semua ></a>
-                </div>
+                <!-- <div class="col-md-6 flex-column">
+                    <div class="card border mb-0 py-0">
+                        <input class="datepicker-monitoring form-control" value="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" style="height: 88px;" name="datepicker">
+                    </div>
+                </div> -->
             </div>
 
             <div class="row">
-                <div class="col col-md-4">
+                <div class="col-12">
                     <div class="card">
-                        <div class="card-body text-center">
-                            <span class="col-md-12 d-flex justify-content-start">
-                                <h5 class="text-success ">
-                                    < 07:00</h5>
-                            </span>
-                            <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="presence_1">
-                                <img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>
-                            </span>
+                        {{-- <div class="card-header">
+                        <h4 class="card-title">Daftar Produk</h4>
+                    </div> --}}
+                        <div class="card-body" id="table-presence">
+                            <div class="table-responsive">
+                                <table id="datatable-presence" class="display min-w850">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Regional</th>
+                                            <th>Aktivitas</th>
+                                            <th>
+                                                < 07:00 </th>
+                                            <th>07:00 - 08:00</th>
+                                            <th>> 08:00</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="col col-md-4">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <span class="col-md-12 d-flex justify-content-start">
-                                <h5 class="text-success ">
-                                    07:00 - 08:00</h5>
-                            </span>
-                            <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="presence_2">
-                                <img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col col-md-4">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <span class="col-md-12 d-flex justify-content-start">
-                                <h5 class="text-primary">
-                                    > 08:00</h5>
-                            </span>
-                            <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="presence_3">
-                                <img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="font-weight-bold">Transaksi</h5>
-                </div>
-                <div class="col-md-6 d-flex justify-content-end">
-                    <a class="text-primary" href="javascript:void(0)">Lihat Semua ></a>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col col-md-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <span class="col-md-12 d-flex justify-content-start">
-                                <h5 class="text-primary ">
-                                    < 10</h5>
-                            </span>
-                            <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="trans_1">
-                                <img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col col-md-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <span class="col-md-12 d-flex justify-content-start">
-                                <h5 class="text" style="color: #FFB743 !important;">
-                                    11-20</h5>
-                            </span>
-                            <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="trans_2">
-                                <img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col col-md-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <span class="col-md-12 d-flex justify-content-start">
-                                <h5 class="text-success ">
-                                    21-30</h5>
-                            </span>
-                            <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="trans_3">
-                                <img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col col-md-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <span class="col-md-12 d-flex justify-content-start">
-                                <h5 class="text-success ">
-                                    > 30</h5>
-                            </span>
-                            <span class="text-default d-flex justify-content-end" style="font-size: 56px; font-weight: 600; color: #000;" id="trans_4">
-                                <img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>
-                            </span>
+                        <div class="card-body" id="table-trans">
+                            <div class="table-responsive">
+                                <table id="datatable-trans" class="display min-w850">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Regional</th>
+                                            <th>Aktivitas</th>
+                                            <th>
+                                                < 10 </th>
+                                            <th>11 - 20</th>
+                                            <th>21 - 30</th>
+                                            <th>> 30</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- Add Order -->
 
     </div>
@@ -155,55 +87,109 @@
 <script>
     var tgl_trans = "<?= date("Y-m-d"); ?>";
     var RegionalSearch = "0"
-    get_data_monitoring()
-    $(".datepicker-monitoring").pickadate({
-        format: 'd\ mmmm yyyy',
-        onSet: function() {
-            tgl_trans = this.get('select', 'yyyy-mm-dd');
-            get_data_monitoring()
-        }
-    });
 
-    $('#SelectRegional').change(function(e) {
-        RegionalSearch = $('#SelectRegional').val()
-        get_data_monitoring()
-    });
+    $('.default-tab').trigger('click')
 
-    function get_data_monitoring() {
-        loading()
-        $.ajax({
-            url: "{{ url('monitoring/monitoring-data') }}",
-            type: "POST",
-            crossDomain: true,
-            beforeSend: function(request) {
-                request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
-            },
-            data: {
-                date: tgl_trans,
-                area: RegionalSearch
-            },
-            dataType: "json",
-            success: function(response) {
-                $('#presence_1').html(response.data.PRESENCE[0].PRESENCE_1)
-                $('#presence_2').html(response.data.PRESENCE[0].PRESENCE_2)
-                $('#presence_3').html(response.data.PRESENCE[0].PRESENCE_3)
-
-                $('#trans_1').html((response.data.TRANS.TRANS_1[0].TOT_TRANS != null) ? response.data.TRANS.TRANS_1[0].TOT_TRANS : 0)
-                $('#trans_2').html((response.data.TRANS.TRANS_2[0].TOT_TRANS != null) ? response.data.TRANS.TRANS_2[0].TOT_TRANS : 0)
-                $('#trans_3').html((response.data.TRANS.TRANS_3[0].TOT_TRANS != null) ? response.data.TRANS.TRANS_3[0].TOT_TRANS : 0)
-                $('#trans_4').html((response.data.TRANS.TRANS_4[0].TOT_TRANS != null) ? response.data.TRANS.TRANS_4[0].TOT_TRANS : 0)
-            }
-        });
+    function show_tb_trans() {
+        $('#table-trans').show()
+        $('#table-presence').hide()
+        fetch_data(1)
     }
 
-    function loading() {
-        $('#presence_1').html("<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>")
-        $('#presence_2').html("<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>")
-        $('#presence_3').html("<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>")
+    function show_tb_presence() {
+        $('#table-presence').show()
+        $('#table-trans').hide()
+        fetch_data(2)
+    }
 
-        $('#trans_1').html("<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>")
-        $('#trans_2').html("<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>")
-        $('#trans_3').html("<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>")
-        $('#trans_4').html("<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>")
+    function fetch_data(type) {
+        if (type == 1) {
+            $('#datatable-trans').DataTable().destroy();
+            $("#datatable-trans").DataTable({
+                "processing": true,
+                "language": {
+                    "processing": "<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>",
+                    "loadingRecords": "",
+                    "emptyTable": "  ",
+                    "infoEmpty": "No Data to Show",
+                },
+                "serverMethod": 'POST',
+                "ajax": {
+                    'url': "{{ url('monitoring/monitoring-data') }}",
+                    'beforeSend': function(request) {
+                        request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                    },
+                    'data': function(data) {
+                        data.tgl_trans = tgl_trans;
+                        data.area = RegionalSearch;
+                        data.type = type;
+                    }
+                },
+                "columns": [{
+                        data: 'NO'
+                    },
+                    {
+                        data: 'NAME_REGIONAL'
+                    },
+                    {
+                        data: 'AKTIVITAS'
+                    },
+                    {
+                        data: 'TRANS_1'
+                    },
+                    {
+                        data: 'TRANS_2'
+                    },
+                    {
+                        data: 'TRANS_3'
+                    },
+                    {
+                        data: 'TRANS_4'
+                    }
+                ],
+            }).draw()
+        }else{
+            $('#datatable-presence').DataTable().destroy();
+            $("#datatable-presence").DataTable({
+                "processing": true,
+                "language": {
+                    "processing": "<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>",
+                    "loadingRecords": "",
+                    "emptyTable": "  ",
+                    "infoEmpty": "No Data to Show",
+                },
+                "serverMethod": 'POST',
+                "ajax": {
+                    'url': "{{ url('monitoring/monitoring-data') }}",
+                    'beforeSend': function(request) {
+                        request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                    },
+                    'data': function(data) {
+                        data.tgl_trans = tgl_trans;
+                        data.area = RegionalSearch;
+                        data.type = type;
+                    }
+                },
+                "columns": [{
+                        data: 'NO'
+                    },
+                    {
+                        data: 'NAME_REGIONAL'
+                    },
+                    {
+                        data: 'AKTIVITAS'
+                    },
+                    {
+                        data: 'PRESENCE_1'
+                    },
+                    {
+                        data: 'PRESENCE_2'
+                    },
+                    {
+                        data: 'PRESENCE_3'
+                    }
+                ],
+            }).draw()
+        }
     }
 </script>
