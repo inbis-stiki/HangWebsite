@@ -20,316 +20,192 @@ class MonitoringController extends Controller
         return view('master.monitoring.monitoring', $data);
     }
 
-    public function monitoring_data()
+    public function monitoring_data(Request $req)
     {
-        $date = $_POST['date'];
-        $regional = $_POST['area'];
+        $type = $req->input('type');
+        $tgl_trans = $req->input('tgl_trans');
 
-        if ($regional != 0) {
-            $temp_regional = array();
+        $data_regional = DB::select('
+            SELECT
+                mr.NAME_REGIONAL
+            FROM
+                md_regional mr
+        ');
+
+        $All_Data = array();
+
+        if ($type == 1) {
+            $All_Data = array();
             
-            $data_regional = DB::select('
+            $TRANS_1 = DB::select('
                 SELECT
-                    md.ID_DISTRICT
+                    t.REGIONAL_TRANS,
+                    COUNT(t.ID_TRANS) AS TOT_TRANS
                 FROM
-                    md_regional mr
-                LEFT JOIN md_area ma ON
-                    ma.ID_REGIONAL = mr.ID_REGIONAL
-                LEFT JOIN md_district md ON 	
-                    md.ID_AREA = ma.ID_AREA
+                    `transaction` t
                 WHERE
-                    mr.ID_REGIONAL = ' . $regional . '
+                    t.DATE_TRANS LIKE "2022-12-07%"
+                GROUP BY
+                    t.REGIONAL_TRANS
+                HAVING
+                    TOT_TRANS < 10
+                ORDER BY
+                    t.DATE_TRANS DESC
             ');
 
+            $TRANS_2 = DB::select('
+                SELECT
+                    t.REGIONAL_TRANS,
+                    COUNT(t.ID_TRANS) AS TOT_TRANS
+                FROM
+                    `transaction` t
+                WHERE
+                    t.DATE_TRANS LIKE "2022-12-07%"
+                GROUP BY
+                    t.REGIONAL_TRANS
+                HAVING
+                    TOT_TRANS >= 11
+                    AND 
+                    TOT_TRANS <= 20
+                ORDER BY
+                    t.DATE_TRANS DESC
+            ');
+            
+            $TRANS_3 = DB::select('
+                SELECT
+                    t.REGIONAL_TRANS,
+                    COUNT(t.ID_TRANS) AS TOT_TRANS
+                FROM
+                    `transaction` t
+                WHERE
+                    t.DATE_TRANS LIKE "2022-12-07%"
+                GROUP BY
+                    t.REGIONAL_TRANS
+                HAVING
+                    TOT_TRANS >= 21
+                    AND 
+                    TOT_TRANS <= 30
+                ORDER BY
+                    t.DATE_TRANS DESC
+            ');
+
+            $TRANS_3 = DB::select('
+                SELECT
+                    t.REGIONAL_TRANS,
+                    COUNT(t.ID_TRANS) AS TOT_TRANS
+                FROM
+                    `transaction` t
+                WHERE
+                    t.DATE_TRANS LIKE "2022-12-07%"
+                GROUP BY
+                    t.REGIONAL_TRANS
+                HAVING
+                    TOT_TRANS > 30
+                ORDER BY
+                    t.DATE_TRANS DESC
+            ');
+
+            $no = 0;
             for ($i = 0; $i < count($data_regional); $i++) {
-                if (!empty($data_regional[$i]->ID_DISTRICT)) {
-                    $temp_regional[$i] = $data_regional[$i]->ID_DISTRICT;
+                if ($data_regional[$i]->NAME_REGIONAL != "") {
+                    $data = array(
+                        "NO" => ++$no,
+                        "NAME_REGIONAL" => $data_regional[$i]->NAME_REGIONAL,
+                        "AKTIVITAS" => "TRANSAKSI",
+                        "TRANS_1" => ((!empty($TRANS_1[$i])) ? $TRANS_1[$i]->TOT_TRANS : 0),
+                        "TRANS_2" => ((!empty($TRANS_2[$i])) ? $TRANS_2[$i]->TOT_TRANS : 0),
+                        "TRANS_3" => ((!empty($TRANS_3[$i])) ? $TRANS_3[$i]->TOT_TRANS : 0),
+                        "TRANS_4" => ((!empty($TRANS_4[$i])) ? $TRANS_4[$i]->TOT_TRANS : 0)
+                    );
+                    array_push($All_Data, $data);
                 }
             }
-
-            $data['PRESENCE'] = DB::select('
-                SELECT(
-                    SELECT
-                        COUNT(p.ID_PRESENCE)
-                    FROM
-                        `user` u
-                    JOIN presence p ON
-                        p.ID_USER = u.ID_USER
-                    WHERE
-                        p.DATE_PRESENCE LIKE "' . $date . '%"
-                        AND HOUR(p.DATE_PRESENCE) < 7
-                        AND p.ID_DISTRICT IN (' . implode(',', $temp_regional) . ')
-                    ORDER BY
-                        p.DATE_PRESENCE DESC
-                ) AS PRESENCE_1,    
-                (
-                    SELECT
-                        COUNT(p.ID_PRESENCE)
-                    FROM
-                        `user` u
-                    JOIN presence p ON
-                        p.ID_USER = u.ID_USER
-                    WHERE
-                        p.DATE_PRESENCE LIKE "' . $date . '%"
-                        AND HOUR(p.DATE_PRESENCE) >= 7 
-                        AND HOUR(p.DATE_PRESENCE) <= 8
-                        AND p.ID_DISTRICT IN (' . implode(',', $temp_regional) . ')
-                    ORDER BY
-                        p.DATE_PRESENCE DESC
-                ) AS PRESENCE_2,    
-                (
-                    SELECT
-                        COUNT(p.ID_PRESENCE)
-                    FROM
-                        `user` u
-                    JOIN presence p ON
-                        p.ID_USER = u.ID_USER
-                    WHERE
-                        p.DATE_PRESENCE LIKE "' . $date . '%"
-                        AND HOUR(p.DATE_PRESENCE) > 8
-                        AND p.ID_DISTRICT IN (' . implode(',', $temp_regional) . ')
-                    ORDER BY
-                        p.DATE_PRESENCE DESC
-                ) AS PRESENCE_3
-            ');
         } else {
-            $data['PRESENCE'] = DB::select('
-                SELECT(
-                    SELECT
-                        COUNT(p.ID_PRESENCE)
-                    FROM
-                        `user` u
-                    JOIN presence p ON
-                        p.ID_USER = u.ID_USER
-                    WHERE
-                        p.DATE_PRESENCE LIKE "' . $date . '%"
-                        AND HOUR(p.DATE_PRESENCE) < 7
-                    ORDER BY
-                        p.DATE_PRESENCE DESC
-                ) AS PRESENCE_1,    
-                (
-                    SELECT
-                        COUNT(p.ID_PRESENCE)
-                    FROM
-                        `user` u
-                    JOIN presence p ON
-                        p.ID_USER = u.ID_USER
-                    WHERE
-                        p.DATE_PRESENCE LIKE "' . $date . '%"
-                        AND HOUR(p.DATE_PRESENCE) >= 7 
-                        AND HOUR(p.DATE_PRESENCE) <= 8
-                    ORDER BY
-                        p.DATE_PRESENCE DESC
-                ) AS PRESENCE_2,    
-                (
-                    SELECT
-                        COUNT(p.ID_PRESENCE)
-                    FROM
-                        `user` u
-                    JOIN presence p ON
-                        p.ID_USER = u.ID_USER
-                    WHERE
-                        p.DATE_PRESENCE LIKE "' . $date . '%"
-                        AND HOUR(p.DATE_PRESENCE) > 8
-                    ORDER BY
-                        p.DATE_PRESENCE DESC
-                ) AS PRESENCE_3
-            ');
-        }
+            $All_Data = array();
 
-        if ($regional != 0) {
-            $data_regional_trans = DB::select('
+            $PRESENCE_1 = DB::select('
                 SELECT
-                    mr.NAME_REGIONAL
+                    mr.NAME_REGIONAL,
+                    COUNT(p.ID_PRESENCE) TOT_PRESENCE
                 FROM
-                    md_regional mr
+                    presence p
+                LEFT JOIN md_district md ON
+                    p.ID_DISTRICT = md.ID_DISTRICT
+                LEFT JOIN md_area ma ON 
+                    md.ID_AREA = ma.ID_AREA 
+                LEFT JOIN md_regional mr ON 
+                    ma.ID_REGIONAL = mr.ID_REGIONAL 
                 WHERE
-                    mr.ID_REGIONAL = ' . $regional . '
+                    p.DATE_PRESENCE LIKE "' . $tgl_trans . '%"
+                    AND HOUR(p.DATE_PRESENCE) < 7
+                GROUP BY 
+                    mr.ID_REGIONAL
+                ORDER BY
+                    p.DATE_PRESENCE DESC
             ');
 
-            $temp_regional_trans = $data_regional_trans[0]->NAME_REGIONAL;
+            $PRESENCE_2 = DB::select('
+                SELECT
+                    mr.NAME_REGIONAL,
+                    COUNT(p.ID_PRESENCE) TOT_PRESENCE
+                FROM
+                    presence p
+                LEFT JOIN md_district md ON
+                    p.ID_DISTRICT = md.ID_DISTRICT
+                LEFT JOIN md_area ma ON 
+                    md.ID_AREA = ma.ID_AREA 
+                LEFT JOIN md_regional mr ON 
+                    ma.ID_REGIONAL = mr.ID_REGIONAL 
+                WHERE
+                    p.DATE_PRESENCE LIKE "' . $tgl_trans . '%"
+                    AND HOUR(p.DATE_PRESENCE) >= 7
+                    AND HOUR(p.DATE_PRESENCE) <=8
+                GROUP BY 
+                    mr.ID_REGIONAL
+                ORDER BY
+                    p.DATE_PRESENCE DESC
+            ');
 
-            $data['TRANS']['TRANS_1'] = DB::select('
-                SELECT 
-                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
-                FROM (
-                    SELECT
-                        COUNT(t.ID_TRANS) AS TOT_TRANS
-                    FROM
-                        `user` u
-                    LEFT JOIN `transaction` t ON
-                        t.ID_USER = u.ID_USER
-                    WHERE
-                        t.DATE_TRANS LIKE "'.$date.'%"
-                        AND t.REGIONAL_TRANS = "' . $temp_regional_trans . '"
-                    GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
-                    HAVING
-                        TOT_TRANS < 10
-                    ORDER BY
-                        t.DATE_TRANS DESC
-                ) AS NEW_DATA
+            $PRESENCE_3 = DB::select('
+                SELECT
+                    mr.NAME_REGIONAL,
+                    COUNT(p.ID_PRESENCE) TOT_PRESENCE
+                FROM
+                    presence p
+                LEFT JOIN md_district md ON
+                    p.ID_DISTRICT = md.ID_DISTRICT
+                LEFT JOIN md_area ma ON 
+                    md.ID_AREA = ma.ID_AREA 
+                LEFT JOIN md_regional mr ON 
+                    ma.ID_REGIONAL = mr.ID_REGIONAL 
+                WHERE
+                    p.DATE_PRESENCE LIKE "' . $tgl_trans . '%"
+                    AND HOUR(p.DATE_PRESENCE) > 8
+                GROUP BY 
+                    mr.ID_REGIONAL
+                ORDER BY
+                    p.DATE_PRESENCE DESC
             ');
-            $data['TRANS']['TRANS_2'] = DB::select('
-                SELECT 
-                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
-                FROM (
-                    SELECT
-                        COUNT(t.ID_TRANS) AS TOT_TRANS
-                    FROM
-                        `user` u
-                    LEFT JOIN `transaction` t ON
-                        t.ID_USER = u.ID_USER
-                    WHERE
-                        t.DATE_TRANS LIKE "'.$date.'%"
-                        AND t.REGIONAL_TRANS = "' . $temp_regional_trans . '"
-                    GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
-                    HAVING
-                        TOT_TRANS >= 11
-                        AND 
-                        TOT_TRANS <= 20
-                    ORDER BY
-                        t.DATE_TRANS DESC
-                ) AS NEW_DATA
-            ');
-            $data['TRANS']['TRANS_3'] = DB::select('
-                SELECT 
-                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
-                FROM (
-                    SELECT
-                        COUNT(t.ID_TRANS) AS TOT_TRANS
-                    FROM
-                        `user` u
-                    LEFT JOIN `transaction` t ON
-                        t.ID_USER = u.ID_USER
-                    WHERE
-                        t.DATE_TRANS LIKE "'.$date.'%"
-                    GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d")
-                        AND t.REGIONAL_TRANS = "' . $temp_regional_trans . '" 
-                    HAVING
-                        TOT_TRANS >= 21
-                        AND 
-                        TOT_TRANS <= 30
-                    ORDER BY
-                        t.DATE_TRANS DESC
-                ) AS NEW_DATA
-            ');
-            $data['TRANS']['TRANS_4'] = DB::select('
-                SELECT 
-                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
-                FROM (
-                    SELECT
-                        COUNT(t.ID_TRANS) AS TOT_TRANS
-                    FROM
-                        `user` u
-                    LEFT JOIN `transaction` t ON
-                        t.ID_USER = u.ID_USER
-                    WHERE
-                        t.DATE_TRANS LIKE "'.$date.'%"
-                        AND t.REGIONAL_TRANS = "' . $temp_regional_trans . '"
-                    GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
-                    HAVING
-                        TOT_TRANS > 30
-                    ORDER BY
-                        t.DATE_TRANS DESC
-                ) AS NEW_DATA
-            ');
-        } else {
-            $data['TRANS']['TRANS_1'] = DB::select('
-                SELECT 
-                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
-                FROM (
-                    SELECT
-                        COUNT(t.ID_TRANS) AS TOT_TRANS
-                    FROM
-                        `user` u
-                    LEFT JOIN `transaction` t ON
-                        t.ID_USER = u.ID_USER
-                    WHERE
-                        t.DATE_TRANS LIKE "'.$date.'%"
-                    GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
-                    HAVING
-                        TOT_TRANS < 10
-                    ORDER BY
-                        t.DATE_TRANS DESC
-                ) AS NEW_DATA
-            ');
-            $data['TRANS']['TRANS_2'] = DB::select('
-                SELECT 
-                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
-                FROM (
-                    SELECT
-                        COUNT(t.ID_TRANS) AS TOT_TRANS
-                    FROM
-                        `user` u
-                    LEFT JOIN `transaction` t ON
-                        t.ID_USER = u.ID_USER
-                    WHERE
-                        t.DATE_TRANS LIKE "'.$date.'%"
-                    GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
-                    HAVING
-                        TOT_TRANS >= 11
-                        AND 
-                        TOT_TRANS <= 20
-                    ORDER BY
-                        t.DATE_TRANS DESC
-                ) AS NEW_DATA
-            ');
-            $data['TRANS']['TRANS_3'] = DB::select('
-                SELECT 
-                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
-                FROM (
-                    SELECT
-                        COUNT(t.ID_TRANS) AS TOT_TRANS
-                    FROM
-                        `user` u
-                    LEFT JOIN `transaction` t ON
-                        t.ID_USER = u.ID_USER
-                    WHERE
-                        t.DATE_TRANS LIKE "'.$date.'%"
-                    GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
-                    HAVING
-                        TOT_TRANS >= 21
-                        AND 
-                        TOT_TRANS <= 30
-                    ORDER BY
-                        t.DATE_TRANS DESC
-                ) AS NEW_DATA
-            ');
-            $data['TRANS']['TRANS_4'] = DB::select('
-                SELECT 
-                    SUM(NEW_DATA.TOT_TRANS) AS TOT_TRANS
-                FROM (
-                    SELECT
-                        COUNT(t.ID_TRANS) AS TOT_TRANS
-                    FROM
-                        `user` u
-                    LEFT JOIN `transaction` t ON
-                        t.ID_USER = u.ID_USER
-                    WHERE
-                        t.DATE_TRANS LIKE "'.$date.'%"
-                    GROUP BY
-                        DATE_FORMAT(t.DATE_TRANS, "%Y-%m-%d") 
-                    HAVING
-                        TOT_TRANS > 30
-                    ORDER BY
-                        t.DATE_TRANS DESC
-                ) AS NEW_DATA
-            ');
+
+            $no = 0;
+            for ($i = 0; $i < count($data_regional); $i++) {
+                $data = array(
+                    "NO" => ++$no,
+                    "NAME_REGIONAL" => $data_regional[$i]->NAME_REGIONAL,
+                    "AKTIVITAS" => "PRESENCE",
+                    "PRESENCE_1" => (!empty($PRESENCE_1[$i]) ? $PRESENCE_1[$i]->TOT_PRESENCE : 0),
+                    "PRESENCE_2" => (!empty($PRESENCE_2[$i]) ? $PRESENCE_2[$i]->TOT_PRESENCE : 0),
+                    "PRESENCE_3" => (!empty($PRESENCE_3[$i]) ? $PRESENCE_3[$i]->TOT_PRESENCE : 0)
+                );
+                array_push($All_Data, $data);
+            }
         }
 
 
         return response([
             'status_code'       => 200,
             'status_message'    => 'Data berhasil diambil!',
-            'data'              => $data
+            'data'              => $All_Data
         ], 200);
-    }
-
+    }    
 }
