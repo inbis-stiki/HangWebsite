@@ -299,7 +299,7 @@ class DetailTransController extends Controller
             array_push(
                 $data['transaction'],
                 array(
-                    "LOCATION" => $Item_ts->DISTRICT,
+                    "LOCATION" => $Item_ts->DETAIL_LOCATION,
                     "LAT_TRANS" => $Item_ts->LAT_TRANS,
                     "LONG_TRANS" => $Item_ts->LONG_TRANS,
                     "DATE_TRANS" => $Item_ts->DATE_TRANS,
