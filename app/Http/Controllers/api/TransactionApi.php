@@ -136,6 +136,7 @@ class TransactionApi extends Controller
                                 'ID_TRANS'      => "TRANS_" . $unik,
                                 'ID_SHOP'       => $req->input('id_shop'),
                                 'ID_PRODUCT'    => $item['id_product'],
+                                'ID_PC'         => $item['id_pc'],
                                 'QTY_TD'        => $item['qty_product'],
                                 'DATE_TD'       => $currDate,
                             ]
@@ -295,6 +296,7 @@ class TransactionApi extends Controller
                         $dataDetailTrans = array(
                             'ID_TRANS'      => "TRANS_" . $unik,
                             'ID_PRODUCT'    => $item['id_product'],
+                            'ID_PC'         => $item['id_pc'],
                             'QTY_TD'        => $item['qty_product'],
                             'DATE_TD'       => $currDate,
                         );
@@ -456,6 +458,7 @@ class TransactionApi extends Controller
                             [
                                 'ID_TRANS'      => "TRANS_" . $unik,
                                 'ID_PRODUCT'    => $item['id_product'],
+                                'ID_PC'         => $item['id_pc'],
                                 'QTY_TD'        => $item['qty_product'],
                                 'DATE_TD'       => $currDate,
                             ]
