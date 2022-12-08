@@ -13,6 +13,7 @@ class DetailTransController extends Controller
     {
         $data['title']          = "Detail Spreading";
         $data['sidebar']        = "transaksi";
+        $data['sidebar2']       = "transaksi";
 
         $id_user        = $req->input('id_user');
         $date           = $req->input('date');
@@ -46,13 +47,14 @@ class DetailTransController extends Controller
         foreach ($transaction as $Item_ts) {
             $data_ts_detail = array();
             $transaction_detail       = DB::table('transaction_detail')
-                ->select('transaction_detail.*', 'transaction.AREA_TRANS', 'md_product.NAME_PRODUCT', 'md_product.ID_PC')
-                ->join('transaction', 'transaction_detail.ID_TRANS', '=', 'transaction.ID_TRANS')
-                ->join('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
                 ->where('transaction_detail.ID_TRANS', $Item_ts->ID_TRANS)
+                ->leftjoin('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
+                ->leftjoin('transaction_image', 'transaction_image.ID_TRANS', '=', 'transaction_detail.ID_TRANS')
+                ->select('transaction_detail.QTY_TD', 'md_product.NAME_PRODUCT', 'md_product.ID_PC', 'transaction_image.PHOTO_TI')
                 ->get();
 
             $TOT_PRODUCT = 0;
+            $data_image_trans = array();
             foreach ($transaction_detail as $ts_detail) {
                 $TOT_PRODUCT += $ts_detail->QTY_TD;
                 array_push(
@@ -63,21 +65,12 @@ class DetailTransController extends Controller
                 if(empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
                 if(empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
                 $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] += $ts_detail->QTY_TD;
+                
+                if (!empty($ts_detail->PHOTO_TI)) {
+                    $data_image_trans = explode(";", $ts_detail->PHOTO_TI);
+                }
             }
             $data['all_sell'] += $TOT_PRODUCT;
-
-            $data_image_trans = array();
-            $transaction_image       = DB::table('transaction_image')
-                ->where('transaction_image.ID_TRANS', $Item_ts->ID_TRANS)
-                ->select('transaction_image.*')
-                ->get();
-
-            foreach ($transaction_image as $Image) {
-                array_push(
-                    $data_image_trans,
-                    explode(";", $Image->PHOTO_TI)
-                );
-            }
 
             array_push(
                 $data['transaction'],
@@ -177,7 +170,7 @@ class DetailTransController extends Controller
             ->groupBy('md_shop.ID_SHOP')
             ->get();
 
-        return view('transaction/detail_spread', $data);
+        return view('transaction.detail_spread', $data);
     }
 
     public function DetailUB(Request $req)

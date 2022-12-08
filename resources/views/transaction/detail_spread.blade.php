@@ -141,7 +141,7 @@
                             $coords = array();
                             $other_coords = array();
                             $other_coords_con2 = array();
-                            foreach ($transaction as $data_spread) :
+                            foreach ($transaction as $data_spread) {
                             ?>
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false">
@@ -149,7 +149,7 @@
                                         <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_spread['DATE_TRANS']), 'j F Y - H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
-                                    <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body">
+                                    <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body" data-parent="#accordion-two">
                                         <div class="accordion__body--text">
                                             <span class="fs-20 text-black d-block mb-3">Detail Informasi</span>
                                             <div class="row">
@@ -173,49 +173,37 @@
                                                 </div>
                                             </div>
                                             <span class="fs-20 text-black d-block mb-3">Produk Terjual</span>
-                                            @foreach ($data_spread['DETAIL'] as $data_spread_detail)
-                                            @if ($data_spread_detail == NULL)
-                                            <div class="row">
-                                                <div class="col-md-8">
-                                                    <p class="fs-18 ml-3">Anda Belum Transaksi</p>
-                                                </div>
-                                            </div>
-                                            @else
-                                            <div class="row">
-                                                <div class="col-md-8">
-                                                    <p class="fs-18 ml-3"><?= $data_spread_detail->NAME_PRODUCT; ?></p>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <div class="fs-18 mr-3 float-right text-center">
-                                                        <?= $data_spread_detail->QTY_TD; ?>
-                                                        <hr style="border-top: 3px solid #bbb; margin: 0px; width: 30px;">
+                                            <?php if (!empty($data_spread['DETAIL'])) { ?>
+                                                <?php foreach ($data_spread['DETAIL'] as $data_spread_detail) : ?>
+                                                    <div class="row">
+                                                        <div class="col-md-8">
+                                                            <p class="fs-18 ml-3"><?= $data_spread_detail->NAME_PRODUCT; ?></p>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="fs-18 mr-3 float-right text-center">
+                                                                <?= $data_spread_detail->QTY_TD; ?>
+                                                                <hr style="border-top: 3px solid #bbb; margin: 0px; width: 30px;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            <?php } else { ?>
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <p class="fs-18 ml-3">Anda Belum Transaksi</p>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            @endif
+                                            <?php } ?>
 
-                                            @endforeach
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
                                                 <div class="col-md-12 d-flex">
-                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][0]) || !empty($data_ublp['IMAGE'][0]['desc'][0])) { ?>
-                                                        <div class="form-group col-md-6">
-                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
-                                                            <br>
-                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
-                                                        </div>
-                                                    <?php } else { ?>
-                                                        <div class="form-group col-md-6">
-                                                            <label for="">NO IMAGE</label>
-                                                        </div>
-                                                    <?php } ?>
-
-                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][1]) || !empty($data_ublp['IMAGE'][0]['desc'][1])) { ?>
-                                                        <div class="form-group col-md-6">
-                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
-                                                            <br>
-                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
-                                                        </div>
+                                                    <?php if (!empty($data_spread['IMAGE'])) { ?>
+                                                        <?php foreach ($data_spread['IMAGE'] as $image) { ?>
+                                                            <div class="form-group col-md-6">
+                                                                <img src="<?= $image; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                            </div>
+                                                        <?php } ?>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
                                                             <label for="">NO IMAGE</label>
@@ -229,7 +217,7 @@
 
                             <?php
                                 $no++;
-                            endforeach;
+                            }
 
                             foreach ($shop_trans as $other_shop) {
                                 array_push(
