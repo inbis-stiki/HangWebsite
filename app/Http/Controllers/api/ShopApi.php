@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
@@ -100,7 +101,7 @@ class ShopApi extends Controller
             } else {
                 $shop = new Shop();
                 $shop->ID_DISTRICT          = $req->input('id_district');
-                $shop->NAME_SHOP            = $req->input('name_shop');
+                $shop->NAME_SHOP            = Str::upper($req->input('name_shop'));
                 $shop->OWNER_SHOP           = $req->input('owner_shop');
                 $shop->ISINSIDEMARKET_SHOP  = $req->input('isinside_market');
                 $shop->TYPE_SHOP            = $req->input('type_shop');
