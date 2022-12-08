@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Area;
 use App\Regional;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Session;
@@ -65,7 +66,7 @@ class AreaController extends Controller
         
         $area = new Area();
         $area->ID_REGIONAL      = $req->input('regional');
-        $area->NAME_AREA        = $req->input('area');
+        $area->NAME_AREA        = Str::upper($req->input('area'));
         $area->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $area->save();
 
@@ -89,7 +90,7 @@ class AreaController extends Controller
         
         $area = Area::find($req->input('id'));
         $area->ID_REGIONAL   = $req->input('regional');
-        $area->NAME_AREA = $req->input('area');
+        $area->NAME_AREA = Str::upper($req->input('area'));
         $area->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $area->save();
 
