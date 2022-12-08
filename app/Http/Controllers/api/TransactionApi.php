@@ -111,6 +111,8 @@ class TransactionApi extends Controller
                     $updatePickup = Pickup::find($cekData->ID_PICKUP);
                     $updatePickup->REMAININGSTOCK_PICKUP      = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                     $updatePickup->save();
+
+                    $shop = Shop::where('ID_SHOP', $req->input('id_shop'))->first();
     
                     $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
@@ -128,6 +130,7 @@ class TransactionApi extends Controller
                     $transaction->LAT_TRANS    = $req->input('lat_trans');
                     $transaction->AREA_TRANS    = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
+                    $transaction->TYPE_SHOP     = $shop->TYPE_SHOP;
                     $transaction->save();
     
                     foreach ($req->input('product') as $item) {
@@ -136,6 +139,7 @@ class TransactionApi extends Controller
                                 'ID_TRANS'      => "TRANS_" . $unik,
                                 'ID_SHOP'       => $req->input('id_shop'),
                                 'ID_PRODUCT'    => $item['id_product'],
+                                'ID_PC'         => $item['id_pc'],
                                 'QTY_TD'        => $item['qty_product'],
                                 'DATE_TD'       => $currDate,
                             ]
@@ -295,6 +299,7 @@ class TransactionApi extends Controller
                         $dataDetailTrans = array(
                             'ID_TRANS'      => "TRANS_" . $unik,
                             'ID_PRODUCT'    => $item['id_product'],
+                            'ID_PC'         => $item['id_pc'],
                             'QTY_TD'        => $item['qty_product'],
                             'DATE_TD'       => $currDate,
                         );
@@ -456,6 +461,7 @@ class TransactionApi extends Controller
                             [
                                 'ID_TRANS'      => "TRANS_" . $unik,
                                 'ID_PRODUCT'    => $item['id_product'],
+                                'ID_PC'         => $item['id_pc'],
                                 'QTY_TD'        => $item['qty_product'],
                                 'DATE_TD'       => $currDate,
                             ]

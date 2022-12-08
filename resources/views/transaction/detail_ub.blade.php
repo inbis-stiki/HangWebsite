@@ -78,7 +78,7 @@
                                                         <div class="form-group col-md-6">
                                                             <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
                                                             <br>
-                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                            <img decoding="async" src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
@@ -90,7 +90,7 @@
                                                         <div class="form-group col-md-6">
                                                             <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
                                                             <br>
-                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                            <img decoding="async" src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
@@ -103,7 +103,7 @@
                                                         <div class="form-group col-md-6">
                                                             <label for=""><?= $data_ublp['IMAGE'][0]['desc'][2]; ?></label>
                                                             <br>
-                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                            <img decoding="async" src="<?= $data_ublp['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
@@ -115,7 +115,7 @@
                                                         <div class="form-group col-md-6">
                                                             <label for=""><?= $data_ublp['IMAGE'][0]['desc'][3]; ?></label>
                                                             <br>
-                                                            <img src="<?= $data_ublp['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                            <img decoding="async" src="<?= $data_ublp['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">

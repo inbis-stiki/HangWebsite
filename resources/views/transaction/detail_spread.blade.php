@@ -201,7 +201,7 @@
                                                     <?php if (!empty($data_spread['IMAGE'])) { ?>
                                                         <?php foreach ($data_spread['IMAGE'] as $image) { ?>
                                                             <div class="form-group col-md-6">
-                                                                <img src="<?= $image; ?>" style="max-width: 300px; margin-bottom: 10px" alt="">
+                                                                <img decoding="async" src="<?= $image; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
                                                             </div>
                                                         <?php } ?>
                                                     <?php } else { ?>

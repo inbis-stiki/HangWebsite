@@ -6,6 +6,7 @@ use App\Area;
 use App\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Session;
 
@@ -85,7 +86,7 @@ class DistrictController extends Controller
         
         $district = new District();
         $district->ID_AREA              = $req->input('area');
-        $district->NAME_DISTRICT        = $req->input('district');
+        $district->NAME_DISTRICT        = Str::upper($req->input('district'));
         $district->ISMARKET_DISTRICT    = '0';
         $district->ISFOCUS_DISTRICT     = '0';
         $district->deleted_at           = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
@@ -120,7 +121,7 @@ class DistrictController extends Controller
         
         $district = District::find($req->input('id'));
         $district->ID_AREA          = $req->input('area');
-        $district->NAME_DISTRICT    = $req->input('district');
+        $district->NAME_DISTRICT    = Str::upper($req->input('district'));
         $district->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $district->save();
 
