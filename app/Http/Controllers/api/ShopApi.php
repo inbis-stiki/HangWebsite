@@ -268,23 +268,22 @@ class ShopApi extends Controller
                     ]
                 )
                 ->orderBy('DISTANCE_SHOP', 'asc')
-                ->get();
-
-            $dataPaginate = $this->paginate($shop);
+                ->paginate(10);
+            
             $dataPagination = array();
             array_push(
                 $dataPagination,
                 array(
-                    "TOTAL_DATA" => $dataPaginate->total(),
-                    "PAGE" => $dataPaginate->currentPage(),
-                    "TOTAL_PAGE" => $dataPaginate->lastPage()
+                    "TOTAL_DATA" => $shop->total(),
+                    "PAGE" => $shop->currentPage(),
+                    "TOTAL_PAGE" => $shop->lastPage()
                 )
             );
 
             return response([
                 'status_code'       => 200,
                 'status_message'    => 'Data berhasil diambil!',
-                'data'              => $dataPaginate->items(),
+                'data'              => $shop->items(),
                 'status_pagination' => $dataPagination
             ], 200);
         } catch (Exception $exp) {
