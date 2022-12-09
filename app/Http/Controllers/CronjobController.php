@@ -123,26 +123,26 @@ class CronjobController extends Controller
                 ]);
 
 
-                $data       = json_decode(json_encode($data), true);
-                $dataDetail = [];
-                $index      = 0;
-                foreach ($prodCategorys as $prodCategory) {
-                    $dataDetail[$index]['ID_USER']      = $data['ID_USER'];
-                    $dataDetail[$index]['TYPE_STD']     = "PRODCATEGORY";
-                    $dataDetail[$index]['IDCAT_STD']    = $prodCategory->ID_PC;
-                    $dataDetail[$index]['QTY_STD']      = $data["REAL".strtoupper(str_replace('-', '', $prodCategory['NAME_PC']))."_ST"];
-                    $index++;    
-                }
+                // $data       = json_decode(json_encode($data), true);
+                // $dataDetail = [];
+                // $index      = 0;
+                // foreach ($prodCategorys as $prodCategory) {
+                //     $dataDetail[$index]['ID_USER']      = $data['ID_USER'];
+                //     $dataDetail[$index]['TYPE_STD']     = "PRODCATEGORY";
+                //     $dataDetail[$index]['IDCAT_STD']    = $prodCategory->ID_PC;
+                //     $dataDetail[$index]['QTY_STD']      = $data["REAL".strtoupper(str_replace('-', '', $prodCategory['NAME_PC']))."_ST"];
+                //     $index++;    
+                // }
 
-                foreach ($actCategorys as $actCategory) {
-                    $dataDetail[$index]['ID_USER']      = $data['ID_USER'];
-                    $dataDetail[$index]['TYPE_STD']     = "ACTCATEGORY";
-                    $dataDetail[$index]['IDCAT_STD']    = $actCategory->ID_AC;
-                    $dataDetail[$index]['QTY_STD']      = $data["REAL".strtoupper(str_replace('-', '', $actCategory['NAME_AC']))."_ST"];
-                    $index++;    
-                }
+                // foreach ($actCategorys as $actCategory) {
+                //     $dataDetail[$index]['ID_USER']      = $data['ID_USER'];
+                //     $dataDetail[$index]['TYPE_STD']     = "ACTCATEGORY";
+                //     $dataDetail[$index]['IDCAT_STD']    = $actCategory->ID_AC;
+                //     $dataDetail[$index]['QTY_STD']      = $data["REAL".strtoupper(str_replace('-', '', $actCategory['NAME_AC']))."_ST"];
+                //     $index++;    
+                // }
 
-                foreach ($dataDetail as $item) {
+                // foreach ($dataDetail as $item) {
                     // DB::table('summary_trans_detail')->insert([
                     //     'ID_USER'       => $item['ID_USER'],
                     //     'TYPE_STD'      => $item['TYPE_STD'],
@@ -153,14 +153,14 @@ class CronjobController extends Controller
                     //     'updated_at'    => $updated_at
                     
                     // ]);
-                    DB::table('dashboard_mobile_detail')->insert([
-                        'ID_USER'       => $item['ID_USER'],
-                        'TYPE_DMD'      => $item['TYPE_STD'],
-                        'IDCAT_DMD'     => $item['IDCAT_STD'],
-                        'QTY_DMD'       => $item['QTY_STD'],
-                        'updated_at'    => $updated_at
-                    ]);
-                }
+                    // DB::table('dashboard_mobile_detail')->insert([
+                    //     'ID_USER'       => $item['ID_USER'],
+                    //     'TYPE_DMD'      => $item['TYPE_STD'],
+                    //     'IDCAT_DMD'     => $item['IDCAT_STD'],
+                    //     'QTY_DMD'       => $item['QTY_STD'],
+                    //     'updated_at'    => $updated_at
+                    // ]);
+                // }
 
             }
 
