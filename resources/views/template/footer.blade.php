@@ -34,6 +34,7 @@
  <script src="{{ asset('js/custom.min.js') }}"></script>
  <script src="{{ asset('js/deznav-init.js') }}"></script>
  <script src="{{ asset('vendor/owl-carousel/owl.carousel.js') }}"></script>
+ <script src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 
  <!-- Chart piety plugin files -->
  <script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
