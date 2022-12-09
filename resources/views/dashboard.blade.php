@@ -15,13 +15,13 @@
                         <h3 class="fs-16 text-black font-weight-bolder mb-0">Ranking</h3>
                         <div class="card-action revenue-tabs mt-3 mt-sm-0 ml-5">
                             <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item" id="tab-aktivity">
-                                    <a class="nav-link active fs-12" data-toggle="tab" href="#" role="tab" aria-selected="false">
+                                <li class="nav-item">
+                                    <a class="nav-link active fs-12" data-toggle="tab" href="#" role="tab" aria-selected="true" id="tab-aktivity">
                                         Aktivitas
                                     </a>
                                 </li>
-                                <li class="nav-item" id="tab-pencapaian">
-                                    <a class="nav-link fs-12" data-toggle="tab" href="#" role="tab" aria-selected="false">
+                                <li class="nav-item">
+                                    <a class="nav-link fs-12" data-toggle="tab" href="#" role="tab" aria-selected="false" id="tab-pencapaian">
                                         Pencapaian
                                     </a>
                                 </li>
@@ -34,8 +34,11 @@
                                 <div class="card text-black mb-3" style="background-color: #F3F2F0;">
                                     <div class="card-body">
                                         <h5 class="card-title fs-14">ASMEN</h5>
-                                        <div class="table-responsive">
-                                            <table id="datatables" class="table table-light rounded">
+                                        <div class="d-flex justify-content-center">
+                                            <img src="{{ asset('images/loader.gif') }}" id="loader_1" style="max-width: 150px;">
+                                        </div>
+                                        <div class="table-responsive" id="table-data">
+                                            <table class="table table-light rounded">
                                                 <tbody class="fs-12" id="ranking_asmen"></tbody>
                                             </table>
                                         </div>
@@ -46,8 +49,11 @@
                                 <div class="card text-white mb-3" style="background-color: #F3F2F0;">
                                     <div class="card-body">
                                         <h5 class="card-title fs-14">RPO</h5>
-                                        <div class="table-responsive">
-                                            <table id="datatables" class="table table-light rounded">
+                                        <div class="d-flex justify-content-center">
+                                            <img src="{{ asset('images/loader.gif') }}" id="loader_2" style="max-width: 150px;">
+                                        </div>
+                                        <div class="table-responsive" id="table-data">
+                                            <table class="table table-light rounded">
                                                 <tbody class="fs-12" id="ranking_rpo"></tbody>
                                             </table>
                                         </div>
@@ -58,8 +64,11 @@
                                 <div class="card text-white mb-3" style="background-color: #F3F2F0;">
                                     <div class="card-body">
                                         <h5 class="card-title fs-14">APO</h5>
-                                        <div class="table-responsive">
-                                            <table id="datatables" class="table table-light rounded">
+                                        <div class="d-flex justify-content-center">
+                                            <img src="{{ asset('images/loader.gif') }}" id="loader_3" style="max-width: 150px;">
+                                        </div>
+                                        <div class="table-responsive" id="table-data">
+                                            <table class="table table-light rounded">
                                                 <tbody class="fs-12" id="ranking_apo"></tbody>
                                             </table>
                                         </div>
@@ -269,120 +278,119 @@
         }
     }
 
-    $(document).ready(function() {
-        // AJAX Jquery ranking
-        load_data_ranking()
-        $('#tab-aktivity').click(function() {
-            ranking_activity()
-        })
+    ranking_activity()
+    $('#tab-aktivity').click(function() {
+        ranking_activity()
+    })
 
-        $('#tab-pencapaian').click(function() {
-            ranking_pencapaian()
-        })
+    $('#tab-pencapaian').click(function() {
+        ranking_pencapaian()
+    })
 
-        function load_data_ranking() {
-            $('#ranking_asmen').html('');
-            $('#ranking_rpo').html('');
-            $('#ranking_apo').html('');
-            ranking_activity()
-        }
+    function ranking_activity() {
+        reset()
+        $.ajax({
+            url: "{{ url('dashboard/ranking_activity') }}",
+            type: "GET",
+            'crossDomain': true,
+            dataType: "json",
+            success: function(response) {
+                var no_asmen = 0
+                $.each(response.asmen, function(key, value) {
+                    no_asmen++
+                    trHTML_asmen +=
+                        '<tr><td>' + no_asmen +
+                        '</td><td>ASMEN ' + value.NAME_LOCATION +
+                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                    '</td></tr>';
+                });
 
-        function ranking_activity() {
-            $('#ranking_asmen').html('');
-            $('#ranking_rpo').html('');
-            $('#ranking_apo').html('');
-            $.ajax({
-                url: "{{ url('dashboard/ranking_activity') }}",
-                type: "GET",
-                'crossDomain': true,
-                dataType: "json",
-                success: function(response) {
-                    var trHTML_asmen = '';
-                    var trHTML_rpo = '';
-                    var trHTML_apo = '';
-                    var no_asmen = 0
-                    var no_rpo = 0
-                    var no_apo = 0
-                    $.each(response, function(key, value) {
-                        if (value.ID_ROLE == 3) {
-                            no_asmen++
-                            trHTML_asmen +=
-                                '<tr><td>' + no_asmen +
-                                '</td><td>' + value.NAME_USER +
-                                '</td><td>' + Number(value.AVERAGE.toFixed(3)) + "%"
-                            '</td></tr>';
-                        } else if (value.ID_ROLE == 4) {
-                            no_rpo++
-                            trHTML_rpo +=
-                                '<tr><td>' + no_rpo +
-                                '</td><td>' + value.NAME_USER +
-                                '</td><td>' + Number(value.AVERAGE.toFixed(3)) + "%"
-                            '</td></tr>';
-                        } else if (value.ID_ROLE == 5) {
-                            no_apo++
-                            trHTML_apo +=
-                                '<tr><td>' + no_apo +
-                                '</td><td>' + value.NAME_USER +
-                                '</td><td>' + Number(value.AVERAGE.toFixed(3)) + "%"
-                            '</td></tr>';
-                        }
-                    });
+                var no_rpo = 0
+                $.each(response.rpo, function(key, value) {
+                    no_rpo++
+                    trHTML_rpo +=
+                        '<tr><td>' + no_rpo +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                    '</td></tr>';
+                });
 
-                    $('#ranking_asmen').append(trHTML_asmen);
-                    $('#ranking_rpo').append(trHTML_rpo);
-                    $('#ranking_apo').append(trHTML_apo);
-                }
-            });
-        }
+                var no_apo = 0
+                $.each(response.apo, function(key, value) {
+                    no_apo++
+                    trHTML_apo +=
+                        '<tr><td>' + no_apo +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                    '</td></tr>';
+                });
 
-        function ranking_pencapaian() {
-            $('#ranking_asmen').html('');
-            $('#ranking_rpo').html('');
-            $('#ranking_apo').html('');
-            $.ajax({
-                url: "{{ url('dashboard/ranking_sale') }}",
-                type: "GET",
-                'crossDomain': true,
-                dataType: "json",
-                success: function(response) {
-                    var trHTML_asmen = '';
-                    var trHTML_rpo = '';
-                    var trHTML_apo = '';
-                    var no_asmen = 0
-                    var no_rpo = 0
-                    var no_apo = 0
-                    $.each(response, function(key, value) {
-                        if (value.ID_ROLE == 3) {
-                            no_asmen++
-                            trHTML_asmen +=
-                                '<tr><td>' + no_asmen +
-                                '</td><td>' + value.NAME_USER +
-                                '</td><td>' + Number(value.AVERAGE.toFixed(2)) + "%"
-                            '</td></tr>';
-                        } else if (value.ID_ROLE == 4) {
-                            no_rpo++
-                            trHTML_rpo +=
-                                '<tr><td>' + no_rpo +
-                                '</td><td>' + value.NAME_USER +
-                                '</td><td>' + Number(value.AVERAGE.toFixed(2)) + "%"
-                            '</td></tr>';
-                        } else if (value.ID_ROLE == 5) {
-                            no_apo++
-                            trHTML_apo +=
-                                '<tr><td>' + no_apo +
-                                '</td><td>' + value.NAME_USER +
-                                '</td><td>' + Number(value.AVERAGE.toFixed(2)) + "%"
-                            '</td></tr>';
-                        }
-                    });
+                $('#ranking_asmen').append(trHTML_asmen);
+                $('#ranking_rpo').append(trHTML_rpo);
+                $('#ranking_apo').append(trHTML_apo);
 
-                    $('#ranking_asmen').append(trHTML_asmen);
-                    $('#ranking_rpo').append(trHTML_rpo);
-                    $('#ranking_apo').append(trHTML_apo);
-                }
-            });
-        }
-    });
+                $('#loader_1, #loader_2, #loader_3').hide()
+                $('#table-data').show()
+            }
+        });
+    }
 
-    $.fn.dataTable.ext.errMode = 'throw';
+    function ranking_pencapaian() {
+        reset()
+        $.ajax({
+            url: "{{ url('dashboard/ranking_sale') }}",
+            type: "GET",
+            'crossDomain': true,
+            dataType: "json",
+            success: function(response) {
+                var no_asmen = 0
+                $.each(response.asmen, function(key, value) {
+                    no_asmen++
+                    trHTML_asmen +=
+                        '<tr><td>' + no_asmen +
+                        '</td><td>ASMEN ' + value.NAME_LOCATION +
+                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                    '</td></tr>';
+                });
+
+                var no_rpo = 0
+                $.each(response.rpo, function(key, value) {
+                    no_rpo++
+                    trHTML_rpo +=
+                        '<tr><td>' + no_rpo +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                    '</td></tr>';
+                });
+
+                var no_apo = 0
+                $.each(response.apo, function(key, value) {
+                    no_apo++
+                    trHTML_apo +=
+                        '<tr><td>' + no_apo +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                    '</td></tr>';
+                });
+
+                $('#ranking_asmen').append(trHTML_asmen);
+                $('#ranking_rpo').append(trHTML_rpo);
+                $('#ranking_apo').append(trHTML_apo);
+
+                $('#loader_1, #loader_2, #loader_3').hide()
+                $('#table-data').show()
+            }
+        });
+    }
+
+    function reset() {
+        $('#loader_1, #loader_2, #loader_3').show()
+        $('#table-data').hide()
+        trHTML_asmen = ''
+        trHTML_rpo = ''
+        trHTML_apo = ''
+        $('#ranking_asmen').html('');
+        $('#ranking_rpo').html('');
+        $('#ranking_apo').html('');
+    }
 </script>
