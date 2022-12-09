@@ -144,23 +144,98 @@ class DashboardController extends Controller
 
     public function ranking_activity()
     {
-        $currDate = date('Y-m-d');
-        $ranking_activity = UserRankingActivity::select('NAME_USER', 'NAME_REGIONAL', 'NAME_AREA', 'AVERAGE')
-                ->whereDate('created_at', '=', $currDate)
-                ->orderBy('AVERAGE', 'DESC')
-                ->get();
-
-        return json_encode($ranking_activity);
+        $ranking_sale_rpo = DB::select("
+            SELECT
+                ura.NAME_REGIONAL,
+                (SUM(ura.AVERAGE) / COUNT(ura.ID_USER)) AS NEW_AVERAGE
+            FROM
+                user_ranking_activity ura 
+            GROUP BY 
+                ura.ID_REGIONAL
+            ORDER BY
+                NEW_AVERAGE DESC
+            LIMIT 5
+        ");
+        $ranking_sale_asmen = DB::select("
+            SELECT
+                ml.NAME_LOCATION,
+                (SUM(ura.AVERAGE) / COUNT(ura.ID_USER)) AS NEW_AVERAGE
+            FROM
+                user_ranking_activity ura 
+            LEFT JOIN md_location ml ON 
+                ml.ID_LOCATION = ura.ID_LOCATION
+            GROUP BY 
+                ura.ID_LOCATION
+            ORDER BY
+                NEW_AVERAGE DESC
+            LIMIT 5
+        ");
+        $ranking_sale_apo = DB::select("
+            SELECT
+                ura.NAME_AREA,
+                (SUM(ura.AVERAGE) / COUNT(ura.ID_USER)) AS NEW_AVERAGE
+            FROM
+                user_ranking_activity ura 
+            GROUP BY
+                ura.ID_AREA
+            ORDER BY
+                NEW_AVERAGE DESC
+            LIMIT 5
+        ");
+        $ranking_sale = [
+            'asmen' => $ranking_sale_asmen,
+            'rpo' => $ranking_sale_rpo,
+            'apo' => $ranking_sale_apo
+        ];
+        echo json_encode($ranking_sale);
     }
 
     public function ranking_sale()
     {
-        $ranking_sale = DB::table('user_ranking_sale')
-            ->select('user_ranking_sale.ID_USER_RANKSALE', 'user_ranking_sale.ID_ROLE', 'user_ranking_sale.AVERAGE', 'user.NAME_USER')
-            ->join('user', 'user_ranking_sale.ID_USER', '=', 'user.ID_USER')
-            ->orderBy('ID_USER_RANKSALE', 'ASC')
-            ->skip(0)->take(5)->get();
-        return json_encode($ranking_sale);
+        $ranking_sale_rpo = DB::select("
+            SELECT
+                urs.NAME_REGIONAL,
+                (SUM(urs.AVERAGE) / COUNT(urs.ID_USER)) AS NEW_AVERAGE
+            FROM
+                user_ranking_sale urs
+            GROUP BY 
+                urs.ID_REGIONAL
+            ORDER BY
+                NEW_AVERAGE DESC
+            LIMIT 5
+        ");
+        $ranking_sale_asmen = DB::select("
+            SELECT
+                ml.NAME_LOCATION,
+                (SUM(urs.AVERAGE) / COUNT(urs.ID_USER)) AS NEW_AVERAGE
+            FROM
+                user_ranking_sale urs
+            LEFT JOIN md_location ml ON 
+                ml.ID_LOCATION = urs.ID_LOCATION
+            GROUP BY 
+                urs.ID_LOCATION
+            ORDER BY
+                NEW_AVERAGE DESC
+            LIMIT 5
+        ");
+        $ranking_sale_apo = DB::select("
+            SELECT
+                urs.NAME_AREA,
+                (SUM(urs.AVERAGE) / COUNT(urs.ID_USER)) AS NEW_AVERAGE
+            FROM
+                user_ranking_sale urs
+            GROUP BY 
+                urs.ID_AREA
+            ORDER BY
+                NEW_AVERAGE DESC
+            LIMIT 5
+        ");
+        $ranking_sale = [
+            'asmen' => $ranking_sale_asmen,
+            'rpo' => $ranking_sale_rpo,
+            'apo' => $ranking_sale_apo
+        ];
+        echo json_encode($ranking_sale);
     }
 
     public function ranking_aktivitas(Request $request)

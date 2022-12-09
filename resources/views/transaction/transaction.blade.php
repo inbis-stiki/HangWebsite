@@ -32,7 +32,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <h4 class="card-title">Tanggal Transaksi</h4>
-                                <input placeholder ="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker" class="datepicker-default form-control">
+                                <input value="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker" class="datepicker-default form-control">
                             </div>
                             <div class="col-6">
                                 <h4 class="card-title">Jenis Transaksi</h4>
@@ -142,6 +142,7 @@
 
     $(".datepicker-default").pickadate({
         format: 'd\ mmmm yyyy',
+        clear: 'All Time',
         onSet: function() {
             tgl_trans = this.get('select', 'yyyy-mm-dd');
             $('#datatables').DataTable().destroy();

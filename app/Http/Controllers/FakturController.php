@@ -36,7 +36,7 @@ class FakturController extends Controller
                 ->where('transaction_daily.DATEFACTUR_TD', 'like', $tgl_trans . '%')
                 ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
-                ->orderBy('transaction_daily.DATE_TD', 'DESC')
+                ->orderBy('transaction_daily.DATEFACTUR_TD', 'DESC')
                 ->select('transaction_daily.*', 'user.NAME_USER', 'md_type.NAME_TYPE')
                 ->get();
         } else {
@@ -44,7 +44,7 @@ class FakturController extends Controller
                 ->where('transaction_daily.DATEFACTUR_TD', 'like', $tgl_trans . '%')
                 ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
-                ->orderBy('transaction_daily.DATE_TD', 'DESC')
+                ->orderBy('transaction_daily.DATEFACTUR_TD', 'DESC')
                 ->select('transaction_daily.*', 'user.NAME_USER', 'md_type.NAME_TYPE')
                 ->get();
         }
@@ -56,8 +56,8 @@ class FakturController extends Controller
                 "NAME_USER" => $item->NAME_USER,
                 "AREA" => $item->AREA_TD,
                 "REGIONAL" => $item->REGIONAL_TD,
-                "DATE" => date_format(date_create($item->DATE_TD), 'j F Y'),
-                "ACTION_BUTTON" => "<a href='detail/faktur?id_td=" . $item->ID_TD . "&id_user=" . $item->ID_USER . "&date=" . date_format(date_create($item->DATEFACTUR_TD), 'Y-m-d') . "><button class='btn light btn-success'><i class='fa fa-circle-info'></i></button></a>"
+                "DATE" => date_format(date_create($item->DATEFACTUR_TD), 'j F Y'),
+                "ACTION_BUTTON" => "<a href='detail/faktur?id_td=" . $item->ID_TD . "&id_user=" . $item->ID_USER . "&date=" . date_format(date_create($item->DATEFACTUR_TD), 'Y-m-d') . "'><button class='btn light btn-success'><i class='fa fa-circle-info'></i></button></a>"
             );
 
             $counter_faktur++;
@@ -83,7 +83,7 @@ class FakturController extends Controller
         $lastInvoice = DB::table('transaction_daily')
             ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
             ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
-            ->orderBy('transaction_daily.DATE_TD', 'DESC')
+            ->orderBy('transaction_daily.DATEFACTUR_TD', 'DESC')
             ->select('transaction_daily.*', 'user.NAME_USER', 'md_type.NAME_TYPE')
             ->where('ISFINISHED_TD', '=', '1')
             ->where('ID_TD', '=', $ID_FAKTUR)

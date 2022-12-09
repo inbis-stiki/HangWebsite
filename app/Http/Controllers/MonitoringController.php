@@ -82,14 +82,14 @@ class MonitoringController extends Controller
                 GROUP BY
                     t.REGIONAL_TRANS
                 HAVING
-                    TOT_TRANS >= 21
+                    TOT_TRANS >= 11
                     AND 
                     TOT_TRANS <= 30
                 ORDER BY
                     t.DATE_TRANS DESC
             ');
 
-            $TRANS_3 = DB::select('
+            $TRANS_4 = DB::select('
                 SELECT
                     t.REGIONAL_TRANS,
                     COUNT(t.ID_TRANS) AS TOT_TRANS
