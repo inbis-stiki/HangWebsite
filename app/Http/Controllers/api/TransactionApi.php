@@ -130,7 +130,7 @@ class TransactionApi extends Controller
                     $transaction->LAT_TRANS    = $req->input('lat_trans');
                     $transaction->AREA_TRANS    = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
-                    $transaction->TYPE_SHOP     = $shop->TYPE_SHOP;
+                    $transaction->TYPE_ACTIVITY     = $shop->TYPE_SHOP;
                     $transaction->save();
     
                     foreach ($req->input('product') as $item) {
@@ -292,6 +292,7 @@ class TransactionApi extends Controller
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
                     $transaction->LONG_TRANS        = $req->input('long_trans');
                     $transaction->DETAIL_LOCATION   = $req->input('detail_loc');
+                    $transaction->TYPE_ACTIVITY     = "Aktivitas UB";
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
                     $transaction->save();
 
@@ -453,6 +454,7 @@ class TransactionApi extends Controller
                     $transaction->DISTRICT          = $district::select('NAME_DISTRICT')->where('ID_DISTRICT', $req->input('id_district'))->first()->NAME_DISTRICT;
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
                     $transaction->LONG_TRANS        = $req->input('long_trans');
+                    $transaction->TYPE_ACTIVITY     = "Aktivitas UB";
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
                     $transaction->save();
     
