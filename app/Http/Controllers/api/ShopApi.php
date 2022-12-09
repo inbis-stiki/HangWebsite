@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
@@ -100,7 +101,7 @@ class ShopApi extends Controller
             } else {
                 $shop = new Shop();
                 $shop->ID_DISTRICT          = $req->input('id_district');
-                $shop->NAME_SHOP            = $req->input('name_shop');
+                $shop->NAME_SHOP            = Str::upper($req->input('name_shop'));
                 $shop->OWNER_SHOP           = $req->input('owner_shop');
                 $shop->ISINSIDEMARKET_SHOP  = $req->input('isinside_market');
                 $shop->TYPE_SHOP            = $req->input('type_shop');
@@ -268,23 +269,22 @@ class ShopApi extends Controller
                     ]
                 )
                 ->orderBy('DISTANCE_SHOP', 'asc')
-                ->get();
-
-            $dataPaginate = $this->paginate($shop);
+                ->paginate(10);
+            
             $dataPagination = array();
             array_push(
                 $dataPagination,
                 array(
-                    "TOTAL_DATA" => $dataPaginate->total(),
-                    "PAGE" => $dataPaginate->currentPage(),
-                    "TOTAL_PAGE" => $dataPaginate->lastPage()
+                    "TOTAL_DATA" => $shop->total(),
+                    "PAGE" => $shop->currentPage(),
+                    "TOTAL_PAGE" => $shop->lastPage()
                 )
             );
 
             return response([
                 'status_code'       => 200,
                 'status_message'    => 'Data berhasil diambil!',
-                'data'              => $dataPaginate->items(),
+                'data'              => $shop->items(),
                 'status_pagination' => $dataPagination
             ], 200);
         } catch (Exception $exp) {

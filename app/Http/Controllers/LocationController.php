@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Location;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Session;
 
@@ -32,7 +33,7 @@ class LocationController extends Controller
 
         
         $location = new Location();
-        $location->NAME_LOCATION = $req->input('name');
+        $location->NAME_LOCATION = Str::upper($req->input('name'));
         $location->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $location->save();
 
@@ -54,7 +55,7 @@ class LocationController extends Controller
 
         
         $location = Location::find($req->input('id'));
-        $location->NAME_LOCATION = $req->input('name');
+        $location->NAME_LOCATION = Str::upper($req->input('name'));
         $location->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $location->save();
 

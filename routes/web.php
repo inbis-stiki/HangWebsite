@@ -118,7 +118,7 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('master/shop', 'ShopController@index');
     Route::post('master/shop/AllShop', 'ShopController@AllShop');
     Route::get('master/shop/store', 'ShopController@store');
-    Route::get('master/shop/update', 'ShopController@update');
+    Route::post('master/shop/update', 'ShopController@update');
     Route::get('master/shop/destroy', 'ShopController@destroy');
 
     // MASTER USER

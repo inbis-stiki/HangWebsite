@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Location;
 use App\Regional;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Session;
@@ -53,7 +54,7 @@ class RegionalController extends Controller
         
         $regional = new Regional();
         $regional->ID_LOCATION   = $req->input('location');
-        $regional->NAME_REGIONAL = $req->input('regional');
+        $regional->NAME_REGIONAL = Str::upper($req->input('regional'));
         $regional->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $regional->save();
 
@@ -77,7 +78,7 @@ class RegionalController extends Controller
         
         $regional = Regional::find($req->input('id'));
         $regional->ID_LOCATION   = $req->input('location');
-        $regional->NAME_REGIONAL = $req->input('regional');
+        $regional->NAME_REGIONAL = Str::upper($req->input('regional'));
         $regional->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $regional->save();
 
