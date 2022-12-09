@@ -32,7 +32,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <h4 class="card-title">Tanggal Presensi</h4>
-                                <input placeholder="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker" class="datepicker-default form-control">
+                                <input value="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="datepicker" class="datepicker-default form-control">
                             </div>
                             <div class="col-6">
                                 <h4 class="card-title">Regional Presensi</h4>
@@ -180,6 +180,7 @@
 
     $(".datepicker-default").pickadate({
         format: 'd\ mmmm yyyy',
+        clear: 'All Time',
         onSet: function() {
             tgl_presence = this.get('select', 'yyyy-mm-dd');
             $('#datatable').DataTable().destroy();
