@@ -113,6 +113,9 @@ class TransactionApi extends Controller
                     $updatePickup->save();
 
                     $shop = Shop::where('ID_SHOP', $req->input('id_shop'))->first();
+                    $nameLoc    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
+                    $nameReg    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
+                    $nameArea   = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
     
                     $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
@@ -121,14 +124,14 @@ class TransactionApi extends Controller
                     $transaction->KECAMATAN         = strtoupper($cekLokasi[0]->NAME_DISTRICT);
                     $transaction->ID_SHOP           = $req->input('id_shop');
                     $transaction->ID_TYPE           = $req->input('id_type');
-                    $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
-                    $transaction->REGIONAL_TRANS    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
+                    $transaction->LOCATION_TRANS    = $nameLoc;
+                    $transaction->REGIONAL_TRANS    = $nameReg;
                     $transaction->QTY_TRANS     = $req->input('qty_trans');
                     $transaction->TOTAL_TRANS   = $req->input('total_trans');
                     $transaction->DATE_TRANS    = $currDate;
                     $transaction->LONG_TRANS    = $req->input('long_trans');
                     $transaction->LAT_TRANS    = $req->input('lat_trans');
-                    $transaction->AREA_TRANS    = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
+                    $transaction->AREA_TRANS    = $nameArea;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
                     $transaction->TYPE_ACTIVITY     = $shop->TYPE_SHOP;
                     $transaction->save();
@@ -147,12 +150,17 @@ class TransactionApi extends Controller
 
                         TransactionDetailToday::insert([
                             [
-                                'ID_TRANS'      => "TRANS_" . $unik,
-                                'ID_PRODUCT'    => $item['id_product'],
-                                'ID_PC'         => $item['id_pc'],
-                                'QTY_TD'        => $item['qty_product'],
-                                'DATE_TD'       => $currDate,
-                                'ID_USER'       => $req->input('id_user')
+                                'ID_TRANS'          => "TRANS_" . $unik,
+                                'ID_PRODUCT'        => $item['id_product'],
+                                'ID_PC'             => $item['id_pc'],
+                                'QTY_TD'            => $item['qty_product'],
+                                'DATE_TD'           => $currDate,
+                                'ID_USER'           => $req->input('id_user'),
+                                'TYPE_ACTIVITY'     => $shop->TYPE_SHOP,
+                                'LOCATION_TRANS'    => $nameLoc,
+                                'REGIONAL_TRANS'    => $nameReg,
+                                'AREA_TRANS'        => $nameArea,
+                                'KECAMATAN'         => strtoupper($cekLokasi[0]->NAME_DISTRICT)
                             ]
                         ]);
                     }
@@ -277,18 +285,22 @@ class TransactionApi extends Controller
                     $updatePickup->REMAININGSTOCK_PICKUP = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                     $updatePickup->save();
 
+                    $nameLoc    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
+                    $nameReg    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
+                    $nameArea   = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
+
                     $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
                     $transaction->ID_TD             = $transDaily->ID_TD;
                     $transaction->KECAMATAN         = strtoupper($req->input('name_district'));
                     $transaction->ID_USER           = $req->input('id_user');
                     $transaction->ID_TYPE           = $req->input('id_type');
-                    $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
-                    $transaction->REGIONAL_TRANS    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
+                    $transaction->LOCATION_TRANS    = $nameLoc;
+                    $transaction->REGIONAL_TRANS    = $nameReg;
                     $transaction->QTY_TRANS         = $req->input('qty_trans');
                     $transaction->TOTAL_TRANS       = $req->input('total_trans');
                     $transaction->DATE_TRANS        = $currDate;
-                    $transaction->AREA_TRANS        = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
+                    $transaction->AREA_TRANS        = $nameArea;
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
                     $transaction->LONG_TRANS        = $req->input('long_trans');
                     $transaction->DETAIL_LOCATION   = $req->input('detail_loc');
@@ -308,12 +320,17 @@ class TransactionApi extends Controller
 
                         TransactionDetailToday::insert([
                             [
-                                'ID_TRANS'      => "TRANS_" . $unik,
-                                'ID_PRODUCT'    => $item['id_product'],
-                                'ID_PC'         => $item['id_pc'],
-                                'QTY_TD'        => $item['qty_product'],
-                                'DATE_TD'       => $currDate,
-                                'ID_USER'       => $req->input('id_user')
+                                'ID_TRANS'          => "TRANS_" . $unik,
+                                'ID_PRODUCT'        => $item['id_product'],
+                                'ID_PC'             => $item['id_pc'],
+                                'QTY_TD'            => $item['qty_product'],
+                                'DATE_TD'           => $currDate,
+                                'ID_USER'           => $req->input('id_user'),
+                                'TYPE_ACTIVITY'     => "Aktivitas UB",
+                                'LOCATION_TRANS'    => $nameLoc,
+                                'REGIONAL_TRANS'    => $nameReg,
+                                'AREA_TRANS'        => $nameArea,
+                                'KECAMATAN'         => strtoupper($req->input('name_district')),
                             ]
                         ]);
                     }
@@ -437,7 +454,10 @@ class TransactionApi extends Controller
                     $updatePickup->REMAININGSTOCK_PICKUP      = $this->UpdatePickup($Stok2, $pecahIdproduk, $pecahRemainproduk);
                     $updatePickup->save();
 
-                    $kecamatan = District::where('ID_DISTRICT', '=', $id_district)->first();
+                    $kecamatan  = District::where('ID_DISTRICT', '=', $id_district)->first();
+                    $nameLoc    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
+                    $nameReg    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
+                    $nameArea   = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
     
                     $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
@@ -445,12 +465,12 @@ class TransactionApi extends Controller
                     $transaction->KECAMATAN         = strtoupper($kecamatan->NAME_DISTRICT);
                     $transaction->ID_USER           = $req->input('id_user');
                     $transaction->ID_TYPE           = $req->input('id_type');
-                    $transaction->LOCATION_TRANS    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
-                    $transaction->REGIONAL_TRANS    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
+                    $transaction->LOCATION_TRANS    = $nameLoc;
+                    $transaction->REGIONAL_TRANS    = $nameReg;
                     $transaction->QTY_TRANS         = $req->input('qty_trans');
                     $transaction->TOTAL_TRANS       = $req->input('total_trans');
                     $transaction->DATE_TRANS        = $currDate;
-                    $transaction->AREA_TRANS        = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
+                    $transaction->AREA_TRANS        = $nameArea;
                     $transaction->DISTRICT          = $district::select('NAME_DISTRICT')->where('ID_DISTRICT', $req->input('id_district'))->first()->NAME_DISTRICT;
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
                     $transaction->LONG_TRANS        = $req->input('long_trans');
@@ -471,12 +491,17 @@ class TransactionApi extends Controller
 
                         TransactionDetailToday::insert([
                             [
-                                'ID_TRANS'      => "TRANS_" . $unik,
-                                'ID_PRODUCT'    => $item['id_product'],
-                                'ID_PC'         => $item['id_pc'],
-                                'QTY_TD'        => $item['qty_product'],
-                                'DATE_TD'       => $currDate,
-                                'ID_USER'       => $req->input('id_user')
+                                'ID_TRANS'          => "TRANS_" . $unik,
+                                'ID_PRODUCT'        => $item['id_product'],
+                                'ID_PC'             => $item['id_pc'],
+                                'QTY_TD'            => $item['qty_product'],
+                                'DATE_TD'           => $currDate,
+                                'ID_USER'           => $req->input('id_user'),
+                                'TYPE_ACTIVITY'     => "Aktivitas UB",
+                                'LOCATION_TRANS'    => $nameLoc,
+                                'REGIONAL_TRANS'    => $nameReg,
+                                'AREA_TRANS'        => $nameArea,
+                                'KECAMATAN'         => strtoupper($kecamatan->NAME_DISTRICT)
                             ]
                         ]);
                     }

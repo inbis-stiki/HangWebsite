@@ -74,7 +74,7 @@ class CronjobController extends Controller
                                 AND t.ID_USER = u.ID_USER 
                                 AND t.ID_TRANS = td.ID_TRANS
                                 AND td.ID_PC = ".$prodCategory->ID_PC."
-                    ), 0) as 'REAL".strtoupper(str_replace('-', '', $prodCategory->NAME_PC))."_ST'
+                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC)))."_DM'
                 ";
                 $tgtUser += $prodCategory->TGTUSER_PC;
             }
@@ -88,7 +88,7 @@ class CronjobController extends Controller
                             AND MONTH(t.DATE_TRANS) = ".$month."
                             AND t.ID_USER = u.ID_USER 
                             AND t.TYPE_ACTIVITY = '".$actCategory->NAME_AC."'
-                    ), 0) as 'REAL".strtoupper(str_replace('-', '', $actCategory->NAME_AC))."_ST'
+                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $actCategory->NAME_AC)))."_DM'
                 ";
             }
 
@@ -98,70 +98,19 @@ class CronjobController extends Controller
             $datas      = Cronjob::queryGetDashboardMobile($date, $month, $year, $queryCategory, $tgtUser);
             
             foreach ($datas as $data) {
-                // DB::table('summary_trans')->insert([
-                //     'ID_USER'               => $data->ID_USER,
-                //     'UBUBLP_ST'             => $data->UBUBLP_ST,
-                //     'SPREADING_ST'          => $data->SPREADING_ST,
-                //     'OFFTARGET_ST'          => $data->OFFTARGET_ST,
-                //     'REALUST_ST'            => $data->REALUST_ST,
-                //     'REALNONUST_ST'         => $data->REALNONUST_ST,
-                //     'REALSELERAKU_ST'       => $data->REALSELERAKU_ST,
-                //     'YEAR_ST'               => $year,
-                //     'MONTH_ST'              => $month,
-                //     'updated_at'            => $updated_at
-                // ]);
-                
                 DB::table('dashboard_mobile')->insert([
                     'ID_USER'               => $data->ID_USER,
-                    'UBUBLP_DM'             => $data->UBUBLP_ST,
-                    'SPREADING_DM'          => $data->SPREADING_ST,
-                    'OFFTARGET_DM'          => $data->OFFTARGET_ST,
-                    'REALUST_DM'            => $data->REALUST_ST,
-                    'REALNONUST_DM'         => $data->REALNONUST_ST,
-                    'REALSELERAKU_DM'       => $data->REALSELERAKU_ST,
+                    'UBUBLP_DM'             => $data->UBUBLP_DM,
+                    'SPREADING_DM'          => $data->SPREADING_DM,
+                    'OFFTARGET_DM'          => $data->OFFTARGET_DM,
+                    'REALUST_DM'            => $data->REALUST_DM,
+                    'REALNONUST_DM'         => $data->REALNONUST_DM,
+                    'REALSELERAKU_DM'       => $data->REALSELERAKU_DM,
+                    'REALACTUB_DM'          => $data->REALAKTIVITASUB_DM,
+                    'REALACTPS_DM'          => $data->REALPEDAGANGSAYUR_DM,
+                    'REALACTRETAIL_DM'      => $data->REALRETAIL_DM,
                     'updated_at'            => $updated_at
                 ]);
-
-
-                // $data       = json_decode(json_encode($data), true);
-                // $dataDetail = [];
-                // $index      = 0;
-                // foreach ($prodCategorys as $prodCategory) {
-                //     $dataDetail[$index]['ID_USER']      = $data['ID_USER'];
-                //     $dataDetail[$index]['TYPE_STD']     = "PRODCATEGORY";
-                //     $dataDetail[$index]['IDCAT_STD']    = $prodCategory->ID_PC;
-                //     $dataDetail[$index]['QTY_STD']      = $data["REAL".strtoupper(str_replace('-', '', $prodCategory['NAME_PC']))."_ST"];
-                //     $index++;    
-                // }
-
-                // foreach ($actCategorys as $actCategory) {
-                //     $dataDetail[$index]['ID_USER']      = $data['ID_USER'];
-                //     $dataDetail[$index]['TYPE_STD']     = "ACTCATEGORY";
-                //     $dataDetail[$index]['IDCAT_STD']    = $actCategory->ID_AC;
-                //     $dataDetail[$index]['QTY_STD']      = $data["REAL".strtoupper(str_replace('-', '', $actCategory['NAME_AC']))."_ST"];
-                //     $index++;    
-                // }
-
-                // foreach ($dataDetail as $item) {
-                    // DB::table('summary_trans_detail')->insert([
-                    //     'ID_USER'       => $item['ID_USER'],
-                    //     'TYPE_STD'      => $item['TYPE_STD'],
-                    //     'IDCAT_STD'     => $item['IDCAT_STD'],
-                    //     'QTY_STD'       => $item['QTY_STD'],
-                    //     'YEAR_STD'      => $year,
-                    //     'MONTH_STD'     => $month,
-                    //     'updated_at'    => $updated_at
-                    
-                    // ]);
-                    // DB::table('dashboard_mobile_detail')->insert([
-                    //     'ID_USER'       => $item['ID_USER'],
-                    //     'TYPE_DMD'      => $item['TYPE_STD'],
-                    //     'IDCAT_DMD'     => $item['IDCAT_STD'],
-                    //     'QTY_DMD'       => $item['QTY_STD'],
-                    //     'updated_at'    => $updated_at
-                    // ]);
-                // }
-
             }
 
             

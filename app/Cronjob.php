@@ -85,7 +85,7 @@ class Cronjob extends Model
 						AND MONTH(t.DATE_TRANS) = ".$month."
 						AND t.ID_USER = u.ID_USER 
                     	AND (t.ID_TYPE = 2 OR t.ID_TYPE = 3)
-                ), 0) as UBUBLP_ST,
+                ), 0) as UBUBLP_DM,
                 COALESCE((
                     SELECT COUNT(*)
                     FROM `transaction` t
@@ -94,7 +94,7 @@ class Cronjob extends Model
 						AND MONTH(t.DATE_TRANS) = ".$month."
 						AND t.ID_USER = u.ID_USER 
                     	AND t.ID_TYPE = 1
-                ), 0) as SPREADING_ST,
+                ), 0) as SPREADING_DM,
                 COALESCE((
                     SELECT COUNT(t.ID_USER)
 					FROM (
@@ -107,7 +107,7 @@ class Cronjob extends Model
 						HAVING SUM(t2.QTY_TRANS) < ".$tgtUser."
 					) as t
 					WHERE t.ID_USER = u.ID_USER  
-                ), 0) as OFFTARGET_ST,
+                ), 0) as OFFTARGET_DM,
                 ".$queryCategory."
             FROM `user` u 
             WHERE 
