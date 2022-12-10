@@ -33,6 +33,8 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Kategori Aktivitas</th>
+                                        <th>Target Regional</th>
+                                        <th>Target User</th>
                                         <th>Persentase</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
@@ -46,6 +48,8 @@
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $item->NAME_AC }}</td>
+                                        <td>{{ $item->TGTREGIONAL_AC }}</td>
+                                        <td>{{ $item->TGTUSER_AC }}</td>
                                         <td>{{ $item->PERCENTAGE_AC }}%</td>
                                         <td>
                                             @if ($item->deleted_at == NULL)
@@ -87,6 +91,14 @@
                 <div class="form-group">
                     <label for="">Kategori Aktivitas</label>
                     <input type="text" name="category_activity" id="mdlEdit_name" class="form-control" placeholder="Input nama kategori" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Target Regional</label>
+                    <input type="text" name="target_reg_act" id="mdlEdit_regi" class="form-control" placeholder="Input Target Regional" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Target User</label>
+                    <input type="text" name="target_user_act" id="mdlEdit_user" class="form-control" placeholder="Input Target User" required>
                 </div>
                 <div class="form-group">
                     <label for="">Persentase Aktivitas</label>
