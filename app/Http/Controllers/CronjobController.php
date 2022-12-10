@@ -48,15 +48,12 @@ class CronjobController extends Controller
         try {
             $prodCategorys  = CategoryProduct::where('deleted_at', NULL)->get();
             $actCategorys   = ActivityCategory::where('deleted_at', NULL)->get();
-            $date           = date('j', strtotime('-1 days'));
+
             $month          = date('n', strtotime('-1 days'));
             $year           = date('Y', strtotime('-1 days'));
             $updated_at     = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
 
-            // DB::table('summary_trans')->where('YEAR_ST', $year)->where('MONTH_ST', $month)->delete();
-            // DB::table('summary_trans_detail')->where('YEAR_STD', $year)->where('MONTH_STD', $month)->delete();
             DB::table('dashboard_mobile')->delete();
-            DB::table('dashboard_mobile_detail')->delete();
             DB::table('transaction_detail_today')->delete();
 
             $queryCategory = [];
@@ -74,7 +71,7 @@ class CronjobController extends Controller
                                 AND t.ID_USER = u.ID_USER 
                                 AND t.ID_TRANS = td.ID_TRANS
                                 AND td.ID_PC = ".$prodCategory->ID_PC."
-                    ), 0) as 'REAL".strtoupper(str_replace('-', '', $prodCategory->NAME_PC))."_ST'
+                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC)))."_DM'
                 ";
                 $tgtUser += $prodCategory->TGTUSER_PC;
             }
@@ -88,83 +85,106 @@ class CronjobController extends Controller
                             AND MONTH(t.DATE_TRANS) = ".$month."
                             AND t.ID_USER = u.ID_USER 
                             AND t.TYPE_ACTIVITY = '".$actCategory->NAME_AC."'
-                    ), 0) as 'REAL".strtoupper(str_replace('-', '', $actCategory->NAME_AC))."_ST'
+                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $actCategory->NAME_AC)))."_DM'
                 ";
             }
 
             
             $queryCategory = $queryCategory != null ? implode(', ', $queryCategory) : "";
             $datas = [];
-            $datas      = Cronjob::queryGetDashboardMobile($date, $month, $year, $queryCategory, $tgtUser);
+            $datas      = Cronjob::queryGetDashboardMobile($month, $year, $queryCategory, $tgtUser);
             
             foreach ($datas as $data) {
-                // DB::table('summary_trans')->insert([
-                //     'ID_USER'               => $data->ID_USER,
-                //     'UBUBLP_ST'             => $data->UBUBLP_ST,
-                //     'SPREADING_ST'          => $data->SPREADING_ST,
-                //     'OFFTARGET_ST'          => $data->OFFTARGET_ST,
-                //     'REALUST_ST'            => $data->REALUST_ST,
-                //     'REALNONUST_ST'         => $data->REALNONUST_ST,
-                //     'REALSELERAKU_ST'       => $data->REALSELERAKU_ST,
-                //     'YEAR_ST'               => $year,
-                //     'MONTH_ST'              => $month,
-                //     'updated_at'            => $updated_at
-                // ]);
-                
                 DB::table('dashboard_mobile')->insert([
                     'ID_USER'               => $data->ID_USER,
-                    'UBUBLP_DM'             => $data->UBUBLP_ST,
-                    'SPREADING_DM'          => $data->SPREADING_ST,
-                    'OFFTARGET_DM'          => $data->OFFTARGET_ST,
-                    'REALUST_DM'            => $data->REALUST_ST,
-                    'REALNONUST_DM'         => $data->REALNONUST_ST,
-                    'REALSELERAKU_DM'       => $data->REALSELERAKU_ST,
+                    'UBUBLP_DM'             => $data->UBUBLP_DM,
+                    'SPREADING_DM'          => $data->SPREADING_DM,
+                    'OFFTARGET_DM'          => $data->OFFTARGET_DM,
+                    'REALUST_DM'            => $data->REALUST_DM,
+                    'REALNONUST_DM'         => $data->REALNONUST_DM,
+                    'REALSELERAKU_DM'       => $data->REALSELERAKU_DM,
+                    'REALACTUB_DM'          => $data->REALAKTIVITASUB_DM,
+                    'REALACTPS_DM'          => $data->REALPEDAGANGSAYUR_DM,
+                    'REALACTRETAIL_DM'      => $data->REALRETAIL_DM,
                     'updated_at'            => $updated_at
                 ]);
+            }
+            
+            
+            return response([
+                "status_code"       => 200,
+                "status_message"    => 'Data berhasil diinsert!',
+                "data"  => $datas
+            ], 200);
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
+    }
+    public function updateSmyTransLocation(){
+        try {
 
+            $prodCategorys  = CategoryProduct::where('deleted_at', NULL)->get();
+            $actCategorys   = ActivityCategory::where('deleted_at', NULL)->get();
 
-                // $data       = json_decode(json_encode($data), true);
-                // $dataDetail = [];
-                // $index      = 0;
-                // foreach ($prodCategorys as $prodCategory) {
-                //     $dataDetail[$index]['ID_USER']      = $data['ID_USER'];
-                //     $dataDetail[$index]['TYPE_STD']     = "PRODCATEGORY";
-                //     $dataDetail[$index]['IDCAT_STD']    = $prodCategory->ID_PC;
-                //     $dataDetail[$index]['QTY_STD']      = $data["REAL".strtoupper(str_replace('-', '', $prodCategory['NAME_PC']))."_ST"];
-                //     $index++;    
-                // }
+            $month          = date('n', strtotime('-1 days'));
+            $year           = date('Y', strtotime('-1 days'));
+            $updated_at     = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
 
-                // foreach ($actCategorys as $actCategory) {
-                //     $dataDetail[$index]['ID_USER']      = $data['ID_USER'];
-                //     $dataDetail[$index]['TYPE_STD']     = "ACTCATEGORY";
-                //     $dataDetail[$index]['IDCAT_STD']    = $actCategory->ID_AC;
-                //     $dataDetail[$index]['QTY_STD']      = $data["REAL".strtoupper(str_replace('-', '', $actCategory['NAME_AC']))."_ST"];
-                //     $index++;    
-                // }
+            DB::table('summary_trans_location')->where('YEAR_STL', $year)->where('MONTH_STL', $month)->delete();
 
-                // foreach ($dataDetail as $item) {
-                    // DB::table('summary_trans_detail')->insert([
-                    //     'ID_USER'       => $item['ID_USER'],
-                    //     'TYPE_STD'      => $item['TYPE_STD'],
-                    //     'IDCAT_STD'     => $item['IDCAT_STD'],
-                    //     'QTY_STD'       => $item['QTY_STD'],
-                    //     'YEAR_STD'      => $year,
-                    //     'MONTH_STD'     => $month,
-                    //     'updated_at'    => $updated_at
-                    
-                    // ]);
-                    // DB::table('dashboard_mobile_detail')->insert([
-                    //     'ID_USER'       => $item['ID_USER'],
-                    //     'TYPE_DMD'      => $item['TYPE_STD'],
-                    //     'IDCAT_DMD'     => $item['IDCAT_STD'],
-                    //     'QTY_DMD'       => $item['QTY_STD'],
-                    //     'updated_at'    => $updated_at
-                    // ]);
-                // }
-
+            $queryCategory = [];
+            foreach ($prodCategorys as $prodCategory) {
+                $queryCategory[] = "
+                    COALESCE((
+                        SELECT SUM(td.QTY_TD)
+                        FROM `transaction` t2 
+                        INNER JOIN transaction_detail td 
+                            ON 
+                                YEAR(t2.DATE_TRANS) = ".$year."
+                                AND MONTH(t2.DATE_TRANS) = ".$month."
+                                AND t2.REGIONAL_TRANS = t.REGIONAL_TRANS 
+                                AND td.ID_TRANS = t2.ID_TRANS 
+                                AND td.ID_PC = ".$prodCategory->ID_PC."
+                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC)))."_STL'
+                ";
+            }
+            foreach ($actCategorys as $actCategory) {
+                $queryCategory[] = "
+                    COALESCE((
+                        SELECT COUNT(*)
+                        FROM `transaction` t2
+                        WHERE 
+                            YEAR(t2.DATE_TRANS) = ".$year."
+                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            AND t2.REGIONAL_TRANS = t.REGIONAL_TRANS 
+                            AND t2.TYPE_ACTIVITY = '".$actCategory->NAME_AC."'
+                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $actCategory->NAME_AC)))."_STL'
+                ";
             }
 
+            $queryCategory = $queryCategory != null ? implode(', ', $queryCategory) : "";
+            $datas = [];
+            $datas      = Cronjob::queryGetSmyTransLocation($queryCategory);
             
+            foreach ($datas as $data) {
+                DB::table('summary_trans_location')->insert([
+                    'LOCATION_STL'      => $data->LOCATION_TRANS,
+                    'REGIONAL_STL'      => $data->REGIONAL_TRANS,
+                    'REALUST_STL'       => $data->REALUST_STL,
+                    'REALNONUST_STL'    => $data->REALNONUST_STL,
+                    'REALSELERAKU_STL'  => $data->REALSELERAKU_STL,
+                    'REALACTUB_STL'     => $data->REALAKTIVITASUB_STL,
+                    'REALACTPS_STL'     => $data->REALPEDAGANGSAYUR_STL,
+                    'REALACTRETAIL_STL' => $data->REALRETAIL_STL,
+                    'MONTH_STL'         => $month,
+                    'YEAR_STL'          => $year,
+                    'updated_at'        => $updated_at
+                ]);
+            }
+
             return response([
                 "status_code"       => 200,
                 "status_message"    => 'Data berhasil diinsert!',
