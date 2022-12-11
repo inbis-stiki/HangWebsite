@@ -45,10 +45,6 @@ class ReportShop
         return $styleContent;
     }
 
-    public function dummyColumn(){
-        return ["A", "B", "C", "D", "E", "F", "G"];
-    }
-
     public function generate($param)
     {
         $spreadsheet = new Spreadsheet();
