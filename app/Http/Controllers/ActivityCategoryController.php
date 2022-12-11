@@ -46,6 +46,7 @@ class ActivityCategoryController extends Controller
         } else {
             $category_activity                  = ActivityCategory::find($req->input('id'));
             $category_activity->NAME_AC         = $req->input('category_activity');
+            $category_activity->TGTLOCATION_AC  = $req->input('target_asm_act');
             $category_activity->TGTREGIONAL_AC  = $req->input('target_reg_act');
             $category_activity->TGTUSER_AC      = $req->input('target_user_act');
             $category_activity->PERCENTAGE_AC   = $req->input('percentage_activity');
