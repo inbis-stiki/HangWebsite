@@ -42,6 +42,9 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Kategori Produk</th>
+                                        <th>Target Asmen</th>
+                                        <th>Target RPO</th>
+                                        <th>Target User</th>
                                         <th>Persentase</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
@@ -55,6 +58,9 @@
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $item->NAME_PC }}</td>
+                                        <td>{{ $item->TGTLOCATION_PC }}</td>
+                                        <td>{{ $item->TGTREGIONAL_PC }}</td>
+                                        <td>{{ $item->TGTUSER_PC }}</td>
                                         <td>{{ $item->PERCENTAGE_PC }}%</td>
                                         <td>
                                             @if ($item->deleted_at == NULL)
@@ -66,7 +72,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlEdit('{{ $item->ID_PC }}', '{{ $item->NAME_PC }}', '{{ $item->PERCENTAGE_PC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $item->ID_PC }}', '{{ $item->NAME_PC }}', '{{ $item->TGTLOCATION_PC }}', '{{ $item->TGTREGIONAL_PC }}', '{{ $item->TGTUSER_PC }}', '{{ $item->PERCENTAGE_PC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                             {{-- <button onclick="showMdlDelete('{{ $item->ID_PC }}')" class="btn btn-primary btn-sm">
@@ -99,6 +105,18 @@
                 <div class="form-group">
                     <label for="">Kategori Produk</label>
                     <input type="text" name="category_product" class="form-control" placeholder="Input Kategori Produk" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Target Asmen</label>
+                    <input type="text" name="target_asm_prod" class="form-control" placeholder="Input Target Asmen" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Target Regional</label>
+                    <input type="text" name="target_reg_prod" class="form-control" placeholder="Input Target Regional" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Target User</label>
+                    <input type="text" name="target_user_prod" class="form-control" placeholder="Input Target User" required>
                 </div>
                 <div class="form-group">
                     <label for="">Percentase Produk</label>
@@ -135,6 +153,18 @@
                 <div class="form-group">
                     <label for="">Kategori Produk</label>
                     <input type="text" name="category_product" id="mdlEdit_name" class="form-control" placeholder="Input nama kategori" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Target Asmen</label>
+                    <input type="text" name="target_asm_prod" id="mdlEdit_asm" class="form-control" placeholder="Input Target Asmen" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Target Regional</label>
+                    <input type="text" name="target_reg_prod" id="mdlEdit_reg" class="form-control" placeholder="Input Target Regional" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Target User</label>
+                    <input type="text" name="target_user_prod" id="mdlEdit_user" class="form-control" placeholder="Input Target User" required>
                 </div>
                 <div class="form-group">
                     <label for="">Persentase Produk</label>
@@ -189,9 +219,12 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, name, percentage, status){
+    function showMdlEdit(id, name, targetasmen, targetreg, targetuser, percentage, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
+        $('#mdlEdit_asm').val(targetasmen)
+        $('#mdlEdit_reg').val(targetreg)
+        $('#mdlEdit_user').val(targetuser)
         $('#mdlEdit_percentage').val(percentage)
         if (status == null || status == '') {
             $('#status_enable').prop('checked', true)

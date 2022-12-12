@@ -21,6 +21,9 @@ class CategoryProductController extends Controller
     public function store(Request $req){
         $validator = Validator::make($req->all(), [
             'category_product'      => 'required',
+            'target_asm_prod'       => 'required',
+            'target_reg_prod'       => 'required',
+            'target_user_prod'      => 'required',
             'percentage_product'    => 'required',
             'status'                => 'required',
         ], [
@@ -44,6 +47,9 @@ class CategoryProductController extends Controller
             }else{
                 $category_product                   = new CategoryProduct();
                 $category_product->NAME_PC          = $req->input('category_product');
+                $category_product->TGTLOCATION_PC   = $req->input('target_asm_prod');
+                $category_product->TGTREGIONAL_PC   = $req->input('target_reg_prod');
+                $category_product->TGTUSER_PC       = $req->input('target_user_prod');
                 $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
                 $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');    
                 try {
@@ -62,6 +68,9 @@ class CategoryProductController extends Controller
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
             'category_product'      => 'required',
+            'target_asm_prod'       => 'required',
+            'target_reg_prod'       => 'required',
+            'target_user_prod'      => 'required',
             'percentage_product'    => 'required',
             'status'                => 'required',
         ], [
@@ -83,6 +92,9 @@ class CategoryProductController extends Controller
         }else{
             $category_product = CategoryProduct::find($req->input('id'));
             $category_product->NAME_PC          = $req->input('category_product');
+            $category_product->TGTLOCATION_PC   = $req->input('target_asm_prod');
+            $category_product->TGTREGIONAL_PC   = $req->input('target_reg_prod');
+            $category_product->TGTUSER_PC       = $req->input('target_user_prod');
             $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
             $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
             $category_product->save();
