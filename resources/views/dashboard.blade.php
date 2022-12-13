@@ -139,6 +139,148 @@
 {{-- Flatpickr --}}
 
 <script type="text/javascript">
+    // RANKING
+    ranking_activity()
+    $('#tab-aktivity').click(function() {
+        ranking_activity()
+    })
+
+    $('#tab-pencapaian').click(function() {
+        ranking_pencapaian()
+    })
+
+    function ranking_activity() {
+        reset()
+        $.ajax({
+            url: "{{ url('dashboard/ranking_activity') }}",
+            type: "GET",
+            'crossDomain': true,
+            dataType: "json",
+            success: function(response) {
+                $.each(response.asmen, function(key, value) {
+                    trHTML_asmen +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>ASMEN ' + value.NAME_LOCATION +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                var first_array_rpo = response.rpo.slice(0, 5)
+                var last_array_rpo = response.rpo.slice(Math.max(response.rpo.length - 5, 1))
+                $.each(first_array_rpo, function(key, value) {
+                    trHTML_rpo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+                $.each(last_array_rpo, function(key, value) {
+                    trHTML_rpo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                var first_array_apo = response.apo.slice(0, 5)
+                var last_array_apo = response.apo.slice(Math.max(response.apo.length - 5, 1))
+                $.each(first_array_apo, function(key, value) {
+                    trHTML_apo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+                $.each(last_array_apo, function(key, value) {
+                    trHTML_apo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                $('#ranking_asmen').append(trHTML_asmen);
+                $('#ranking_rpo').append(trHTML_rpo);
+                $('#ranking_apo').append(trHTML_apo);
+
+                $('#loader_1, #loader_2, #loader_3').hide()
+                $('#table-data').show()
+            }
+        });
+    }
+
+    function ranking_pencapaian() {
+        reset()
+        $.ajax({
+            url: "{{ url('dashboard/ranking_sale') }}",
+            type: "GET",
+            'crossDomain': true,
+            dataType: "json",
+            success: function(response) {
+                $.each(response.asmen, function(key, value) {
+                    trHTML_asmen +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>ASMEN ' + value.NAME_LOCATION +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                var first_array_rpo = response.rpo.slice(0, 5)
+                var last_array_rpo = response.rpo.slice(Math.max(response.rpo.length - 5, 1))
+                $.each(first_array_rpo, function(key, value) {
+                    trHTML_rpo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+                $.each(last_array_rpo, function(key, value) {
+                    trHTML_rpo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                var first_array_apo = response.apo.slice(0, 5)
+                var last_array_apo = response.apo.slice(Math.max(response.apo.length - 5, 1))
+                $.each(first_array_apo, function(key, value) {
+                    trHTML_apo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+                $.each(last_array_apo, function(key, value) {
+                    trHTML_apo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                $('#ranking_asmen').append(trHTML_asmen);
+                $('#ranking_rpo').append(trHTML_rpo);
+                $('#ranking_apo').append(trHTML_apo);
+
+                $('#loader_1, #loader_2, #loader_3').hide()
+                $('#table-data').show()
+            }
+        });
+    }
+
+    function reset() {
+        $('#loader_1, #loader_2, #loader_3').show()
+        $('#table-data').hide()
+        trHTML_asmen = ''
+        trHTML_rpo = ''
+        trHTML_apo = ''
+        $('#ranking_asmen').html('');
+        $('#ranking_rpo').html('');
+        $('#ranking_apo').html('');
+    }
+
+    // TREND
     // Chart Trend
     var data_trend_asmen = [];
 
@@ -170,31 +312,33 @@
         legend: {
             position: 'bottom',
             horizontalAlign: 'left',
+            formatter: (seriesName, opts) => {
+                if (opts.seriesIndex == 0) return '' // hides first label
+                return seriesName;
+            },
+            markers: {
+                width: [0, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12], // hides first marker
+            },
+            onItemClick: {
+                toggleDataSeries: false
+            }
         },
+        noData: {
+            text: undefined,
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: undefined
+            }
+        }
     };
     var chart = new ApexCharts(document.querySelector("#LineChart"), options);
     chart.render().then(() => chart.isRendered = true);
 
-    var role_data = $('#role_trend').find('option').filter(':selected').val()
-    var year_data = $('#year_trend').find('option').filter(':selected').val()
-
-    setDataTrend()
-    $('#role_trend').change(function(e) {
-        role_data = $(this).find('option').filter(':selected').val()
-        setDataTrend()
-    })
-
-    $('#year_trend').change(function(e) {
-        year_data = $(this).find('option').filter(':selected').val()
-        setDataTrend()
-    })
-
-    function callback(response) {
-        data_trend_asmen = []
-        data_trend_asmen.push(response)
-    }
-
-    // AJAX Trend asmen
     function setDataTrend() {
         if (role_data == 3) {
             $.ajax({
@@ -236,24 +380,25 @@
     }
 
     function SetTypeTrend(type) {
-        chart.updateSeries([])
+        chart.updateSeries()
         if (role_data == 3) {
             for (let i = 0; i < data_trend_asmen[0].length; i++) {
+                chart.update
                 if (type == "UST") {
                     chart.appendSeries({
                         name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
                         data: data_trend_asmen[0][i].UST
-                    }, true)
+                    }, false)
                 } else if (type == "NONUST") {
                     chart.appendSeries({
                         name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
                         data: data_trend_asmen[0][i].NONUST
-                    }, true)
+                    }, false)
                 } else if (type == "SELERAKU") {
                     chart.appendSeries({
                         name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
                         data: data_trend_asmen[0][i].SELERAKU
-                    }, true)
+                    }, false)
                 }
             }
         } else {
@@ -278,119 +423,22 @@
         }
     }
 
-    ranking_activity()
-    $('#tab-aktivity').click(function() {
-        ranking_activity()
+    var role_data = $('#role_trend').find('option').filter(':selected').val()
+    var year_data = $('#year_trend').find('option').filter(':selected').val()
+
+    setDataTrend()
+    $('#role_trend').change(function(e) {
+        role_data = $(this).find('option').filter(':selected').val()
+        setDataTrend()
     })
 
-    $('#tab-pencapaian').click(function() {
-        ranking_pencapaian()
+    $('#year_trend').change(function(e) {
+        year_data = $(this).find('option').filter(':selected').val()
+        setDataTrend()
     })
 
-    function ranking_activity() {
-        reset()
-        $.ajax({
-            url: "{{ url('dashboard/ranking_activity') }}",
-            type: "GET",
-            'crossDomain': true,
-            dataType: "json",
-            success: function(response) {
-                var no_asmen = 0
-                $.each(response.asmen, function(key, value) {
-                    no_asmen++
-                    trHTML_asmen +=
-                        '<tr><td>' + no_asmen +
-                        '</td><td>ASMEN ' + value.NAME_LOCATION +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                var no_rpo = 0
-                $.each(response.rpo, function(key, value) {
-                    no_rpo++
-                    trHTML_rpo +=
-                        '<tr><td>' + no_rpo +
-                        '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                var no_apo = 0
-                $.each(response.apo, function(key, value) {
-                    no_apo++
-                    trHTML_apo +=
-                        '<tr><td>' + no_apo +
-                        '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                $('#ranking_asmen').append(trHTML_asmen);
-                $('#ranking_rpo').append(trHTML_rpo);
-                $('#ranking_apo').append(trHTML_apo);
-
-                $('#loader_1, #loader_2, #loader_3').hide()
-                $('#table-data').show()
-            }
-        });
-    }
-
-    function ranking_pencapaian() {
-        reset()
-        $.ajax({
-            url: "{{ url('dashboard/ranking_sale') }}",
-            type: "GET",
-            'crossDomain': true,
-            dataType: "json",
-            success: function(response) {
-                var no_asmen = 0
-                $.each(response.asmen, function(key, value) {
-                    no_asmen++
-                    trHTML_asmen +=
-                        '<tr><td>' + no_asmen +
-                        '</td><td>ASMEN ' + value.NAME_LOCATION +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                var no_rpo = 0
-                $.each(response.rpo, function(key, value) {
-                    no_rpo++
-                    trHTML_rpo +=
-                        '<tr><td>' + no_rpo +
-                        '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                var no_apo = 0
-                $.each(response.apo, function(key, value) {
-                    no_apo++
-                    trHTML_apo +=
-                        '<tr><td>' + no_apo +
-                        '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                $('#ranking_asmen').append(trHTML_asmen);
-                $('#ranking_rpo').append(trHTML_rpo);
-                $('#ranking_apo').append(trHTML_apo);
-
-                $('#loader_1, #loader_2, #loader_3').hide()
-                $('#table-data').show()
-            }
-        });
-    }
-
-    function reset() {
-        $('#loader_1, #loader_2, #loader_3').show()
-        $('#table-data').hide()
-        trHTML_asmen = ''
-        trHTML_rpo = ''
-        trHTML_apo = ''
-        $('#ranking_asmen').html('');
-        $('#ranking_rpo').html('');
-        $('#ranking_apo').html('');
+    function callback(response) {
+        data_trend_asmen = []
+        data_trend_asmen.push(response)
     }
 </script>
