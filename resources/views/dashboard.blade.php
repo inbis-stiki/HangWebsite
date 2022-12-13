@@ -161,7 +161,7 @@
                     trHTML_asmen +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>ASMEN ' + value.NAME_LOCATION +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
 
@@ -171,14 +171,14 @@
                     trHTML_rpo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
                 $.each(last_array_rpo, function(key, value) {
                     trHTML_rpo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
 
@@ -188,14 +188,14 @@
                     trHTML_apo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
                 $.each(last_array_apo, function(key, value) {
                     trHTML_apo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
 
@@ -221,7 +221,7 @@
                     trHTML_asmen +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>ASMEN ' + value.NAME_LOCATION +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
 
@@ -231,14 +231,14 @@
                     trHTML_rpo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
                 $.each(last_array_rpo, function(key, value) {
                     trHTML_rpo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
 
@@ -248,14 +248,14 @@
                     trHTML_apo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
                 $.each(last_array_apo, function(key, value) {
                     trHTML_apo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
+                        '</td><td>' + value.NEW_AVERAGE + "%"
                     '</td></tr>';
                 });
 
