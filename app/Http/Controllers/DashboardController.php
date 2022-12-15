@@ -24,6 +24,57 @@ class DashboardController extends Controller
         return view('dashboard', $data);
     }
 
+    public function total_activity()
+    {
+        $data_activity = DB::select("
+            SELECT
+                stl.REGIONAL_STL,
+                stl.MONTH_STL AS bulan,
+                (stl.REALACTUB_STL + (
+                    SELECT
+                        COUNT(tdt.ID_USER) 
+                    FROM
+                        transaction_detail_today tdt
+                    WHERE
+                        tdt.LOCATION_TRANS = stl.LOCATION_STL
+                    GROUP BY
+                        tdt.LOCATION_TRANS
+                )) AS total_activity_ub,
+                (stl.REALACTPS_STL + (
+                    SELECT
+                        COUNT(tdt.ID_USER) 
+                    FROM
+                        transaction_detail_today tdt
+                    WHERE
+                        tdt.LOCATION_TRANS = stl.LOCATION_STL
+                    GROUP BY
+                        tdt.LOCATION_TRANS
+                )) AS total_activity_ps,
+                (stl.REALACTRETAIL_STL + (
+                    SELECT
+                        COUNT(tdt.ID_USER) 
+                    FROM
+                        transaction_detail_today tdt
+                    WHERE
+                        tdt.LOCATION_TRANS = stl.LOCATION_STL
+                    GROUP BY
+                        tdt.LOCATION_TRANS
+                )) AS total_activity_retail
+            FROM
+                summary_trans_location stl
+            WHERE	
+                stl.YEAR_STL = 2022 AND 
+                stl.MONTH_STL = 12
+            GROUP BY
+                stl.REGIONAL_STL,
+                stl.MONTH_STL
+        ");
+        $activity = [
+            'data' => $data_activity
+        ];
+        echo json_encode($activity);
+    }
+
     public function ranking_activity()
     {
         $ranking_sale_asmen = DB::select("
@@ -682,7 +733,7 @@ class DashboardController extends Controller
                                 ) AS TB_SELERAKU,
                     summary_trans_location stl
                 WHERE
-                    stl.updated_at LIKE '%" . $year . "%'
+                    stl.YEAR_STL = '" . $year . "'
                     AND stl.LOCATION_STL = '" . $regional_target->NAME_LOCATION . "'
                 GROUP BY
                     stl.LOCATION_STL,
