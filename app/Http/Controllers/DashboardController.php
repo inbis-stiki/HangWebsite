@@ -24,6 +24,103 @@ class DashboardController extends Controller
         return view('dashboard', $data);
     }
 
+    public function total_activity()
+    {
+        $role_act = $_POST['role'];
+        if ($role_act == 'asmen') {
+            $data_activity = DB::select("
+                SELECT
+                    ml.ID_LOCATION,
+                    ml.NAME_LOCATION AS PLACE,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTUB_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ub,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTPS_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ps,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTRETAIL_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_retail,
+                    (
+                        SELECT
+                            mac.TGTLOCATION_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 1
+                    ) AS TGT_UB,
+                    (
+                        SELECT
+                            mac.TGTLOCATION_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 2
+                    ) AS TGT_PS,
+                    (
+                        SELECT
+                            mac.TGTLOCATION_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 3
+                    ) AS TGT_RETAIL
+                FROM
+                    transaction_detail_today tdt
+                RIGHT JOIN md_location ml ON 
+                    ml.NAME_LOCATION COLLATE utf8mb4_general_ci = tdt.LOCATION_TRANS
+                LEFT JOIN summary_trans_location stl ON 
+                    stl.REGIONAL_STL COLLATE utf8mb4_general_ci = tdt.REGIONAL_TRANS
+                GROUP BY 
+                    tdt.LOCATION_TRANS
+            ");
+        } else if ($role_act == 'rpo') {
+            $data_activity = DB::select("
+                SELECT
+                    mr.ID_REGIONAL,
+                    mr.NAME_REGIONAL AS PLACE,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTUB_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ub,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTPS_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ps,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTRETAIL_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_retail,
+                    (
+                        SELECT
+                            mac.TGTREGIONAL_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 1
+                    ) AS TGT_UB,
+                    (
+                        SELECT
+                            mac.TGTREGIONAL_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 2
+                    ) AS TGT_PS,
+                    (
+                        SELECT
+                            mac.TGTREGIONAL_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 3
+                    ) AS TGT_RETAIL
+                FROM
+                    transaction_detail_today tdt
+                RIGHT JOIN md_regional mr ON 
+                    mr.NAME_REGIONAL COLLATE utf8mb4_general_ci = tdt.REGIONAL_TRANS
+                LEFT JOIN md_area ma ON
+                    ma.NAME_AREA COLLATE utf8mb4_general_ci = tdt.AREA_TRANS
+                LEFT JOIN summary_trans_location stl ON 
+                    stl.REGIONAL_STL COLLATE utf8mb4_general_ci = tdt.REGIONAL_TRANS
+                WHERE 
+                    tdt.DATE_TD LIKE '" . date("Y-m") . "%'
+                GROUP BY 
+                    tdt.REGIONAL_TRANS
+            ");
+        }
+
+        $activity = [
+            'data' => $data_activity
+        ];
+        echo json_encode($activity);
+    }
+
     public function ranking_activity()
     {
         $ranking_sale_asmen = DB::select("
@@ -682,7 +779,7 @@ class DashboardController extends Controller
                                 ) AS TB_SELERAKU,
                     summary_trans_location stl
                 WHERE
-                    stl.updated_at LIKE '%" . $year . "%'
+                    stl.YEAR_STL = '" . $year . "'
                     AND stl.LOCATION_STL = '" . $regional_target->NAME_LOCATION . "'
                 GROUP BY
                     stl.LOCATION_STL,

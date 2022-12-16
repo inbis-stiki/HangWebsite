@@ -18,7 +18,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="Javascript:void(0)" role="tab" aria-selected="false" onclick="show_tb_presence()">
-                                    Presence
+                                    Presensi
                                 </a>
                             </li>
                         </ul>

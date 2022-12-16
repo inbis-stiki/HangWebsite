@@ -11,6 +11,33 @@
         <div class="row">
             <div class="col">
                 <div class="card">
+                    <div class="card-header pb-0 d-block d-flex border-0">
+                        <h3 class="fs-16 font-weight-bolder text-black mb-0">Aktivitas</h3>
+                        <div class="d-flex ml-auto">
+                            <select name="" id="role_act" class="form-control default-select fs-12 mr-3">
+                                <option selected value="asmen">ASMEN</option>
+                                <option value="rpo">RPO</option>
+                            </select>
+                            <select name="" id="cat_act" class="form-control default-select fs-12 mr-3">
+                                <option selected value="0">AKTIVITAS UB</option>
+                                <option value="1">PEDAGANG SAYUR</option>
+                                <option value="2">RETAIL</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="dataActivity" role="tabpanel">
+                                {{-- <canvas id="" class="chart"></canvas> --}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
                     <div class="card-header pb-0 d-block d-flex flex-row justify-content-start border-0">
                         <h3 class="fs-16 text-black font-weight-bolder mb-0">Ranking</h3>
                         <div class="card-action revenue-tabs mt-3 mt-sm-0 ml-5">
@@ -440,5 +467,170 @@
     function callback(response) {
         data_trend_asmen = []
         data_trend_asmen.push(response)
+    }
+
+    // AKTIVITAS
+    // Chart Activity
+    var role_act = $('#role_act').find('option').filter(':selected').val();
+    var cat_act = $('#cat_act').find('option').filter(':selected').val();
+    var data_aktivitas = [];
+    var options_activty = {
+        series: [],
+        chart: {
+            height: 350,
+            type: 'bar',
+            parentHeightOffset: 50
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: '50%',
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        legend: {
+            show: true,
+            showForSingleSeries: true,
+            customLegendItems: ['REAL', 'EXCEED TARGET'],
+            horizontalAlign: 'left',
+            markers: {
+                fillColors: ['#f26f21', '#EC1D25']
+            }
+        },
+        annotations: {
+            yaxis: []
+        }
+    };
+
+    var chartActivty = new ApexCharts(document.querySelector("#dataActivity"), options_activty);
+    chartActivty.render();
+
+    setDataAktivity()
+
+    $('#cat_act').change(function(e) {
+        cat_act = $(this).find('option').filter(':selected').val()
+        setDataAktivitas()
+    })
+
+    $('#role_act').change(function(e) {
+        role_act = $(this).find('option').filter(':selected').val()
+        setDataAktivity()
+    })
+
+    function setDataAktivity() {
+        chartActivty.updateSeries([{
+            name: 'Total Aktivitas',
+            data: []
+        }])
+        $.ajax({
+            url: "{{ url('dashboard/aktivitas') }}",
+            type: "POST",
+            crossDomain: true,
+            data: {
+                role: role_act,
+            },
+            beforeSend: function(request) {
+                request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+            },
+            dataType: "json",
+            success: function(response) {
+                data_aktivitas = []
+                data_aktivitas.push(response.data)
+                setDataAktivitas()
+            }
+        });
+    }
+
+    function setDataAktivitas() {
+        chartActivty.updateSeries([{
+            name: 'Total Aktivitas',
+            data: []
+        }])
+        if (cat_act == 0) {
+            $.each(data_aktivitas[0], function(key, value) {
+                chartActivty.appendData([{
+                    data: [{
+                        x: value.PLACE,
+                        y: value.total_activity_ub,
+                        fillColor: (value.total_activity_ub > value.TGT_UB) ? "#ec1d25" : "#f26f21"
+                    }]
+                }])
+                chartActivty.updateOptions({
+                    annotations: {
+                        yaxis: [{
+                            y: value.TGT_UB,
+                            strokeDashArray: 5,
+                            borderColor: '#EC1D25',
+                            fillColor: '#EC1D25',
+                            label: {
+                                borderColor: "#EC1D25",
+                                style: {
+                                    color: "#fff",
+                                    background: "#EC1D25"
+                                },
+                                text: "Target : " + value.TGT_UB
+                            }
+                        }]
+                    }
+                })
+            });
+        } else if (cat_act == 1) {
+            $.each(data_aktivitas[0], function(key, value) {
+                chartActivty.appendData([{
+                    data: [{
+                        x: value.PLACE,
+                        y: value.total_activity_ps,
+                        fillColor: (value.total_activity_ps > value.TGT_PS) ? "#ec1d25" : "#f26f21"
+                    }]
+                }])
+                chartActivty.updateOptions({
+                    annotations: {
+                        yaxis: [{
+                            y: value.TGT_PS,
+                            strokeDashArray: 5,
+                            borderColor: '#EC1D25',
+                            fillColor: '#EC1D25',
+                            label: {
+                                borderColor: "#EC1D25",
+                                style: {
+                                    color: "#fff",
+                                    background: "#EC1D25"
+                                },
+                                text: "Target : " + value.TGT_PS
+                            }
+                        }]
+                    }
+                })
+            });
+        } else {
+            $.each(data_aktivitas[0], function(key, value) {
+                chartActivty.appendData([{
+                    data: [{
+                        x: value.PLACE,
+                        y: value.total_activity_retail,
+                        fillColor: (value.total_activity_retail > value.TGT_RETAIL) ? "#ec1d25" : "#f26f21"
+                    }]
+                }])
+                chartActivty.updateOptions({
+                    annotations: {
+                        yaxis: [{
+                            y: value.TGT_RETAIL,
+                            strokeDashArray: 5,
+                            borderColor: '#EC1D25',
+                            fillColor: '#EC1D25',
+                            label: {
+                                borderColor: "#EC1D25",
+                                style: {
+                                    color: "#fff",
+                                    background: "#EC1D25"
+                                },
+                                text: "Target : " + value.TGT_RETAIL
+                            }
+                        }]
+                    }
+                })
+            });
+        }
     }
 </script>
