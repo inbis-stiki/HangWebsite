@@ -14,7 +14,11 @@
                     <div class="card-header pb-0 d-block d-flex border-0">
                         <h3 class="fs-16 font-weight-bolder text-black mb-0">Aktivitas</h3>
                         <div class="d-flex ml-auto">
-                            <select name="" id="role_act" class="form-control default-select fs-12">
+                            <select name="" id="role_act" class="form-control default-select fs-12 mr-3">
+                                <option selected value="asmen">ASMEN</option>
+                                <option value="rpo">RPO</option>
+                            </select>
+                            <select name="" id="cat_act" class="form-control default-select fs-12 mr-3">
                                 <option selected value="0">AKTIVITAS UB</option>
                                 <option value="1">PEDAGANG SAYUR</option>
                                 <option value="2">RETAIL</option>
@@ -305,7 +309,6 @@
 
     // TREND
     // Chart Trend
-    
     var data_trend_asmen = [];
 
     var options = {
@@ -468,18 +471,19 @@
 
     // AKTIVITAS
     // Chart Activity
-    var data_act_role = $('#role_act').find('option').filter(':selected').val();
+    var role_act = $('#role_act').find('option').filter(':selected').val();
+    var cat_act = $('#cat_act').find('option').filter(':selected').val();
     var data_aktivitas = [];
     var options_activty = {
         series: [],
         chart: {
             height: 350,
             type: 'bar',
-            parentHeightOffset: 20
+            parentHeightOffset: 50
         },
         plotOptions: {
             bar: {
-                columnWidth: '60%'
+                columnWidth: '50%',
             }
         },
         dataLabels: {
@@ -495,12 +499,7 @@
             }
         },
         annotations: {
-            yaxis: [{
-                y: 1000,
-                strokeDashArray: 5,
-                borderColor: '#EC1D25',
-                fillColor: '#EC1D25'
-            }]
+            yaxis: []
         }
     };
 
@@ -509,9 +508,14 @@
 
     setDataAktivity()
 
-    $('#role_act').change(function(e) {
-        data_act_role = $(this).find('option').filter(':selected').val()
+    $('#cat_act').change(function(e) {
+        cat_act = $(this).find('option').filter(':selected').val()
         setDataAktivitas()
+    })
+
+    $('#role_act').change(function(e) {
+        role_act = $(this).find('option').filter(':selected').val()
+        setDataAktivity()
     })
 
     function setDataAktivity() {
@@ -523,11 +527,15 @@
             url: "{{ url('dashboard/aktivitas') }}",
             type: "POST",
             crossDomain: true,
+            data: {
+                role: role_act,
+            },
             beforeSend: function(request) {
                 request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
             },
             dataType: "json",
             success: function(response) {
+                data_aktivitas = []
                 data_aktivitas.push(response.data)
                 setDataAktivitas()
             }
@@ -539,35 +547,89 @@
             name: 'Total Aktivitas',
             data: []
         }])
-        if (data_act_role == 0) {
+        if (cat_act == 0) {
             $.each(data_aktivitas[0], function(key, value) {
                 chartActivty.appendData([{
                     data: [{
-                        x: value.REGIONAL_STL,
+                        x: value.PLACE,
                         y: value.total_activity_ub,
-                        fillColor: (value.total_activity_ub > 1000) ? "#ec1d25" : "#f26f21"
+                        fillColor: (value.total_activity_ub > value.TGT_UB) ? "#ec1d25" : "#f26f21"
                     }]
                 }])
+                chartActivty.updateOptions({
+                    annotations: {
+                        yaxis: [{
+                            y: value.TGT_UB,
+                            strokeDashArray: 5,
+                            borderColor: '#EC1D25',
+                            fillColor: '#EC1D25',
+                            label: {
+                                borderColor: "#EC1D25",
+                                style: {
+                                    color: "#fff",
+                                    background: "#EC1D25"
+                                },
+                                text: "Target : " + value.TGT_UB
+                            }
+                        }]
+                    }
+                })
             });
-        } else if (data_act_role == 1) {
+        } else if (cat_act == 1) {
             $.each(data_aktivitas[0], function(key, value) {
                 chartActivty.appendData([{
                     data: [{
-                        x: value.REGIONAL_STL,
+                        x: value.PLACE,
                         y: value.total_activity_ps,
-                        fillColor: (value.total_activity_ps > 1000) ? "#ec1d25" : "#f26f21"
+                        fillColor: (value.total_activity_ps > value.TGT_PS) ? "#ec1d25" : "#f26f21"
                     }]
                 }])
+                chartActivty.updateOptions({
+                    annotations: {
+                        yaxis: [{
+                            y: value.TGT_PS,
+                            strokeDashArray: 5,
+                            borderColor: '#EC1D25',
+                            fillColor: '#EC1D25',
+                            label: {
+                                borderColor: "#EC1D25",
+                                style: {
+                                    color: "#fff",
+                                    background: "#EC1D25"
+                                },
+                                text: "Target : " + value.TGT_PS
+                            }
+                        }]
+                    }
+                })
             });
         } else {
             $.each(data_aktivitas[0], function(key, value) {
                 chartActivty.appendData([{
                     data: [{
-                        x: value.REGIONAL_STL,
+                        x: value.PLACE,
                         y: value.total_activity_retail,
-                        fillColor: (value.total_activity_retail > 1000) ? "#ec1d25" : "#f26f21"
+                        fillColor: (value.total_activity_retail > value.TGT_RETAIL) ? "#ec1d25" : "#f26f21"
                     }]
                 }])
+                chartActivty.updateOptions({
+                    annotations: {
+                        yaxis: [{
+                            y: value.TGT_RETAIL,
+                            strokeDashArray: 5,
+                            borderColor: '#EC1D25',
+                            fillColor: '#EC1D25',
+                            label: {
+                                borderColor: "#EC1D25",
+                                style: {
+                                    color: "#fff",
+                                    background: "#EC1D25"
+                                },
+                                text: "Target : " + value.TGT_RETAIL
+                            }
+                        }]
+                    }
+                })
             });
         }
     }
