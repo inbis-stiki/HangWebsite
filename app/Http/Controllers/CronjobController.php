@@ -135,50 +135,21 @@ class CronjobController extends Controller
 
             DB::table('summary_trans_location')->where('YEAR_STL', $year)->where('MONTH_STL', $month)->delete();
 
-            $queryCategory = [];
-            foreach ($prodCategorys as $prodCategory) {
-                $queryCategory[] = "
-                    COALESCE((
-                        SELECT SUM(td.QTY_TD)
-                        FROM `transaction` t2 
-                        INNER JOIN transaction_detail td 
-                            ON 
-                                YEAR(t2.DATE_TRANS) = ".$year."
-                                AND MONTH(t2.DATE_TRANS) = ".$month."
-                                AND t2.REGIONAL_TRANS = t.REGIONAL_TRANS 
-                                AND td.ID_TRANS = t2.ID_TRANS 
-                                AND td.ID_PC = ".$prodCategory->ID_PC."
-                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC)))."_STL'
-                ";
-            }
-            foreach ($actCategorys as $actCategory) {
-                $queryCategory[] = "
-                    COALESCE((
-                        SELECT COUNT(*)
-                        FROM `transaction` t2
-                        WHERE 
-                            YEAR(t2.DATE_TRANS) = ".$year."
-                            AND MONTH(t2.DATE_TRANS) = ".$month."
-                            AND t2.REGIONAL_TRANS = t.REGIONAL_TRANS 
-                            AND t2.TYPE_ACTIVITY = '".$actCategory->NAME_AC."'
-                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $actCategory->NAME_AC)))."_STL'
-                ";
-            }
 
-            $queryCategory = $queryCategory != null ? implode(', ', $queryCategory) : "";
             $datas = [];
-            $datas      = Cronjob::queryGetSmyTransLocation($queryCategory);
+            $datas  = Cronjob::queryGetSmyTransLocation($year, $month);
             
             foreach ($datas as $data) {
                 DB::table('summary_trans_location')->insert([
                     'LOCATION_STL'      => $data->LOCATION_TRANS,
                     'REGIONAL_STL'      => $data->REGIONAL_TRANS,
+                    'AREA_STL'          => $data->AREA_TRANS,
                     'REALUST_STL'       => $data->REALUST_STL,
                     'REALNONUST_STL'    => $data->REALNONUST_STL,
                     'REALSELERAKU_STL'  => $data->REALSELERAKU_STL,
-                    'REALACTUB_STL'     => $data->REALAKTIVITASUB_STL,
-                    'REALACTPS_STL'     => $data->REALPEDAGANGSAYUR_STL,
-                    'REALACTRETAIL_STL' => $data->REALRETAIL_STL,
+                    'REALACTUB_STL'     => $data->REALACTUB_STL,
+                    'REALACTPS_STL'     => $data->REALACTPS_STL,
+                    'REALACTRETAIL_STL' => $data->REALACTRETAIL_STL,
                     'MONTH_STL'         => $month,
                     'YEAR_STL'          => $year,
                     'updated_at'        => $updated_at
@@ -196,6 +167,161 @@ class CronjobController extends Controller
                 'status_message'    => $exp->getMessage(),
             ], 500);
         }
+    }
+    public function genReportRankRegional(){
+        $month          = date('n', strtotime('-1 days'));
+        $year           = date('Y', strtotime('-1 days'));
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $reports = Cronjob::queryGetSmyRegional($year, $month);
+
+        $datas['dapulActs']         = [];
+        $datas['lapulActs']         = [];
+        
+        // ACTIVITY
+
+        $indexDapul          = 0;
+        $indexLapul          = 0;
+        // $tgtDapulUB          = 0;
+        // $tgtDapulPS          = 0;
+        // $tgtDapulRETAIL      = 0;
+        // $tgtLapulUB          = 0;
+        // $tgtLapulPS          = 0;
+        // $tgtLapulRETAIL      = 0;
+        // $realDapulUB         = 0;
+        // $realDapulRETAIL     = 0;
+        // $realDapulPS         = 0;
+        // $realLapulUB         = 0;
+        // $realLapulPS         = 0;
+        // $realLapulRETAIL     = 0;
+        foreach ($reports['reportActs'] as $report) {
+            $detailReport = Cronjob::queryGetDetailSmyRegional($report->REGIONAL_STL);
+
+            if($detailReport == NULL){
+                $datas['dapulActs'][$indexDapul] = $report;
+                $datas['dapulActs'][$indexDapul]['NAME_USER'] = "";
+                $indexDapul++;
+
+                // $tgtDapulUB     += $report->TGTACTUB_STL;
+                // $tgtDapulPS     += $report->TGTACTPS_STL;
+                // $tgtDapulRETAIL += $report->TGTACTRETAIL_STL;
+
+                // $realDapulUB     += $report->REALACTUB_STL;
+                // $realDapulPS     += $report->REALACTPS_STL;
+                // $realDapulRETAIL += $report->REALACTRETAIL_STL;
+            }else if($detailReport[0]->ISINSIDE_LOCATION == 1){
+                $datas['dapulActs'][$indexDapul] = $report;
+                $datas['dapulActs'][$indexDapul]->NAME_USER = $detailReport[0]->NAME_USER;
+                $indexDapul++;
+                
+                // $tgtDapulUB     += $report->TGTACTUB_STL;
+                // $tgtDapulPS     += $report->TGTACTPS_STL;
+                // $tgtDapulRETAIL += $report->TGTACTRETAIL_STL;
+
+                // $realDapulUB     += $report->REALACTUB_STL;
+                // $realDapulPS     += $report->REALACTPS_STL;
+                // $realDapulRETAIL += $report->REALACTRETAIL_STL;
+            }else{
+                $datas['lapulActs'][$indexLapul] = $report;
+                $datas['lapulActs'][$indexLapul]->NAME_USER = $detailReport[0]->NAME_USER;
+                $indexLapul++;
+
+                // $tgtLapulUB     += $report->TGTACTUB_STL;
+                // $tgtLapulPS     += $report->TGTACTPS_STL;
+                // $tgtLapulRETAIL += $report->TGTACTRETAIL_STL;
+
+                // $realLapulUB     += $report->REALACTUB_STL;
+                // $realLapulPS     += $report->REALACTPS_STL;
+                // $realLapulRETAIL += $report->REALACTRETAIL_STL;
+            }
+            
+        }
+
+        // $datas['avgDapulUB']        = $realDapulUB != 0 ? ($realDapulUB / $tgtDapulUB) * 100 : 0;
+        // $datas['avgDapulPS']        = $realDapulPS != 0 ? ($realDapulPS / $tgtDapulPS) * 100 : 0;
+        // $datas['avgDapulRETAIL']    = $realDapulRETAIL != 0 ? ($realDapulRETAIL / $tgtDapulRETAIL) * 100 : 0;
+        // $datas['avgLapulUB']        = $realLapulUB != 0 ? ($realLapulUB / $tgtLapulUB) * 100 : 0;
+        // $datas['avgLapulPS']        = $realLapulPS != 0 ? ($realLapulPS / $tgtLapulPS) * 100 : 0;
+        // $datas['avgLapulRETAIL']    = $realLapulRETAIL != 0 ? ($realLapulRETAIL / $tgtLapulRETAIL) * 100 : 0;
+
+        // PENCAPAIAN
+
+        $datas['dapulProds']  = [];
+        $datas['lapulProds']  = [];
+        $indexDapul = 0;
+        $indexLapul = 0;
+
+
+        // $tgtDapulUST        = 0;
+        // $tgtDapulNONUST     = 0;
+        // $tgtDapulSELERAKU   = 0;
+        // $tgtLapulUST        = 0;
+        // $tgtLapulNONUST     = 0;
+        // $tgtLapulSELERAKU   = 0;
+        // $realDapulUST       = 0;
+        // $realDapulNONUST    = 0;
+        // $realDapulSELERAKU  = 0;
+        // $realLapulUST       = 0;
+        // $realLapulNONUST    = 0;
+        // $realLapulSELERAKU  = 0;
+        foreach ($reports['reportProds'] as $report) {
+            $detailReport = Cronjob::queryGetDetailSmyRegional($report->REGIONAL_STL);
+
+            if($detailReport == NULL){
+                $datas['dapulProds'][$indexDapul] = $report;
+                $datas['dapulProds'][$indexDapul]->NAME_USER = "";
+                $indexDapul++;
+
+                // $tgtDapulUST        += $report->TGTUST_STL;
+                // $tgtDapulNONUST     += $report->TGTPS_STL;
+                // $tgtDapulSELERAKU   += $report->TGTSELERAKU_STL;
+
+                // $realDapulUST        += $report->REALUST_STL;
+                // $realDapulNONUST     += $report->REALPS_STL;
+                // $realDapulSELERAKU   += $report->REALSELERAKU_STL;
+            }else if($detailReport[0]->ISINSIDE_LOCATION == 1){
+                $datas['dapulProds'][$indexDapul] = $report;
+                $datas['dapulProds'][$indexDapul]->NAME_USER = $detailReport[0]->NAME_USER;
+                $indexDapul++;
+
+                // $tgtDapulUST        += $report->TGTUST_STL;
+                // $tgtDapulNONUST     += $report->TGTPS_STL;
+                // $tgtDapulSELERAKU   += $report->TGTSELERAKU_STL;
+
+                // $realDapulUST      += $report->REALUST_STL;
+                // $realDapulNONUST   += $report->REALPS_STL;
+                // $realDapulSELERAKU += $report->REALSELERAKU_STL;
+            }else{
+                $datas['lapulProds'][$indexLapul] = $report;
+                $datas['lapulProds'][$indexLapul]->NAME_USER = $detailReport[0]->NAME_USER;
+                $indexLapul++;
+
+                // $tgtLapulUST        += $report->TGTUST_STL;
+                // $tgtLapulNONUST     += $report->TGTPS_STL;
+                // $tgtLapulSELERAKU   += $report->TGTSELERAKU_STL;
+
+                // $realLapulUST      += $report->REALUST_STL;
+                // $realLapulNONUST   += $report->REALPS_STL;
+                // $realLapulSELERAKU += $report->REALSELERAKU_STL;
+            }
+        }
+
+        // $datas['avgDapulUST']       = $realDapulUST != 0 ? ($realDapulUST / $tgtDapulUST) * 100 : 0;
+        // $datas['avgDapulNONUST']    = $realDapulNONUST != 0 ? ($realDapulNONUST / $tgtDapulNONUST) * 100 : 0;
+        // $datas['avgDapulSELERAKU']  = $realDapulSELERAKU != 0 ? ($realDapulSELERAKU / $tgtDapulSELERAKU) * 100 : 0;
+        // $datas['avgLapulUST']       = $realLapulUST != 0 ? ($realLapulUST / $tgtLapulUST) * 100 : 0;
+        // $datas['avgLapulNONUST']    = $realLapulNONUST != 0 ? ($realLapulNONUST / $tgtLapulNONUST) * 100 : 0;
+        // $datas['avgLapulSELERAKU']  = $realLapulSELERAKU != 0 ? ($realLapulSELERAKU / $tgtLapulSELERAKU) * 100 : 0;
+
+        // // AVG NATIONAL
+        // $datas['avgNatUB']          = $datas['avgDapulUB'] != 0 && $datas['avgLapulUB'] ? ($datas['avgDapulUB'] + $datas['avgLapulUB'])/2 : 0;
+        // $datas['avgNatPS']          = $datas['avgDapulPS'] != 0 && $datas['avgLapulPS'] ? ($datas['avgDapulPS'] + $datas['avgLapulPS'])/2 : 0;
+        // $datas['avgNatRETAIL']      = $datas['avgDapulRETAIL'] != 0 && $datas['avgLapulRETAIL'] ? ($datas['avgDapulRETAIL'] + $datas['avgLapulRETAIL'])/2 : 0;
+        // $datas['avgNatUST']         = $datas['avgDapulUST'] != 0 && $datas['avgLapulUST'] ? ($datas['avgDapulUST'] + $datas['avgLapulUST'])/2 : 0;
+        // $datas['avgNatNONUST']      = $datas['avgDapulNONUST'] != 0 && $datas['avgLapulNONUST'] ? ($datas['avgDapulNONUST'] + $datas['avgLapulNONUST'])/2 : 0;
+        // $datas['avgNatSELERAKU']    = $datas['avgDapulSELERAKU'] != 0 && $datas['avgLapulSELERAKU'] ? ($datas['avgDapulSELERAKU'] + $datas['avgLapulSELERAKU'])/2 : 0;
+        
+        app(ReportRanking::class)->generate_ranking_rpo($datas, $updated_at);
     }
     public function generateReportTransDaily(){
         $products       = Product::get();
