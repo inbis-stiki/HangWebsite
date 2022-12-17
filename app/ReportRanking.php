@@ -225,12 +225,12 @@ class ReportRanking
         return $styleContent;
     }
 
-    public function generate_ranking_rpo($AktifitasRPOLapul, $AktifitasRPODapul, $PencapaianRPOLapul, $PencapaianRPODapul)
+    public function generate_ranking_rpo()
     {
-        $this->dataAktifitasRPOLapul = $AktifitasRPOLapul;
-        $this->dataAktifitasRPODapul = $AktifitasRPODapul;
-        $this->dataPencapaianRPOLapul = $PencapaianRPOLapul;
-        $this->dataPencapaianRPODapul = $PencapaianRPODapul;
+        // $this->dataAktifitasRPOLapul = $AktifitasRPOLapul;
+        // $this->dataAktifitasRPODapul = $AktifitasRPODapul;
+        // $this->dataPencapaianRPOLapul = $PencapaianRPOLapul;
+        // $this->dataPencapaianRPODapul = $PencapaianRPODapul;
 
         $spreadsheet = new Spreadsheet();
 

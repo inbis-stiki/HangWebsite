@@ -49,14 +49,210 @@ class Cronjob extends Model
                 AND u.deleted_at IS NULL
         ");
     }
-    public static function queryGetSmyTransLocation($queryCategory){
+    public static function queryGetSmyTransLocation($year, $month){
         return DB::select("
             SELECT
                 t.LOCATION_TRANS ,
                 t.REGIONAL_TRANS ,
-                ".$queryCategory."
+                t.AREA_TRANS ,
+                COALESCE((
+                    SELECT SUM(td.QTY_TD)
+                    FROM `transaction` t2 
+                    INNER JOIN transaction_detail td 
+                        ON 
+                            YEAR(t2.DATE_TRANS) = ".$year."
+                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            AND t2.AREA_TRANS = t.AREA_TRANS 
+                            AND td.ID_TRANS = t2.ID_TRANS 
+                            AND td.ID_PC = 12
+                ), 0) as 'REALUST_STL',
+                COALESCE((
+                    SELECT SUM(td.QTY_TD)
+                    FROM `transaction` t2 
+                    INNER JOIN transaction_detail td 
+                        ON 
+                            YEAR(t2.DATE_TRANS) = ".$year."
+                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            AND t2.AREA_TRANS = t.AREA_TRANS 
+                            AND td.ID_TRANS = t2.ID_TRANS 
+                            AND td.ID_PC = 2
+                ), 0) as 'REALNONUST_STL',
+                COALESCE((
+                    SELECT SUM(td.QTY_TD)
+                    FROM `transaction` t2 
+                    INNER JOIN transaction_detail td 
+                        ON 
+                            YEAR(t2.DATE_TRANS) = ".$year."
+                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            AND t2.AREA_TRANS = t.AREA_TRANS 
+                            AND td.ID_TRANS = t2.ID_TRANS 
+                            AND td.ID_PC = 3
+                ), 0) as 'REALSELERAKU_STL',
+                COALESCE((
+                    SELECT COUNT(*)
+                    FROM `transaction` t2
+                    WHERE 
+                        YEAR(t2.DATE_TRANS) = ".$year."
+                        AND MONTH(t2.DATE_TRANS) = ".$month."
+                        AND t2.AREA_TRANS = t.AREA_TRANS 
+                        AND t2.TYPE_ACTIVITY = 'AKTIVITAS UB'
+                ), 0) as 'REALACTUB_STL',
+                COALESCE((
+                    SELECT COUNT(*)
+                    FROM `transaction` t2
+                    WHERE 
+                        YEAR(t2.DATE_TRANS) = ".$year."
+                        AND MONTH(t2.DATE_TRANS) = ".$month."
+                        AND t2.AREA_TRANS = t.AREA_TRANS 
+                        AND t2.TYPE_ACTIVITY = 'Pedagang Sayur'
+                ), 0) as 'REALACTPS_STL',
+                COALESCE((
+                    SELECT COUNT(*)
+                    FROM `transaction` t2
+                    WHERE 
+                        YEAR(t2.DATE_TRANS) = ".$year."
+                        AND MONTH(t2.DATE_TRANS) = ".$month."
+                        AND t2.AREA_TRANS = t.AREA_TRANS 
+                        AND t2.TYPE_ACTIVITY = 'Retail'
+                ), 0) as 'REALACTRETAIl_STL'
             FROM `transaction` t
-            GROUP BY t.REGIONAL_TRANS 
+            GROUP BY t.AREA_TRANS 
+        ");
+    }
+    public static function queryGetSmyRegional($year, $month){
+        $reportProds = DB::select("
+            SELECT 
+                smy.*,
+                ((smy.VSUST * smy.WUST) / 100) + ((smy.VSNONUST * smy.WNONUST) / 100) + ((smy.VSSELERAKU * smy.WSELERAKU) / 100) as AVG_VS
+            FROM (
+                SELECT
+                    stl.*,
+                    (
+                        SELECT mpc.PERCENTAGE_PC
+                        FROM md_product_category mpc 
+                        WHERE mpc.ID_PC = 12
+                    ) as WUST,
+                    (
+                        SELECT mpc.PERCENTAGE_PC
+                        FROM md_product_category mpc 
+                        WHERE mpc.ID_PC = 2
+                    ) as WNONUST,
+                    (
+                        SELECT mpc.PERCENTAGE_PC
+                        FROM md_product_category mpc 
+                        WHERE mpc.ID_PC = 3
+                    ) as WSELERAKU,
+                    (
+                        SELECT mpc.TGTREGIONAL_PC
+                        FROM md_product_category mpc 
+                        WHERE mpc.ID_PC = 12
+                    ) as TGTUST,
+                    (
+                        SELECT mpc.TGTREGIONAL_PC
+                        FROM md_product_category mpc 
+                        WHERE mpc.ID_PC = 2
+                    ) as TGTNONUST,
+                    (
+                        SELECT mpc.TGTREGIONAL_PC
+                        FROM md_product_category mpc 
+                        WHERE mpc.ID_PC = 3
+                    ) as TGTSELERAKU,
+                    (
+                        SELECT (stl.REALUST_STL / mpc.TGTREGIONAL_PC) * 100
+                        FROM md_product_category mpc 
+                        WHERE mpc.ID_PC = 12
+                    ) as VSUST,
+                    (
+                        SELECT (stl.REALNONUST_STL / mpc.TGTREGIONAL_PC) * 100
+                        FROM md_product_category mpc 
+                        WHERE mpc.ID_PC = 2
+                    ) as VSNONUST,
+                    (
+                        SELECT (stl.REALSELERAKU_STL / mpc.TGTREGIONAL_PC) * 100
+                        FROM md_product_category mpc 
+                        WHERE mpc.ID_PC = 3
+                    ) as VSSELERAKU
+                FROM summary_trans_location stl
+                WHERE
+                    stl.YEAR_STL = ".$year."
+                    AND stl.MONTH_STL = ".$month."
+            ) as smy
+            ORDER BY AVG_VS DESC
+        ");
+
+        $reportActs = DB::select("
+            SELECT 
+                smy.*,
+                ((smy.VSUB * smy.WUB) / 100) + ((smy.VSPS * smy.WPS) / 100) + ((smy.VSRETAIL * smy.WRETAIL) / 100) as AVG_VS
+            FROM (
+                SELECT
+                    stl.*,
+                    (
+                        SELECT mac.PERCENTAGE_AC 
+                        FROM md_activity_category mac  
+                        WHERE mac.ID_AC = 1
+                    ) as WUB,
+                    (
+                        SELECT mac.PERCENTAGE_AC 
+                        FROM md_activity_category mac  
+                        WHERE mac.ID_AC = 2
+                    ) as WPS,
+                    (
+                        SELECT mac.PERCENTAGE_AC 
+                        FROM md_activity_category mac  
+                        WHERE mac.ID_AC = 3
+                    ) as WRETAIL,
+                    (
+                        SELECT mac.TGTREGIONAL_AC 
+                        FROM md_activity_category mac  
+                        WHERE mac.ID_AC = 1
+                    ) as TGTUB,
+                    (
+                        SELECT mac.TGTREGIONAL_AC 
+                        FROM md_activity_category mac  
+                        WHERE mac.ID_AC = 2
+                    ) as TGTPS,
+                    (
+                        SELECT mac.TGTREGIONAL_AC 
+                        FROM md_activity_category mac  
+                        WHERE mac.ID_AC = 3
+                    ) as TGTRETAIL,
+                    (
+                        SELECT (stl.REALACTUB_STL / mac.TGTREGIONAL_AC) * 100
+                        FROM md_activity_category mac
+                        WHERE mac.ID_AC = 1
+                    ) as VSUB,
+                    (
+                        SELECT (stl.REALACTPS_STL / mac.TGTREGIONAL_AC) * 100
+                        FROM md_activity_category mac
+                        WHERE mac.ID_AC = 2
+                    ) as VSPS,
+                    (
+                        SELECT (stl.REALACTRETAIL_STL / mac.TGTREGIONAL_AC) * 100
+                        FROM md_activity_category mac
+                        WHERE mac.ID_AC = 3
+                    ) as VSRETAIL
+                FROM summary_trans_location stl
+                WHERE
+                    stl.YEAR_STL = ".$year."
+                    AND stl.MONTH_STL = ".$month."
+            ) as smy
+            ORDER BY AVG_VS DESC    
+        ");
+
+        return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
+    }
+    public static function queryGetDetailSmyRegional($regional){
+        return DB::select("
+            SELECT mr.NAME_REGIONAL , GROUP_CONCAT(u.NAME_USER) as NAME_USER , ml.ISINSIDE_LOCATION 
+            FROM md_regional mr 
+            INNER JOIN `user` u 
+                ON 
+                    mr.NAME_REGIONAL = '".$regional."'
+                    AND u.ID_ROLE = 4 
+                    AND u.deleted_at IS NULL AND u.ID_REGIONAL = mr.ID_REGIONAL 
+            INNER JOIN md_location ml 
+                ON ml.ID_LOCATION = mr.ID_LOCATION
         ");
     }
     public static function queryGetTransactionDaily($querySumProd, $date, $regional){
