@@ -147,9 +147,9 @@ class CronjobController extends Controller
                     'REALUST_STL'       => $data->REALUST_STL,
                     'REALNONUST_STL'    => $data->REALNONUST_STL,
                     'REALSELERAKU_STL'  => $data->REALSELERAKU_STL,
-                    'REALACTUB_STL'     => $data->REALAKTIVITASUB_STL,
-                    'REALACTPS_STL'     => $data->REALPEDAGANGSAYUR_STL,
-                    'REALACTRETAIL_STL' => $data->REALRETAIL_STL,
+                    'REALACTUB_STL'     => $data->REALACTUB_STL,
+                    'REALACTPS_STL'     => $data->REALACTPS_STL,
+                    'REALACTRETAIL_STL' => $data->REALACTRETAIL_STL,
                     'MONTH_STL'         => $month,
                     'YEAR_STL'          => $year,
                     'updated_at'        => $updated_at
