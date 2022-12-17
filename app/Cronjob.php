@@ -114,7 +114,7 @@ class Cronjob extends Model
                         AND MONTH(t2.DATE_TRANS) = ".$month."
                         AND t2.AREA_TRANS = t.AREA_TRANS 
                         AND t2.TYPE_ACTIVITY = 'Retail'
-                ), 0) as 'REALACTRETAIl_STL'
+                ), 0) as 'REALACTRETAIL_STL'
             FROM `transaction` t
             GROUP BY t.AREA_TRANS 
         ");
