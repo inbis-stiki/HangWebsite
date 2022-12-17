@@ -33,7 +33,8 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Kategori Aktivitas</th>
-                                        <th>Target Regional</th>
+                                        <th>Target Asmen</th>
+                                        <th>Target RPO</th>
                                         <th>Target User</th>
                                         <th>Persentase</th>
                                         <th>Status</th>
@@ -48,6 +49,7 @@
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $item->NAME_AC }}</td>
+                                        <td>{{ $item->TGTLOCATION_AC }}</td>
                                         <td>{{ $item->TGTREGIONAL_AC }}</td>
                                         <td>{{ $item->TGTUSER_AC }}</td>
                                         <td>{{ $item->PERCENTAGE_AC }}%</td>
@@ -61,7 +63,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlEdit('{{ $item->ID_AC }}', '{{ $item->NAME_AC }}', '{{ $item->PERCENTAGE_AC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $item->ID_AC }}', '{{ $item->NAME_AC }}', '{{ $item->TGTLOCATION_AC }}', '{{ $item->TGTREGIONAL_AC }}', '{{ $item->TGTUSER_AC }}',  '{{ $item->PERCENTAGE_AC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                         </td>
@@ -93,8 +95,12 @@
                     <input type="text" name="category_activity" id="mdlEdit_name" class="form-control" placeholder="Input nama kategori" required>
                 </div>
                 <div class="form-group">
+                    <label for="">Target Asmen</label>
+                    <input type="text" name="target_asm_act" id="mdlEdit_asm" class="form-control" placeholder="Input Target Regional" required>
+                </div>
+                <div class="form-group">
                     <label for="">Target Regional</label>
-                    <input type="text" name="target_reg_act" id="mdlEdit_regi" class="form-control" placeholder="Input Target Regional" required>
+                    <input type="text" name="target_reg_act" id="mdlEdit_reg" class="form-control" placeholder="Input Target Regional" required>
                 </div>
                 <div class="form-group">
                     <label for="">Target User</label>
@@ -129,9 +135,12 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, name, percentage, status){
+    function showMdlEdit(id, name, targetasmen, targetreg, targetuser, percentage, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
+        $('#mdlEdit_asm').val(targetasmen)
+        $('#mdlEdit_reg').val(targetreg)
+        $('#mdlEdit_user').val(targetuser)
         $('#mdlEdit_percentage').val(percentage)
         if (status == null || status == '') {
             $('#status_enable').prop('checked', true)

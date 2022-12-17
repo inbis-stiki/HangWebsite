@@ -47,11 +47,8 @@ Route::group(['middleware' => ['checkLogin']], function () {
     // Dashboard LineChart
     Route::post('dashboard/trend_asmen', 'DashboardController@trend_asmen');
     Route::post('dashboard/trend_rpo', 'DashboardController@trend_rpo');
-    // Dashboard DonutChart
-    Route::post('dashboard/ranking_aktivitas', 'DashboardController@ranking_aktivitas');
-    Route::post('dashboard/ranking_pencapaian', 'DashboardController@ranking_pencapaian');
-    // Dashboard Presenssi
-    Route::post('dashboard/presensi', 'DashboardController@presensi');
+    // Dashboard BarChart
+    Route::post('dashboard/aktivitas', 'DashboardController@total_activity');
 
     // MASTER LOCATION
     // nasional

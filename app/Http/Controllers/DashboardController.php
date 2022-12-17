@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ActivityCategory;
+use App\CategoryProduct;
 use App\ReportQuery;
 use App\UserRankingActivity;
 use Illuminate\Http\Request;
@@ -23,164 +24,328 @@ class DashboardController extends Controller
         return view('dashboard', $data);
     }
 
-    public function AktivitasRPO()
+    public function total_activity()
     {
-        $month = date('n');
-        $data = array();
-        $user_regionals = DB::select("
-            SELECT
-            (
+        $role_act = $_POST['role'];
+        if ($role_act == 'asmen') {
+            $data_activity = DB::select("
                 SELECT
-                    u.NAME_USER
+                    ml.ID_LOCATION,
+                    ml.NAME_LOCATION AS PLACE,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTUB_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ub,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTPS_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ps,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTRETAIL_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_retail,
+                    (
+                        SELECT
+                            mac.TGTLOCATION_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 1
+                    ) AS TGT_UB,
+                    (
+                        SELECT
+                            mac.TGTLOCATION_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 2
+                    ) AS TGT_PS,
+                    (
+                        SELECT
+                            mac.TGTLOCATION_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 3
+                    ) AS TGT_RETAIL
                 FROM
-                    `user` u
-                WHERE
-                    u.ID_ROLE = 4 
-                    AND u.ID_REGIONAL = mr.ID_REGIONAL
-                    LIMIT 1
-            ) AS NAME_USER,
-            (
-                SELECT
-                    u.ID_ROLE
-                FROM
-                    `user` u
-                WHERE
-                    u.ID_ROLE = 4 
-                    AND u.ID_REGIONAL = mr.ID_REGIONAL
-                    LIMIT 1
-            ) AS ROLE_USER,
-            mr.NAME_REGIONAL,
-            mr.ID_REGIONAL
-            FROM
-                md_regional mr,
-                md_location ml
-            WHERE
-                mr.ID_LOCATION = ml.ID_LOCATION           
-        ");
-
-        foreach ($user_regionals as $user_regional) {
-            $activity_rankings = DB::select("
-            SELECT 
-            (
-                SELECT
-                    QUANTITY
-                    FROM
-                    target_activity ta
-                    WHERE
-                        ID_ACTIVITY = 1
-                        AND ID_REGIONAL = usa.ID_REGIONAL
-            ) AS TARGET_UB, 
-            SUM(usa.REAL_UB) AS REAL_UB, 
-            usa.VSTARGET_UB, 
-            (
-                SELECT
-                    QUANTITY
-                    FROM
-                    target_activity ta
-                    WHERE
-                        ID_ACTIVITY = 2
-                        AND ID_REGIONAL = usa.ID_REGIONAL
-            ) AS TARGET_PDGSAYUR, 
-            SUM(usa.REAL_PDGSAYUR) AS REAL_PDGSAYUR, 
-            usa.VSTARGET_PDGSAYUR, 
-            (
-                SELECT
-                    QUANTITY
-                    FROM
-                    target_activity ta
-                    WHERE
-                        ID_ACTIVITY = 3
-                        AND ID_REGIONAL = usa.ID_REGIONAL
-            ) AS TARGET_RETAIL, 
-            SUM(usa.REAL_RETAIL) AS REAL_RETAIL, 
-            usa.VSTARGET_RETAIL, 
-            usa.AVERAGE, 
-            usa.ID_USER_RANKACTIVITY
-            FROM
-                user_ranking_activity AS usa,
-                md_regional AS mr
-            WHERE
-                usa.ID_REGIONAL	= " . $user_regional->ID_REGIONAL . "
-                AND usa.ID_REGIONAL = mr.ID_REGIONAL
-                AND MONTH(DATE(usa.created_at)) = " . $month . "
-            GROUP BY
-                usa.ID_REGIONAL
+                    transaction_detail_today tdt
+                RIGHT JOIN md_location ml ON 
+                    ml.NAME_LOCATION COLLATE utf8mb4_general_ci = tdt.LOCATION_TRANS
+                LEFT JOIN summary_trans_location stl ON 
+                    stl.REGIONAL_STL COLLATE utf8mb4_general_ci = tdt.REGIONAL_TRANS
+                GROUP BY 
+                    tdt.LOCATION_TRANS
             ");
-
-            $temp['NAME_USER']          = $user_regional->NAME_USER;
-            $temp['NAME_AREA']          = $user_regional->NAME_REGIONAL;
-            $temp['ID_ROLE']            = $user_regional->ROLE_USER;
-            $temp['TARGET_UB']          = !empty($activity_rankings[0]->TARGET_UB) ? $activity_rankings[0]->TARGET_UB : "-";
-            $temp['REAL_UB']            = !empty($activity_rankings[0]->REAL_UB) ? $activity_rankings[0]->REAL_UB : "-";
-            $temp['VSTARGET_UB']        = $temp['REAL_UB'] != "-" && $temp['TARGET_UB'] != "-" ? ($temp['REAL_UB'] / $temp['TARGET_UB']) * 100 : "-";
-            $temp['TARGET_PDGSAYUR']    = !empty($activity_rankings[0]->TARGET_PDGSAYUR) ? $activity_rankings[0]->TARGET_PDGSAYUR : "-";
-            $temp['REAL_PDGSAYUR']      = !empty($activity_rankings[0]->REAL_PDGSAYUR) ? $activity_rankings[0]->REAL_PDGSAYUR : "-";
-            $temp['VSTARGET_PDGSAYUR']  = $temp['REAL_PDGSAYUR'] != "-" && $temp['TARGET_PDGSAYUR'] != "-" ? ($temp['REAL_PDGSAYUR'] / $temp['TARGET_PDGSAYUR']) * 100 : "-";
-            $temp['TARGET_RETAIL']      = !empty($activity_rankings[0]->TARGET_RETAIL) ? $activity_rankings[0]->TARGET_RETAIL : "-";
-            $temp['REAL_RETAIL']        = !empty($activity_rankings[0]->REAL_RETAIL) ? $activity_rankings[0]->REAL_RETAIL : "-";
-            $temp['VSTARGET_RETAIL']    = $temp['REAL_RETAIL'] != "-" && $temp['TARGET_RETAIL'] != "-" ? ($temp['REAL_RETAIL'] / $temp['TARGET_RETAIL']) * 100 : "-";
-
-            $weightActCat = ActivityCategory::where('deleted_at', NULL)->get()->toArray();
-            $avgCount = 0;
-            if ($weightActCat[0]["PERCENTAGE_AC"] != 0) $avgCount++;
-            if ($weightActCat[1]["PERCENTAGE_AC"] != 0) $avgCount++;
-            if ($weightActCat[2]["PERCENTAGE_AC"] != 0) $avgCount++;
-
-            $temp['AVERAGE'] = (((float)$temp['VSTARGET_UB'] / 100) * ((float)$weightActCat[0]["PERCENTAGE_AC"] / 100));
-            $temp['AVERAGE'] += (((float)$temp['VSTARGET_PDGSAYUR'] / 100) * ((float)$weightActCat[1]["PERCENTAGE_AC"] / 100));
-            $temp['AVERAGE'] += (((float)$temp['VSTARGET_RETAIL'] / 100) * ((float)$weightActCat[2]["PERCENTAGE_AC"] / 100));
-            $temp['AVERAGE'] = $temp['AVERAGE'] / $avgCount;
-
-            $data[] = $temp;
+        } else if ($role_act == 'rpo') {
+            $data_activity = DB::select("
+                SELECT
+                    mr.ID_REGIONAL,
+                    mr.NAME_REGIONAL AS PLACE,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTUB_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ub,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTPS_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ps,
+                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTRETAIL_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_retail,
+                    (
+                        SELECT
+                            mac.TGTREGIONAL_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 1
+                    ) AS TGT_UB,
+                    (
+                        SELECT
+                            mac.TGTREGIONAL_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 2
+                    ) AS TGT_PS,
+                    (
+                        SELECT
+                            mac.TGTREGIONAL_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 3
+                    ) AS TGT_RETAIL
+                FROM
+                    transaction_detail_today tdt
+                RIGHT JOIN md_regional mr ON 
+                    mr.NAME_REGIONAL COLLATE utf8mb4_general_ci = tdt.REGIONAL_TRANS
+                LEFT JOIN md_area ma ON
+                    ma.NAME_AREA COLLATE utf8mb4_general_ci = tdt.AREA_TRANS
+                LEFT JOIN summary_trans_location stl ON 
+                    stl.REGIONAL_STL COLLATE utf8mb4_general_ci = tdt.REGIONAL_TRANS
+                WHERE 
+                    tdt.DATE_TD LIKE '" . date("Y-m") . "%'
+                GROUP BY 
+                    tdt.REGIONAL_TRANS
+            ");
         }
-        usort($data, function ($a, $b) {
-            return strnatcmp($b['AVERAGE'], $a['AVERAGE']);
-        });
-        foreach ($data as $key => $value) {
-            $data[$key]['ID_USER_RANKSALE'] = $key + 1;
-        }
-        return $data;
+
+        $activity = [
+            'data' => $data_activity
+        ];
+        echo json_encode($activity);
     }
 
     public function ranking_activity()
     {
-        $ranking_sale_rpo = DB::select("
-            SELECT
-                ura.NAME_REGIONAL,
-                (SUM(ura.AVERAGE) / COUNT(ura.ID_USER)) AS NEW_AVERAGE
-            FROM
-                user_ranking_activity ura 
-            GROUP BY 
-                ura.ID_REGIONAL
-            ORDER BY
-                NEW_AVERAGE DESC
-            LIMIT 5
-        ");
         $ranking_sale_asmen = DB::select("
             SELECT
-                ml.NAME_LOCATION,
-                (SUM(ura.AVERAGE) / COUNT(ura.ID_USER)) AS NEW_AVERAGE
+                ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
+                stl.LOCATION_STL AS NAME_LOCATION,
+                ROUND((
+                    (
+                        ((((SUM(stl.REALACTUB_STL) + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTPS_STL) + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTRETAIL_STL) + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                    ) / 3
+                    ), 2) AS NEW_AVERAGE
             FROM
-                user_ranking_activity ura 
-            LEFT JOIN md_location ml ON 
-                ml.ID_LOCATION = ura.ID_LOCATION
-            GROUP BY 
-                ura.ID_LOCATION
+                (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.TYPE_ACTIVITY LIKE 'Aktivitas UB'
+                        GROUP BY
+                            tdt.TYPE_ACTIVITY
+                                            ) AS TOT_QTYTD
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 1
+                ) AS TB_UB,
+                (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.TYPE_ACTIVITY LIKE 'Pedagang Sayur'
+                        GROUP BY
+                            tdt.TYPE_ACTIVITY
+                                            ) AS TOT_QTYTD
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 2
+                ) AS TB_PS,
+                (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.TYPE_ACTIVITY LIKE 'Retail'
+                        GROUP BY
+                            tdt.TYPE_ACTIVITY
+                                            ) AS TOT_QTYTD
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 3
+                ) AS TB_RETAIL,
+                summary_trans_location stl
+            WHERE
+                stl.updated_at LIKE '2022-12%'
+            GROUP BY
+                stl.LOCATION_STL
             ORDER BY
                 NEW_AVERAGE DESC
-            LIMIT 5
+        ");
+        $ranking_sale_rpo = DB::select("
+            SELECT
+                ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
+                stl.REGIONAL_STL AS NAME_REGIONAL,
+                ROUND((
+                    (
+                        ((((stl.REALACTUB_STL + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((stl.REALACTPS_STL + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((stl.REALACTRETAIL_STL + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                    ) / 3
+                    ), 2) AS NEW_AVERAGE
+            FROM
+                (
+                    SELECT
+                    *,
+                    (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.TYPE_ACTIVITY LIKE 'Aktivitas UB'
+                        GROUP BY
+                            tdt.TYPE_ACTIVITY
+                    ) AS TOT_QTYTD
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 1
+                ) AS TB_UB,
+                (
+                    SELECT
+                    *,
+                    (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.TYPE_ACTIVITY LIKE 'Pedagang Sayur'
+                        GROUP BY
+                            tdt.TYPE_ACTIVITY
+                    ) AS TOT_QTYTD
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 2
+                ) AS TB_PS,
+                (
+                    SELECT
+                    *,
+                    (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.TYPE_ACTIVITY LIKE 'Retail'
+                        GROUP BY
+                            tdt.TYPE_ACTIVITY
+                    ) AS TOT_QTYTD
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 3
+                ) AS TB_RETAIL,
+                summary_trans_location stl
+            WHERE
+                stl.updated_at LIKE '2022-12%'
+            ORDER BY 
+                NEW_AVERAGE DESC
         ");
         $ranking_sale_apo = DB::select("
             SELECT
-                ura.NAME_AREA,
-                (SUM(ura.AVERAGE) / COUNT(ura.ID_USER)) AS NEW_AVERAGE
+                ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
+                ma.NAME_AREA,
+                ROUND((
+                    (
+                        ((((dm.REALUST_DM + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((dm.REALNONUST_DM + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((dm.REALSELERAKU_DM + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                    ) / 3
+                ), 2)  AS NEW_AVERAGE
             FROM
-                user_ranking_activity ura 
-            GROUP BY
-                ura.ID_AREA
-            ORDER BY
+                (
+                    SELECT
+                    *,
+                    (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.TYPE_ACTIVITY LIKE 'Aktivitas UB'
+                        GROUP BY
+                            tdt.TYPE_ACTIVITY
+                    ) AS TOT_QTYTD
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 1
+                ) AS TB_UB,
+                (
+                    SELECT
+                    *,
+                    (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.TYPE_ACTIVITY LIKE 'Pedagang Sayur'
+                        GROUP BY
+                            tdt.TYPE_ACTIVITY
+                    ) AS TOT_QTYTD
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 2
+                ) AS TB_PS,
+                (
+                    SELECT
+                    *,
+                    (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.TYPE_ACTIVITY LIKE 'Retail'
+                        GROUP BY
+                            tdt.TYPE_ACTIVITY
+                    ) AS TOT_QTYTD
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 3
+                ) AS TB_RETAIL,
+                dashboard_mobile dm
+            LEFT JOIN `user` u ON
+                u.ID_USER = dm.ID_USER
+            LEFT JOIN md_area ma ON
+                ma.ID_AREA = u.ID_AREA
+            WHERE 
+                u.ID_ROLE = 5
+            GROUP BY 
+                dm.ID_USER
+            ORDER BY 
                 NEW_AVERAGE DESC
-            LIMIT 5
         ");
         $ranking_sale = [
             'asmen' => $ranking_sale_asmen,
@@ -192,44 +357,233 @@ class DashboardController extends Controller
 
     public function ranking_sale()
     {
-        $ranking_sale_rpo = DB::select("
-            SELECT
-                urs.NAME_REGIONAL,
-                (SUM(urs.AVERAGE) / COUNT(urs.ID_USER)) AS NEW_AVERAGE
-            FROM
-                user_ranking_sale urs
-            GROUP BY 
-                urs.ID_REGIONAL
-            ORDER BY
-                NEW_AVERAGE DESC
-            LIMIT 5
-        ");
         $ranking_sale_asmen = DB::select("
             SELECT
-                ml.NAME_LOCATION,
-                (SUM(urs.AVERAGE) / COUNT(urs.ID_USER)) AS NEW_AVERAGE
+                ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
+                stl.LOCATION_STL AS NAME_LOCATION,
+                ROUND((
+                    (
+                        ((((SUM(stl.REALUST_STL) + TB_UST.TOT_QTYTD) / TB_UST.TGTLOCATION_PC) * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
+                        ((((SUM(stl.REALNONUST_STL) + TB_NONUST.TOT_QTYTD) / TB_NONUST.TGTLOCATION_PC) * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
+                        ((((SUM(stl.REALSELERAKU_STL) + TB_SELERAKU.TOT_QTYTD) / TB_SELERAKU.TGTLOCATION_PC) * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100))
+                    ) / 3
+                    ), 2) AS NEW_AVERAGE
             FROM
-                user_ranking_sale urs
-            LEFT JOIN md_location ml ON 
-                ml.ID_LOCATION = urs.ID_LOCATION
-            GROUP BY 
-                urs.ID_LOCATION
+                (
+                    SELECT
+                        *,
+                        (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 12
+                ) AS TB_UST,
+                (
+                    SELECT
+                        *,
+                        (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 2
+                ) AS TB_NONUST,
+                (
+                    SELECT
+                        *,
+                        (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 3
+                ) AS TB_SELERAKU,
+                summary_trans_location stl
+            WHERE
+                stl.updated_at LIKE '2022-12%'
+            GROUP BY
+                stl.LOCATION_STL
             ORDER BY
                 NEW_AVERAGE DESC
-            LIMIT 5
         ");
+
+        $ranking_sale_rpo = DB::select("
+            SELECT
+                ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
+                stl.REGIONAL_STL AS NAME_REGIONAL,
+                ROUND((
+                        (
+                            ((((stl.REALUST_STL + TB_UST.TOT_QTYTD) / TB_UST.TGTREGIONAL_PC) * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
+                            ((((stl.REALNONUST_STL + TB_NONUST.TOT_QTYTD) / TB_NONUST.TGTREGIONAL_PC) * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
+                            ((((stl.REALSELERAKU_STL + TB_SELERAKU.TOT_QTYTD) / TB_SELERAKU.TGTREGIONAL_PC) * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100))
+                        ) / 3
+                        ), 2) AS NEW_AVERAGE
+            FROM
+                (
+                SELECT
+                    *,
+                    (
+                    SELECT
+                        SUM(QTY_TD)
+                    FROM
+                        transaction_detail_today tdt
+                    WHERE
+                        tdt.ID_PC = mpc.ID_PC
+                    GROUP BY
+                        tdt.ID_PC
+                    ) AS TOT_QTYTD
+                FROM
+                    md_product_category mpc
+                WHERE
+                    mpc.ID_PC = 12
+                ) AS TB_UST,
+                (
+                SELECT
+                    *,
+                    (
+                    SELECT
+                        SUM(QTY_TD)
+                    FROM
+                        transaction_detail_today tdt
+                    WHERE
+                        tdt.ID_PC = mpc.ID_PC
+                    GROUP BY
+                        tdt.ID_PC
+                    ) AS TOT_QTYTD
+                FROM
+                    md_product_category mpc
+                WHERE
+                    mpc.ID_PC = 2
+                ) AS TB_NONUST,
+                (
+                SELECT
+                    *,
+                    (
+                    SELECT
+                        SUM(QTY_TD)
+                    FROM
+                        transaction_detail_today tdt
+                    WHERE
+                        tdt.ID_PC = mpc.ID_PC
+                    GROUP BY
+                        tdt.ID_PC
+                    ) AS TOT_QTYTD
+                FROM
+                    md_product_category mpc
+                WHERE
+                    mpc.ID_PC = 3
+                ) AS TB_SELERAKU,
+                summary_trans_location stl
+            WHERE
+                stl.updated_at LIKE '2022-12%'
+            ORDER BY
+                NEW_AVERAGE DESC
+        ");
+
         $ranking_sale_apo = DB::select("
             SELECT
-                urs.NAME_AREA,
-                (SUM(urs.AVERAGE) / COUNT(urs.ID_USER)) AS NEW_AVERAGE
+                ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
+                ma.NAME_AREA,
+                ROUND((
+                    (
+                        ((((dm.REALUST_DM + TB_UST.TOT_QTYTD) / TB_UST.TGTREGIONAL_PC) * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
+                        ((((dm.REALNONUST_DM + TB_NONUST.TOT_QTYTD) / TB_NONUST.TGTREGIONAL_PC) * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
+                        ((((dm.REALSELERAKU_DM + TB_SELERAKU.TOT_QTYTD) / TB_SELERAKU.TGTREGIONAL_PC) * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100))
+                    ) / 3
+                ), 2)  AS NEW_AVERAGE
             FROM
-                user_ranking_sale urs
+                (
+                SELECT
+                    *,
+                    (
+                    SELECT
+                        SUM(QTY_TD)
+                    FROM
+                        transaction_detail_today tdt
+                    WHERE
+                        tdt.ID_PC = mpc.ID_PC
+                    GROUP BY
+                        tdt.ID_PC
+                    ) AS TOT_QTYTD
+                FROM
+                    md_product_category mpc
+                WHERE
+                    mpc.ID_PC = 12
+                ) AS TB_UST,
+                (
+                SELECT
+                    *,
+                    (
+                    SELECT
+                        SUM(QTY_TD)
+                    FROM
+                        transaction_detail_today tdt
+                    WHERE
+                        tdt.ID_PC = mpc.ID_PC
+                    GROUP BY
+                        tdt.ID_PC
+                    ) AS TOT_QTYTD
+                FROM
+                    md_product_category mpc
+                WHERE
+                    mpc.ID_PC = 2
+                ) AS TB_NONUST,
+                (
+                SELECT
+                    *,
+                    (
+                    SELECT
+                        SUM(QTY_TD)
+                    FROM
+                        transaction_detail_today tdt
+                    WHERE
+                        tdt.ID_PC = mpc.ID_PC
+                    GROUP BY
+                        tdt.ID_PC
+                    ) AS TOT_QTYTD
+                FROM
+                    md_product_category mpc
+                WHERE
+                    mpc.ID_PC = 3
+                ) AS TB_SELERAKU,
+                dashboard_mobile dm
+            LEFT JOIN `user` u ON
+                u.ID_USER = dm.ID_USER
+            LEFT JOIN md_area ma ON
+                ma.ID_AREA = u.ID_AREA
+            WHERE 
+                u.ID_ROLE = 5
             GROUP BY 
-                urs.ID_AREA
-            ORDER BY
+                dm.ID_USER
+            ORDER BY 
                 NEW_AVERAGE DESC
-            LIMIT 5
         ");
+
         $ranking_sale = [
             'asmen' => $ranking_sale_asmen,
             'rpo' => $ranking_sale_rpo,
@@ -238,221 +592,110 @@ class DashboardController extends Controller
         echo json_encode($ranking_sale);
     }
 
-    public function ranking_aktivitas(Request $request)
-    {
-        $date = $request->input('filter_date');
-        $area = $request->input('filter_area');
-        if ($area == 0) {
-            $data_activity = DB::table('user_ranking_activity')
-                ->where('user_ranking_activity.created_at', 'like', $date . '%')
-                ->selectRaw(
-                    'SUM(user_ranking_activity.TARGET_UB) as TotalTGT_UB, 
-                SUM(user_ranking_activity.REAL_UB) as TotalREAL_UB,
-                SUM(user_ranking_activity.TARGET_PDGSAYUR) as TotalTGT_PDGSAYUR, 
-                SUM(user_ranking_activity.REAL_PDGSAYUR) as TotalREAL_PDGSAYUR,
-                SUM(user_ranking_activity.TARGET_RETAIL) as TotalTGT_RETAIL, 
-                SUM(user_ranking_activity.REAL_RETAIL) as TotalREAL_RETAIL'
-                )
-                ->first();
-        } else {
-            $data_activity = DB::table('user_ranking_activity')
-                ->where('user_ranking_activity.created_at', 'like', $date . '%')
-                ->where('user_ranking_activity.ID_LOCATION', '=', $area)
-                ->selectRaw(
-                    'SUM(user_ranking_activity.TARGET_UB) as TotalTGT_UB, 
-                SUM(user_ranking_activity.REAL_UB) as TotalREAL_UB,
-                SUM(user_ranking_activity.TARGET_PDGSAYUR) as TotalTGT_PDGSAYUR, 
-                SUM(user_ranking_activity.REAL_PDGSAYUR) as TotalREAL_PDGSAYUR,
-                SUM(user_ranking_activity.TARGET_RETAIL) as TotalTGT_RETAIL, 
-                SUM(user_ranking_activity.REAL_RETAIL) as TotalREAL_RETAIL'
-                )
-                ->first();
-        }
-
-        if ($data_activity->TotalTGT_UB == null) {
-            $ranking_activity = array(
-                "TGT_UB" => "0",
-                "REAL_UB" => "0",
-                "VSTARGET_UB" => "NO DATA",
-                "TGT_PDGSAYUR" => "0",
-                "REAL_PDGSAYUR" => "0",
-                "VSTARGET_PDGSAYUR" => "NO DATA",
-                "TGT_RETAIL" => "0",
-                "REAL_RETAIL" => "0",
-                "VSTARGET_RETAIL" => "NO DATA"
-            );
-        } else {
-            $vsTarget_ub = ($data_activity->TotalREAL_UB / $data_activity->TotalTGT_UB) * 100;
-            $vsTarget_pdgSayur = ($data_activity->TotalREAL_PDGSAYUR / $data_activity->TotalTGT_PDGSAYUR) * 100;
-            $vsTarget_retail = ($data_activity->TotalREAL_RETAIL / $data_activity->TotalTGT_RETAIL) * 100;
-
-            $ranking_activity = array(
-                "TGT_UB" => $data_activity->TotalTGT_UB,
-                "REAL_UB" => $data_activity->TotalREAL_UB,
-                "VSTARGET_UB" => (number_format((float)$vsTarget_ub, 1, '.', '') + 0) . "%",
-                "TGT_PDGSAYUR" => $data_activity->TotalTGT_PDGSAYUR,
-                "REAL_PDGSAYUR" => $data_activity->TotalREAL_PDGSAYUR,
-                "VSTARGET_PDGSAYUR" => (number_format((float)$vsTarget_pdgSayur, 1, '.', '') + 0) . "%",
-                "TGT_RETAIL" => $data_activity->TotalTGT_RETAIL,
-                "REAL_RETAIL" => $data_activity->TotalREAL_RETAIL,
-                "VSTARGET_RETAIL" => (number_format((float)$vsTarget_retail, 1, '.', '') + 0) . "%"
-            );
-        }
-
-        return json_encode($ranking_activity);
-    }
-
-    public function ranking_pencapaian(Request $request)
-    {
-        $date = $request->input('filter_date');
-        $area = $request->input('filter_area');
-        if ($area == 0) {
-            $data_sale = DB::table('user_ranking_sale')
-                ->where('user_ranking_sale.created_at', 'like', $date . '%')
-                ->selectRaw(
-                    'SUM(user_ranking_sale.TARGET_UST) as TotalTGT_UST, 
-                SUM(user_ranking_sale.REAL_UST) as TotalREAL_UST,
-                SUM(user_ranking_sale.TARGET_NONUST) as TotalTGT_NONUST, 
-                SUM(user_ranking_sale.REAL_NONUST) as TotalREAL_NONUST,
-                SUM(user_ranking_sale.TARGET_SELERAKU) as TotalTGT_SELERAKU, 
-                SUM(user_ranking_sale.REAL_SELERAKU) as TotalREAL_SELERAKU'
-                )
-                ->first();
-        } else {
-            $data_sale = DB::table('user_ranking_sale')
-                ->where('user_ranking_sale.created_at', 'like', $date . '%')
-                ->where('user_ranking_sale.ID_LOCATION', '=', $area)
-                ->selectRaw(
-                    'SUM(user_ranking_sale.TARGET_UST) as TotalTGT_UST, 
-                SUM(user_ranking_sale.REAL_UST) as TotalREAL_UST,
-                SUM(user_ranking_sale.TARGET_NONUST) as TotalTGT_NONUST, 
-                SUM(user_ranking_sale.REAL_NONUST) as TotalREAL_NONUST,
-                SUM(user_ranking_sale.TARGET_SELERAKU) as TotalTGT_SELERAKU, 
-                SUM(user_ranking_sale.REAL_SELERAKU) as TotalREAL_SELERAKU'
-                )
-                ->first();
-        }
-
-        if ($data_sale->TotalTGT_UST == null) {
-            $ranking_sale = array(
-                "TGT_UST" => "0",
-                "REAL_UST" => "0",
-                "VSTARGET_UST" => "NO DATA",
-                "TGT_NONUST" => "0",
-                "REAL_NONUST" => "0",
-                "VSTARGET_NONUST" => "NO DATA",
-                "TGT_SELERAKU" => "0",
-                "REAL_SELERAKU" => "0",
-                "VSTARGET_SELERAKU" => "NO DATA"
-            );
-        } else {
-            $vsTarget_UST = ($data_sale->TotalREAL_UST / $data_sale->TotalTGT_UST) * 100;
-            $vsTarget_NONUST = ($data_sale->TotalREAL_NONUST / $data_sale->TotalTGT_NONUST) * 100;
-            $vsTarget_SELERAKU = ($data_sale->TotalREAL_SELERAKU / $data_sale->TotalTGT_SELERAKU) * 100;
-            $ranking_sale = array(
-                "TGT_UST" => $data_sale->TotalTGT_UST,
-                "REAL_UST" => $data_sale->TotalREAL_UST,
-                "VSTARGET_UST" => (number_format((float)$vsTarget_UST, 1, '.', '') + 0) . "%",
-                "TGT_NONUST" => $data_sale->TotalTGT_NONUST,
-                "REAL_NONUST" => $data_sale->TotalREAL_NONUST,
-                "VSTARGET_NONUST" => (number_format((float)$vsTarget_NONUST, 1, '.', '') + 0) . "%",
-                "TGT_SELERAKU" => $data_sale->TotalTGT_SELERAKU,
-                "REAL_SELERAKU" => $data_sale->TotalREAL_SELERAKU,
-                "VSTARGET_SELERAKU" => (number_format((float)$vsTarget_SELERAKU, 1, '.', '') + 0) . "%"
-            );
-        }
-
-        return json_encode($ranking_sale);
-    }
-
     public function trend_rpo()
     {
-        $year = date('Y');
+        $year = $_POST['date'];
+        $role = $_POST['role'];
         $regional_targets = DB::select("
-        SELECT
-            mr.ID_REGIONAL,
-            mr.NAME_REGIONAL,
-            (
-                SELECT 
-                    SUM(ts.QUANTITY) 
-                FROM target_sale ts
-                WHERE ts.ID_REGIONAL = mr.ID_REGIONAL
-            ) AS QUANTITY
-        FROM
-            md_regional mr
-        GROUP BY mr.ID_REGIONAL
+            SELECT
+                mr.*
+            FROM
+                md_regional mr
         ");
-
 
         $data_trend = array();
         foreach ($regional_targets as $regional_target) {
+            $data['UST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['NONUST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['SELERAKU'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $trend_asmen = DB::select("
-            SELECT
-                urs.NAME_REGIONAL ,
-                MONTH(created_at) as bulan,
-                SUM(urs.REAL_UST) as total_ust,
-                SUM(urs.REAL_NONUST) as total_non_ust,
-                SUM(urs.REAL_SELERAKU) as total_seleraku
-            FROM user_ranking_sale urs
-            WHERE 
-                YEAR(DATE(urs.created_at)) = 2022
-                AND urs.ID_REGIONAL = " . $regional_target->ID_REGIONAL . "
-            GROUP BY MONTH(urs.created_at), urs.NAME_REGIONAL
-            ORDER BY MONTH(urs.created_at) ASC
+                SELECT
+                    stl.LOCATION_STL,
+                    stl.MONTH_STL AS bulan,
+                    (stl.REALUST_STL + TB_UST.TOT_QTYTD) AS total_ust,
+                    (stl.REALNONUST_STL + TB_NONUST.TOT_QTYTD) AS total_non_ust,
+                    (stl.REALSELERAKU_STL + TB_SELERAKU.TOT_QTYTD) AS total_seleraku	
+                FROM
+                    (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 12
+                                ) AS TB_UST,
+                    (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 2
+                                ) AS TB_NONUST,
+                    (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 3
+                                ) AS TB_SELERAKU,
+                    summary_trans_location stl
+                WHERE
+                    stl.updated_at LIKE '%" . $year . "%'
+                    AND stl.REGIONAL_STL = '" . $regional_target->NAME_REGIONAL . "'
+                GROUP BY
+                    stl.REGIONAL_STL,
+                    stl.MONTH_STL
             ");
 
+            foreach ($trend_asmen as $item) {
+                $data['UST'][($item->bulan - 1)] = ((!empty($item->total_ust)) ? $item->total_ust : 0);
+                $data['NONUST'][($item->bulan - 1)] = ((!empty($item->total_non_ust)) ? $item->total_non_ust : 0);
+                $data['SELERAKU'][($item->bulan - 1)] = ((!empty($item->total_seleraku)) ? $item->total_seleraku : 0);
+            }
             array_push(
                 $data_trend,
                 array(
                     "NAME_AREA" => $regional_target->NAME_REGIONAL,
-                    "TARGET" => $regional_target->QUANTITY,
-                    "UST" => array(
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 1 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 2 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 3 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 4 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 5 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 6 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 7 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 8 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 9 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 10 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 11 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 12 && !empty($trend_asmen[0]->total_ust)) ? $trend_asmen[0]->total_ust : 0) : 0
-                    ),
-                    "NONUST" => array(
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 1 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 2 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 3 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 4 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 5 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 6 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 7 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 8 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 9 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 10 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 11 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 12 && !empty($trend_asmen[0]->total_non_ust)) ? $trend_asmen[0]->total_non_ust : 0) : 0
-                    ),
-                    "SELERAKU" => array(
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 1 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 2 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 3 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 4 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 5 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 6 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 7 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 8 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 9 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 10 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 11 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0,
-                        (!empty($trend_asmen[0]->bulan)) ? (($trend_asmen[0]->bulan == 12 && !empty($trend_asmen[0]->seleraku)) ? $trend_asmen[0]->seleraku : 0) : 0
-                    )
+                    "TARGET" => 0,
+                    "UST" => $data['UST'],
+                    "NONUST" => $data['NONUST'],
+                    "SELERAKU" => $data['SELERAKU']
                 )
             );
         }
-        echo json_encode($data_trend);
-        die;
+
         return $data_trend;
     }
 
@@ -474,29 +717,77 @@ class DashboardController extends Controller
             $data['SELERAKU'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $trend_asmen = DB::select("
                 SELECT
-                    ml.ID_LOCATION,
-                    MONTH(urs.created_at) as bulan,
-                    SUM(urs.REAL_UST) as total_ust,
-                    SUM(urs.REAL_NONUST) as total_non_ust,
-                    SUM(urs.REAL_SELERAKU) as total_seleraku
+                    stl.LOCATION_STL,
+                    stl.MONTH_STL AS bulan,
+                    (SUM(stl.REALUST_STL) + TB_UST.TOT_QTYTD) AS total_ust,
+                    (SUM(stl.REALNONUST_STL) + TB_NONUST.TOT_QTYTD) AS total_non_ust,
+                    (SUM(stl.REALSELERAKU_STL) + TB_SELERAKU.TOT_QTYTD) AS total_seleraku	
                 FROM
-                    user_ranking_sale urs
-                LEFT JOIN md_regional mr ON
-                    mr.ID_REGIONAL = urs.ID_REGIONAL
-                LEFT JOIN md_location ml ON
-                    ml.ID_LOCATION = mr.ID_LOCATION
+                    (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 12
+                                ) AS TB_UST,
+                    (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 2
+                                ) AS TB_NONUST,
+                    (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 3
+                                ) AS TB_SELERAKU,
+                    summary_trans_location stl
                 WHERE
-                    YEAR(DATE(urs.created_at)) LIKE '%" . $year . "%'
-                    AND ml.ID_LOCATION = " . $regional_target->ID_LOCATION . "
+                    stl.YEAR_STL = '" . $year . "'
+                    AND stl.LOCATION_STL = '" . $regional_target->NAME_LOCATION . "'
                 GROUP BY
-                    MONTH(urs.created_at),
-                    ml.ID_LOCATION
-                ORDER BY
-                    MONTH(urs.created_at) ASC
+                    stl.LOCATION_STL,
+                    stl.MONTH_STL
             ");
 
             foreach ($trend_asmen as $item) {
-                $data['UST'][($item->bulan - 1)] += ((!empty($item->total_ust)) ? $item->total_ust : 0);
+                $data['UST'][($item->bulan - 1)] = ((!empty($item->total_ust)) ? $item->total_ust : 0);
                 $data['NONUST'][($item->bulan - 1)] = ((!empty($item->total_non_ust)) ? $item->total_non_ust : 0);
                 $data['SELERAKU'][($item->bulan - 1)] = ((!empty($item->total_seleraku)) ? $item->total_seleraku : 0);
             }

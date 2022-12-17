@@ -11,6 +11,33 @@
         <div class="row">
             <div class="col">
                 <div class="card">
+                    <div class="card-header pb-0 d-block d-flex border-0">
+                        <h3 class="fs-16 font-weight-bolder text-black mb-0">Aktivitas</h3>
+                        <div class="d-flex ml-auto">
+                            <select name="" id="role_act" class="form-control default-select fs-12 mr-3">
+                                <option selected value="asmen">ASMEN</option>
+                                <option value="rpo">RPO</option>
+                            </select>
+                            <select name="" id="cat_act" class="form-control default-select fs-12 mr-3">
+                                <option selected value="0">AKTIVITAS UB</option>
+                                <option value="1">PEDAGANG SAYUR</option>
+                                <option value="2">RETAIL</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="dataActivity" role="tabpanel">
+                                {{-- <canvas id="" class="chart"></canvas> --}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
                     <div class="card-header pb-0 d-block d-flex flex-row justify-content-start border-0">
                         <h3 class="fs-16 text-black font-weight-bolder mb-0">Ranking</h3>
                         <div class="card-action revenue-tabs mt-3 mt-sm-0 ml-5">
@@ -139,6 +166,148 @@
 {{-- Flatpickr --}}
 
 <script type="text/javascript">
+    // RANKING
+    ranking_activity()
+    $('#tab-aktivity').click(function() {
+        ranking_activity()
+    })
+
+    $('#tab-pencapaian').click(function() {
+        ranking_pencapaian()
+    })
+
+    function ranking_activity() {
+        reset()
+        $.ajax({
+            url: "{{ url('dashboard/ranking_activity') }}",
+            type: "GET",
+            'crossDomain': true,
+            dataType: "json",
+            success: function(response) {
+                $.each(response.asmen, function(key, value) {
+                    trHTML_asmen +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>ASMEN ' + value.NAME_LOCATION +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                var first_array_rpo = response.rpo.slice(0, 5)
+                var last_array_rpo = response.rpo.slice(Math.max(response.rpo.length - 5, 1))
+                $.each(first_array_rpo, function(key, value) {
+                    trHTML_rpo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+                $.each(last_array_rpo, function(key, value) {
+                    trHTML_rpo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                var first_array_apo = response.apo.slice(0, 5)
+                var last_array_apo = response.apo.slice(Math.max(response.apo.length - 5, 1))
+                $.each(first_array_apo, function(key, value) {
+                    trHTML_apo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+                $.each(last_array_apo, function(key, value) {
+                    trHTML_apo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                $('#ranking_asmen').append(trHTML_asmen);
+                $('#ranking_rpo').append(trHTML_rpo);
+                $('#ranking_apo').append(trHTML_apo);
+
+                $('#loader_1, #loader_2, #loader_3').hide()
+                $('#table-data').show()
+            }
+        });
+    }
+
+    function ranking_pencapaian() {
+        reset()
+        $.ajax({
+            url: "{{ url('dashboard/ranking_sale') }}",
+            type: "GET",
+            'crossDomain': true,
+            dataType: "json",
+            success: function(response) {
+                $.each(response.asmen, function(key, value) {
+                    trHTML_asmen +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>ASMEN ' + value.NAME_LOCATION +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                var first_array_rpo = response.rpo.slice(0, 5)
+                var last_array_rpo = response.rpo.slice(Math.max(response.rpo.length - 5, 1))
+                $.each(first_array_rpo, function(key, value) {
+                    trHTML_rpo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+                $.each(last_array_rpo, function(key, value) {
+                    trHTML_rpo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>RPO ' + value.NAME_REGIONAL +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                var first_array_apo = response.apo.slice(0, 5)
+                var last_array_apo = response.apo.slice(Math.max(response.apo.length - 5, 1))
+                $.each(first_array_apo, function(key, value) {
+                    trHTML_apo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+                $.each(last_array_apo, function(key, value) {
+                    trHTML_apo +=
+                        '<tr><td>' + value.NUM_ROW +
+                        '</td><td>APO ' + value.NAME_AREA +
+                        '</td><td>' + value.NEW_AVERAGE + "%"
+                    '</td></tr>';
+                });
+
+                $('#ranking_asmen').append(trHTML_asmen);
+                $('#ranking_rpo').append(trHTML_rpo);
+                $('#ranking_apo').append(trHTML_apo);
+
+                $('#loader_1, #loader_2, #loader_3').hide()
+                $('#table-data').show()
+            }
+        });
+    }
+
+    function reset() {
+        $('#loader_1, #loader_2, #loader_3').show()
+        $('#table-data').hide()
+        trHTML_asmen = ''
+        trHTML_rpo = ''
+        trHTML_apo = ''
+        $('#ranking_asmen').html('');
+        $('#ranking_rpo').html('');
+        $('#ranking_apo').html('');
+    }
+
+    // TREND
     // Chart Trend
     var data_trend_asmen = [];
 
@@ -170,31 +339,33 @@
         legend: {
             position: 'bottom',
             horizontalAlign: 'left',
+            formatter: (seriesName, opts) => {
+                if (opts.seriesIndex == 0) return '' // hides first label
+                return seriesName;
+            },
+            markers: {
+                width: [0, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12], // hides first marker
+            },
+            onItemClick: {
+                toggleDataSeries: false
+            }
         },
+        noData: {
+            text: undefined,
+            align: 'center',
+            verticalAlign: 'middle',
+            offsetX: 0,
+            offsetY: 0,
+            style: {
+                color: undefined,
+                fontSize: '14px',
+                fontFamily: undefined
+            }
+        }
     };
     var chart = new ApexCharts(document.querySelector("#LineChart"), options);
     chart.render().then(() => chart.isRendered = true);
 
-    var role_data = $('#role_trend').find('option').filter(':selected').val()
-    var year_data = $('#year_trend').find('option').filter(':selected').val()
-
-    setDataTrend()
-    $('#role_trend').change(function(e) {
-        role_data = $(this).find('option').filter(':selected').val()
-        setDataTrend()
-    })
-
-    $('#year_trend').change(function(e) {
-        year_data = $(this).find('option').filter(':selected').val()
-        setDataTrend()
-    })
-
-    function callback(response) {
-        data_trend_asmen = []
-        data_trend_asmen.push(response)
-    }
-
-    // AJAX Trend asmen
     function setDataTrend() {
         if (role_data == 3) {
             $.ajax({
@@ -236,24 +407,25 @@
     }
 
     function SetTypeTrend(type) {
-        chart.updateSeries([])
+        chart.updateSeries()
         if (role_data == 3) {
             for (let i = 0; i < data_trend_asmen[0].length; i++) {
+                chart.update
                 if (type == "UST") {
                     chart.appendSeries({
                         name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
                         data: data_trend_asmen[0][i].UST
-                    }, true)
+                    }, false)
                 } else if (type == "NONUST") {
                     chart.appendSeries({
                         name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
                         data: data_trend_asmen[0][i].NONUST
-                    }, true)
+                    }, false)
                 } else if (type == "SELERAKU") {
                     chart.appendSeries({
                         name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
                         data: data_trend_asmen[0][i].SELERAKU
-                    }, true)
+                    }, false)
                 }
             }
         } else {
@@ -278,119 +450,187 @@
         }
     }
 
-    ranking_activity()
-    $('#tab-aktivity').click(function() {
-        ranking_activity()
+    var role_data = $('#role_trend').find('option').filter(':selected').val()
+    var year_data = $('#year_trend').find('option').filter(':selected').val()
+
+    setDataTrend()
+    $('#role_trend').change(function(e) {
+        role_data = $(this).find('option').filter(':selected').val()
+        setDataTrend()
     })
 
-    $('#tab-pencapaian').click(function() {
-        ranking_pencapaian()
+    $('#year_trend').change(function(e) {
+        year_data = $(this).find('option').filter(':selected').val()
+        setDataTrend()
     })
 
-    function ranking_activity() {
-        reset()
+    function callback(response) {
+        data_trend_asmen = []
+        data_trend_asmen.push(response)
+    }
+
+    // AKTIVITAS
+    // Chart Activity
+    var role_act = $('#role_act').find('option').filter(':selected').val();
+    var cat_act = $('#cat_act').find('option').filter(':selected').val();
+    var data_aktivitas = [];
+    var options_activty = {
+        series: [],
+        chart: {
+            height: 350,
+            type: 'bar',
+            parentHeightOffset: 50
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: '50%',
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        legend: {
+            show: true,
+            showForSingleSeries: true,
+            customLegendItems: ['REAL', 'EXCEED TARGET'],
+            horizontalAlign: 'left',
+            markers: {
+                fillColors: ['#f26f21', '#EC1D25']
+            }
+        },
+        annotations: {
+            yaxis: []
+        }
+    };
+
+    var chartActivty = new ApexCharts(document.querySelector("#dataActivity"), options_activty);
+    chartActivty.render();
+
+    setDataAktivity()
+
+    $('#cat_act').change(function(e) {
+        cat_act = $(this).find('option').filter(':selected').val()
+        setDataAktivitas()
+    })
+
+    $('#role_act').change(function(e) {
+        role_act = $(this).find('option').filter(':selected').val()
+        setDataAktivity()
+    })
+
+    function setDataAktivity() {
+        chartActivty.updateSeries([{
+            name: 'Total Aktivitas',
+            data: []
+        }])
         $.ajax({
-            url: "{{ url('dashboard/ranking_activity') }}",
-            type: "GET",
-            'crossDomain': true,
+            url: "{{ url('dashboard/aktivitas') }}",
+            type: "POST",
+            crossDomain: true,
+            data: {
+                role: role_act,
+            },
+            beforeSend: function(request) {
+                request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+            },
             dataType: "json",
             success: function(response) {
-                var no_asmen = 0
-                $.each(response.asmen, function(key, value) {
-                    no_asmen++
-                    trHTML_asmen +=
-                        '<tr><td>' + no_asmen +
-                        '</td><td>ASMEN ' + value.NAME_LOCATION +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                var no_rpo = 0
-                $.each(response.rpo, function(key, value) {
-                    no_rpo++
-                    trHTML_rpo +=
-                        '<tr><td>' + no_rpo +
-                        '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                var no_apo = 0
-                $.each(response.apo, function(key, value) {
-                    no_apo++
-                    trHTML_apo +=
-                        '<tr><td>' + no_apo +
-                        '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                $('#ranking_asmen').append(trHTML_asmen);
-                $('#ranking_rpo').append(trHTML_rpo);
-                $('#ranking_apo').append(trHTML_apo);
-
-                $('#loader_1, #loader_2, #loader_3').hide()
-                $('#table-data').show()
+                data_aktivitas = []
+                data_aktivitas.push(response.data)
+                setDataAktivitas()
             }
         });
     }
 
-    function ranking_pencapaian() {
-        reset()
-        $.ajax({
-            url: "{{ url('dashboard/ranking_sale') }}",
-            type: "GET",
-            'crossDomain': true,
-            dataType: "json",
-            success: function(response) {
-                var no_asmen = 0
-                $.each(response.asmen, function(key, value) {
-                    no_asmen++
-                    trHTML_asmen +=
-                        '<tr><td>' + no_asmen +
-                        '</td><td>ASMEN ' + value.NAME_LOCATION +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                var no_rpo = 0
-                $.each(response.rpo, function(key, value) {
-                    no_rpo++
-                    trHTML_rpo +=
-                        '<tr><td>' + no_rpo +
-                        '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                var no_apo = 0
-                $.each(response.apo, function(key, value) {
-                    no_apo++
-                    trHTML_apo +=
-                        '<tr><td>' + no_apo +
-                        '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + Number(value.NEW_AVERAGE.toFixed(2)) + "%"
-                    '</td></tr>';
-                });
-
-                $('#ranking_asmen').append(trHTML_asmen);
-                $('#ranking_rpo').append(trHTML_rpo);
-                $('#ranking_apo').append(trHTML_apo);
-
-                $('#loader_1, #loader_2, #loader_3').hide()
-                $('#table-data').show()
-            }
-        });
-    }
-
-    function reset() {
-        $('#loader_1, #loader_2, #loader_3').show()
-        $('#table-data').hide()
-        trHTML_asmen = ''
-        trHTML_rpo = ''
-        trHTML_apo = ''
-        $('#ranking_asmen').html('');
-        $('#ranking_rpo').html('');
-        $('#ranking_apo').html('');
+    function setDataAktivitas() {
+        chartActivty.updateSeries([{
+            name: 'Total Aktivitas',
+            data: []
+        }])
+        if (cat_act == 0) {
+            $.each(data_aktivitas[0], function(key, value) {
+                chartActivty.appendData([{
+                    data: [{
+                        x: value.PLACE,
+                        y: value.total_activity_ub,
+                        fillColor: (value.total_activity_ub > value.TGT_UB) ? "#ec1d25" : "#f26f21"
+                    }]
+                }])
+                chartActivty.updateOptions({
+                    annotations: {
+                        yaxis: [{
+                            y: value.TGT_UB,
+                            strokeDashArray: 5,
+                            borderColor: '#EC1D25',
+                            fillColor: '#EC1D25',
+                            label: {
+                                borderColor: "#EC1D25",
+                                style: {
+                                    color: "#fff",
+                                    background: "#EC1D25"
+                                },
+                                text: "Target : " + value.TGT_UB
+                            }
+                        }]
+                    }
+                })
+            });
+        } else if (cat_act == 1) {
+            $.each(data_aktivitas[0], function(key, value) {
+                chartActivty.appendData([{
+                    data: [{
+                        x: value.PLACE,
+                        y: value.total_activity_ps,
+                        fillColor: (value.total_activity_ps > value.TGT_PS) ? "#ec1d25" : "#f26f21"
+                    }]
+                }])
+                chartActivty.updateOptions({
+                    annotations: {
+                        yaxis: [{
+                            y: value.TGT_PS,
+                            strokeDashArray: 5,
+                            borderColor: '#EC1D25',
+                            fillColor: '#EC1D25',
+                            label: {
+                                borderColor: "#EC1D25",
+                                style: {
+                                    color: "#fff",
+                                    background: "#EC1D25"
+                                },
+                                text: "Target : " + value.TGT_PS
+                            }
+                        }]
+                    }
+                })
+            });
+        } else {
+            $.each(data_aktivitas[0], function(key, value) {
+                chartActivty.appendData([{
+                    data: [{
+                        x: value.PLACE,
+                        y: value.total_activity_retail,
+                        fillColor: (value.total_activity_retail > value.TGT_RETAIL) ? "#ec1d25" : "#f26f21"
+                    }]
+                }])
+                chartActivty.updateOptions({
+                    annotations: {
+                        yaxis: [{
+                            y: value.TGT_RETAIL,
+                            strokeDashArray: 5,
+                            borderColor: '#EC1D25',
+                            fillColor: '#EC1D25',
+                            label: {
+                                borderColor: "#EC1D25",
+                                style: {
+                                    color: "#fff",
+                                    background: "#EC1D25"
+                                },
+                                text: "Target : " + value.TGT_RETAIL
+                            }
+                        }]
+                    }
+                })
+            });
+        }
     }
 </script>

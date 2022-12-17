@@ -74,11 +74,11 @@
                                             <span class="fs-20 text-black d-block mb-3">Foto Transaksi</span>
                                             <div class="row">
                                                 <div class="col-md-12 d-flex">
-                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][0]) || !empty($data_ublp['IMAGE'][0]['desc'][0])) { ?>
+                                                    <?php if (!empty($data_ub['IMAGE'][0]['image'][0]) || !empty($data_ub['IMAGE'][0]['desc'][0])) { ?>
                                                         <div class="form-group col-md-6">
-                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][0]; ?></label>
+                                                            <label for=""><?= $data_ub['IMAGE'][0]['desc'][0]; ?></label>
                                                             <br>
-                                                            <img decoding="async" src="<?= $data_ublp['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
+                                                            <img decoding="async" src="<?= $data_ub['IMAGE'][0]['image'][0]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
@@ -86,11 +86,11 @@
                                                         </div>
                                                     <?php } ?>
 
-                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][1]) || !empty($data_ublp['IMAGE'][0]['desc'][1])) { ?>
+                                                    <?php if (!empty($data_ub['IMAGE'][0]['image'][1]) || !empty($data_ub['IMAGE'][0]['desc'][1])) { ?>
                                                         <div class="form-group col-md-6">
-                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][1]; ?></label>
+                                                            <label for=""><?= $data_ub['IMAGE'][0]['desc'][1]; ?></label>
                                                             <br>
-                                                            <img decoding="async" src="<?= $data_ublp['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
+                                                            <img decoding="async" src="<?= $data_ub['IMAGE'][0]['image'][1]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
@@ -99,11 +99,11 @@
                                                     <?php } ?>
                                                 </div>
                                                 <div class="col-md-12 d-flex">
-                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][2]) || !empty($data_ublp['IMAGE'][0]['desc'][2])) { ?>
+                                                    <?php if (!empty($data_ub['IMAGE'][0]['image'][2]) || !empty($data_ub['IMAGE'][0]['desc'][2])) { ?>
                                                         <div class="form-group col-md-6">
-                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][2]; ?></label>
+                                                            <label for=""><?= $data_ub['IMAGE'][0]['desc'][2]; ?></label>
                                                             <br>
-                                                            <img decoding="async" src="<?= $data_ublp['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
+                                                            <img decoding="async" src="<?= $data_ub['IMAGE'][0]['image'][2]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
@@ -111,11 +111,11 @@
                                                         </div>
                                                     <?php } ?>
 
-                                                    <?php if (!empty($data_ublp['IMAGE'][0]['image'][3]) || !empty($data_ublp['IMAGE'][0]['desc'][3])) { ?>
+                                                    <?php if (!empty($data_ub['IMAGE'][0]['image'][3]) || !empty($data_ub['IMAGE'][0]['desc'][3])) { ?>
                                                         <div class="form-group col-md-6">
-                                                            <label for=""><?= $data_ublp['IMAGE'][0]['desc'][3]; ?></label>
+                                                            <label for=""><?= $data_ub['IMAGE'][0]['desc'][3]; ?></label>
                                                             <br>
-                                                            <img decoding="async" src="<?= $data_ublp['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
+                                                            <img decoding="async" src="<?= $data_ub['IMAGE'][0]['image'][3]; ?>" style="max-width: 300px; margin-bottom: 10px; content-visibility: auto;" alt="">
                                                         </div>
                                                     <?php } else { ?>
                                                         <div class="form-group col-md-6">
