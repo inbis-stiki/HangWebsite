@@ -1014,16 +1014,29 @@ class DashboardController extends Controller
         echo json_encode($ranking_sale);
     }
 
-    public function trend_rpo()
+    public function trend_rpo(Request $req)
     {
         $year = $_POST['date'];
         $role = $_POST['role'];
-        $regional_targets = DB::select("
-            SELECT
-                mr.*
-            FROM
-                md_regional mr
-        ");
+        $id_role  = $req->session()->get('role');
+        $id_location  = $req->session()->get('location');
+        if ($id_role == 1 || $id_role == 2) {
+            $regional_targets = DB::select("
+                SELECT
+                    mr.*
+                FROM
+                    md_regional mr
+            ");
+        } else {
+            $regional_targets = DB::select("
+                SELECT
+                    mr.*
+                FROM
+                    md_regional mr
+                WHERE
+                    mr.ID_LOCATION = " . $id_location . "
+            ");
+        }
 
         $data_trend = array();
         foreach ($regional_targets as $regional_target) {
@@ -1032,7 +1045,7 @@ class DashboardController extends Controller
             $data['SELERAKU'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $trend_asmen = DB::select("
                 SELECT
-                    stl.LOCATION_STL,
+                    stl.REGIONAL_STL,
                     stl.MONTH_STL AS bulan,
                     (SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) AS total_ust,
                     (SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) AS total_non_ust,
@@ -1094,7 +1107,7 @@ class DashboardController extends Controller
                                 ) AS TB_SELERAKU,
                     summary_trans_location stl
                 WHERE
-                    stl.updated_at LIKE '%" . $year . "%'
+                    stl.YEAR_STL = " . $year . "
                     AND stl.REGIONAL_STL = '" . $regional_target->NAME_REGIONAL . "'
                 GROUP BY
                     stl.REGIONAL_STL,
@@ -1109,7 +1122,7 @@ class DashboardController extends Controller
             array_push(
                 $data_trend,
                 array(
-                    "NAME_AREA" => $regional_target->NAME_REGIONAL,
+                    "PLACE" => $regional_target->NAME_REGIONAL,
                     "TARGET" => 0,
                     "UST" => $data['UST'],
                     "NONUST" => $data['NONUST'],
@@ -1121,16 +1134,29 @@ class DashboardController extends Controller
         return $data_trend;
     }
 
-    public function trend_asmen()
+    public function trend_asmen(Request $req)
     {
         $year = $_POST['date'];
         $role = $_POST['role'];
-        $regional_targets = DB::select("
-            SELECT
-                ml.*
-            FROM
-                md_location ml
-        ");
+        $id_role  = $req->session()->get('role');
+        $id_location  = $req->session()->get('location');
+        if ($id_role == 1 || $id_role == 2) {
+            $regional_targets = DB::select("
+                SELECT
+                    ml.*
+                FROM
+                    md_location ml
+            ");
+        } else {
+            $regional_targets = DB::select("
+                SELECT
+                    ml.*
+                FROM
+                    md_location ml
+                WHERE
+                    ml.ID_LOCATION = " . $id_location . "
+            ");
+        }
 
         $data_trend = array();
         foreach ($regional_targets as $regional_target) {
@@ -1216,7 +1242,116 @@ class DashboardController extends Controller
             array_push(
                 $data_trend,
                 array(
-                    "NAME_AREA" => $regional_target->NAME_LOCATION,
+                    "PLACE" => $regional_target->NAME_LOCATION,
+                    "TARGET" => 0,
+                    "UST" => $data['UST'],
+                    "NONUST" => $data['NONUST'],
+                    "SELERAKU" => $data['SELERAKU']
+                )
+            );
+        }
+
+        return $data_trend;
+    }
+
+    public function trend_apo(Request $req)
+    {
+        $id_reg  = $req->session()->get('regional');
+        $year = $_POST['date'];
+        $area_targets = DB::select("
+            SELECT
+                ma.*
+            FROM
+                md_area ma
+            WHERE 
+                ma.ID_REGIONAL = " . $id_reg . "
+        ");
+
+        $data_trend = array();
+        foreach ($area_targets as $area_target) {
+            $data['UST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['NONUST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['SELERAKU'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $trend_asmen = DB::select("
+                SELECT
+                    stl.AREA_STL,
+                    stl.MONTH_STL AS bulan,
+                    (SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) AS total_ust,
+                    (SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) AS total_non_ust,
+                    (SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) AS total_seleraku
+                FROM
+                    (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 12
+                                ) AS TB_UST,
+                    (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 2
+                                ) AS TB_NONUST,
+                    (
+                    SELECT
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 3
+                                ) AS TB_SELERAKU,
+                    summary_trans_location stl
+                WHERE
+                    stl.YEAR_STL = '" . $year . "'
+                    AND stl.AREA_STL = '" . $area_target->NAME_AREA . "'
+                GROUP BY
+                    stl.AREA_STL,
+                    stl.MONTH_STL
+            ");
+
+            foreach ($trend_asmen as $item) {
+                $data['UST'][($item->bulan - 1)] = ((!empty($item->total_ust)) ? $item->total_ust : 0);
+                $data['NONUST'][($item->bulan - 1)] = ((!empty($item->total_non_ust)) ? $item->total_non_ust : 0);
+                $data['SELERAKU'][($item->bulan - 1)] = ((!empty($item->total_seleraku)) ? $item->total_seleraku : 0);
+            }
+            array_push(
+                $data_trend,
+                array(
+                    "PLACE" => $area_target->NAME_AREA,
                     "TARGET" => 0,
                     "UST" => $data['UST'],
                     "NONUST" => $data['NONUST'],
