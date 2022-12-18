@@ -134,7 +134,7 @@
                         <div class="d-flex ml-auto">
                             <select name="" id="role_trend" class="form-control default-select fs-12" {{ (Session::get('role') != 2 && Session::get('role') != 3) ? "disabled" : "" }}>
                                 <option value="3" {{ (Session::get('role') == 2 || Session::get('role') == 3) ? "selected" : "" }}>Asmen</option>
-                                <option value="4" {{ (Session::get('role') == 4) ? "selected" : "" }}>RPO</option>
+                                <option value="4" {{ (Session::get('role') == 4) ? "selected" : "" }}>{{ (Session::get('role') == 4) ? "AREA" : "RPO" }}</option>
                             </select>
                             <select name="" id="year_trend" class="form-control default-select fs-12">
                                 <option selected value="<?= date("Y"); ?>">Tahun</option>
