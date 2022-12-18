@@ -24,94 +24,518 @@ class DashboardController extends Controller
         return view('dashboard', $data);
     }
 
-    public function total_activity()
+    public function total_activity(Request $req)
     {
+        $id_role  = $req->session()->get('role');
         $role_act = $_POST['role'];
-        if ($role_act == 'asmen') {
-            $data_activity = DB::select("
-                SELECT
-                    ml.ID_LOCATION,
-                    ml.NAME_LOCATION AS PLACE,
-                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTUB_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ub,
-                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTPS_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ps,
-                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTRETAIL_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_retail,
-                    (
-                        SELECT
-                            mac.TGTLOCATION_AC
-                        FROM
-                            md_activity_category mac
-                        WHERE
-                            mac.ID_AC = 1
-                    ) AS TGT_UB,
-                    (
-                        SELECT
-                            mac.TGTLOCATION_AC
-                        FROM
-                            md_activity_category mac
-                        WHERE
-                            mac.ID_AC = 2
-                    ) AS TGT_PS,
-                    (
-                        SELECT
-                            mac.TGTLOCATION_AC
-                        FROM
-                            md_activity_category mac
-                        WHERE
-                            mac.ID_AC = 3
-                    ) AS TGT_RETAIL
-                FROM
-                    transaction_detail_today tdt
-                RIGHT JOIN md_location ml ON 
-                    ml.NAME_LOCATION COLLATE utf8mb4_general_ci = tdt.LOCATION_TRANS
-                LEFT JOIN summary_trans_location stl ON 
-                    stl.REGIONAL_STL COLLATE utf8mb4_general_ci = tdt.REGIONAL_TRANS
-                GROUP BY 
-                    tdt.LOCATION_TRANS
-            ");
-        } else if ($role_act == 'rpo') {
-            $data_activity = DB::select("
-                SELECT
-                    mr.ID_REGIONAL,
-                    mr.NAME_REGIONAL AS PLACE,
-                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTUB_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ub,
-                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTPS_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_ps,
-                    IF(COUNT(tdt.ID_TRANS) <> 0, (stl.REALACTRETAIL_STL + COUNT(tdt.ID_TRANS)), 0) AS total_activity_retail,
-                    (
+        if ($id_role == 2) {
+            if ($role_act == 'asmen') {
+                $data_activity = DB::select("
+                    SELECT
+                        stl.LOCATION_STL AS PLACE,
+                        SUM(stl.REALACTUB_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ), 0
+                        ) AS total_activity_ub,
+                        SUM(stl.REALACTPS_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ), 0
+                        ) AS total_activity_ps,
+                        SUM(stl.REALACTRETAIL_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ), 0
+                        ) AS total_activity_retail,
+                        (
+                            SELECT
+                                mac.TGTLOCATION_AC
+                            FROM
+                                md_activity_category mac
+                            WHERE
+                                mac.ID_AC = 1
+                        ) AS TGT_UB,
+                        (
+                            SELECT
+                                mac.TGTLOCATION_AC
+                            FROM
+                                md_activity_category mac
+                            WHERE
+                                mac.ID_AC = 2
+                        ) AS TGT_PS,
+                        (
+                            SELECT
+                                mac.TGTLOCATION_AC
+                            FROM
+                                md_activity_category mac
+                            WHERE
+                                mac.ID_AC = 3
+                        ) AS TGT_RETAIL
+                    FROM
+                        summary_trans_location stl
+                    RIGHT JOIN md_location ml ON
+                        ml.NAME_LOCATION COLLATE utf8mb4_unicode_ci = stl.LOCATION_STL
+                    WHERE
+                        stl.updated_at LIKE '" . date('Y-m') . "%'
+                    GROUP BY
+                        stl.LOCATION_STL
+                ");
+            } else if ($role_act == 'rpo') {
+                $data_activity = DB::select("
+                    SELECT
+                        stl.REGIONAL_STL AS PLACE,
+                        SUM(stl.REALACTUB_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ), 0
+                        ) AS total_activity_ub,
+                        SUM(stl.REALACTPS_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ), 0
+                        ) AS total_activity_ps,
+                        SUM(stl.REALACTRETAIL_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ), 0
+                        ) AS total_activity_retail,
+                        (
                         SELECT
                             mac.TGTREGIONAL_AC
                         FROM
                             md_activity_category mac
                         WHERE
                             mac.ID_AC = 1
-                    ) AS TGT_UB,
-                    (
+                        ) AS TGT_UB,
+                        (
                         SELECT
                             mac.TGTREGIONAL_AC
                         FROM
                             md_activity_category mac
                         WHERE
                             mac.ID_AC = 2
-                    ) AS TGT_PS,
-                    (
+                        ) AS TGT_PS,
+                        (
                         SELECT
                             mac.TGTREGIONAL_AC
                         FROM
                             md_activity_category mac
                         WHERE
                             mac.ID_AC = 3
+                        ) AS TGT_RETAIL
+                    FROM
+                        summary_trans_location stl
+                    RIGHT JOIN md_regional mr ON
+                        mr.NAME_REGIONAL COLLATE utf8mb4_unicode_ci = stl.REGIONAL_STL
+                    WHERE
+                        stl.updated_at LIKE '" . date('Y-m') . "%'
+                    GROUP BY
+                        stl.REGIONAL_STL
+                ");
+            }
+        } else if ($id_role == 3) {
+            $id_location  = $req->session()->get('location');
+            if ($role_act == 'asmen') {
+                $data_activity = DB::select("
+                    SELECT
+                        stl.LOCATION_STL AS PLACE,
+                        SUM(stl.REALACTUB_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ), 0
+                        ) AS total_activity_ub,
+                        SUM(stl.REALACTPS_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ), 0
+                        ) AS total_activity_ps,
+                        SUM(stl.REALACTRETAIL_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.LOCATION_TRANS = stl.LOCATION_STL
+                            GROUP BY 
+                                tdt.LOCATION_TRANS
+                        ), 0
+                        ) AS total_activity_retail,
+                        (
+                            SELECT
+                                mac.TGTLOCATION_AC
+                            FROM
+                                md_activity_category mac
+                            WHERE
+                                mac.ID_AC = 1
+                        ) AS TGT_UB,
+                        (
+                            SELECT
+                                mac.TGTLOCATION_AC
+                            FROM
+                                md_activity_category mac
+                            WHERE
+                                mac.ID_AC = 2
+                        ) AS TGT_PS,
+                        (
+                            SELECT
+                                mac.TGTLOCATION_AC
+                            FROM
+                                md_activity_category mac
+                            WHERE
+                                mac.ID_AC = 3
+                        ) AS TGT_RETAIL
+                    FROM
+                        summary_trans_location stl
+                    RIGHT JOIN md_location ml ON
+                        ml.NAME_LOCATION COLLATE utf8mb4_unicode_ci = stl.LOCATION_STL
+                    WHERE
+                        stl.updated_at LIKE '" . date('Y-m') . "%'
+                        AND ml.ID_LOCATION = " . $id_location . "
+                    GROUP BY
+                        stl.LOCATION_STL
+                ");
+            } else if ($role_act == 'rpo') {
+                $data_activity = DB::select("
+                    SELECT
+                        stl.REGIONAL_STL AS PLACE,
+                        SUM(stl.REALACTUB_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ), 0
+                        ) AS total_activity_ub,
+                        SUM(stl.REALACTPS_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ), 0
+                        ) AS total_activity_ps,
+                        SUM(stl.REALACTRETAIL_STL) + IF(
+                            (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ) IS NOT NULL, (
+                            SELECT
+                                COUNT(tdt.ID_TRANS)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE 
+                                tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                            GROUP BY 
+                                tdt.REGIONAL_TRANS
+                        ), 0
+                        ) AS total_activity_retail,
+                        (
+                        SELECT
+                            mac.TGTREGIONAL_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 1
+                        ) AS TGT_UB,
+                        (
+                        SELECT
+                            mac.TGTREGIONAL_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 2
+                        ) AS TGT_PS,
+                        (
+                        SELECT
+                            mac.TGTREGIONAL_AC
+                        FROM
+                            md_activity_category mac
+                        WHERE
+                            mac.ID_AC = 3
+                        ) AS TGT_RETAIL
+                    FROM
+                        summary_trans_location stl
+                    RIGHT JOIN md_regional mr ON
+                        mr.NAME_REGIONAL COLLATE utf8mb4_unicode_ci = stl.REGIONAL_STL
+                    WHERE
+                        stl.updated_at LIKE '" . date('Y-m') . "%'
+                        AND mr.ID_LOCATION = " . $id_location . "
+                    GROUP BY
+                        stl.REGIONAL_STL
+                ");
+            }
+        } else if ($id_role == 4) {
+            $id_regional  = $req->session()->get('regional');
+            $data_activity = DB::select("
+                SELECT
+                    stl.AREA_STL AS PLACE,
+                    SUM(stl.REALACTUB_STL) + IF(
+                        (
+                        SELECT
+                            COUNT(tdt.ID_TRANS)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE 
+                            tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                        GROUP BY 
+                            tdt.REGIONAL_TRANS
+                    ) IS NOT NULL, (
+                        SELECT
+                            COUNT(tdt.ID_TRANS)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE 
+                            tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                        GROUP BY 
+                            tdt.REGIONAL_TRANS
+                    ), 0
+                    ) AS total_activity_ub,
+                    SUM(stl.REALACTPS_STL) + IF(
+                        (
+                        SELECT
+                            COUNT(tdt.ID_TRANS)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE 
+                            tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                        GROUP BY 
+                            tdt.REGIONAL_TRANS
+                    ) IS NOT NULL, (
+                        SELECT
+                            COUNT(tdt.ID_TRANS)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE 
+                            tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                        GROUP BY 
+                            tdt.REGIONAL_TRANS
+                    ), 0
+                    ) AS total_activity_ps,
+                    SUM(stl.REALACTRETAIL_STL) + IF(
+                        (
+                        SELECT
+                            COUNT(tdt.ID_TRANS)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE 
+                            tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                        GROUP BY 
+                            tdt.REGIONAL_TRANS
+                    ) IS NOT NULL, (
+                        SELECT
+                            COUNT(tdt.ID_TRANS)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE 
+                            tdt.REGIONAL_TRANS = stl.REGIONAL_STL
+                        GROUP BY 
+                            tdt.REGIONAL_TRANS
+                    ), 0
+                    ) AS total_activity_retail,
+                    (
+                    SELECT
+                        mac.TGTREGIONAL_AC
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 1
+                    ) AS TGT_UB,
+                    (
+                    SELECT
+                        mac.TGTREGIONAL_AC
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 2
+                    ) AS TGT_PS,
+                    (
+                    SELECT
+                        mac.TGTREGIONAL_AC
+                    FROM
+                        md_activity_category mac
+                    WHERE
+                        mac.ID_AC = 3
                     ) AS TGT_RETAIL
                 FROM
-                    transaction_detail_today tdt
-                RIGHT JOIN md_regional mr ON 
-                    mr.NAME_REGIONAL COLLATE utf8mb4_general_ci = tdt.REGIONAL_TRANS
-                LEFT JOIN md_area ma ON
-                    ma.NAME_AREA COLLATE utf8mb4_general_ci = tdt.AREA_TRANS
-                LEFT JOIN summary_trans_location stl ON 
-                    stl.REGIONAL_STL COLLATE utf8mb4_general_ci = tdt.REGIONAL_TRANS
-                WHERE 
-                    tdt.DATE_TD LIKE '" . date("Y-m") . "%'
-                GROUP BY 
-                    tdt.REGIONAL_TRANS
+                    summary_trans_location stl
+                RIGHT JOIN md_regional mr ON
+                    mr.NAME_REGIONAL COLLATE utf8mb4_unicode_ci = stl.REGIONAL_STL
+                WHERE
+                    stl.updated_at LIKE '" . date('Y-m') . "%'
+                    AND mr.ID_REGIONAL = " . $id_regional . "
+                GROUP BY
+                    stl.AREA_STL
             ");
         }
 
@@ -129,9 +553,9 @@ class DashboardController extends Controller
                 stl.LOCATION_STL AS NAME_LOCATION,
                 ROUND((
                     (
-                        ((((SUM(stl.REALACTUB_STL) + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
-                        ((((SUM(stl.REALACTPS_STL) + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
-                        ((((SUM(stl.REALACTRETAIL_STL) + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                        ((((SUM(stl.REALACTUB_STL) + IF(TB_UB.TOT_QTYTD IS NOT NULL, TB_UB.TOT_QTYTD, 0)) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTPS_STL) + IF(TB_PS.TOT_QTYTD IS NOT NULL, TB_PS.TOT_QTYTD, 0)) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTRETAIL_STL) + IF(TB_RETAIL.TOT_QTYTD IS NOT NULL, TB_RETAIL.TOT_QTYTD, 0)) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
                     ) / 3
                     ), 2) AS NEW_AVERAGE
             FROM
@@ -191,7 +615,7 @@ class DashboardController extends Controller
                 ) AS TB_RETAIL,
                 summary_trans_location stl
             WHERE
-                stl.updated_at LIKE '2022-12%'
+                stl.updated_at LIKE '" . date('Y-m') . "%'
             GROUP BY
                 stl.LOCATION_STL
             ORDER BY
@@ -203,9 +627,9 @@ class DashboardController extends Controller
                 stl.REGIONAL_STL AS NAME_REGIONAL,
                 ROUND((
                     (
-                        ((((stl.REALACTUB_STL + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
-                        ((((stl.REALACTPS_STL + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
-                        ((((stl.REALACTRETAIL_STL + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                        ((((SUM(stl.REALACTUB_STL) + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTPS_STL) + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTRETAIL_STL) + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
                     ) / 3
                     ), 2) AS NEW_AVERAGE
             FROM
@@ -265,21 +689,23 @@ class DashboardController extends Controller
                 ) AS TB_RETAIL,
                 summary_trans_location stl
             WHERE
-                stl.updated_at LIKE '2022-12%'
+                stl.updated_at LIKE '" . date('Y-m') . "%'
+            GROUP BY 
+                stl.REGIONAL_STL 
             ORDER BY 
                 NEW_AVERAGE DESC
         ");
         $ranking_sale_apo = DB::select("
             SELECT
                 ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
-                ma.NAME_AREA,
+                stl.AREA_STL AS NAME_AREA,
                 ROUND((
                     (
-                        ((((dm.REALUST_DM + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
-                        ((((dm.REALNONUST_DM + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
-                        ((((dm.REALSELERAKU_DM + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                        ((((SUM(stl.REALACTUB_STL) + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTPS_STL) + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTRETAIL_STL) + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
                     ) / 3
-                ), 2)  AS NEW_AVERAGE
+                    ), 2) AS NEW_AVERAGE
             FROM
                 (
                     SELECT
@@ -335,15 +761,11 @@ class DashboardController extends Controller
                     WHERE
                         mac.ID_AC = 3
                 ) AS TB_RETAIL,
-                dashboard_mobile dm
-            LEFT JOIN `user` u ON
-                u.ID_USER = dm.ID_USER
-            LEFT JOIN md_area ma ON
-                ma.ID_AREA = u.ID_AREA
-            WHERE 
-                u.ID_ROLE = 5
+                summary_trans_location stl
+            WHERE
+                stl.updated_at LIKE '" . date('Y-m') . "%'
             GROUP BY 
-                dm.ID_USER
+                stl.AREA_STL 
             ORDER BY 
                 NEW_AVERAGE DESC
         ");
@@ -363,9 +785,9 @@ class DashboardController extends Controller
                 stl.LOCATION_STL AS NAME_LOCATION,
                 ROUND((
                     (
-                        ((((SUM(stl.REALUST_STL) + TB_UST.TOT_QTYTD) / TB_UST.TGTLOCATION_PC) * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
-                        ((((SUM(stl.REALNONUST_STL) + TB_NONUST.TOT_QTYTD) / TB_NONUST.TGTLOCATION_PC) * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
-                        ((((SUM(stl.REALSELERAKU_STL) + TB_SELERAKU.TOT_QTYTD) / TB_SELERAKU.TGTLOCATION_PC) * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100))
+                        ((((SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) / TB_UST.TGTLOCATION_PC) * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
+                        ((((SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) / TB_NONUST.TGTLOCATION_PC) * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
+                        ((((SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) / TB_SELERAKU.TGTLOCATION_PC) * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100))
                     ) / 3
                     ), 2) AS NEW_AVERAGE
             FROM
@@ -425,7 +847,7 @@ class DashboardController extends Controller
                 ) AS TB_SELERAKU,
                 summary_trans_location stl
             WHERE
-                stl.updated_at LIKE '2022-12%'
+                stl.updated_at LIKE '" . date('Y-m') . "%'
             GROUP BY
                 stl.LOCATION_STL
             ORDER BY
@@ -500,7 +922,7 @@ class DashboardController extends Controller
                 ) AS TB_SELERAKU,
                 summary_trans_location stl
             WHERE
-                stl.updated_at LIKE '2022-12%'
+                stl.updated_at LIKE '" . date('Y-m') . "%'
             ORDER BY
                 NEW_AVERAGE DESC
         ");
@@ -612,9 +1034,9 @@ class DashboardController extends Controller
                 SELECT
                     stl.LOCATION_STL,
                     stl.MONTH_STL AS bulan,
-                    (stl.REALUST_STL + TB_UST.TOT_QTYTD) AS total_ust,
-                    (stl.REALNONUST_STL + TB_NONUST.TOT_QTYTD) AS total_non_ust,
-                    (stl.REALSELERAKU_STL + TB_SELERAKU.TOT_QTYTD) AS total_seleraku	
+                    (SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) AS total_ust,
+                    (SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) AS total_non_ust,
+                    (SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) AS total_seleraku
                 FROM
                     (
                     SELECT
@@ -719,9 +1141,9 @@ class DashboardController extends Controller
                 SELECT
                     stl.LOCATION_STL,
                     stl.MONTH_STL AS bulan,
-                    (SUM(stl.REALUST_STL) + TB_UST.TOT_QTYTD) AS total_ust,
-                    (SUM(stl.REALNONUST_STL) + TB_NONUST.TOT_QTYTD) AS total_non_ust,
-                    (SUM(stl.REALSELERAKU_STL) + TB_SELERAKU.TOT_QTYTD) AS total_seleraku	
+                    (SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) AS total_ust,
+                    (SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) AS total_non_ust,
+                    (SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) AS total_seleraku
                 FROM
                     (
                     SELECT
