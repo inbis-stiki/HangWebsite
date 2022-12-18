@@ -14,9 +14,9 @@
                     <div class="card-header pb-0 d-block d-flex border-0">
                         <h3 class="fs-16 font-weight-bolder text-black mb-0">Aktivitas</h3>
                         <div class="d-flex ml-auto">
-                            <select name="" id="role_act" class="form-control default-select fs-12 mr-3" {{ (Session::get('role') != 2 && Session::get('role') != 3) ? "disabled" : "" }}>
-                                <option value="asmen" {{ (Session::get('role') == 2) ? "selected" : "" }}>ASMEN</option>
-                                <option value="rpo" {{ (Session::get('role') == 3 || Session::get('role') == 4) ? "selected" : "" }}>RPO</option>
+                            <select name="" id="role_act" class="form-control default-select fs-12 mr-3" {{ (Session::get('role') != 1 && Session::get('role') != 2 && Session::get('role') != 3) ? "disabled" : "" }}>
+                                <option value="asmen" {{ (Session::get('role') == 1 || Session::get('role') == 2) ? "selected" : "" }}>ASMEN</option>
+                                <option value="rpo" {{ (Session::get('role') == 3 || Session::get('role') == 4) ? "selected" : "" }}>{{ (Session::get('role') == 4) ? "AREA" : "RPO" }}</option>
                             </select>
                             <select name="" id="cat_act" class="form-control default-select fs-12 mr-3">
                                 <option selected value="0">AKTIVITAS UB</option>
@@ -366,9 +366,47 @@
     chart.render().then(() => chart.isRendered = true);
 
     function setDataTrend() {
-        if (role_data == 3) {
+        <?php if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 3) { ?>
+            if (role_data == 3) {
+                $.ajax({
+                    url: "{{ url('dashboard/trend_asmen') }}",
+                    type: "POST",
+                    crossDomain: true,
+                    beforeSend: function(request) {
+                        request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                    },
+                    data: {
+                        date: year_data,
+                        role: role_data
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        callback(response)
+                        $('#UST').trigger('click')
+                    }
+                });
+            } else {
+                $.ajax({
+                    url: "{{ url('dashboard/trend_rpo') }}",
+                    type: "POST",
+                    crossDomain: true,
+                    beforeSend: function(request) {
+                        request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                    },
+                    data: {
+                        date: year_data,
+                        role: role_data
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        callback(response)
+                        $('#UST').trigger('click')
+                    }
+                });
+            }
+        <?php } else { ?>
             $.ajax({
-                url: "{{ url('dashboard/trend_asmen') }}",
+                url: "{{ url('dashboard/trend_apo') }}",
                 type: "POST",
                 crossDomain: true,
                 beforeSend: function(request) {
@@ -384,69 +422,72 @@
                     $('#UST').trigger('click')
                 }
             });
-        } else {
-            $.ajax({
-                url: "{{ url('dashboard/trend_rpo') }}",
-                type: "POST",
-                crossDomain: true,
-                beforeSend: function(request) {
-                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
-                },
-                data: {
-                    date: year_data,
-                    role: role_data
-                },
-                dataType: "json",
-                success: function(response) {
-                    callback(response)
-                    $('#UST').trigger('click')
-                }
-            });
-        }
+        <?php } ?>
     }
 
     function SetTypeTrend(type) {
         chart.updateSeries()
-        if (role_data == 3) {
-            for (let i = 0; i < data_trend_asmen[0].length; i++) {
-                chart.update
-                if (type == "UST") {
-                    chart.appendSeries({
-                        name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
-                        data: data_trend_asmen[0][i].UST
-                    }, false)
-                } else if (type == "NONUST") {
-                    chart.appendSeries({
-                        name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
-                        data: data_trend_asmen[0][i].NONUST
-                    }, false)
-                } else if (type == "SELERAKU") {
-                    chart.appendSeries({
-                        name: "ASMEN " + data_trend_asmen[0][i].NAME_AREA,
-                        data: data_trend_asmen[0][i].SELERAKU
-                    }, false)
+        <?php if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 3) { ?>
+            if (role_data == 3) {
+                for (let i = 0; i < data_trend_asmen[0].length; i++) {
+                    chart.update
+                    if (type == "UST") {
+                        chart.appendSeries({
+                            name: "ASMEN " + data_trend_asmen[0][i].PLACE,
+                            data: data_trend_asmen[0][i].UST
+                        }, false)
+                    } else if (type == "NONUST") {
+                        chart.appendSeries({
+                            name: "ASMEN " + data_trend_asmen[0][i].PLACE,
+                            data: data_trend_asmen[0][i].NONUST
+                        }, false)
+                    } else if (type == "SELERAKU") {
+                        chart.appendSeries({
+                            name: "ASMEN " + data_trend_asmen[0][i].PLACE,
+                            data: data_trend_asmen[0][i].SELERAKU
+                        }, false)
+                    }
+                }
+            } else {
+                for (let i = 0; i < data_trend_asmen[0].length; i++) {
+                    if (type == "UST") {
+                        chart.appendSeries({
+                            name: "RPO " + data_trend_asmen[0][i].PLACE,
+                            data: data_trend_asmen[0][i].UST
+                        }, true)
+                    } else if (type == "NONUST") {
+                        chart.appendSeries({
+                            name: "RPO " + data_trend_asmen[0][i].PLACE,
+                            data: data_trend_asmen[0][i].NONUST
+                        }, true)
+                    } else if (type == "SELERAKU") {
+                        chart.appendSeries({
+                            name: "RPO " + data_trend_asmen[0][i].PLACE,
+                            data: data_trend_asmen[0][i].SELERAKU
+                        }, true)
+                    }
                 }
             }
-        } else {
+        <?php } else { ?>
             for (let i = 0; i < data_trend_asmen[0].length; i++) {
                 if (type == "UST") {
                     chart.appendSeries({
-                        name: "RPO " + data_trend_asmen[0][i].NAME_AREA,
+                        name: "APO " + data_trend_asmen[0][i].PLACE,
                         data: data_trend_asmen[0][i].UST
                     }, true)
                 } else if (type == "NONUST") {
                     chart.appendSeries({
-                        name: "RPO " + data_trend_asmen[0][i].NAME_AREA,
+                        name: "APO " + data_trend_asmen[0][i].PLACE,
                         data: data_trend_asmen[0][i].NONUST
                     }, true)
                 } else if (type == "SELERAKU") {
                     chart.appendSeries({
-                        name: "RPO " + data_trend_asmen[0][i].NAME_AREA,
+                        name: "APO " + data_trend_asmen[0][i].PLACE,
                         data: data_trend_asmen[0][i].SELERAKU
                     }, true)
                 }
             }
-        }
+        <?php } ?>
     }
 
     var role_data = $('#role_trend').find('option').filter(':selected').val()

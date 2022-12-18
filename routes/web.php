@@ -47,6 +47,7 @@ Route::group(['middleware' => ['checkLogin']], function () {
     // Dashboard LineChart
     Route::post('dashboard/trend_asmen', 'DashboardController@trend_asmen');
     Route::post('dashboard/trend_rpo', 'DashboardController@trend_rpo');
+    Route::post('dashboard/trend_apo', 'DashboardController@trend_apo');
     // Dashboard BarChart
     Route::post('dashboard/aktivitas', 'DashboardController@total_activity');
 
