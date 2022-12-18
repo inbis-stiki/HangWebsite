@@ -14,9 +14,9 @@
                     <div class="card-header pb-0 d-block d-flex border-0">
                         <h3 class="fs-16 font-weight-bolder text-black mb-0">Aktivitas</h3>
                         <div class="d-flex ml-auto">
-                            <select name="" id="role_act" class="form-control default-select fs-12 mr-3">
-                                <option selected value="asmen">ASMEN</option>
-                                <option value="rpo">RPO</option>
+                            <select name="" id="role_act" class="form-control default-select fs-12 mr-3" {{ (Session::get('role') != 2 && Session::get('role') != 3) ? "disabled" : "" }}>
+                                <option value="asmen" {{ (Session::get('role') == 2) ? "selected" : "" }}>ASMEN</option>
+                                <option value="rpo" {{ (Session::get('role') == 3 || Session::get('role') == 4) ? "selected" : "" }}>RPO</option>
                             </select>
                             <select name="" id="cat_act" class="form-control default-select fs-12 mr-3">
                                 <option selected value="0">AKTIVITAS UB</option>
@@ -132,10 +132,9 @@
                             </ul>
                         </div>
                         <div class="d-flex ml-auto">
-                            <select name="" id="role_trend" class="form-control default-select fs-12">
-                                <option selected value="3">Role</option>
-                                <option value="3">Asmen</option>
-                                <option value="4">RPO</option>
+                            <select name="" id="role_trend" class="form-control default-select fs-12" {{ (Session::get('role') != 2 && Session::get('role') != 3) ? "disabled" : "" }}>
+                                <option value="3" {{ (Session::get('role') == 2 || Session::get('role') == 3) ? "selected" : "" }}>Asmen</option>
+                                <option value="4" {{ (Session::get('role') == 4) ? "selected" : "" }}>RPO</option>
                             </select>
                             <select name="" id="year_trend" class="form-control default-select fs-12">
                                 <option selected value="<?= date("Y"); ?>">Tahun</option>
