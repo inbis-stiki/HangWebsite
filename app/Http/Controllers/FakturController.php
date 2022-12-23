@@ -157,3 +157,4 @@ class FakturController extends Controller
         return view('master.faktur.detail_faktur', $data);
     }
 }
+
