@@ -28,7 +28,7 @@ class DashboardController extends Controller
     {
         $id_role  = $req->session()->get('role');
         $role_act = $_POST['role'];
-        if ($id_role == 2) {
+        if ($id_role == 2 || $id_role == 1) {
             if ($role_act == 'asmen') {
                 $data_activity = DB::select("
                     SELECT
