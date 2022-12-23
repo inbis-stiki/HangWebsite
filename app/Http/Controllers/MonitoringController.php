@@ -27,95 +27,75 @@ class MonitoringController extends Controller
 
         $data_regional = DB::select('
             SELECT
-                mr.NAME_REGIONAL
-            FROM
-                md_regional mr
+                mr.NAME_REGIONAL,
+                COUNT(u.ID_USER) AS JML
+            FROM 
+                md_regional mr 
+            LEFT JOIN `user` u ON
+                u.ID_REGIONAL = mr.ID_REGIONAL 
+                AND
+                (u.ID_ROLE = 5 OR u.ID_ROLE = 6)
+            WHERE 
+                u.deleted_at IS NULL
+            GROUP BY 
+                u.ID_REGIONAL
+            ORDER BY 
+                mr.NAME_REGIONAL ASC
         ');
 
         $All_Data = array();
 
         if ($type == 1) {
             $All_Data = array();
-            
-            $TRANS_1 = DB::select('
-                SELECT
-                    t.REGIONAL_TRANS,
-                    COUNT(t.ID_TRANS) AS TOT_TRANS
-                FROM
-                    `transaction` t
-                WHERE
-                    t.DATE_TRANS LIKE "2022-12-07%"
-                GROUP BY
-                    t.REGIONAL_TRANS
-                HAVING
-                    TOT_TRANS < 10
-                ORDER BY
-                    t.DATE_TRANS DESC
-            ');
 
-            $TRANS_2 = DB::select('
+            $TRANS = DB::select('
                 SELECT
-                    t.REGIONAL_TRANS,
-                    COUNT(t.ID_TRANS) AS TOT_TRANS
+                    mr2.NAME_REGIONAL,
+                    IFNULL(SUM(tb_temp.DATA_TEMP_1), 0) AS DATA_1,
+                    IFNULL(SUM(tb_temp.DATA_TEMP_2), 0) AS DATA_2,
+                    IFNULL(SUM(tb_temp.DATA_TEMP_3), 0) AS DATA_3,
+                    IFNULL(SUM(tb_temp.DATA_TEMP_4), 0) AS DATA_4
                 FROM
-                    `transaction` t
-                WHERE
-                    t.DATE_TRANS LIKE "2022-12-07%"
-                GROUP BY
-                    t.REGIONAL_TRANS
-                HAVING
-                    TOT_TRANS >= 11
-                    AND 
-                    TOT_TRANS <= 20
-                ORDER BY
-                    t.DATE_TRANS DESC
-            ');
-            
-            $TRANS_3 = DB::select('
-                SELECT
-                    t.REGIONAL_TRANS,
-                    COUNT(t.ID_TRANS) AS TOT_TRANS
-                FROM
-                    `transaction` t
-                WHERE
-                    t.DATE_TRANS LIKE "2022-12-07%"
-                GROUP BY
-                    t.REGIONAL_TRANS
-                HAVING
-                    TOT_TRANS >= 11
-                    AND 
-                    TOT_TRANS <= 30
-                ORDER BY
-                    t.DATE_TRANS DESC
-            ');
-
-            $TRANS_4 = DB::select('
-                SELECT
-                    t.REGIONAL_TRANS,
-                    COUNT(t.ID_TRANS) AS TOT_TRANS
-                FROM
-                    `transaction` t
-                WHERE
-                    t.DATE_TRANS LIKE "2022-12-07%"
-                GROUP BY
-                    t.REGIONAL_TRANS
-                HAVING
-                    TOT_TRANS > 30
-                ORDER BY
-                    t.DATE_TRANS DESC
-            ');
+                    md_regional mr2
+                LEFT JOIN 
+                    (
+                        SELECT
+                            t.ID_USER,
+                            t.REGIONAL_TRANS,
+                            COUNT(t.ID_TRANS) < 10 AS DATA_TEMP_1,
+                            (COUNT(t.ID_TRANS) BETWEEN 11 AND 20) AS DATA_TEMP_2,
+                            (COUNT(t.ID_TRANS) BETWEEN 21 AND 30) AS DATA_TEMP_3,
+                            COUNT(t.ID_TRANS) > 30 AS DATA_TEMP_4
+                        FROM 
+                            `transaction` t 
+                        WHERE 
+                            DATE(t.DATE_TRANS) = "' . $tgl_trans . '" 
+                        GROUP BY 
+                            t.ID_USER
+                    ) tb_temp ON 
+                    tb_temp.REGIONAL_TRANS = mr2.NAME_REGIONAL
+                GROUP BY 
+                    tb_temp.REGIONAL_TRANS
+                ORDER BY 
+                    mr2.NAME_REGIONAL ASC
+            ');            
 
             $no = 0;
             for ($i = 0; $i < count($data_regional); $i++) {
                 if ($data_regional[$i]->NAME_REGIONAL != "") {
+                    $trans_1 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_1 : 0);
+                    $trans_2 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_2 : 0);
+                    $trans_3 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_3 : 0);
+                    $trans_4 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_4 : 0);
+                    $trans_5 = ($data_regional[$i]->JML - ($trans_1 + $trans_2 + $trans_3 + $trans_4));
                     $data = array(
                         "NO" => ++$no,
                         "NAME_REGIONAL" => $data_regional[$i]->NAME_REGIONAL,
-                        "AKTIVITAS" => "TRANSAKSI",
-                        "TRANS_1" => ((!empty($TRANS_1[$i])) ? $TRANS_1[$i]->TOT_TRANS : 0),
-                        "TRANS_2" => ((!empty($TRANS_2[$i])) ? $TRANS_2[$i]->TOT_TRANS : 0),
-                        "TRANS_3" => ((!empty($TRANS_3[$i])) ? $TRANS_3[$i]->TOT_TRANS : 0),
-                        "TRANS_4" => ((!empty($TRANS_4[$i])) ? $TRANS_4[$i]->TOT_TRANS : 0)
+                        "TRANS_1" => $trans_1 . " (" . round(($trans_1 / $data_regional[$i]->JML) * 100) . "%)",
+                        "TRANS_2" => $trans_2 . " (" . round(($trans_2 / $data_regional[$i]->JML) * 100) . "%)",
+                        "TRANS_3" => $trans_3 . " (" . round(($trans_3 / $data_regional[$i]->JML) * 100) . "%)",
+                        "TRANS_4" => $trans_4 . " (" . round(($trans_4 / $data_regional[$i]->JML) * 100) . "%)",
+                        "TRANS_5" => $trans_5 . " (" . round(($trans_5 / $data_regional[$i]->JML) * 100) . "%)"
                     );
                     array_push($All_Data, $data);
                 }
@@ -123,79 +103,56 @@ class MonitoringController extends Controller
         } else {
             $All_Data = array();
 
-            $PRESENCE_1 = DB::select('
+            $PRESENCE = DB::select('
                 SELECT
-                    mr.NAME_REGIONAL,
-                    COUNT(p.ID_PRESENCE) TOT_PRESENCE
-                FROM
-                    presence p
-                LEFT JOIN md_district md ON
-                    p.ID_DISTRICT = md.ID_DISTRICT
-                LEFT JOIN md_area ma ON 
-                    md.ID_AREA = ma.ID_AREA 
-                LEFT JOIN md_regional mr ON 
-                    ma.ID_REGIONAL = mr.ID_REGIONAL 
-                WHERE
-                    p.DATE_PRESENCE LIKE "' . $tgl_trans . '%"
-                    AND HOUR(p.DATE_PRESENCE) < 7
-                GROUP BY 
-                    mr.ID_REGIONAL
-                ORDER BY
-                    p.DATE_PRESENCE DESC
-            ');
-
-            $PRESENCE_2 = DB::select('
-                SELECT
-                    mr.NAME_REGIONAL,
-                    COUNT(p.ID_PRESENCE) TOT_PRESENCE
-                FROM
-                    presence p
-                LEFT JOIN md_district md ON
-                    p.ID_DISTRICT = md.ID_DISTRICT
-                LEFT JOIN md_area ma ON 
-                    md.ID_AREA = ma.ID_AREA 
-                LEFT JOIN md_regional mr ON 
-                    ma.ID_REGIONAL = mr.ID_REGIONAL 
-                WHERE
-                    p.DATE_PRESENCE LIKE "' . $tgl_trans . '%"
-                    AND HOUR(p.DATE_PRESENCE) >= 7
-                    AND HOUR(p.DATE_PRESENCE) <=8
-                GROUP BY 
-                    mr.ID_REGIONAL
-                ORDER BY
-                    p.DATE_PRESENCE DESC
-            ');
-
-            $PRESENCE_3 = DB::select('
-                SELECT
-                    mr.NAME_REGIONAL,
-                    COUNT(p.ID_PRESENCE) TOT_PRESENCE
-                FROM
-                    presence p
-                LEFT JOIN md_district md ON
-                    p.ID_DISTRICT = md.ID_DISTRICT
-                LEFT JOIN md_area ma ON 
-                    md.ID_AREA = ma.ID_AREA 
-                LEFT JOIN md_regional mr ON 
-                    ma.ID_REGIONAL = mr.ID_REGIONAL 
-                WHERE
-                    p.DATE_PRESENCE LIKE "' . $tgl_trans . '%"
-                    AND HOUR(p.DATE_PRESENCE) > 8
-                GROUP BY 
-                    mr.ID_REGIONAL
-                ORDER BY
-                    p.DATE_PRESENCE DESC
-            ');
+                    mr2.NAME_REGIONAL,
+                    IFNULL(tb_temp.DATA_TEMP_1, 0) AS DATA_1,
+                    IFNULL(tb_temp.DATA_TEMP_2, 0) AS DATA_2,
+                    IFNULL(tb_temp.DATA_TEMP_3, 0) AS DATA_3,
+                    IFNULL(tb_temp.DATA_TEMP_4, 0) AS DATA_4
+                FROM 
+                md_regional mr2
+                LEFT JOIN 
+                    (
+                        SELECT
+                            u.ID_REGIONAL,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 01:00:00" AND "' . $tgl_trans . ' 07:00:00")) AS DATA_TEMP_1,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07:00:00" AND "' . $tgl_trans . ' 07:31:00")) AS DATA_TEMP_2,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07:30:00" AND "' . $tgl_trans . ' 08:01:00")) AS DATA_TEMP_3,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 08:00:00" AND "' . $tgl_trans . ' 23:00:00")) AS DATA_TEMP_4
+                        FROM
+                            `user` u
+                        LEFT JOIN presence p ON 
+                            p.ID_USER = u.ID_USER
+                        WHERE 
+                            u.ID_ROLE IN (5, 6)
+                            AND 
+                            u.deleted_at IS NULL
+                            AND 
+                            p.DATE_PRESENCE LIKE "' . $tgl_trans . '%"
+                        GROUP BY 
+                            u.ID_REGIONAL
+                    ) tb_temp ON 
+                    tb_temp.ID_REGIONAL = mr2.ID_REGIONAL
+                ORDER BY 
+                    mr2.NAME_REGIONAL ASC
+            ');          
 
             $no = 0;
             for ($i = 0; $i < count($data_regional); $i++) {
+                $pres_1 = (!empty($PRESENCE[$i]) ? $PRESENCE[$i]->DATA_1 : 0);
+                $pres_2 = (!empty($PRESENCE[$i]) ? $PRESENCE[$i]->DATA_2 : 0);
+                $pres_3 = (!empty($PRESENCE[$i]) ? $PRESENCE[$i]->DATA_3 : 0);
+                $pres_4 = (!empty($PRESENCE[$i]) ? $PRESENCE[$i]->DATA_4 : 0);
+                $pres_5 = ($data_regional[$i]->JML - ($pres_1 + $pres_2 + $pres_3 + $pres_4));
                 $data = array(
                     "NO" => ++$no,
                     "NAME_REGIONAL" => $data_regional[$i]->NAME_REGIONAL,
-                    "AKTIVITAS" => "PRESENCE",
-                    "PRESENCE_1" => (!empty($PRESENCE_1[$i]) ? $PRESENCE_1[$i]->TOT_PRESENCE : 0),
-                    "PRESENCE_2" => (!empty($PRESENCE_2[$i]) ? $PRESENCE_2[$i]->TOT_PRESENCE : 0),
-                    "PRESENCE_3" => (!empty($PRESENCE_3[$i]) ? $PRESENCE_3[$i]->TOT_PRESENCE : 0)
+                    "PRESENCE_1" => $pres_1 . " (" . round(($pres_1 / $data_regional[$i]->JML) * 100) . "%)",
+                    "PRESENCE_2" => $pres_2 . " (" . round(($pres_2 / $data_regional[$i]->JML) * 100) . "%)",
+                    "PRESENCE_3" => $pres_3 . " (" . round(($pres_3 / $data_regional[$i]->JML) * 100) . "%)",
+                    "PRESENCE_4" => $pres_4 . " (" . round(($pres_4 / $data_regional[$i]->JML) * 100) . "%)",
+                    "PRESENCE_5" => $pres_5 . " (" . round(($pres_5 / $data_regional[$i]->JML) * 100) . "%)"
                 );
                 array_push($All_Data, $data);
             }
@@ -207,5 +164,5 @@ class MonitoringController extends Controller
             'status_message'    => 'Data berhasil diambil!',
             'data'              => $All_Data
         ], 200);
-    }    
+    }
 }
