@@ -12,13 +12,13 @@
                     <div class="event-tabs mb-3 ml-3">
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link default-tab" data-toggle="tab" href="Javascript:void(0)" role="tab" aria-selected="false" onclick="show_tb_trans()">
-                                    Transaksi
+                                <a class="nav-link default-tab" data-toggle="tab" href="Javascript:void(0)" role="tab" aria-selected="false" onclick="show_tb_presence()">
+                                    Presensi
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="Javascript:void(0)" role="tab" aria-selected="false" onclick="show_tb_presence()">
-                                    Presensi
+                                <a class="nav-link" data-toggle="tab" href="Javascript:void(0)" role="tab" aria-selected="false" onclick="show_tb_trans()">
+                                    Transaksi
                                 </a>
                             </li>
                         </ul>
@@ -44,13 +44,24 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Regional</th>
-                                            <th>Aktivitas</th>
-                                            <th>
-                                                < 07:00 </th>
-                                            <th>07:00 - 08:00</th>
+                                            <th>< 07:00 </th>
+                                            <th>07:00 - 07:31</th>
+                                            <th>07:30 - 08:01</th>
                                             <th>> 08:00</th>
+                                            <th>Belum Presensi</th>
                                         </tr>
                                     </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th>0</th>
+                                            <th>0</th>
+                                            <th>0</th>
+                                            <th>0</th>
+                                            <th>0</th>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
@@ -61,14 +72,25 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Regional</th>
-                                            <th>Aktivitas</th>
                                             <th>
                                                 < 10 </th>
                                             <th>11 - 20</th>
                                             <th>21 - 30</th>
                                             <th>> 30</th>
+                                            <th>Belum Transaksi</th>
                                         </tr>
                                     </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th>0</th>
+                                            <th>0</th>
+                                            <th>0</th>
+                                            <th>0</th>
+                                            <th>0</th>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
@@ -113,6 +135,11 @@
                     "emptyTable": "  ",
                     "infoEmpty": "No Data to Show",
                 },
+                "pageLength": 25,
+                "columnDefs": [{
+                    "className": "dt-center",
+                    "targets": "_all"
+                }],
                 "serverMethod": 'POST',
                 "ajax": {
                     'url': "{{ url('monitoring/monitoring-data') }}",
@@ -130,9 +157,6 @@
                     },
                     {
                         data: 'NAME_REGIONAL'
-                    },
-                    {
-                        data: 'AKTIVITAS'
                     },
                     {
                         data: 'TRANS_1'
@@ -145,10 +169,66 @@
                     },
                     {
                         data: 'TRANS_4'
+                    },
+                    {
+                        data: 'TRANS_5'
                     }
                 ],
+                footerCallback: function (row, data, start, end, display) {
+                    var api = this.api();
+        
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function (i) {
+                        return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+                    };
+        
+                    // Total over this page
+                    pageTotal2 = api
+                        .column(2, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+                    pageTotal3 = api
+                        .column(3, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+                    pageTotal4 = api
+                        .column(4, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+                    pageTotal5 = api
+                        .column(5, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+                    pageTotal6 = api
+                        .column(6, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+        
+                    // Update footer
+                    $(api.column(1).footer()).html("Total");
+                    $(api.column(2).footer()).html(pageTotal2);
+                    $(api.column(3).footer()).html(pageTotal3);
+                    $(api.column(4).footer()).html(pageTotal4);
+                    $(api.column(5).footer()).html(pageTotal5);
+                    $(api.column(6).footer()).html(pageTotal6);
+                },
             }).draw()
-        }else{
+        } else {
             $('#datatable-presence').DataTable().destroy();
             $("#datatable-presence").DataTable({
                 "processing": true,
@@ -158,6 +238,11 @@
                     "emptyTable": "  ",
                     "infoEmpty": "No Data to Show",
                 },
+                "pageLength": 25,
+                "columnDefs": [{
+                    "className": "dt-center",
+                    "targets": "_all"
+                }],
                 "serverMethod": 'POST',
                 "ajax": {
                     'url': "{{ url('monitoring/monitoring-data') }}",
@@ -177,9 +262,6 @@
                         data: 'NAME_REGIONAL'
                     },
                     {
-                        data: 'AKTIVITAS'
-                    },
-                    {
                         data: 'PRESENCE_1'
                     },
                     {
@@ -187,8 +269,67 @@
                     },
                     {
                         data: 'PRESENCE_3'
+                    },
+                    {
+                        data: 'PRESENCE_4'
+                    },
+                    {
+                        data: 'PRESENCE_5'
                     }
                 ],
+                footerCallback: function (row, data, start, end, display) {
+                    var api = this.api();
+        
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function (i) {
+                        return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
+                    };
+        
+                    // Total over this page
+                    pageTotal2 = api
+                        .column(2, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+                    pageTotal3 = api
+                        .column(3, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+                    pageTotal4 = api
+                        .column(4, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+                    pageTotal5 = api
+                        .column(5, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+                    pageTotal6 = api
+                        .column(6, { page: 'current' })
+                        .data()
+                        .reduce(function (a, b) {
+                            var data1 = b.split(/(\s+)/)[0]
+                            return intVal(a) + intVal(data1);
+                        }, 0);
+        
+                    // Update footer
+                    $(api.column(1).footer()).html("Total");
+                    $(api.column(2).footer()).html(pageTotal2);
+                    $(api.column(3).footer()).html(pageTotal3);
+                    $(api.column(4).footer()).html(pageTotal4);
+                    $(api.column(5).footer()).html(pageTotal5);
+                    $(api.column(6).footer()).html(pageTotal6);
+                },
             }).draw()
         }
     }

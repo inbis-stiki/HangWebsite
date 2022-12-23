@@ -333,7 +333,7 @@
             },
         },
         xaxis: {
-            categories: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+            categories: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
         },
         legend: {
             position: 'bottom',
@@ -347,7 +347,21 @@
             },
             onItemClick: {
                 toggleDataSeries: false
+            },
+            tooltipHoverFormatter: function(seriesName, opts) {
+                if (opts.seriesIndex == 0) return ''
+                return seriesName + ' : <strong>' + addCommas(opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex]) + '</strong>'
             }
+        },
+        tooltip: {
+            enabled: true,
+            shared: true,
+            x: {
+                show: false
+            },
+            items: {
+                'display': 'none',
+            },
         },
         noData: {
             text: undefined,
@@ -509,6 +523,18 @@
         data_trend_asmen.push(response)
     }
 
+    function addCommas(nStr) {
+        nStr += '';
+        var x = nStr.split('.');
+        var x1 = x[0];
+        var x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    }
+
     // AKTIVITAS
     // Chart Activity
     var role_act = $('#role_act').find('option').filter(':selected').val();
@@ -525,6 +551,21 @@
             bar: {
                 columnWidth: '50%',
             }
+        },
+        tooltip: {
+            y: {
+                formatter: function(value, {
+                    series,
+                    seriesIndex,
+                    dataPointIndex,
+                    w
+                }) {
+                    return addCommas(value)
+                },
+                title: {
+                    formatter: (seriesName) => seriesName,
+                },
+            },
         },
         dataLabels: {
             enabled: false
