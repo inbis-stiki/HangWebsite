@@ -152,7 +152,7 @@ class Cronjob extends Model
             $groupBy = "GROUP BY stl.LOCATION_STL";
             $nameUser = "
                 SELECT DISTINCT(u.NAME_USER)
-                FROM md_regional mr 
+                FROM md_location ml
                 JOIN `user` u  
                     ON 
                         ml.NAME_LOCATION = smy.LOCATION_STL COLLATE utf8mb4_unicode_ci
@@ -171,9 +171,10 @@ class Cronjob extends Model
         }
 
         // SET DAPUL OR LAPUL
+        $isInsideQry = "";
         if($isInside == "1"){
             $isInsideQry = "AND ml.ISINSIDE_LOCATION = 1";
-        }else{
+        }else if($isInside == "2"){
             $isInsideQry = "AND ml.ISINSIDE_LOCATION = 0";
         }
 
