@@ -37,7 +37,7 @@ class ReportShopController extends Controller
     }
 
     public function download(){
-        $data['regional']   = Regional::where('ID_LOCATION', $_POST['idRegional'])->first();
+        $data['regional']   = Regional::where('ID_REGIONAL', $_POST['idRegional'])->first();
         $data['areas']      = Shop::getTotTypePerArea($_POST['idRegional']);
 
         $report = new ReportShop();
