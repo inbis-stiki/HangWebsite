@@ -145,9 +145,9 @@ class Cronjob extends Model
             $tgtPS      = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
             $tgtRetail  = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
 
-            $tgtUST         = (80 * 3) * 25;
-            $tgtNONUST      = (1000 * 3) * 25;
-            $tgtSeleraku    = (180 * 3) * 25;
+            $tgtUST         = (80 * 3) * 14;
+            $tgtNONUST      = (1000 * 3) * 14;
+            $tgtSeleraku    = (180 * 3) * 14;
         }else if($area == "Location"){
             $groupBy = "GROUP BY stl.LOCATION_STL";
             $nameUser = "
@@ -165,9 +165,9 @@ class Cronjob extends Model
             $tgtPS      = ((14 * 3) * 10 * 25) * 2; // ((tgt * jmluser) * 10PS) * totharikerja) * totasmen
             $tgtRetail  = ((14 * 3) * 10 * 25) * 2; // ((tgt * jmluser) * 10RET) totharikerja) * totasmen
 
-            $tgtUST         = ((80 * 3) * 25) * 2;
-            $tgtNONUST      = ((1000 * 3) * 25) * 2;
-            $tgtSeleraku    = ((180 * 3) * 25) * 2;
+            $tgtUST         = ((80 * 3) * 14) * 2;
+            $tgtNONUST      = ((1000 * 3) * 14) * 2;
+            $tgtSeleraku    = ((180 * 3) * 14) * 2;
         }
 
         // SET DAPUL OR LAPUL
@@ -320,8 +320,8 @@ class Cronjob extends Model
         
         // SET TARGET
         $tgtUB      = 12; // tgt
-        $tgtPS      = 14 * 10 * 25; // ((tgt * jmluser) * 10PS totharikerja) * totasmen
-        $tgtRetail  = 14 * 10 * 25; // ((tgt * jmluser) * 10RET totharikerja) * totasmen
+        $tgtPS      = 10 * 25; // ((tgt * jmluser) * 10PS totharikerja) * totasmen
+        $tgtRetail  = 10 * 25; // ((tgt * jmluser) * 10RET totharikerja) * totasmen
 
         $tgtUST         = 80 * 25;
         $tgtNONUST      = 1000 * 25;
