@@ -142,8 +142,8 @@ class Cronjob extends Model
             ";
             // SET TARGET
             $tgtUB      = (12 * 14); // (tgt * jmlarea)
-            $tgtPS      = (14 * 3) * 25; // (tgt * jmluser) * totharikerja
-            $tgtRetail  = (14 * 3) * 25; // (tgt * jmluser) * totharikerja
+            $tgtPS      = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
+            $tgtRetail  = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
 
             $tgtUST         = (80 * 3) * 25;
             $tgtNONUST      = (1000 * 3) * 25;
@@ -162,8 +162,8 @@ class Cronjob extends Model
 
             // SET TARGET
             $tgtUB      = (12 * 14) * 2; // (tgt * jmlarea) * totasmen
-            $tgtPS      = ((14 * 3) * 25) * 2; // ((tgt * jmluser) * totharikerja) * totasmen
-            $tgtRetail  = (14 * 3) * 25; // ((tgt * jmluser) * totharikerja) * totasmen
+            $tgtPS      = ((14 * 3) * 10 * 25) * 2; // ((tgt * jmluser) * 10PS) * totharikerja) * totasmen
+            $tgtRetail  = ((14 * 3) * 10 * 25) * 2; // ((tgt * jmluser) * 10RET) totharikerja) * totasmen
 
             $tgtUST         = ((80 * 3) * 25) * 2;
             $tgtNONUST      = ((1000 * 3) * 25) * 2;
@@ -320,8 +320,8 @@ class Cronjob extends Model
         
         // SET TARGET
         $tgtUB      = 12; // tgt
-        $tgtPS      = 14 * 25; // ((tgt * jmluser) * totharikerja) * totasmen
-        $tgtRetail  = 14 * 25; // ((tgt * jmluser) * totharikerja) * totasmen
+        $tgtPS      = 14 * 10 * 25; // ((tgt * jmluser) * 10PS totharikerja) * totasmen
+        $tgtRetail  = 14 * 10 * 25; // ((tgt * jmluser) * 10RET totharikerja) * totasmen
 
         $tgtUST         = 80 * 25;
         $tgtNONUST      = 1000 * 25;
