@@ -35,8 +35,8 @@
                         <div class="form-group">
                             <label for="">Pilih Area</label>
                             <select name="" id="slctArea" class="form-control">
-                                @foreach ($locations as $location)
-                                    <option value="{{ $location->ID_LOCATION }}" {{ !empty($idLoc) && $idLoc == $location->ID_LOCATION ? "selected" : ""}}>{{ $location->NAME_LOCATION }}</option>
+                                @foreach ($regionals as $regional)
+                                    <option value="{{ $regional->ID_REGIONAL }}" {{ !empty($idReg) && $idReg == $regional->ID_REGIONAL ? "selected" : ""}}>{{ $regional->NAME_REGIONAL }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -70,7 +70,7 @@
                         </div>
                         <form action="{{ url("laporan/lpr-shop/download") }}" method="POST">
                             @csrf
-                            <input type="hidden" name="idLocation" value="{{ !empty($idLoc) ? $idLoc : $locations[0]->ID_LOCATION }}">
+                            <input type="hidden" name="idRegional" value="{{ !empty($idReg) ? $idReg : $regionals[0]->ID_REGIONAL }}">
                             <button type="submit" class="btn btn-primary btn-sm w-100 mb-3">Download Laporan</button>
                         </form>
                         <div class="row">

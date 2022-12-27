@@ -11,12 +11,12 @@ class Shop extends Model
     protected $primaryKey = 'ID_SHOP';
     public $timestamps = false;
 
-    public static function getShopByLoc($idLocation){
+    public static function getShopByReg($idRegional){
         return DB::select("
             SELECT ms.NAME_SHOP , ms.LONG_SHOP , ms.LAT_SHOP
             FROM md_regional mr 
             INNER JOIN md_area ma 
-                ON mr.ID_LOCATION = '".$idLocation."' AND ma.ID_REGIONAL = mr.ID_REGIONAL 
+                ON mr.ID_REGIONAL = '".$idRegional."' AND ma.ID_REGIONAL = mr.ID_REGIONAL 
             INNER JOIN md_district md 
                 ON md.ISMARKET_DISTRICT = 0 AND md.ID_AREA = ma.ID_AREA 
             INNER JOIN md_shop ms 
@@ -24,12 +24,12 @@ class Shop extends Model
         ");
     }
 
-    public static function getTotTypeByLoc($idLocation){
+    public static function getTotTypeByReg($idRegional){
         return DB::select("
             SELECT ms.TYPE_SHOP , COUNT(ms.TYPE_SHOP) as TOTAL
             FROM md_regional mr 
             INNER JOIN md_area ma 
-                ON mr.ID_LOCATION = '".$idLocation."' AND ma.ID_REGIONAL = mr.ID_REGIONAL 
+                ON mr.ID_REGIONAL = '".$idRegional."' AND ma.ID_REGIONAL = mr.ID_REGIONAL 
             INNER JOIN md_district md 
                 ON md.ISMARKET_DISTRICT = 0 AND md.ID_AREA = ma.ID_AREA 
             INNER JOIN md_shop ms 
@@ -47,7 +47,7 @@ class Shop extends Model
             GROUP BY ms.TYPE_SHOP 
         ");
     }
-    public static function getTotTypePerArea($idLocation){
+    public static function getTotTypePerArea($idRegional){
         return DB::select('
             SELECT ma.ID_AREA, ma.NAME_AREA ,
                 (
@@ -87,8 +87,7 @@ class Shop extends Model
                     ) AND ms.TYPE_SHOP = "Permanen" 
                 ) as TOT_PERMANEN
             FROM md_area ma
-            INNER JOIN md_regional mr 
-                ON mr.ID_LOCATION = '.$idLocation.' AND mr.ID_REGIONAL = ma.ID_REGIONAL 
+            WHERE ma.ID_REGIONAL = '.$idRegional.'
             ORDER BY ma.NAME_AREA ASC
         ');
     }
