@@ -211,6 +211,9 @@ class CronjobController extends Controller
 
         app(ReportRanking::class)->generate_ranking_apo_spg($datas, $updated_at);
     }
+    public function genTrendRPO(){
+        app(ReportTrend::class)->generate_trend_rpo();
+    }
     public function genTransDaily(){
         $products       = Product::get();
         $querySumProd   = [];
