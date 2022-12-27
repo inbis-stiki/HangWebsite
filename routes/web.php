@@ -33,6 +33,7 @@ Route::get('cronjob/update-daily-rangking-achievement', 'CronjobController@updat
 Route::get('cronjob/update-daily-rangking-activity', 'CronjobController@updateDailyRankingActivity');
 Route::get('cronjob/update-dashboard-mobile', 'CronjobController@updateDashboardMobile');
 Route::get('cronjob/update-summary-trans-location', 'CronjobController@updateSmyTransLocation');
+Route::get('cronjob/gen-rank-regional', 'CronjobController@genRankRegional');
 Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
 Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
