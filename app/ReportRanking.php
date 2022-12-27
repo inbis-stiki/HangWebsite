@@ -846,8 +846,10 @@ class ReportRanking
         $writer->save('php://output');
     }
 
-    public function generate_ranking_apo_spg()
+    public function generate_ranking_apo_spg($datas, $updated_at)
     {
+        $apos = $datas['reportApos'];
+        $spgs = $datas['reportSpgs'];
         $spreadsheet = new Spreadsheet();
 
         $ObjSheet = $spreadsheet->createSheet(0);
@@ -880,9 +882,9 @@ class ReportRanking
 
         // Activity APO
         $ObjSheet->setCellValue('B4', 'ACTIVITY APO')->getStyle('B4')->applyFromArray($this->styling_default_template(10, 'FF000000'));
-        $ObjSheet->setCellValue('F4', 'Bobot 50%')->getStyle('F4')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->setCellValue('I4', 'Bobot 25%')->getStyle('I4')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->setCellValue('L4', 'Bobot 25%')->getStyle('L4')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
+        $ObjSheet->setCellValue('F4', 'Bobot '.$apos['reportActs']['wUB'].'%')->getStyle('F4')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
+        $ObjSheet->setCellValue('I4', 'Bobot '.$apos['reportActs']['wPS'].'%')->getStyle('I4')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
+        $ObjSheet->setCellValue('L4', 'Bobot '.$apos['reportActs']['wRETAIL'].'%')->getStyle('L4')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->mergeCells('K3:M3')->setCellValue('K3', ' RANGKING ' . strtoupper(date_format(date_create(date("Y-m")), 'F Y')))->getStyle('K3:M3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
 
         $ObjSheet->mergeCells('B5:B7')->setCellValue('B5', 'NAMA')->getStyle('B5:B7')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
@@ -909,20 +911,23 @@ class ReportRanking
         $ObjSheet->mergeCells('N5:N7')->setCellValue('N5', 'RANGKING')->getStyle('N5:N7')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
 
         $rowStart = 8;
-        for ($i = 0; $i < count($this->dataAktifitasAPO); $i++) {
-            $ObjSheet->setCellValue('B' . $rowStart, $this->dataAktifitasAPO[$i]['NAME_USER'])->getStyle('B' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('C' . $rowStart, $this->dataAktifitasAPO[$i]['NAME_AREA'])->getStyle('C' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('D' . $rowStart, $this->dataAktifitasAPO[$i]['TARGET_UB'])->getStyle('D' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('E' . $rowStart, $this->dataAktifitasAPO[$i]['REAL_UB'])->getStyle('E' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('F' . $rowStart, $this->dataAktifitasAPO[$i]['VSTARGET_UB'])->getStyle('F' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('G' . $rowStart, $this->dataAktifitasAPO[$i]['TARGET_UB'])->getStyle('G' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('H' . $rowStart, $this->dataAktifitasAPO[$i]['REAL_UB'])->getStyle('H' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('I' . $rowStart, $this->dataAktifitasAPO[$i]['VSTARGET_UB'])->getStyle('I' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('J' . $rowStart, $this->dataAktifitasAPO[$i]['TARGET_UB'])->getStyle('J' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('K' . $rowStart, $this->dataAktifitasAPO[$i]['REAL_UB'])->getStyle('K' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('L' . $rowStart, $this->dataAktifitasAPO[$i]['VSTARGET_UB'])->getStyle('L' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('M' . $rowStart, $this->dataAktifitasAPO[$i]['AVERAGE'])->getStyle('M' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('N' . $rowStart, $this->dataAktifitasAPO[$i]['ID_USER_RANKSALE'])->getStyle('N' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+        $rank = 1;
+        for ($i = 0; $i < count($apos['reportActs']['DATAS']); $i++) {
+            $act = $apos['reportActs']['DATAS'][$i];
+
+            $ObjSheet->setCellValue('B' . $rowStart, $act->NAME_USER)->getStyle('B' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('C' . $rowStart, $act->NAME_AREA)->getStyle('C' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('D' . $rowStart, $act->TGTUB)->getStyle('D' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('E' . $rowStart, $act->REALACTUB_DM)->getStyle('E' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('F' . $rowStart, $act->VSUB)->getStyle('F' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('G' . $rowStart, $act->TGTPS)->getStyle('G' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('H' . $rowStart, $act->REALACTPS_DM)->getStyle('H' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('I' . $rowStart, $act->VSPS)->getStyle('I' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('J' . $rowStart, $act->TGTRETAIL)->getStyle('J' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('K' . $rowStart, $act->REALACTRETAIL_DM)->getStyle('K' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('L' . $rowStart, $act->VSRETAIL)->getStyle('L' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('M' . $rowStart, $act->AVG_VS)->getStyle('M' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('N' . $rowStart, $rank++)->getStyle('N' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
 
             $rowStart++;
         }
@@ -930,9 +935,9 @@ class ReportRanking
         // Pencapaian APO
         $rowStart2 = $rowStart + 2;
         $ObjSheet->setCellValue('B' . $rowStart2, 'PENCAPAIAN APO')->getStyle('B' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FF000000'));
-        $ObjSheet->setCellValue('F' . $rowStart2, 'Bobot 75%')->getStyle('F' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->setCellValue('I' . $rowStart2, 'Bobot 0%')->getStyle('I' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->setCellValue('L' . $rowStart2, 'Bobot 25%')->getStyle('L' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
+        $ObjSheet->setCellValue('F' . $rowStart2, 'Bobot '.$apos['reportProds']['wUST'].'%')->getStyle('F' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
+        $ObjSheet->setCellValue('I' . $rowStart2, 'Bobot '.$apos['reportProds']['wNONUST'].'%')->getStyle('I' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
+        $ObjSheet->setCellValue('L' . $rowStart2, 'Bobot '.$apos['reportProds']['wSELERAKU'].'%')->getStyle('L' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
 
         $ObjSheet->mergeCells('B' . ($rowStart2 + 1) . ':B' . ($rowStart2 + 3))->setCellValue('B' . ($rowStart2 + 1), 'NAMA')->getStyle('B' . ($rowStart2 + 1) . ':B' . ($rowStart2 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('C' . ($rowStart2 + 1) . ':C' . ($rowStart2 + 3))->setCellValue('C' . ($rowStart2 + 1), 'AREA')->getStyle('C' . ($rowStart2 + 1) . ':C' . ($rowStart2 + 3))->applyFromArray($this->styling_title_template('FFC000', 'FF000000'));
@@ -961,21 +966,23 @@ class ReportRanking
         // $ObjSheet->setCellValue('P' . ($rowStart2 + 3), 'TGT')->getStyle('P' . ($rowStart2 + 3))->applyFromArray($this->styling_title_template('FFBDD7EE', 'FF000000'));
 
         $rowStart3 = ($rowStart2 + 4);
-        for ($i = 0; $i < count($this->dataPencapaianAPO); $i++) {
+        $rank = 1;
+        for ($i = 0; $i < count($apos['reportProds']['DATAS']); $i++) {
+            $prod = $apos['reportProds']['DATAS'][$i];
 
-            $ObjSheet->setCellValue('B' . $rowStart3, $this->dataPencapaianAPO[$i]['NAME_USER'])->getStyle('B' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('C' . $rowStart3, $this->dataPencapaianAPO[$i]['NAME_AREA'])->getStyle('C' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('D' . $rowStart3, $this->dataPencapaianAPO[$i]['TARGET_NONUST'])->getStyle('D' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('E' . $rowStart3, $this->dataPencapaianAPO[$i]['REAL_NONUST'])->getStyle('E' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('F' . $rowStart3, $this->dataPencapaianAPO[$i]['VSTARGET_NONUST'])->getStyle('F' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('G' . $rowStart3, $this->dataPencapaianAPO[$i]['TARGET_UST'])->getStyle('G' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('H' . $rowStart3, $this->dataPencapaianAPO[$i]['REAL_UST'])->getStyle('H' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('I' . $rowStart3, $this->dataPencapaianAPO[$i]['VSTARGET_UST'])->getStyle('I' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('J' . $rowStart3, $this->dataPencapaianAPO[$i]['TARGET_SELERAKU'])->getStyle('J' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('K' . $rowStart3, $this->dataPencapaianAPO[$i]['REAL_SELERAKU'])->getStyle('K' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('L' . $rowStart3, $this->dataPencapaianAPO[$i]['VSTARGET_SELERAKU'])->getStyle('L' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('M' . $rowStart3, $this->dataPencapaianAPO[$i]['AVERAGE'])->getStyle('M' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('N' . $rowStart3, $this->dataPencapaianAPO[$i]['ID_USER_RANKSALE'])->getStyle('N' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('B' . $rowStart3, $prod->NAME_USER)->getStyle('B' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('C' . $rowStart3, $prod->NAME_AREA)->getStyle('C' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('D' . $rowStart3, $prod->TGTUST)->getStyle('D' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('E' . $rowStart3, $prod->REALUST_DM)->getStyle('E' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('F' . $rowStart3, $prod->VSUST)->getStyle('F' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('G' . $rowStart3, $prod->TGTNONUST)->getStyle('G' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('H' . $rowStart3, $prod->REALNONUST_DM)->getStyle('H' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('I' . $rowStart3, $prod->VSNONUST)->getStyle('I' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('J' . $rowStart3, $prod->TGTSELERAKU)->getStyle('J' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('K' . $rowStart3, $prod->REALSELERAKU_DM)->getStyle('K' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('L' . $rowStart3, $prod->VSSELERAKU)->getStyle('L' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('M' . $rowStart3, $prod->AVG_VS)->getStyle('M' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('N' . $rowStart3, $rank++)->getStyle('N' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
             // $ObjSheet->getStyle('P' . $rowStart3)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
 
             $rowStart3++;
@@ -985,9 +992,9 @@ class ReportRanking
         $rowStart4 = $rowStart3 + 3;
         $ObjSheet->mergeCells('B' . ($rowStart4 - 1) . ':N' . ($rowStart4 - 1))->setCellValue('B' . ($rowStart4 - 1), strtoupper(date_format(date_create(date("Y-m")), 'F Y')))->getStyle('B' . ($rowStart4 - 1) . ':N' . ($rowStart4 - 1))->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
         $ObjSheet->setCellValue('B' . $rowStart4, 'ACTIVITY SPG')->getStyle('B' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FF000000'));
-        $ObjSheet->setCellValue('F' . $rowStart4, 'Bobot 50%')->getStyle('F' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->setCellValue('I' . $rowStart4, 'Bobot 25%')->getStyle('I' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->setCellValue('L' . $rowStart4, 'Bobot 25%')->getStyle('L' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
+        $ObjSheet->setCellValue('F' . $rowStart4, 'Bobot '.$spgs['reportActs']['wUB'].'%')->getStyle('F' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
+        $ObjSheet->setCellValue('I' . $rowStart4, 'Bobot '.$spgs['reportActs']['wPS'].'%')->getStyle('I' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
+        $ObjSheet->setCellValue('L' . $rowStart4, 'Bobot '.$spgs['reportActs']['wRETAIL'].'%')->getStyle('L' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
 
         $ObjSheet->mergeCells('B' . ($rowStart4 + 1) . ':B' . ($rowStart4 + 3))->setCellValue('B' . ($rowStart4 + 1), 'NAMA')->getStyle('B' . ($rowStart4 + 1) . ':B' . ($rowStart4 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('C' . ($rowStart4 + 1) . ':C' . ($rowStart4 + 3))->setCellValue('C' . ($rowStart4 + 1), 'AREA')->getStyle('C' . ($rowStart4 + 1) . ':C' . ($rowStart4 + 3))->applyFromArray($this->styling_title_template('FFC000', 'FF000000'));
@@ -1013,20 +1020,23 @@ class ReportRanking
         $ObjSheet->mergeCells('N' . ($rowStart4 + 1) . ':N' . ($rowStart4 + 3))->setCellValue('N' . ($rowStart4 + 1), 'RANGKING')->getStyle('N' . ($rowStart4 + 1) . ':N' . ($rowStart4 + 3))->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
 
         $rowStart5 = ($rowStart4 + 4);
-        for ($i = 0; $i < count($this->dataAktifitasSPG); $i++) {
-            $ObjSheet->setCellValue('B' . $rowStart5, $this->dataAktifitasSPG[$i]['NAME_USER'])->getStyle('B' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('C' . $rowStart5, $this->dataAktifitasSPG[$i]['NAME_AREA'])->getStyle('C' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('D' . $rowStart5, $this->dataAktifitasSPG[$i]['TARGET_UB'])->getStyle('D' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('E' . $rowStart5, $this->dataAktifitasSPG[$i]['REAL_UB'])->getStyle('E' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('F' . $rowStart5, $this->dataAktifitasSPG[$i]['VSTARGET_UB'])->getStyle('F' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('G' . $rowStart5, $this->dataAktifitasSPG[$i]['TARGET_UB'])->getStyle('G' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('H' . $rowStart5, $this->dataAktifitasSPG[$i]['REAL_UB'])->getStyle('H' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('I' . $rowStart5, $this->dataAktifitasSPG[$i]['VSTARGET_UB'])->getStyle('I' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('J' . $rowStart5, $this->dataAktifitasSPG[$i]['TARGET_UB'])->getStyle('J' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('K' . $rowStart5, $this->dataAktifitasSPG[$i]['REAL_UB'])->getStyle('K' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('L' . $rowStart5, $this->dataAktifitasSPG[$i]['VSTARGET_UB'])->getStyle('L' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('M' . $rowStart5, $this->dataAktifitasSPG[$i]['AVERAGE'])->getStyle('M' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('N' . $rowStart5, $this->dataAktifitasSPG[$i]['ID_USER_RANKSALE'])->getStyle('N' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+        $rank = 1;
+        for ($i = 0; $i < count($spgs['reportActs']['DATAS']); $i++) {
+            $act = $spgs['reportActs']['DATAS'][$i];
+
+            $ObjSheet->setCellValue('B' . $rowStart5, $act->NAME_USER)->getStyle('B' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('C' . $rowStart5, $act->NAME_AREA)->getStyle('C' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('D' . $rowStart5, $act->TGTUB)->getStyle('D' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('E' . $rowStart5, $act->REALACTUB_DM)->getStyle('E' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('F' . $rowStart5, $act->VSUB)->getStyle('F' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('G' . $rowStart5, $act->TGTPS)->getStyle('G' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('H' . $rowStart5, $act->REALACTPS_DM)->getStyle('H' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('I' . $rowStart5, $act->VSPS)->getStyle('I' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('J' . $rowStart5, $act->TGTRETAIL)->getStyle('J' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('K' . $rowStart5, $act->REALACTRETAIL_DM)->getStyle('K' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('L' . $rowStart5, $act->VSRETAIL)->getStyle('L' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('M' . $rowStart5, $act->AVG_VS)->getStyle('M' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('N' . $rowStart5, $rank++)->getStyle('N' . $rowStart5)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
 
             $rowStart5++;
         }
@@ -1066,20 +1076,23 @@ class ReportRanking
         // $ObjSheet->setCellValue('P' . ($rowStart6 + 3), 'TGT')->getStyle('P' . ($rowStart6 + 3))->applyFromArray($this->styling_title_template('FFBDD7EE', 'FF000000'));
 
         $rowStart7 = ($rowStart6 + 4);
-        for ($i = 0; $i < count($this->dataPencapaianSPG); $i++) {
-            $ObjSheet->setCellValue('B' . $rowStart7, $this->dataPencapaianSPG[$i]['NAME_USER'])->getStyle('B' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('C' . $rowStart7, $this->dataPencapaianSPG[$i]['NAME_AREA'])->getStyle('C' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('D' . $rowStart7, $this->dataPencapaianSPG[$i]['TARGET_NONUST'])->getStyle('D' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('E' . $rowStart7, $this->dataPencapaianSPG[$i]['REAL_NONUST'])->getStyle('E' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('F' . $rowStart7, $this->dataPencapaianSPG[$i]['VSTARGET_NONUST'])->getStyle('F' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('G' . $rowStart7, $this->dataPencapaianSPG[$i]['TARGET_UST'])->getStyle('G' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('H' . $rowStart7, $this->dataPencapaianSPG[$i]['REAL_UST'])->getStyle('H' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('I' . $rowStart7, $this->dataPencapaianSPG[$i]['VSTARGET_UST'])->getStyle('I' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('J' . $rowStart7, $this->dataPencapaianSPG[$i]['TARGET_SELERAKU'])->getStyle('J' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('K' . $rowStart7, $this->dataPencapaianSPG[$i]['REAL_SELERAKU'])->getStyle('K' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('L' . $rowStart7, $this->dataPencapaianSPG[$i]['VSTARGET_SELERAKU'])->getStyle('L' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('M' . $rowStart7, $this->dataPencapaianSPG[$i]['AVERAGE'])->getStyle('M' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('N' . $rowStart7, $this->dataPencapaianSPG[$i]['ID_USER_RANKSALE'])->getStyle('N' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+        $rank = 1;
+        for ($i = 0; $i < count($spgs['reportProds']['DATAS']); $i++) {
+            $prod = $spgs['reportProds']['DATAS'][$i];
+
+            $ObjSheet->setCellValue('B' . $rowStart7, $prod->NAME_USER)->getStyle('B' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('C' . $rowStart7, $prod->NAME_AREA)->getStyle('C' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('D' . $rowStart7, $prod->TGTUST)->getStyle('D' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('E' . $rowStart7, $prod->REALUST_DM)->getStyle('E' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('F' . $rowStart7, $prod->VSUST)->getStyle('F' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('G' . $rowStart7, $prod->TGTNONUST)->getStyle('G' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('H' . $rowStart7, $prod->REALNONUST_DM)->getStyle('H' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('I' . $rowStart7, $prod->VSNONUST)->getStyle('I' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('J' . $rowStart7, $prod->TGTSELERAKU)->getStyle('J' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('K' . $rowStart7, $prod->REALSELERAKU_DM)->getStyle('K' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('L' . $rowStart7, $prod->VSSELERAKU)->getStyle('L' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('M' . $rowStart7, $prod->AVG_VS)->getStyle('M' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('N' . $rowStart7, $rank++)->getStyle('N' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
             // $ObjSheet->getStyle('P' . $rowStart7)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
 
             $rowStart7++;

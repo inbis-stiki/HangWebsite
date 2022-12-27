@@ -201,29 +201,15 @@ class CronjobController extends Controller
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
         $datas['reports']   = Cronjob::queryGetSmy($year, $month, "Location", 3);
-
-        // $datas['avgNat']['TGTUB']           = ($datas['reportDapuls']['reportActs']['AVG_TGTUB'] + $datas['reportLapuls']['reportActs']['AVG_TGTUB']) / 2; 
-        // $datas['avgNat']['REALACTUB']       = ($datas['reportDapuls']['reportActs']['AVG_REALACTUB'] + $datas['reportLapuls']['reportActs']['AVG_REALACTUB']) / 2; 
-        // $datas['avgNat']['VSUB']            = ($datas['reportDapuls']['reportActs']['AVG_VSUB'] + $datas['reportLapuls']['reportActs']['AVG_VSUB']) / 2;
-        // $datas['avgNat']['TGTPS']           = ($datas['reportDapuls']['reportActs']['AVG_TGTPS'] + $datas['reportLapuls']['reportActs']['AVG_TGTPS']) / 2; 
-        // $datas['avgNat']['REALACTPS']       = ($datas['reportDapuls']['reportActs']['AVG_REALACTPS'] + $datas['reportLapuls']['reportActs']['AVG_REALACTPS']) / 2; 
-        // $datas['avgNat']['VSPS']            = ($datas['reportDapuls']['reportActs']['AVG_VSPS'] + $datas['reportLapuls']['reportActs']['AVG_VSPS']) / 2;
-        // $datas['avgNat']['TGTRETAIL']       = ($datas['reportDapuls']['reportActs']['AVG_TGTRETAIL'] + $datas['reportLapuls']['reportActs']['AVG_TGTRETAIL']) / 2; 
-        // $datas['avgNat']['REALACTRETAIL']   = ($datas['reportDapuls']['reportActs']['AVG_REALACTRETAIL'] + $datas['reportLapuls']['reportActs']['AVG_REALACTRETAIL']) / 2; 
-        // $datas['avgNat']['VSRETAIL']        = ($datas['reportDapuls']['reportActs']['AVG_VSRETAIL'] + $datas['reportLapuls']['reportActs']['AVG_VSRETAIL']) / 2;
-        
-        // $datas['avgNat']['TGTUST']          = ($datas['reportDapuls']['reportProds']['AVG_TGTUST'] + $datas['reportLapuls']['reportProds']['AVG_TGTUST']) / 2; 
-        // $datas['avgNat']['REALUST']         = ($datas['reportDapuls']['reportProds']['AVG_REALUST'] + $datas['reportLapuls']['reportProds']['AVG_REALUST']) / 2; 
-        // $datas['avgNat']['VSUST']           = ($datas['reportDapuls']['reportProds']['AVG_VSUST'] + $datas['reportLapuls']['reportProds']['AVG_VSUST']) / 2;
-        // $datas['avgNat']['TGTNONUST']       = ($datas['reportDapuls']['reportProds']['AVG_TGTNONUST'] + $datas['reportLapuls']['reportProds']['AVG_TGTNONUST']) / 2; 
-        // $datas['avgNat']['REALNONUST']      = ($datas['reportDapuls']['reportProds']['AVG_REALNONUST'] + $datas['reportLapuls']['reportProds']['AVG_REALNONUST']) / 2; 
-        // $datas['avgNat']['VSNONUST']        = ($datas['reportDapuls']['reportProds']['AVG_VSNONUST'] + $datas['reportLapuls']['reportProds']['AVG_VSNONUST']) / 2;
-        // $datas['avgNat']['TGTSELERAKU']     = ($datas['reportDapuls']['reportProds']['AVG_TGTSELERAKU'] + $datas['reportLapuls']['reportProds']['AVG_TGTSELERAKU']) / 2; 
-        // $datas['avgNat']['REALSELERAKU']    = ($datas['reportDapuls']['reportProds']['AVG_REALSELERAKU'] + $datas['reportLapuls']['reportProds']['AVG_REALSELERAKU']) / 2; 
-        // $datas['avgNat']['VSSELERAKU']      = ($datas['reportDapuls']['reportProds']['AVG_VSSELERAKU'] + $datas['reportLapuls']['reportProds']['AVG_VSSELERAKU']) / 2;
-
-        
         app(ReportRanking::class)->generate_ranking_asmen($datas, $updated_at);
+    }
+    public function genRankAPOSPG(){
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $datas['reportApos'] = Cronjob::queryGetSmyUser(7, 5);
+        $datas['reportSpgs'] = Cronjob::queryGetSmyUser(7, 6);
+
+        app(ReportRanking::class)->generate_ranking_apo_spg($datas, $updated_at);
     }
     public function generateReportTransDaily(){
         $products       = Product::get();
