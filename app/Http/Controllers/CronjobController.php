@@ -164,7 +164,7 @@ class CronjobController extends Controller
             ], 500);
         }
     }
-    public function genRankRegional(){
+    public function genRankRPO(){
         $month          = date('n', strtotime('-1 days'));
         $year           = date('Y', strtotime('-1 days'));
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
@@ -194,6 +194,22 @@ class CronjobController extends Controller
 
         
         app(ReportRanking::class)->generate_ranking_rpo($datas, $updated_at);
+    }
+    public function genRankAsmen(){
+        $month          = date('n', strtotime('-1 days'));
+        $year           = date('Y', strtotime('-1 days'));
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $datas['reports']   = Cronjob::queryGetSmy($year, $month, "Location", 3);
+        app(ReportRanking::class)->generate_ranking_asmen($datas, $updated_at);
+    }
+    public function genRankAPOSPG(){
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $datas['reportApos'] = Cronjob::queryGetSmyUser(7, 5);
+        $datas['reportSpgs'] = Cronjob::queryGetSmyUser(7, 6);
+
+        app(ReportRanking::class)->generate_ranking_apo_spg($datas, $updated_at);
     }
     public function generateReportTransDaily(){
         $products       = Product::get();

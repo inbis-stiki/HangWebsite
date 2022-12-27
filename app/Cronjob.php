@@ -152,7 +152,7 @@ class Cronjob extends Model
             $groupBy = "GROUP BY stl.LOCATION_STL";
             $nameUser = "
                 SELECT DISTINCT(u.NAME_USER)
-                FROM md_regional mr 
+                FROM md_location ml
                 JOIN `user` u  
                     ON 
                         ml.NAME_LOCATION = smy.LOCATION_STL COLLATE utf8mb4_unicode_ci
@@ -171,9 +171,10 @@ class Cronjob extends Model
         }
 
         // SET DAPUL OR LAPUL
+        $isInsideQry = "";
         if($isInside == "1"){
             $isInsideQry = "AND ml.ISINSIDE_LOCATION = 1";
-        }else{
+        }else if($isInside == "2"){
             $isInsideQry = "AND ml.ISINSIDE_LOCATION = 0";
         }
 
@@ -238,10 +239,10 @@ class Cronjob extends Model
                         (stl.REALACTUB_STL / (".$tgtUB.")) * 100
                     ) as VSUB,
                     (
-                        (stl.REALACTUB_STL / (".$tgtPS.")) * 100
+                        (stl.REALACTPS_STL / (".$tgtPS.")) * 100
                     ) as VSPS,
                     (
-                        (stl.REALACTUB_STL / (".$tgtRetail.")) * 100
+                        (stl.REALACTRETAIL_STL / (".$tgtRetail.")) * 100
                     ) as VSRETAIL
                 FROM summary_trans_location stl
                 INNER JOIN md_location ml
@@ -292,7 +293,6 @@ class Cronjob extends Model
         $reportActs['wUB']                  = $wUB;
         $reportActs['wPS']                  = $wPS;
         $reportActs['wRETAIL']              = $wRETAIL;
-        $reportActs['DATAS']                = $resActs;
         $reportActs['AVG_REALACTUB']        = round($tot1 / count($reportActs['DATAS']));
         $reportActs['AVG_TGTUB']            = $tgtUB;
         $reportActs['AVG_VSUB']             = $reportActs['AVG_REALACTUB'] / $reportActs['AVG_TGTUB'];
@@ -306,6 +306,122 @@ class Cronjob extends Model
         $reportActs['AVG_VS']               += (($reportActs['AVG_VSPS'] * $wPS) / 100);
         $reportActs['AVG_VS']               += (($reportActs['AVG_VSRETAIL'] * $wRETAIL) / 100);
 
+        return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
+    }
+    public static function queryGetSmyUser($idRegional, $idRole){
+        // SET WEIGHT
+        $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
+        $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
+        $wSELERAKU  = CategoryProduct::where("ID_PC", "3")->first()->PERCENTAGE_PC;
+        
+        $wUB        = ActivityCategory::where("ID_AC", "1")->first()->PERCENTAGE_AC;
+        $wPS        = ActivityCategory::where("ID_AC", "2")->first()->PERCENTAGE_AC;
+        $wRETAIL    = ActivityCategory::where("ID_AC", "3")->first()->PERCENTAGE_AC;
+        
+        // SET TARGET
+        $tgtUB      = 12; // tgt
+        $tgtPS      = 14 * 25; // ((tgt * jmluser) * totharikerja) * totasmen
+        $tgtRetail  = 14 * 25; // ((tgt * jmluser) * totharikerja) * totasmen
+
+        $tgtUST         = 80 * 25;
+        $tgtNONUST      = 1000 * 25;
+        $tgtSeleraku    = 180 * 25;
+
+        $resActs = DB::select("
+            SELECT 
+                rp.NAME_USER ,
+                rp.NAME_AREA ,
+                rp.REALACTUB_DM ,
+                (".$tgtUB.") as TGTUB ,
+                rp.VSUB ,
+                rp.REALACTPS_DM ,
+                (".$tgtPS.") as TGTPS ,
+                rp.VSPS ,
+                rp.REALACTRETAIL_DM ,
+                (".$tgtRetail.") as TGTRETAIL ,
+                rp.VSRETAIL ,
+                ((rp.VSUB * ".$wUB.") / 100) + ((rp.VSPS * ".$wPS.") / 100) + ((rp.VSRETAIL * ".$wRETAIL.") / 100) as AVG_VS
+            FROM (
+                SELECT 
+                    u.NAME_USER ,
+                    ma.NAME_AREA ,
+                    dm.*,
+                    (
+                        (dm.REALACTUB_DM/ (".$tgtUB.")) * 100
+                    ) as VSUB,
+                    (
+                        (dm.REALACTPS_DM/ (".$tgtPS.")) * 100
+                    ) as VSPS,
+                    (
+                        (dm.REALACTRETAIL_DM/ (".$tgtRetail.")) * 100
+                    ) as VSRETAIL
+                FROM dashboard_mobile dm 
+                INNER JOIN `user` u 
+                    ON
+                        dm.ID_USER = u.ID_USER
+                        AND u.ID_ROLE = ".$idRole."
+                        AND u.deleted_at IS NULL
+                INNER JOIN md_regional mr 
+                    ON mr.ID_REGIONAL = u.ID_REGIONAL AND mr.ID_REGIONAL = ".$idRegional."
+                INNER JOIN md_area ma 
+                    ON ma.ID_AREA = u.ID_AREA
+            ) as rp
+            ORDER BY AVG_VS DESC
+        ");
+
+        $reportActs['DATAS']    = $resActs;
+        $reportActs['wUB']      = $wUB;
+        $reportActs['wPS']      = $wPS;
+        $reportActs['wRETAIL']  = $wRETAIL;
+
+        $resProds = DB::select("
+            SELECT 
+                rp.NAME_USER,
+                rp.NAME_AREA,
+                rp.REALUST_DM ,
+                (".$tgtUST.") as TGTUST ,
+                rp.VSUST ,
+                rp.REALNONUST_DM ,
+                (".$tgtNONUST.") as TGTNONUST ,
+                rp.VSNONUST ,
+                rp.REALSELERAKU_DM ,
+                (".$tgtSeleraku.") as TGTSELERAKU ,
+                rp.VSSELERAKU ,
+                ((rp.VSUST * ".$wUST.") / 100) + ((rp.VSNONUST * ".$wNONUST.") / 100) + ((rp.VSSELERAKU * ".$wSELERAKU.") / 100) as AVG_VS
+            FROM 
+            (
+                SELECT 
+                    u.NAME_USER ,
+                    ma.NAME_AREA ,
+                    dm.* ,
+                    (
+                        (dm.REALUST_DM/ (".$tgtUST.")) * 100
+                    ) as VSUST,
+                    (
+                        (dm.REALNONUST_DM/ (".$tgtNONUST.")) * 100
+                    ) as VSNONUST,
+                    (
+                        (dm.REALSELERAKU_DM/ (".$tgtSeleraku.")) * 100
+                    ) as VSSELERAKU
+                FROM dashboard_mobile dm 
+                INNER JOIN `user` u 
+                    ON
+                        dm.ID_USER = u.ID_USER
+                        AND u.ID_ROLE = ".$idRole."
+                        AND u.deleted_at IS NULL
+                INNER JOIN md_regional mr 
+                    ON mr.ID_REGIONAL = u.ID_REGIONAL AND mr.ID_REGIONAL = ".$idRegional."
+                INNER JOIN md_area ma 
+                    ON ma.ID_AREA = u.ID_AREA
+            ) as rp
+            ORDER BY AVG_VS DESC
+        ");
+
+        $reportProds['DATAS']       = $resProds;
+        $reportProds['wUST']        = $wUST;
+        $reportProds['wNONUST']     = $wNONUST;
+        $reportProds['wSELERAKU']   = $wSELERAKU;
+        
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
     public static function queryGetDetailSmyRegional($regional){
