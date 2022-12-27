@@ -323,9 +323,9 @@ class Cronjob extends Model
         $tgtPS      = 10 * 25; // ((tgt * jmluser) * 10PS totharikerja) * totasmen
         $tgtRetail  = 10 * 25; // ((tgt * jmluser) * 10RET totharikerja) * totasmen
 
-        $tgtUST         = 80 * 25;
-        $tgtNONUST      = 1000 * 25;
-        $tgtSeleraku    = 180 * 25;
+        $tgtUST         = 80;
+        $tgtNONUST      = 1000;
+        $tgtSeleraku    = 180;
 
         $resActs = DB::select("
             SELECT 
