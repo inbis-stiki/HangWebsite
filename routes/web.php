@@ -15,6 +15,7 @@ use App\Http\Middleware\CheckRole;
 */
 // TES IMAGE S3
 Route::get('testimage', 'ImageController@create');
+Route::get('testexcel', 'ImageController@excel');
 Route::post('testimage', 'ImageController@store');
 Route::get('testimage/{image}', 'ImageController@show');
 Route::get('testTemplate', 'CronjobController@TestTemplate');
