@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Area;
 use App\Location;
+use App\Regional;
 use App\ReportShop;
 use App\Shop;
 use Illuminate\Http\Request;
@@ -14,30 +15,30 @@ class ReportShopController extends Controller
         $data['title']          = "Toko";
         $data['sidebar']        = "shop";
         $data['sidebar2']       = "";
-        $data['locations']      = Location::where('deleted_at', NULL)->get();
-        $data['coords']         = Shop::getShopByLoc($data['locations'][0]->ID_LOCATION);
-        $data['shopTypeCounts'] = Shop::getTotTypeByLoc($data['locations'][0]->ID_LOCATION);
-        $data['area']           = $data['locations'][0]->NAME_LOCATION;
+        $data['regionals']      = Regional::where('deleted_at', NULL)->get();
+        $data['coords']         = Shop::getShopByReg($data['regionals'][0]->ID_REGIONAL);
+        $data['shopTypeCounts'] = Shop::getTotTypeByReg($data['regionals'][0]->ID_REGIONAL);
+        $data['area']           = $data['regionals'][0]->NAME_REGIONAL;
 
         return view('laporan.shop.shop', $data);
     }
 
-    public function get($idLoc){
+    public function get($idReg){
         $data['title']          = "Toko";
         $data['sidebar']        = "shop";
         $data['sidebar2']       = "";
-        $data['locations']      = Location::where('deleted_at', NULL)->get();
-        $data['coords']         = Shop::getShopByLoc($idLoc);
-        $data['shopTypeCounts'] = Shop::getTotTypeByLoc($idLoc);
-        $data['area']           = $data['locations'][0]->NAME_LOCATION;
-        $data['idLoc']          = $idLoc;
+        $data['regionals']      = Regional::where('deleted_at', NULL)->get();
+        $data['coords']         = Shop::getShopByReg($idReg);
+        $data['shopTypeCounts'] = Shop::getTotTypeByReg($idReg);
+        $data['area']           = $data['regionals'][0]->NAME_REGIONAL;
+        $data['idReg']          = $idReg;
 
         return view('laporan.shop.shop', $data);
     }
 
     public function download(){
-        $data['location']   = Location::where('ID_LOCATION', $_POST['idLocation'])->first();
-        $data['areas']      = Shop::getTotTypePerArea($_POST['idLocation']);
+        $data['regional']   = Regional::where('ID_REGIONAL', $_POST['idRegional'])->first();
+        $data['areas']      = Shop::getTotTypePerArea($_POST['idRegional']);
 
         $report = new ReportShop();
         $report->generate($data);

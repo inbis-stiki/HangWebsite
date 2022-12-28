@@ -117,6 +117,12 @@ class TransactionApi extends Controller
                     $nameReg    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
                     $nameArea   = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
     
+                    $typeAct = null;
+                    if((int)$req->input('is_trans') == 1){
+                        $typeAct = $shop->TYPE_SHOP;
+                    }
+                    
+                    
                     $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
                     $transaction->ID_TD             = $transDaily->ID_TD;
@@ -133,7 +139,7 @@ class TransactionApi extends Controller
                     $transaction->LAT_TRANS    = $req->input('lat_trans');
                     $transaction->AREA_TRANS    = $nameArea;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
-                    $transaction->TYPE_ACTIVITY     = $shop->TYPE_SHOP;
+                    $transaction->TYPE_ACTIVITY     = $typeAct;
                     $transaction->save();
     
                     foreach ($req->input('product') as $item) {
@@ -156,7 +162,7 @@ class TransactionApi extends Controller
                                 'QTY_TD'            => $item['qty_product'],
                                 'DATE_TD'           => $currDate,
                                 'ID_USER'           => $req->input('id_user'),
-                                'TYPE_ACTIVITY'     => $shop->TYPE_SHOP,
+                                'TYPE_ACTIVITY'     => $typeAct,
                                 'LOCATION_TRANS'    => $nameLoc,
                                 'REGIONAL_TRANS'    => $nameReg,
                                 'AREA_TRANS'        => $nameArea,
@@ -288,6 +294,11 @@ class TransactionApi extends Controller
                     $nameLoc    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
                     $nameReg    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
                     $nameArea   = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
+                    
+                    $typeAct = null;
+                    if((int)$req->input('is_trans') == 1){
+                        $typeAct = "Aktivitas UB";
+                    }
 
                     $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
@@ -304,7 +315,7 @@ class TransactionApi extends Controller
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
                     $transaction->LONG_TRANS        = $req->input('long_trans');
                     $transaction->DETAIL_LOCATION   = $req->input('detail_loc');
-                    $transaction->TYPE_ACTIVITY     = "Aktivitas UB";
+                    $transaction->TYPE_ACTIVITY     = $typeAct;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
                     $transaction->save();
 
@@ -326,7 +337,7 @@ class TransactionApi extends Controller
                                 'QTY_TD'            => $item['qty_product'],
                                 'DATE_TD'           => $currDate,
                                 'ID_USER'           => $req->input('id_user'),
-                                'TYPE_ACTIVITY'     => "Aktivitas UB",
+                                'TYPE_ACTIVITY'     => $typeAct,
                                 'LOCATION_TRANS'    => $nameLoc,
                                 'REGIONAL_TRANS'    => $nameReg,
                                 'AREA_TRANS'        => $nameArea,
@@ -458,6 +469,11 @@ class TransactionApi extends Controller
                     $nameLoc    = $location::select('NAME_LOCATION')->where('ID_LOCATION', $req->input('id_location'))->first()->NAME_LOCATION;
                     $nameReg    = $regional::select('NAME_REGIONAL')->where('ID_REGIONAL', $req->input('id_regional'))->first()->NAME_REGIONAL;
                     $nameArea   = $area::select('NAME_AREA')->where('ID_AREA', $req->input('id_area'))->first()->NAME_AREA;
+
+                    $typeAct = null;
+                    if((int)$req->input('is_trans') == 1){
+                        $typeAct = "Aktivitas UB";
+                    }
     
                     $unik                           = md5($req->input('id_user') . "_" . $currDate);
                     $transaction->ID_TRANS          = "TRANS_" . $unik;
@@ -474,7 +490,7 @@ class TransactionApi extends Controller
                     $transaction->DISTRICT          = $district::select('NAME_DISTRICT')->where('ID_DISTRICT', $req->input('id_district'))->first()->NAME_DISTRICT;
                     $transaction->LAT_TRANS         = $req->input('lat_trans');
                     $transaction->LONG_TRANS        = $req->input('long_trans');
-                    $transaction->TYPE_ACTIVITY     = "Aktivitas UB";
+                    $transaction->TYPE_ACTIVITY     = $typeAct;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
                     $transaction->save();
     
@@ -497,7 +513,7 @@ class TransactionApi extends Controller
                                 'QTY_TD'            => $item['qty_product'],
                                 'DATE_TD'           => $currDate,
                                 'ID_USER'           => $req->input('id_user'),
-                                'TYPE_ACTIVITY'     => "Aktivitas UB",
+                                'TYPE_ACTIVITY'     => $typeAct,
                                 'LOCATION_TRANS'    => $nameLoc,
                                 'REGIONAL_TRANS'    => $nameReg,
                                 'AREA_TRANS'        => $nameArea,

@@ -61,7 +61,7 @@ class ReportShop
         $ObjSheet->getColumnDimension('G')->setWidth('20');
         $ObjSheet->getColumnDimension('H')->setWidth('20');
 
-        $ObjSheet->mergeCells('B2:H2')->setCellValue('B2', $param['location']->NAME_LOCATION)->getStyle('B2:H2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+        $ObjSheet->mergeCells('B2:H2')->setCellValue('B2', $param['regional']->NAME_REGIONAL)->getStyle('B2:H2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
         $ObjSheet->mergeCells('B3:B5')->setCellValue('B3', "NO")->getStyle('B3:B5')->applyFromArray($this->styling_title_template('FF66FF33', 'FF000000'));
         $ObjSheet->mergeCells('C3:C5')->setCellValue('C3', "Area")->getStyle('C3:C5')->applyFromArray($this->styling_title_template('FF66FF33', 'FF000000'));
         
@@ -172,7 +172,7 @@ class ReportShop
             $ObjSheet->mergeCells('G'.$rowSheetArea.':G'.($rowSheetArea+1))->setCellValue('G'.$rowSheetArea.'', $totPermanenArea)->getStyle('G'.$rowSheetArea.':G'.($rowSheetArea+1))->applyFromArray($this->styling_title_template('00B050', 'FF000000'));
             $ObjSheet->mergeCells('H'.$rowSheetArea.':H'.($rowSheetArea+1))->setCellValue('H'.$rowSheetArea.'', $totAllTokoArea)->getStyle('H'.$rowSheetArea.':H'.($rowSheetArea+1))->applyFromArray($this->styling_title_template('00B050', 'FF000000'));
 
-        $fileName = 'Report Toko - '.$param['location']->NAME_LOCATION."_".date('j F Y');
+        $fileName = 'Report Toko - '.$param['regional']->NAME_REGIONAL."_".date('j F Y');
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file

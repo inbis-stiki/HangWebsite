@@ -125,10 +125,6 @@ class CronjobController extends Controller
     }
     public function updateSmyTransLocation(){
         try {
-
-            $prodCategorys  = CategoryProduct::where('deleted_at', NULL)->get();
-            $actCategorys   = ActivityCategory::where('deleted_at', NULL)->get();
-
             $month          = date('n', strtotime('-1 days'));
             $year           = date('Y', strtotime('-1 days'));
             $updated_at     = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
@@ -168,162 +164,57 @@ class CronjobController extends Controller
             ], 500);
         }
     }
-    public function genReportRankRegional(){
+    public function genRankRPO(){
         $month          = date('n', strtotime('-1 days'));
         $year           = date('Y', strtotime('-1 days'));
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $reports = Cronjob::queryGetSmyRegional($year, $month);
+        $datas['reportDapuls'] = Cronjob::queryGetSmy($year, $month, "Regional", 1);
+        $datas['reportLapuls'] = Cronjob::queryGetSmy($year, $month, "Regional", 0);
 
-        $datas['dapulActs']         = [];
-        $datas['lapulActs']         = [];
+        $datas['avgNat']['TGTUB']           = ($datas['reportDapuls']['reportActs']['AVG_TGTUB'] + $datas['reportLapuls']['reportActs']['AVG_TGTUB']) / 2; 
+        $datas['avgNat']['REALACTUB']       = ($datas['reportDapuls']['reportActs']['AVG_REALACTUB'] + $datas['reportLapuls']['reportActs']['AVG_REALACTUB']) / 2; 
+        $datas['avgNat']['VSUB']            = ($datas['reportDapuls']['reportActs']['AVG_VSUB'] + $datas['reportLapuls']['reportActs']['AVG_VSUB']) / 2;
+        $datas['avgNat']['TGTPS']           = ($datas['reportDapuls']['reportActs']['AVG_TGTPS'] + $datas['reportLapuls']['reportActs']['AVG_TGTPS']) / 2; 
+        $datas['avgNat']['REALACTPS']       = ($datas['reportDapuls']['reportActs']['AVG_REALACTPS'] + $datas['reportLapuls']['reportActs']['AVG_REALACTPS']) / 2; 
+        $datas['avgNat']['VSPS']            = ($datas['reportDapuls']['reportActs']['AVG_VSPS'] + $datas['reportLapuls']['reportActs']['AVG_VSPS']) / 2;
+        $datas['avgNat']['TGTRETAIL']       = ($datas['reportDapuls']['reportActs']['AVG_TGTRETAIL'] + $datas['reportLapuls']['reportActs']['AVG_TGTRETAIL']) / 2; 
+        $datas['avgNat']['REALACTRETAIL']   = ($datas['reportDapuls']['reportActs']['AVG_REALACTRETAIL'] + $datas['reportLapuls']['reportActs']['AVG_REALACTRETAIL']) / 2; 
+        $datas['avgNat']['VSRETAIL']        = ($datas['reportDapuls']['reportActs']['AVG_VSRETAIL'] + $datas['reportLapuls']['reportActs']['AVG_VSRETAIL']) / 2;
         
-        // ACTIVITY
+        $datas['avgNat']['TGTUST']          = ($datas['reportDapuls']['reportProds']['AVG_TGTUST'] + $datas['reportLapuls']['reportProds']['AVG_TGTUST']) / 2; 
+        $datas['avgNat']['REALUST']         = ($datas['reportDapuls']['reportProds']['AVG_REALUST'] + $datas['reportLapuls']['reportProds']['AVG_REALUST']) / 2; 
+        $datas['avgNat']['VSUST']           = ($datas['reportDapuls']['reportProds']['AVG_VSUST'] + $datas['reportLapuls']['reportProds']['AVG_VSUST']) / 2;
+        $datas['avgNat']['TGTNONUST']       = ($datas['reportDapuls']['reportProds']['AVG_TGTNONUST'] + $datas['reportLapuls']['reportProds']['AVG_TGTNONUST']) / 2; 
+        $datas['avgNat']['REALNONUST']      = ($datas['reportDapuls']['reportProds']['AVG_REALNONUST'] + $datas['reportLapuls']['reportProds']['AVG_REALNONUST']) / 2; 
+        $datas['avgNat']['VSNONUST']        = ($datas['reportDapuls']['reportProds']['AVG_VSNONUST'] + $datas['reportLapuls']['reportProds']['AVG_VSNONUST']) / 2;
+        $datas['avgNat']['TGTSELERAKU']     = ($datas['reportDapuls']['reportProds']['AVG_TGTSELERAKU'] + $datas['reportLapuls']['reportProds']['AVG_TGTSELERAKU']) / 2; 
+        $datas['avgNat']['REALSELERAKU']    = ($datas['reportDapuls']['reportProds']['AVG_REALSELERAKU'] + $datas['reportLapuls']['reportProds']['AVG_REALSELERAKU']) / 2; 
+        $datas['avgNat']['VSSELERAKU']      = ($datas['reportDapuls']['reportProds']['AVG_VSSELERAKU'] + $datas['reportLapuls']['reportProds']['AVG_VSSELERAKU']) / 2;
 
-        $indexDapul          = 0;
-        $indexLapul          = 0;
-        // $tgtDapulUB          = 0;
-        // $tgtDapulPS          = 0;
-        // $tgtDapulRETAIL      = 0;
-        // $tgtLapulUB          = 0;
-        // $tgtLapulPS          = 0;
-        // $tgtLapulRETAIL      = 0;
-        // $realDapulUB         = 0;
-        // $realDapulRETAIL     = 0;
-        // $realDapulPS         = 0;
-        // $realLapulUB         = 0;
-        // $realLapulPS         = 0;
-        // $realLapulRETAIL     = 0;
-        foreach ($reports['reportActs'] as $report) {
-            $detailReport = Cronjob::queryGetDetailSmyRegional($report->REGIONAL_STL);
-
-            if($detailReport == NULL){
-                $datas['dapulActs'][$indexDapul] = $report;
-                $datas['dapulActs'][$indexDapul]['NAME_USER'] = "";
-                $indexDapul++;
-
-                // $tgtDapulUB     += $report->TGTACTUB_STL;
-                // $tgtDapulPS     += $report->TGTACTPS_STL;
-                // $tgtDapulRETAIL += $report->TGTACTRETAIL_STL;
-
-                // $realDapulUB     += $report->REALACTUB_STL;
-                // $realDapulPS     += $report->REALACTPS_STL;
-                // $realDapulRETAIL += $report->REALACTRETAIL_STL;
-            }else if($detailReport[0]->ISINSIDE_LOCATION == 1){
-                $datas['dapulActs'][$indexDapul] = $report;
-                $datas['dapulActs'][$indexDapul]->NAME_USER = $detailReport[0]->NAME_USER;
-                $indexDapul++;
-                
-                // $tgtDapulUB     += $report->TGTACTUB_STL;
-                // $tgtDapulPS     += $report->TGTACTPS_STL;
-                // $tgtDapulRETAIL += $report->TGTACTRETAIL_STL;
-
-                // $realDapulUB     += $report->REALACTUB_STL;
-                // $realDapulPS     += $report->REALACTPS_STL;
-                // $realDapulRETAIL += $report->REALACTRETAIL_STL;
-            }else{
-                $datas['lapulActs'][$indexLapul] = $report;
-                $datas['lapulActs'][$indexLapul]->NAME_USER = $detailReport[0]->NAME_USER;
-                $indexLapul++;
-
-                // $tgtLapulUB     += $report->TGTACTUB_STL;
-                // $tgtLapulPS     += $report->TGTACTPS_STL;
-                // $tgtLapulRETAIL += $report->TGTACTRETAIL_STL;
-
-                // $realLapulUB     += $report->REALACTUB_STL;
-                // $realLapulPS     += $report->REALACTPS_STL;
-                // $realLapulRETAIL += $report->REALACTRETAIL_STL;
-            }
-            
-        }
-
-        // $datas['avgDapulUB']        = $realDapulUB != 0 ? ($realDapulUB / $tgtDapulUB) * 100 : 0;
-        // $datas['avgDapulPS']        = $realDapulPS != 0 ? ($realDapulPS / $tgtDapulPS) * 100 : 0;
-        // $datas['avgDapulRETAIL']    = $realDapulRETAIL != 0 ? ($realDapulRETAIL / $tgtDapulRETAIL) * 100 : 0;
-        // $datas['avgLapulUB']        = $realLapulUB != 0 ? ($realLapulUB / $tgtLapulUB) * 100 : 0;
-        // $datas['avgLapulPS']        = $realLapulPS != 0 ? ($realLapulPS / $tgtLapulPS) * 100 : 0;
-        // $datas['avgLapulRETAIL']    = $realLapulRETAIL != 0 ? ($realLapulRETAIL / $tgtLapulRETAIL) * 100 : 0;
-
-        // PENCAPAIAN
-
-        $datas['dapulProds']  = [];
-        $datas['lapulProds']  = [];
-        $indexDapul = 0;
-        $indexLapul = 0;
-
-
-        // $tgtDapulUST        = 0;
-        // $tgtDapulNONUST     = 0;
-        // $tgtDapulSELERAKU   = 0;
-        // $tgtLapulUST        = 0;
-        // $tgtLapulNONUST     = 0;
-        // $tgtLapulSELERAKU   = 0;
-        // $realDapulUST       = 0;
-        // $realDapulNONUST    = 0;
-        // $realDapulSELERAKU  = 0;
-        // $realLapulUST       = 0;
-        // $realLapulNONUST    = 0;
-        // $realLapulSELERAKU  = 0;
-        foreach ($reports['reportProds'] as $report) {
-            $detailReport = Cronjob::queryGetDetailSmyRegional($report->REGIONAL_STL);
-
-            if($detailReport == NULL){
-                $datas['dapulProds'][$indexDapul] = $report;
-                $datas['dapulProds'][$indexDapul]->NAME_USER = "";
-                $indexDapul++;
-
-                // $tgtDapulUST        += $report->TGTUST_STL;
-                // $tgtDapulNONUST     += $report->TGTPS_STL;
-                // $tgtDapulSELERAKU   += $report->TGTSELERAKU_STL;
-
-                // $realDapulUST        += $report->REALUST_STL;
-                // $realDapulNONUST     += $report->REALPS_STL;
-                // $realDapulSELERAKU   += $report->REALSELERAKU_STL;
-            }else if($detailReport[0]->ISINSIDE_LOCATION == 1){
-                $datas['dapulProds'][$indexDapul] = $report;
-                $datas['dapulProds'][$indexDapul]->NAME_USER = $detailReport[0]->NAME_USER;
-                $indexDapul++;
-
-                // $tgtDapulUST        += $report->TGTUST_STL;
-                // $tgtDapulNONUST     += $report->TGTPS_STL;
-                // $tgtDapulSELERAKU   += $report->TGTSELERAKU_STL;
-
-                // $realDapulUST      += $report->REALUST_STL;
-                // $realDapulNONUST   += $report->REALPS_STL;
-                // $realDapulSELERAKU += $report->REALSELERAKU_STL;
-            }else{
-                $datas['lapulProds'][$indexLapul] = $report;
-                $datas['lapulProds'][$indexLapul]->NAME_USER = $detailReport[0]->NAME_USER;
-                $indexLapul++;
-
-                // $tgtLapulUST        += $report->TGTUST_STL;
-                // $tgtLapulNONUST     += $report->TGTPS_STL;
-                // $tgtLapulSELERAKU   += $report->TGTSELERAKU_STL;
-
-                // $realLapulUST      += $report->REALUST_STL;
-                // $realLapulNONUST   += $report->REALPS_STL;
-                // $realLapulSELERAKU += $report->REALSELERAKU_STL;
-            }
-        }
-
-        // $datas['avgDapulUST']       = $realDapulUST != 0 ? ($realDapulUST / $tgtDapulUST) * 100 : 0;
-        // $datas['avgDapulNONUST']    = $realDapulNONUST != 0 ? ($realDapulNONUST / $tgtDapulNONUST) * 100 : 0;
-        // $datas['avgDapulSELERAKU']  = $realDapulSELERAKU != 0 ? ($realDapulSELERAKU / $tgtDapulSELERAKU) * 100 : 0;
-        // $datas['avgLapulUST']       = $realLapulUST != 0 ? ($realLapulUST / $tgtLapulUST) * 100 : 0;
-        // $datas['avgLapulNONUST']    = $realLapulNONUST != 0 ? ($realLapulNONUST / $tgtLapulNONUST) * 100 : 0;
-        // $datas['avgLapulSELERAKU']  = $realLapulSELERAKU != 0 ? ($realLapulSELERAKU / $tgtLapulSELERAKU) * 100 : 0;
-
-        // // AVG NATIONAL
-        // $datas['avgNatUB']          = $datas['avgDapulUB'] != 0 && $datas['avgLapulUB'] ? ($datas['avgDapulUB'] + $datas['avgLapulUB'])/2 : 0;
-        // $datas['avgNatPS']          = $datas['avgDapulPS'] != 0 && $datas['avgLapulPS'] ? ($datas['avgDapulPS'] + $datas['avgLapulPS'])/2 : 0;
-        // $datas['avgNatRETAIL']      = $datas['avgDapulRETAIL'] != 0 && $datas['avgLapulRETAIL'] ? ($datas['avgDapulRETAIL'] + $datas['avgLapulRETAIL'])/2 : 0;
-        // $datas['avgNatUST']         = $datas['avgDapulUST'] != 0 && $datas['avgLapulUST'] ? ($datas['avgDapulUST'] + $datas['avgLapulUST'])/2 : 0;
-        // $datas['avgNatNONUST']      = $datas['avgDapulNONUST'] != 0 && $datas['avgLapulNONUST'] ? ($datas['avgDapulNONUST'] + $datas['avgLapulNONUST'])/2 : 0;
-        // $datas['avgNatSELERAKU']    = $datas['avgDapulSELERAKU'] != 0 && $datas['avgLapulSELERAKU'] ? ($datas['avgDapulSELERAKU'] + $datas['avgLapulSELERAKU'])/2 : 0;
         
         app(ReportRanking::class)->generate_ranking_rpo($datas, $updated_at);
     }
-    public function generateReportTransDaily(){
+    public function genRankAsmen(){
+        $month          = date('n', strtotime('-1 days'));
+        $year           = date('Y', strtotime('-1 days'));
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $datas['reports']   = Cronjob::queryGetSmy($year, $month, "Location", 3);
+        app(ReportRanking::class)->generate_ranking_asmen($datas, $updated_at);
+    }
+    public function genRankAPOSPG(){
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $datas['reportApos'] = Cronjob::queryGetSmyUser(7, 5);
+        $datas['reportSpgs'] = Cronjob::queryGetSmyUser(7, 6);
+
+        app(ReportRanking::class)->generate_ranking_apo_spg($datas, $updated_at);
+    }
+    public function genTrendRPO(){
+        app(ReportTrend::class)->generate_trend_rpo();
+    }
+    public function genTransDaily(){
         $products       = Product::get();
         $querySumProd   = [];
         $idUsers        = null;

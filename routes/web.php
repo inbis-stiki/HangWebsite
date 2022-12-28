@@ -15,6 +15,7 @@ use App\Http\Middleware\CheckRole;
 */
 // TES IMAGE S3
 Route::get('testimage', 'ImageController@create');
+Route::get('testexcel', 'ImageController@excel');
 Route::post('testimage', 'ImageController@store');
 Route::get('testimage/{image}', 'ImageController@show');
 Route::get('testTemplate', 'CronjobController@TestTemplate');
@@ -29,10 +30,15 @@ Route::post('auth', 'AuthController@auth');
 Route::get('logout', 'AuthController@logout');
 Route::get('cronjob/update-shop-recommendation', 'CronjobController@updateRecommendShop');
 Route::get('cronjob/rangking', 'CronjobController@cronjob_template_rangking');
-Route::get('cronjob/update-daily-rangking-achievement', 'CronjobController@updateDailyRankingAchievement');
+Route::get('cronjob/update-daily-rangking-ac/transactionhievement', 'CronjobController@updateDailyRankingAchievement');
 Route::get('cronjob/update-daily-rangking-activity', 'CronjobController@updateDailyRankingActivity');
 Route::get('cronjob/update-dashboard-mobile', 'CronjobController@updateDashboardMobile');
 Route::get('cronjob/update-summary-trans-location', 'CronjobController@updateSmyTransLocation');
+Route::get('cronjob/gen-trans-daily', 'CronjobController@genTransDaily');
+Route::get('cronjob/gen-rank-apospg', 'CronjobController@genRankAPOSPG');
+Route::get('cronjob/gen-rank-rpo', 'CronjobController@genRankRPO');
+Route::get('cronjob/gen-rank-asmen', 'CronjobController@genRankAsmen');
+Route::get('cronjob/gen-trend-rpo', 'CronjobController@genTrendRPO');
 Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
 Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
