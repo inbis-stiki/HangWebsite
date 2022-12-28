@@ -220,12 +220,20 @@
                         }, 0);
         
                     // Update footer
+                    $(api.column(1).footer()).css('color', 'black')
+                    $(api.column(2).footer()).css('color', 'black')
+                    $(api.column(3).footer()).css('color', 'black')
+                    $(api.column(4).footer()).css('color', 'black')
+                    $(api.column(5).footer()).css('color', 'black')
+                    $(api.column(6).footer()).css('color', 'black')
+
+                    var total_akun = (pageTotal2 + pageTotal3 + pageTotal4 + pageTotal5 + pageTotal6)
                     $(api.column(1).footer()).html("Total");
-                    $(api.column(2).footer()).html(pageTotal2);
-                    $(api.column(3).footer()).html(pageTotal3);
-                    $(api.column(4).footer()).html(pageTotal4);
-                    $(api.column(5).footer()).html(pageTotal5);
-                    $(api.column(6).footer()).html(pageTotal6);
+                    $(api.column(2).footer()).html(pageTotal2 + " ("+ Math.round((pageTotal2 / total_akun) * 100) +"%)");
+                    $(api.column(3).footer()).html(pageTotal3 + " ("+ Math.round((pageTotal3 / total_akun) * 100) +"%)");
+                    $(api.column(4).footer()).html(pageTotal4 + " ("+ Math.round((pageTotal4 / total_akun) * 100) +"%)");
+                    $(api.column(5).footer()).html(pageTotal5 + " ("+ Math.round((pageTotal5 / total_akun) * 100) +"%)");
+                    $(api.column(6).footer()).html(pageTotal6 + " ("+ Math.round((pageTotal6 / total_akun) * 100) +"%)");
                 },
             }).draw()
         } else {
@@ -323,12 +331,20 @@
                         }, 0);
         
                     // Update footer
+                    $(api.column(1).footer()).css('color', 'black')
+                    $(api.column(2).footer()).css('color', 'black')
+                    $(api.column(3).footer()).css('color', 'black')
+                    $(api.column(4).footer()).css('color', 'black')
+                    $(api.column(5).footer()).css('color', 'black')
+                    $(api.column(6).footer()).css('color', 'black')
+
+                    var total_akun = (pageTotal2 + pageTotal3 + pageTotal4 + pageTotal5 + pageTotal6)
                     $(api.column(1).footer()).html("Total");
-                    $(api.column(2).footer()).html(pageTotal2);
-                    $(api.column(3).footer()).html(pageTotal3);
-                    $(api.column(4).footer()).html(pageTotal4);
-                    $(api.column(5).footer()).html(pageTotal5);
-                    $(api.column(6).footer()).html(pageTotal6);
+                    $(api.column(2).footer()).html(pageTotal2 + " ("+ Math.round((pageTotal2 / total_akun) * 100) +"%)");
+                    $(api.column(3).footer()).html(pageTotal3 + " ("+ Math.round((pageTotal3 / total_akun) * 100) +"%)");
+                    $(api.column(4).footer()).html(pageTotal4 + " ("+ Math.round((pageTotal4 / total_akun) * 100) +"%)");
+                    $(api.column(5).footer()).html(pageTotal5 + " ("+ Math.round((pageTotal5 / total_akun) * 100) +"%)");
+                    $(api.column(6).footer()).html(pageTotal6 + " ("+ Math.round((pageTotal6 / total_akun) * 100) +"%)");
                 },
             }).draw()
         }
