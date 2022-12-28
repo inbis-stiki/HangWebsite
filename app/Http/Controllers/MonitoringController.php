@@ -58,27 +58,31 @@ class MonitoringController extends Controller
                 FROM
                     md_regional mr2
                 LEFT JOIN 
-                    (
-                        SELECT
-                            t.ID_USER,
-                            t.REGIONAL_TRANS,
-                            COUNT(t.ID_TRANS) < 10 AS DATA_TEMP_1,
-                            (COUNT(t.ID_TRANS) BETWEEN 11 AND 20) AS DATA_TEMP_2,
-                            (COUNT(t.ID_TRANS) BETWEEN 21 AND 30) AS DATA_TEMP_3,
-                            COUNT(t.ID_TRANS) > 30 AS DATA_TEMP_4
-                        FROM 
-                            `transaction` t 
-                        WHERE 
-                            DATE(t.DATE_TRANS) = "' . $tgl_trans . '" 
-                        GROUP BY 
-                            t.ID_USER
-                    ) tb_temp ON 
+                                    (
+                    SELECT
+                        t.ID_USER,
+                        t.REGIONAL_TRANS,
+                        COUNT(t.ID_TRANS) < 10 AS DATA_TEMP_1,
+                        (COUNT(t.ID_TRANS) BETWEEN 11 AND 20) AS DATA_TEMP_2,
+                        (COUNT(t.ID_TRANS) BETWEEN 21 AND 30) AS DATA_TEMP_3,
+                        COUNT(t.ID_TRANS) > 30 AS DATA_TEMP_4
+                    FROM
+                        `transaction` t
+                    WHERE
+                        DATE(t.DATE_TRANS) = "' . $tgl_trans . '" 
+                        AND 
+                        t.ISTRANS_TRANS = 1
+                        AND 
+                        t.ID_TYPE = 1
+                    GROUP BY
+                        t.ID_USER
+                                    ) tb_temp ON
                     tb_temp.REGIONAL_TRANS = mr2.NAME_REGIONAL
-                GROUP BY 
+                GROUP BY
                     tb_temp.REGIONAL_TRANS
-                ORDER BY 
+                ORDER BY
                     mr2.NAME_REGIONAL ASC
-            ');            
+            ');
 
             $no = 0;
             for ($i = 0; $i < count($data_regional); $i++) {
@@ -136,7 +140,7 @@ class MonitoringController extends Controller
                     tb_temp.ID_REGIONAL = mr2.ID_REGIONAL
                 ORDER BY 
                     mr2.NAME_REGIONAL ASC
-            ');          
+            ');
 
             $no = 0;
             for ($i = 0; $i < count($data_regional); $i++) {
