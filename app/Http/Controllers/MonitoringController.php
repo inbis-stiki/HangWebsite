@@ -115,6 +115,7 @@ class MonitoringController extends Controller
                     $trans_3 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_3 : 0);
                     $trans_4 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_4 : 0);
                     $trans_5 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_5 : 0);
+                    $percentage_trans_6 = ($data_regional[$i]->JML - ($trans_1 + $trans_2 + $trans_3 + $trans_4));
                     $trans_6 = (!empty($NO_TRANS[$i]) ? $NO_TRANS[$i]->DATA_NO_TRANS : 0);
                     $data = array(
                         "NO" => ++$no,
@@ -124,7 +125,7 @@ class MonitoringController extends Controller
                         "TRANS_3" => $trans_3 . " (" . round(($trans_3 / $data_regional[$i]->JML) * 100) . "%)",
                         "TRANS_4" => $trans_4 . " (" . round(($trans_4 / $data_regional[$i]->JML) * 100) . "%)",
                         "TRANS_5" => $trans_5 . " (" . round(($trans_5 / $data_regional[$i]->JML) * 100) . "%)",
-                        "NO_TRANS" => $trans_6 . " (" . round(($trans_6 / $data_regional[$i]->JML) * 100) . "%)"
+                        "NO_TRANS" => $trans_6 . " (" . round(($percentage_trans_6 / $data_regional[$i]->JML) * 100) . "%)"
                     );
                     array_push($All_Data, $data);
                 }
