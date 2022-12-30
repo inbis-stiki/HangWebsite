@@ -44,10 +44,11 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Regional</th>
-                                            <th>< 07:00 </th>
-                                            <th>07:00 - 07:31</th>
-                                            <th>07:30 - 08:01</th>
-                                            <th>> 08:00</th>
+                                            <th>
+                                                < 07:01 </th>
+                                            <th>07:01 - 07:15</th>
+                                            <th>07:16 - 07:30</th>
+                                            <th>> 07:31</th>
                                             <th>Belum Presensi</th>
                                         </tr>
                                     </thead>
@@ -73,10 +74,11 @@
                                             <th>No</th>
                                             <th>Regional</th>
                                             <th>
-                                                < 10 </th>
-                                            <th>11 - 20</th>
-                                            <th>21 - 30</th>
-                                            <th>> 30</th>
+                                                < 11 </th>
+                                            <th>11 - 15</th>
+                                            <th>16 - 20</th>
+                                            <th>21 - 25</th>
+                                            <th>> 25</th>
                                             <th>Belum Transaksi</th>
                                         </tr>
                                     </thead>
@@ -137,8 +139,8 @@
                 },
                 "pageLength": 25,
                 "columnDefs": [{
-                    "className": "dt-center",
-                    "targets": "_all"
+                    "targets": "_all",
+                    "className": "dt-center"
                 }],
                 "serverMethod": 'POST',
                 "ajax": {
@@ -159,66 +161,211 @@
                         data: 'NAME_REGIONAL'
                     },
                     {
-                        data: 'TRANS_1'
+                        data: 'TRANS_1',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     },
                     {
-                        data: 'TRANS_2'
+                        data: 'TRANS_2',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     },
                     {
-                        data: 'TRANS_3'
+                        data: 'TRANS_3',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     },
                     {
-                        data: 'TRANS_4'
+                        data: 'TRANS_4',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     },
                     {
-                        data: 'TRANS_5'
+                        data: 'TRANS_5',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        data: 'NO_TRANS',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     }
                 ],
-                footerCallback: function (row, data, start, end, display) {
+                footerCallback: function(row, data, start, end, display) {
                     var api = this.api();
-        
+
                     // Remove the formatting to get integer data for summation
-                    var intVal = function (i) {
+                    var intVal = function(i) {
                         return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
                     };
-        
+
                     // Total over this page
                     pageTotal2 = api
-                        .column(2, { page: 'current' })
+                        .column(2, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
                     pageTotal3 = api
-                        .column(3, { page: 'current' })
+                        .column(3, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
                     pageTotal4 = api
-                        .column(4, { page: 'current' })
+                        .column(4, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
                     pageTotal5 = api
-                        .column(5, { page: 'current' })
+                        .column(5, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
                     pageTotal6 = api
-                        .column(6, { page: 'current' })
+                        .column(6, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
-        
+
                     // Update footer
                     $(api.column(1).footer()).css('color', 'black')
                     $(api.column(2).footer()).css('color', 'black')
@@ -229,11 +376,11 @@
 
                     var total_akun = (pageTotal2 + pageTotal3 + pageTotal4 + pageTotal5 + pageTotal6)
                     $(api.column(1).footer()).html("Total");
-                    $(api.column(2).footer()).html(pageTotal2 + " ("+ Math.round((pageTotal2 / total_akun) * 100) +"%)");
-                    $(api.column(3).footer()).html(pageTotal3 + " ("+ Math.round((pageTotal3 / total_akun) * 100) +"%)");
-                    $(api.column(4).footer()).html(pageTotal4 + " ("+ Math.round((pageTotal4 / total_akun) * 100) +"%)");
-                    $(api.column(5).footer()).html(pageTotal5 + " ("+ Math.round((pageTotal5 / total_akun) * 100) +"%)");
-                    $(api.column(6).footer()).html(pageTotal6 + " ("+ Math.round((pageTotal6 / total_akun) * 100) +"%)");
+                    $(api.column(2).footer()).html(pageTotal2 + " (" + Math.round((pageTotal2 / total_akun) * 100) + "%)");
+                    $(api.column(3).footer()).html(pageTotal3 + " (" + Math.round((pageTotal3 / total_akun) * 100) + "%)");
+                    $(api.column(4).footer()).html(pageTotal4 + " (" + Math.round((pageTotal4 / total_akun) * 100) + "%)");
+                    $(api.column(5).footer()).html(pageTotal5 + " (" + Math.round((pageTotal5 / total_akun) * 100) + "%)");
+                    $(api.column(6).footer()).html(pageTotal6 + " (" + Math.round((pageTotal6 / total_akun) * 100) + "%)");
                 },
             }).draw()
         } else {
@@ -270,66 +417,186 @@
                         data: 'NAME_REGIONAL'
                     },
                     {
-                        data: 'PRESENCE_1'
+                        data: 'PRESENCE_1',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     },
                     {
-                        data: 'PRESENCE_2'
+                        data: 'PRESENCE_2',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     },
                     {
-                        data: 'PRESENCE_3'
+                        data: 'PRESENCE_3',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     },
                     {
-                        data: 'PRESENCE_4'
+                        data: 'PRESENCE_4',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     },
                     {
-                        data: 'PRESENCE_5'
+                        data: 'PRESENCE_5',
+                        "render": function(data, type, row, meta) {
+                            var newData = (typeof data === 'string' ? parseInt(data.split(/(\s+)/)[0]) : data)
+                            if (type === 'sort' || type === 'type') {
+                                var r = 0;
+                                if (data) {
+                                    r = newData;
+                                }
+                                return r;
+                            }
+                            if (type === 'display') {
+                                var r = '';
+                                var temp = data.split(';');
+                                if (temp[0]) {
+                                    r = temp[0];
+                                    if (temp[1] && temp[1] != temp[0]) {
+                                        r += '-' + temp[1];
+                                    }
+                                }
+                                return r;
+                            }
+                            return data;
+                        }
                     }
                 ],
-                footerCallback: function (row, data, start, end, display) {
+                footerCallback: function(row, data, start, end, display) {
                     var api = this.api();
-        
+
                     // Remove the formatting to get integer data for summation
-                    var intVal = function (i) {
+                    var intVal = function(i) {
                         return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
                     };
-        
+
                     // Total over this page
                     pageTotal2 = api
-                        .column(2, { page: 'current' })
+                        .column(2, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
                     pageTotal3 = api
-                        .column(3, { page: 'current' })
+                        .column(3, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
                     pageTotal4 = api
-                        .column(4, { page: 'current' })
+                        .column(4, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
                     pageTotal5 = api
-                        .column(5, { page: 'current' })
+                        .column(5, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
                     pageTotal6 = api
-                        .column(6, { page: 'current' })
+                        .column(6, {
+                            page: 'current'
+                        })
                         .data()
-                        .reduce(function (a, b) {
-                            var data1 = b.split(/(\s+)/)[0]
+                        .reduce(function(a, b) {
+                            var data1 = (typeof b === 'string' ? b.split(/(\s+)/)[0] : b)
                             return intVal(a) + intVal(data1);
                         }, 0);
-        
+
                     // Update footer
                     $(api.column(1).footer()).css('color', 'black')
                     $(api.column(2).footer()).css('color', 'black')
@@ -340,11 +607,11 @@
 
                     var total_akun = (pageTotal2 + pageTotal3 + pageTotal4 + pageTotal5 + pageTotal6)
                     $(api.column(1).footer()).html("Total");
-                    $(api.column(2).footer()).html(pageTotal2 + " ("+ Math.round((pageTotal2 / total_akun) * 100) +"%)");
-                    $(api.column(3).footer()).html(pageTotal3 + " ("+ Math.round((pageTotal3 / total_akun) * 100) +"%)");
-                    $(api.column(4).footer()).html(pageTotal4 + " ("+ Math.round((pageTotal4 / total_akun) * 100) +"%)");
-                    $(api.column(5).footer()).html(pageTotal5 + " ("+ Math.round((pageTotal5 / total_akun) * 100) +"%)");
-                    $(api.column(6).footer()).html(pageTotal6 + " ("+ Math.round((pageTotal6 / total_akun) * 100) +"%)");
+                    $(api.column(2).footer()).html(pageTotal2 + " (" + Math.round((pageTotal2 / total_akun) * 100) + "%)");
+                    $(api.column(3).footer()).html(pageTotal3 + " (" + Math.round((pageTotal3 / total_akun) * 100) + "%)");
+                    $(api.column(4).footer()).html(pageTotal4 + " (" + Math.round((pageTotal4 / total_akun) * 100) + "%)");
+                    $(api.column(5).footer()).html(pageTotal5 + " (" + Math.round((pageTotal5 / total_akun) * 100) + "%)");
+                    $(api.column(6).footer()).html(pageTotal6 + " (" + Math.round((pageTotal6 / total_akun) * 100) + "%)");
                 },
             }).draw()
         }

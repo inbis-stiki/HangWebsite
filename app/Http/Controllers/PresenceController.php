@@ -32,7 +32,7 @@ class PresenceController extends Controller
     public function getAllPresence(Request $req)
     {
         $id_role  = $req->session()->get('role');
-        $id_location    = $req->session()->get('location');
+        $id_regional    = $req->session()->get('regional');
         $tgl_presence  = $req->input('tglSearchPresence');
         $id_regional_search  = $req->input('regionalSearch');
         if ($id_regional_search == 0) {
@@ -44,7 +44,7 @@ class PresenceController extends Controller
                     ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
                     ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
                     ->orderBy('presence.DATE_PRESENCE', 'DESC')
-                    ->where('md_regional.ID_LOCATION', '=', $id_location)
+                    ->where('md_regional.ID_REGIONAL', '=', $id_regional)
                     ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
                     ->get();
             } else {
@@ -68,7 +68,7 @@ class PresenceController extends Controller
                     ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
                     ->orderBy('presence.DATE_PRESENCE', 'DESC')
                     ->where('md_district.ID_AREA', '=', $id_regional_search)
-                    ->where('md_regional.ID_LOCATION', '=', $id_location)
+                    ->where('md_regional.ID_REGIONAL', '=', $id_regional)
                     ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
                     ->get();
             } else {

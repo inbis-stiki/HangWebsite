@@ -56,7 +56,7 @@
                                         <td>{{ $item->USERNAME_USER }}</td>
                                         <td>{{ $item->NAME_ROLE }}</td>
                                         <td>
-                                            @if ($item->deleted_at == NULL)
+                                            @if (empty($item->deleted_at))
                                             <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
                                             Enable
                                             @else

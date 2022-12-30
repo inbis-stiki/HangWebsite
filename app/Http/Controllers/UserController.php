@@ -24,6 +24,7 @@ class UserController extends Controller
         if($role == 3){
             $location = SESSION::get('location');
             $data['users']  = DB::table('user')
+            ->select('user.*', "md_role.ID_ROLE", "md_role.NAME_ROLE")
             ->where('user.ID_LOCATION', '=' , $location)
             ->where('user.ID_ROLE', '>' , $role)
             ->join('md_role', 'user.ID_ROLE', '=', 'md_role.ID_ROLE')
@@ -48,6 +49,7 @@ class UserController extends Controller
         }else if($role == 4){
             $regional = SESSION::get('regional');
             $data['users']  = DB::table('user')
+            ->select('user.*', "md_role.ID_ROLE", "md_role.NAME_ROLE")
             ->where('user.ID_REGIONAL', '=' , $regional)
             ->where('user.ID_ROLE', '>' , $role)
             ->join('md_role', 'user.ID_ROLE', '=', 'md_role.ID_ROLE')
@@ -89,7 +91,7 @@ class UserController extends Controller
         //     ->whereNull('md_area.deleted_at')->get();
         // }
         else{
-            $data['users']      = DB::table('user')->join('md_role', 'user.ID_ROLE', '=', 'md_role.ID_ROLE')->select('*')->get();
+            $data['users']      = DB::table('user')->join('md_role', 'user.ID_ROLE', '=', 'md_role.ID_ROLE')->select('user.*', "md_role.ID_ROLE", "md_role.NAME_ROLE")->get();
             $data['roles']      = Role::whereNull('deleted_at')->get();
             $data['areas']      = Area::whereNull('deleted_at')->get();
             $data['location']      = Location::whereNull('deleted_at')->get();
