@@ -54,7 +54,8 @@ class MonitoringController extends Controller
                     IFNULL(SUM(tb_temp.DATA_TEMP_1), 0) AS DATA_1,
                     IFNULL(SUM(tb_temp.DATA_TEMP_2), 0) AS DATA_2,
                     IFNULL(SUM(tb_temp.DATA_TEMP_3), 0) AS DATA_3,
-                    IFNULL(SUM(tb_temp.DATA_TEMP_4), 0) AS DATA_4
+                    IFNULL(SUM(tb_temp.DATA_TEMP_4), 0) AS DATA_4,
+                    IFNULL(SUM(tb_temp.DATA_TEMP_5), 0) AS DATA_5
                 FROM
                     md_regional mr2
                 LEFT JOIN 
@@ -62,10 +63,11 @@ class MonitoringController extends Controller
                     SELECT
                         t.ID_USER,
                         t.REGIONAL_TRANS,
-                        COUNT(t.ID_TRANS) < 10 AS DATA_TEMP_1,
-                        (COUNT(t.ID_TRANS) BETWEEN 11 AND 20) AS DATA_TEMP_2,
-                        (COUNT(t.ID_TRANS) BETWEEN 21 AND 30) AS DATA_TEMP_3,
-                        COUNT(t.ID_TRANS) > 30 AS DATA_TEMP_4
+                        COUNT(t.ID_TRANS) <= 10 AS DATA_TEMP_1,
+                        (COUNT(t.ID_TRANS) BETWEEN 11 AND 15) AS DATA_TEMP_2,
+                        (COUNT(t.ID_TRANS) BETWEEN 16 AND 20) AS DATA_TEMP_3,
+                        (COUNT(t.ID_TRANS) BETWEEN 21 AND 25) AS DATA_TEMP_4,
+                        COUNT(t.ID_TRANS) >= 26 AS DATA_TEMP_5
                     FROM
                         `transaction` t
                     WHERE
@@ -84,6 +86,27 @@ class MonitoringController extends Controller
                     mr2.NAME_REGIONAL ASC
             ');
 
+            $NO_TRANS = DB::select('
+                SELECT
+                    mr.NAME_REGIONAL,
+                    COUNT(u.ID_USER) AS DATA_NO_TRANS,
+                    p.DATE_PRESENCE
+                FROM
+                    `user` u
+                LEFT JOIN presence p ON
+                    p.ID_USER = u.ID_USER
+                LEFT JOIN md_regional mr ON 
+                    mr.ID_REGIONAL = u.ID_REGIONAL
+                WHERE
+                    u.ID_ROLE IN (5, 6)
+                    AND 
+                    DATE(p.DATE_PRESENCE) = "2022-12-30"
+                GROUP BY 
+                    u.ID_REGIONAL
+                ORDER BY 
+                    mr.NAME_REGIONAL ASC
+            ');
+
             $no = 0;
             for ($i = 0; $i < count($data_regional); $i++) {
                 if ($data_regional[$i]->NAME_REGIONAL != "") {
@@ -91,7 +114,9 @@ class MonitoringController extends Controller
                     $trans_2 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_2 : 0);
                     $trans_3 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_3 : 0);
                     $trans_4 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_4 : 0);
-                    $trans_5 = ($data_regional[$i]->JML - ($trans_1 + $trans_2 + $trans_3 + $trans_4));
+                    $trans_5 = (!empty($TRANS[$i]) ? $TRANS[$i]->DATA_5 : 0);
+                    $percentage_trans_6 = ($data_regional[$i]->JML - ($trans_1 + $trans_2 + $trans_3 + $trans_4));
+                    $trans_6 = (!empty($NO_TRANS[$i]) ? $NO_TRANS[$i]->DATA_NO_TRANS : 0);
                     $data = array(
                         "NO" => ++$no,
                         "NAME_REGIONAL" => $data_regional[$i]->NAME_REGIONAL,
@@ -99,7 +124,8 @@ class MonitoringController extends Controller
                         "TRANS_2" => $trans_2 . " (" . round(($trans_2 / $data_regional[$i]->JML) * 100) . "%)",
                         "TRANS_3" => $trans_3 . " (" . round(($trans_3 / $data_regional[$i]->JML) * 100) . "%)",
                         "TRANS_4" => $trans_4 . " (" . round(($trans_4 / $data_regional[$i]->JML) * 100) . "%)",
-                        "TRANS_5" => $trans_5 . " (" . round(($trans_5 / $data_regional[$i]->JML) * 100) . "%)"
+                        "TRANS_5" => $trans_5 . " (" . round(($trans_5 / $data_regional[$i]->JML) * 100) . "%)",
+                        "NO_TRANS" => $trans_6 . " (" . round(($percentage_trans_6 / $data_regional[$i]->JML) * 100) . "%)"
                     );
                     array_push($All_Data, $data);
                 }
@@ -120,10 +146,10 @@ class MonitoringController extends Controller
                     (
                         SELECT
                             u.ID_REGIONAL,
-                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 01:00:00" AND "' . $tgl_trans . ' 07:00:00")) AS DATA_TEMP_1,
-                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07:00:00" AND "' . $tgl_trans . ' 07:31:00")) AS DATA_TEMP_2,
-                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07:30:00" AND "' . $tgl_trans . ' 08:01:00")) AS DATA_TEMP_3,
-                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 08:00:00" AND "' . $tgl_trans . ' 23:00:00")) AS DATA_TEMP_4
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 01:00:00" AND "' . $tgl_trans . ' 07:01:00")) AS DATA_TEMP_1,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07.01:00" AND "' . $tgl_trans . ' 07:15:00")) AS DATA_TEMP_2,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07:16:00" AND "' . $tgl_trans . ' 07:30:00")) AS DATA_TEMP_3,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07:31:00" AND "' . $tgl_trans . ' 23:00:00")) AS DATA_TEMP_4
                         FROM
                             `user` u
                         LEFT JOIN presence p ON 
