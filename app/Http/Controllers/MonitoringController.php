@@ -100,7 +100,7 @@ class MonitoringController extends Controller
                 WHERE
                     u.ID_ROLE IN (5, 6)
                     AND 
-                    DATE(p.DATE_PRESENCE) = "2022-12-30"
+                    DATE(p.DATE_PRESENCE) = "' . $tgl_trans . '" 
                 GROUP BY 
                     u.ID_REGIONAL
                 ORDER BY 
