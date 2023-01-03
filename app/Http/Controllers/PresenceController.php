@@ -33,10 +33,22 @@ class PresenceController extends Controller
     {
         $id_role  = $req->session()->get('role');
         $id_regional    = $req->session()->get('regional');
+        $id_location    = $req->session()->get('location');
         $tgl_presence  = $req->input('tglSearchPresence');
         $id_regional_search  = $req->input('regionalSearch');
         if ($id_regional_search == 0) {
-            if ($id_role != 2 && $id_role != 1) {
+            if ($id_role == 3) {
+                $data_presence      = DB::table('presence')
+                    ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_area.ID_REGIONAL', 'md_regional.NAME_REGIONAL')
+                    ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
+                    ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
+                    ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
+                    ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+                    ->orderBy('presence.DATE_PRESENCE', 'DESC')
+                    ->where('md_regional.ID_LOCATION', '=', $id_location)
+                    ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
+                    ->get();
+            } else if($id_role == 4){
                 $data_presence      = DB::table('presence')
                     ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_area.ID_REGIONAL', 'md_regional.NAME_REGIONAL')
                     ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
@@ -59,7 +71,7 @@ class PresenceController extends Controller
                     ->get();
             }
         } else {
-            if ($id_role != 2 && $id_role != 1) {
+            if ($id_role == 3) {
                 $data_presence      = DB::table('presence')
                     ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_area.ID_REGIONAL', 'md_regional.NAME_REGIONAL')
                     ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
@@ -67,8 +79,20 @@ class PresenceController extends Controller
                     ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
                     ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
                     ->orderBy('presence.DATE_PRESENCE', 'DESC')
+                    ->where('md_regional.ID_LOCATION', '=', $id_location)
                     ->where('md_district.ID_AREA', '=', $id_regional_search)
+                    ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
+                    ->get();
+            } else if($id_role == 4){
+                $data_presence      = DB::table('presence')
+                    ->select('presence.*', 'user.NAME_USER', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_area.ID_REGIONAL', 'md_regional.NAME_REGIONAL')
+                    ->join('user', 'user.ID_USER', '=', 'presence.ID_USER')
+                    ->join('md_district', 'md_district.ID_DISTRICT', '=', 'presence.ID_DISTRICT')
+                    ->join('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
+                    ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+                    ->orderBy('presence.DATE_PRESENCE', 'DESC')
                     ->where('md_regional.ID_REGIONAL', '=', $id_regional)
+                    ->where('md_district.ID_AREA', '=', $id_regional_search)
                     ->where('presence.DATE_PRESENCE', 'like', $tgl_presence . '%')
                     ->get();
             } else {
