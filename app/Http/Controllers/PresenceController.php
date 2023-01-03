@@ -17,10 +17,16 @@ class PresenceController extends Controller
 
         $id_role  = $req->session()->get('role');
         $id_location    = $req->session()->get('location');
-        if ($id_role != 2 && $id_role != 1) {
+        $id_regional    = $req->session()->get('regional');
+        if ($id_role == 3) {
             $data['data_regional']  = DB::table('md_area')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
                 ->where('md_regional.ID_LOCATION', '=', $id_location)
+                ->get();
+        } else if ($id_role == 4) {
+            $data['data_regional']  = DB::table('md_area')
+                ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+                ->where('md_regional.ID_REGIONAL', '=', $id_regional)
                 ->get();
         } else {
             $data['data_regional']  = DB::table('md_area')->get();
