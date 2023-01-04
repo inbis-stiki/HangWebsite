@@ -307,6 +307,7 @@
     $(document).ready(function() {
         $("#role_add").change(function() {
             var val = $(this).val();
+            console.log(val);
             $("#area_add").html()
             if  (val == "1"){
                 $("#area_add").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
