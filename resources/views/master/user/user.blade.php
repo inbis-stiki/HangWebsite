@@ -269,6 +269,7 @@
         </div>
     </div>
 </div>
+
 <!-- Modal Change Password  -->
 <div class="modal fade" id="mdlChangePass">
     <div class="modal-dialog" role="document">
@@ -325,22 +326,12 @@
         });
     });
 
-    function showMdlEdit(id, username, idrole, area, ktp, name, email, phone, status) {
-        $("#area_edit").html()
-        if (idrole == "1") {
-            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-        } else if (idrole == "2") {
-            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-        } else if (idrole == "3") {
-            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($location as $loc)<option value='{{ $loc->ID_LOCATION }}'>{{ $loc->NAME_LOCATION }}</option>@endforeach");
-        } else if (idrole == "4") {
-            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($regional as $reg)<option value='{{ $reg->ID_REGIONAL }}'>{{ $reg->NAME_REGIONAL }}</option>@endforeach");
-        } else if (idrole == "5") {
-            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-        } else if (idrole == "6") {
-            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-        }
- 
+    function showMdlEdit(id, username, idrole, area, ktp, name, email, phone, status) { 
+        setDropdownAreaModalUpdate(idrole)
+        $('#role_edit').on('change', function(e){
+            setDropdownAreaModalUpdate($(this).val())
+        })
+
         $('#mdlEdit_id').val(id)
         $('#username_edit').val(username)
         $('#ktp_edit').val(ktp)
@@ -356,6 +347,23 @@
         }
  
         $('#mdlEdit').modal('show');
+    }
+
+    function setDropdownAreaModalUpdate(idrole){
+        $("#area_edit").html()
+        if (idrole == "1") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+        } else if (idrole == "2") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+        } else if (idrole == "3") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($location as $loc)<option value='{{ $loc->ID_LOCATION }}'>{{ $loc->NAME_LOCATION }}</option>@endforeach");
+        } else if (idrole == "4") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($regional as $reg)<option value='{{ $reg->ID_REGIONAL }}'>{{ $reg->NAME_REGIONAL }}</option>@endforeach");
+        } else if (idrole == "5") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+        } else if (idrole == "6") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+        }
     }
 
     function showMdlDelete(id) {
