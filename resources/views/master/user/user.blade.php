@@ -65,10 +65,10 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlChangePass('{{ $item->ID_USER }}', '{{ $item->USERNAME_USER }}', '{{ $item->ID_ROLE }}', '{{ $item->ID_AREA }}', '{{ $item->KTP_USER }}', '{{ $item->NAME_USER }}', '{{ $item->EMAIL_USER }}', '{{ $item->TELP_USER }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlChangePass('{{ $item->ID_USER }}', '{{ $item->USERNAME_USER }}', '{{ $item->ID_ROLE }}', '{{ ($item->ID_ROLE == 3) ? $item->ID_LOCATION : (($item->ID_ROLE == 2) ? $item->ID_REGIONAL : $item->ID_AREA) }}', '{{ $item->KTP_USER }}', '{{ $item->NAME_USER }}', '{{ $item->EMAIL_USER }}', '{{ $item->TELP_USER }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-key"></i>
                                             </button>
-                                            <button onclick="showMdlEdit('{{ $item->ID_USER }}', '{{ $item->USERNAME_USER }}', '{{ $item->ID_ROLE }}', '{{ $item->ID_AREA }}', '{{ $item->KTP_USER }}', '{{ $item->NAME_USER }}', '{{ $item->EMAIL_USER }}', '{{ $item->TELP_USER }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $item->ID_USER }}', '{{ $item->USERNAME_USER }}', '{{ $item->ID_ROLE }}', '{{ ($item->ID_ROLE == 3) ? $item->ID_LOCATION : (($item->ID_ROLE == 4) ? $item->ID_REGIONAL : $item->ID_AREA) }}', '{{ $item->KTP_USER }}', '{{ $item->NAME_USER }}', '{{ $item->EMAIL_USER }}', '{{ $item->TELP_USER }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                             <button onclick="showMdlDelete('{{ $item->ID_USER }}')" class="btn btn-primary btn-sm">
@@ -325,6 +325,21 @@
     });
 
     function showMdlEdit(id, username, idrole, area, ktp, name, email, phone, status) {
+        $("#area_edit").html()
+        if (idrole == "1") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+        } else if (idrole == "2") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+        } else if (idrole == "3") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($location as $loc)<option value='{{ $loc->ID_LOCATION }}'>{{ $loc->NAME_LOCATION }}</option>@endforeach");
+        } else if (idrole == "4") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($regional as $reg)<option value='{{ $reg->ID_REGIONAL }}'>{{ $reg->NAME_REGIONAL }}</option>@endforeach");
+        } else if (idrole == "5") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+        } else if (idrole == "6") {
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+        }
+ 
         $('#mdlEdit_id').val(id)
         $('#username_edit').val(username)
         $('#ktp_edit').val(ktp)
@@ -338,7 +353,7 @@
         } else {
             $('#status_disable').prop('checked', true)
         }
-
+ 
         $('#mdlEdit').modal('show');
     }
 
