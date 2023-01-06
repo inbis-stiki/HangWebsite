@@ -261,7 +261,7 @@ class UserController extends Controller
 
         $user   = Users::find($req->input('id'));
 
-        if ($req->input('role') == 3) {
+        if ($req->input('role') == 1 || $req->input('role') == 2 || $req->input('role') == 3) {
             if ($user->ID_LOCATION != $req->input('area')) {
                 $locations      = DB::table('md_location')
                     ->where('md_location.ID_LOCATION', $req->input('area'))
