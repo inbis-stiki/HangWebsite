@@ -338,6 +338,31 @@
     });
 
     function showMdlEdit(id, username, idrole, area, ktp, name, email, phone, status) {
+        
+        setDropdownAreaModalUpdate(idrole)
+        $('#role_edit').on('change', function(e){
+            setDropdownAreaModalUpdate($(this).val())
+        })
+
+        $('#mdlEdit_id').val(id)
+        $('#username_edit').val(username)
+        $('#ktp_edit').val(ktp)
+        $('#name_edit').val(name)
+        $('#email_edit').val(email)
+        $('#telepon_edit').val(phone)
+        $('#role_edit').val(idrole).change()
+        $('#area_edit').val(area).change()
+        $("#area_edit_sa").val(area)
+        if (status == null || status == '') {
+            $('#status_enable').prop('checked', true)
+        } else {
+            $('#status_disable').prop('checked', true)
+        }
+
+        $('#mdlEdit').modal('show');
+    }
+
+    function setDropdownAreaModalUpdate(idrole){
         $("#area_edit").html()
         if (idrole == "1") {
             $("#area_edit").html("<option selected value='{{ $location[0]->ID_LOCATION }}' >Pilih Area</option>");
@@ -361,41 +386,7 @@
         $("#area_edit").change(function() {
             $("#area_edit_sa").val($(this).val());
         });
-
-        $('#mdlEdit_id').val(id)
-        $('#username_edit').val(username)
-        $('#ktp_edit').val(ktp)
-        $('#name_edit').val(name)
-        $('#email_edit').val(email)
-        $('#telepon_edit').val(phone)
-        $('#role_edit').val(idrole).change()
-        $('#area_edit').val(area).change()
-        $("#area_edit_sa").val(area)
-        if (status == null || status == '') {
-            $('#status_enable').prop('checked', true)
-        } else {
-            $('#status_disable').prop('checked', true)
-        }
-
-        $('#mdlEdit').modal('show');
     }
-
-    // function setDropdownAreaModalUpdate(idrole){
-    //     $("#area_edit").html()
-    //     if (idrole == "1") {
-    //         $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-    //     } else if (idrole == "2") {
-    //         $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-    //     } else if (idrole == "3") {
-    //         $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($location as $loc)<option value='{{ $loc->ID_LOCATION }}'>{{ $loc->NAME_LOCATION }}</option>@endforeach");
-    //     } else if (idrole == "4") {
-    //         $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($regional as $reg)<option value='{{ $reg->ID_REGIONAL }}'>{{ $reg->NAME_REGIONAL }}</option>@endforeach");
-    //     } else if (idrole == "5") {
-    //         $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-    //     } else if (idrole == "6") {
-    //         $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-    //     }
-    // }
 
     function showMdlDelete(id) {
         $('#mdlDelete_id').val(id)
