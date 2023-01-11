@@ -715,7 +715,7 @@ class TransactionApi extends Controller
 
         return implode(";", $newStok);
     }
-    public function checkUBUBLP(Request $req){
+    public function checkUBUBLP(Request $req, $idType){
         try{
             $date = date('Y-m-d');
             $transUBUBLP = DB::select("
