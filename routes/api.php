@@ -56,6 +56,7 @@ Route::middleware(['checkAuthApi'])->group(function(){
     Route::post("transaction/ublp", "api\TransactionApi@ublp");
     Route::post("transactionimage/ublp", "api\TransactionImageApi@ublp");
     Route::post("transaction/ub", "api\TransactionApi@ubTransaction");
+    Route::get("transaction/checkUBUBLP", "api\TransactionApi@checkUBUBLP");
     Route::post("transactionimage/ub", "api\TransactionImageApi@ubImage");
     Route::get("transaction/history", "api\TransactionApi@TransactionHistory");
     Route::get("transaction/detail", "api\TransactionApi@DetailVisit");
