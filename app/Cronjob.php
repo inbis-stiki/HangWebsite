@@ -89,6 +89,28 @@ class Cronjob extends Model
                             AND td.ID_PC = 3
                 ), 0) as 'REALSELERAKU_STL',
                 COALESCE((
+                    SELECT SUM(td.QTY_TD)
+                    FROM `transaction` t2 
+                    INNER JOIN transaction_detail td 
+                        ON 
+                            YEAR(t2.DATE_TRANS) = ".$year."
+                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            AND t2.AREA_TRANS = t.AREA_TRANS 
+                            AND td.ID_TRANS = t2.ID_TRANS 
+                            AND td.ID_PC = 16
+                ), 0) as 'REALRENDANG_STL',
+                COALESCE((
+                    SELECT SUM(td.QTY_TD)
+                    FROM `transaction` t2 
+                    INNER JOIN transaction_detail td 
+                        ON 
+                            YEAR(t2.DATE_TRANS) = ".$year."
+                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            AND t2.AREA_TRANS = t.AREA_TRANS 
+                            AND td.ID_TRANS = t2.ID_TRANS 
+                            AND td.ID_PC = 17
+                ), 0) as 'REALGEPREK_STL',
+                COALESCE((
                     SELECT COUNT(*)
                     FROM `transaction` t2
                     WHERE 
@@ -141,7 +163,7 @@ class Cronjob extends Model
                         AND u.ID_ROLE = 4
             ";
             // SET TARGET
-            $tgtUB      = (12 * 14); // (tgt * jmlarea)
+            $tgtUB      = (12 * 14); // tgtUB * totArea
             $tgtPS      = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
             $tgtRetail  = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
 
