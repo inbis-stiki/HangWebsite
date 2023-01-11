@@ -209,66 +209,98 @@ class DashboardApi extends Controller
                 ->where('dashboard_mobile.ID_USER', '=', $req->input("id_user"))
                 ->first();
 
-            $targetUser = DB::table("user_target")
-                ->where('user_target.ID_USER', '=', $req->input("id_user"))
-                ->first();
-
             $transToday = TransactionDetailToday::getData($req->input('id_user'));
             $month = (int)date('j');
 
             $tdyUST         = (int)($transToday <> null) ? (($transToday[0]->UST <> null) ? $transToday[0]->UST : 0) : 0;
             $tdyNONUST      = (int)($transToday <> null) ? (($transToday[0]->NON_UST <> null) ? $transToday[0]->NON_UST : 0) : 0;
             $tdySeleraku    = (int)($transToday <> null) ? (($transToday[0]->SELERAKU <> null) ? $transToday[0]->SELERAKU : 0) : 0;
-            $transToday     = $tdyUST+$tdyNONUST+$tdySeleraku;
+            $tdyRendang     = (int)($transToday <> null) ? (($transToday[0]->RENDANG <> null) ? $transToday[0]->RENDANG : 0) : 0;
+            $tdyGeprek      = (int)($transToday <> null) ? (($transToday[0]->GEPREK <> null) ? $transToday[0]->SELERAKU : 0) : 0;
+            $transToday     = $tdyUST+$tdyNONUST+$tdySeleraku+$tdyRendang+$tdyGeprek;
 
             $realUST        = (int)($AllData_temp <> null) ? (($AllData_temp->REALUST_DM <> null) ? $AllData_temp->REALUST_DM : 0) : 0;
             $realNONUST     = (int)($AllData_temp <> null) ? (($AllData_temp->REALNONUST_DM <> null) ? $AllData_temp->REALNONUST_DM : 0) : 0;
             $realSeleraku   = (int)($AllData_temp <> null) ? (($AllData_temp->REALSELERAKU_DM <> null) ? $AllData_temp->REALSELERAKU_DM : 0) : 0;
+            $realRendang    = (int)($AllData_temp <> null) ? (($AllData_temp->REALRENDANG_DM <> null) ? $AllData_temp->REALRENDANG_DM : 0) : 0;
+            $realGeprek     = (int)($AllData_temp <> null) ? (($AllData_temp->REALGEPREK_DM <> null) ? $AllData_temp->REALGEPREK_DM : 0) : 0;
 
-            $tgtUST         = (int)$targetUser->SALESUST_UT;
-            $tgtNONUST      = (int)$targetUser->SALESNONUST_UT;
-            $tgtSeleraku    = (int)$targetUser->SALESSELERAKU_UT;
-            $tgtTotal       = $tgtUST + $tgtNONUST + $tgtSeleraku;
+            $tgtUST         = 80;
+            $tgtNONUST      = 660;
+            $tgtSeleraku    = 120;
+            $tgtRendang     = 250;
+            $tgtGeprek      = 250;
+            $tgtTotal       = $tgtUST + $tgtNONUST + $tgtSeleraku + $tgtRendang + $tgtGeprek;
 
             $totUST         = $tdyUST + $realUST;
             $totNONUST      = $tdyNONUST + $realNONUST;
             $totSeleraku    = $tdySeleraku + $realSeleraku;
-            $totTrans       = $totUST + $totNONUST + $totSeleraku;
+            $totRendang     = $tdyRendang + $realRendang;
+            $totGeprek      = $tdyGeprek + $realGeprek;
+            $totTrans       = $totUST + $totNONUST + $totSeleraku + $totRendang + $totGeprek;
 
-            $avgUST         = $totUST / $month;
-            $avgNONUST      = $totNONUST / $month;
-            $avgSeleraku    = $totSeleraku / $month;
+            $avgUST         = number_format((float)($totUST / $month), 1, '.', '');
+            $avgNONUST      = number_format((float)($totNONUST / $month), 1, '.', '');
+            $avgSeleraku    = number_format((float)($totSeleraku / $month), 1, '.', '');
+            $avgRendang     = number_format((float)($totRendang / $month), 1, '.', '');
+            $avgGeprek      = number_format((float)($totGeprek / $month), 1, '.', '');
 
-            $progUST        = $totUST / ($tgtUST * 25) * 100;
-            $progNONUST     = $totNONUST / ($tgtNONUST * 25) * 100;
-            $progSeleraku   = $totSeleraku / ($tgtSeleraku * 25) * 100;
+            $progUST        = number_format((float)($totUST / ($tgtUST * 25) * 100), 1, '.', '');
+            $progNONUST     = number_format((float)($totNONUST / ($tgtNONUST * 25) * 100), 1, '.', '');
+            $progSeleraku   = number_format((float)($totSeleraku / ($tgtSeleraku * 25) * 100), 1, '.', '');
+            $progRendang    = number_format((float)($totRendang / ($tgtRendang * 25) * 100), 1, '.', '');
+            $progGeprek     = number_format((float)($totGeprek / ($tgtGeprek * 25) * 100), 1, '.', '');
             $progTotal      = $totTrans / ($tgtTotal * 25) * 100;
 
             $AllData = array(
-                'SPREADNIG' => ($AllData_temp <> null) ? (($AllData_temp->SPREADING_DM <> null) ? $AllData_temp->SPREADING_DM : 0) : 0,
-                'UB_UBLP' => ($AllData_temp <> null) ? (($AllData_temp->UBUBLP_DM <> null) ? $AllData_temp->UBUBLP_DM : 0) : 0,
-                'DAYS' => $transToday,
-                'AVERAGE' => [
-                    'UST'      => number_format((float)$avgUST, 1, '.', ''),
-                    'NON_UST'  => number_format((float)$avgNONUST, 1, '.', ''),
-                    'SELERAKU' => number_format((float)$avgSeleraku, 1, '.', '')
-                ],
-                'OFF_TARGET' => ($AllData_temp <> null) ? (($AllData_temp->OFFTARGET_DM <> null) ? $AllData_temp->OFFTARGET_DM : 0) : 0,
-                'PROGRESS' => number_format((float)$progTotal, 1, '.', ''),
-                'PROGRESS_DETAIL' => [
-                    'UST' => number_format((float)$progUST, 1, '.', ''),
-                    'NON_UST' => number_format((float)$progNONUST, 1, '.', ''),
-                    'SELERAKU' => number_format((float)$progSeleraku, 1, '.', '')
-                ],
-                'REAL_DETAIL' => [
-                    'UST' => $totUST,
-                    'NON_UST' => $totNONUST,
-                    'SELERAKU' => $totSeleraku
-                ],
-                'TGT_DETAIL' => [
-                    'UST' => $tgtUST,
-                    'NON_UST' => $tgtNONUST,
-                    'SELERAKU' => $tgtSeleraku
+                'SPREADNIG'     => ($AllData_temp <> null) ? (($AllData_temp->SPREADING_DM <> null) ? $AllData_temp->SPREADING_DM : 0) : 0,
+                'UB_UBLP'       => ($AllData_temp <> null) ? (($AllData_temp->UBUBLP_DM <> null) ? $AllData_temp->UBUBLP_DM : 0) : 0,
+                'DAYS'          => $transToday,
+                'OFF_TARGET'    => ($AllData_temp <> null) ? (($AllData_temp->OFFTARGET_DM <> null) ? $AllData_temp->OFFTARGET_DM : 0) : 0,
+                'PROGRESS'      => number_format((float)$progTotal, 1, '.', ''),
+                'DATA_CATEGORY' => 
+                [
+
+                    [
+                        [
+                            'NAME'          => 'UST', 
+                            'AVG'           => $avgUST, 
+                            'PROG_DETAIL'   => $progUST, 
+                            'REAL'          => $realUST,
+                            'TGT'           => $tgtUST
+                        ],
+                        [
+                            'NAME'          => 'NON-UST', 
+                            'AVG'           => $avgNONUST, 
+                            'PROG_DETAIL'   => $progNONUST, 
+                            'REAL'          => $realNONUST,
+                            'TGT'           => $tgtNONUST
+                        ],
+                        [
+                            'NAME'          => 'SELERAKU', 
+                            'AVG'           => $avgSeleraku, 
+                            'PROG_DETAIL'   => $progSeleraku, 
+                            'REAL'          => $realSeleraku,
+                            'TGT'           => $tgtSeleraku
+                        ],
+                        
+                    ],
+                    [
+                        [
+                            'NAME'          => 'RENDANG', 
+                            'AVG'           => $avgRendang, 
+                            'PROG_DETAIL'   => $progRendang, 
+                            'REAL'          => $realRendang,
+                            'TGT'           => $tgtRendang
+                        ],
+                        [
+                            'NAME'          => 'GEPREK', 
+                            'AVG'           => $avgGeprek, 
+                            'PROG_DETAIL'   => $progGeprek, 
+                            'REAL'          => $realGeprek,
+                            'TGT'           => $tgtGeprek
+                        ]
+                    ]
                 ]
             );
 
