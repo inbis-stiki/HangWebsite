@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use App\CategoryProduct;
+use App\Regional;
+use App\ReportPresence;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -194,5 +196,54 @@ class MonitoringController extends Controller
             'status_message'    => 'Data berhasil diambil!',
             'data'              => $All_Data
         ], 200);
+    }
+    public function downloadPresenceMonthly(){
+        $regionals          = Regional::where('deleted_at', NULL)->get();
+        $sundays            = [];
+        $totDate            = date('t');
+        $currDate           = date('j');
+        $yearMonth          = date('Y-m-');
+        $queryDatePresence  = "";
+        $presences          = [];
+
+
+        for ($x = 1; $x <= $totDate; $x++) {
+            if($x > (int)$currDate) break;
+            if(date_format(date_create($yearMonth.$x), "w") == "0") $sundays[$x] = true; // check if sunday
+            $queryDatePresence .= "
+                , COALESCE ((
+                    SELECT 'M'
+                    FROM presence p2
+                    WHERE DATE(p2.DATE_PRESENCE) = '".$yearMonth.$x."' AND p2.ID_USER = u.ID_USER
+                ), 'A') as TGL".$x."
+            ";
+        }
+
+        $index = 0;
+        foreach ($regionals as $regional) {
+            $datas = DB::select("
+                SELECT 
+                    u.NAME_USER ,
+                    ma.NAME_AREA ,
+                    mr.NAME_ROLE
+                    ".$queryDatePresence."
+                FROM `user` u
+                INNER JOIN md_area ma 
+                    ON 
+                        u.ID_REGIONAL = ".$regional->ID_REGIONAL." 
+                        AND u.ID_ROLE IN (5, 6)
+                        AND u.deleted_at IS NULL 
+                        AND ma.ID_AREA = u.ID_AREA 
+                INNER JOIN md_role mr 
+                    ON mr.ID_ROLE = u.ID_ROLE 
+                ORDER BY ma.NAME_AREA ASC , u.ID_ROLE ASC
+            ");
+
+            $presences[$index]['NAME_REGIONAL'] = $regional->NAME_REGIONAL;
+            $presences[$index++]['PRESENCES']   = $datas;
+        }
+
+        $report = new ReportPresence();
+        $report->generateMonthly($presences, $totDate, $sundays);
     }
 }
