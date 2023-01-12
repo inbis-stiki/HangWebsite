@@ -144,6 +144,8 @@ Route::group(['middleware' => ['checkLogin']], function () {
 
     // MASTER MONITORING
     Route::get('monitoring', 'MonitoringController@index');
+    Route::get('monitoring/download-presence-daily', 'MonitoringController@downloadPresenceDaily');
+    Route::get('monitoring/download-presence-monthly', 'MonitoringController@downloadPresenceMonthly');
     Route::post('monitoring/monitoring-data', 'MonitoringController@monitoring_data');
 
     // PRESENCE
