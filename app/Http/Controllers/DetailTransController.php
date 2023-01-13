@@ -30,7 +30,7 @@ class DetailTransController extends Controller
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
             ->where('transaction.ID_USER', '=', $id_user)
             ->where('transaction.ID_TYPE', '=', $type)
-            ->where('transaction.ISTRANS_TRANS', 1)
+            // ->where('transaction.ISTRANS_TRANS', 1)
             ->orderBy('transaction.DATE_TRANS', 'DESC')
             ->get();
 
@@ -170,6 +170,7 @@ class DetailTransController extends Controller
             ->groupBy('md_shop.ID_SHOP')
             ->get();
 
+        // dd($data['transaction']);
         return view('transaction.detail_spread', $data);
     }
 
