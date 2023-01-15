@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\TargetUser;
 
 class Cronjob extends Model
 {
@@ -141,11 +142,13 @@ class Cronjob extends Model
             GROUP BY t.AREA_TRANS 
         ");
     }
-    public static function queryGetSmy($year, $month, $area, $isInside){
+    public static function queryGetSmy($year, $month, $area){
         // SET WEIGHT
         $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
         $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
         $wSELERAKU  = CategoryProduct::where("ID_PC", "3")->first()->PERCENTAGE_PC;
+        $wRENDANG   = CategoryProduct::where("ID_PC", "16")->first()->PERCENTAGE_PC;
+        $wGEPREK    = CategoryProduct::where("ID_PC", "17")->first()->PERCENTAGE_PC;
         
         $wUB        = ActivityCategory::where("ID_AC", "1")->first()->PERCENTAGE_AC;
         $wPS        = ActivityCategory::where("ID_AC", "2")->first()->PERCENTAGE_AC;
@@ -154,50 +157,50 @@ class Cronjob extends Model
         if($area == "Regional"){
             $groupBy = "GROUP BY stl.REGIONAL_STL";
             $nameUser = "
-                SELECT DISTINCT(u.NAME_USER)
+                SELECT GROUP_CONCAT(u.NAME_USER)
                 FROM md_regional mr 
                 JOIN `user` u  
                     ON 
                         mr.NAME_REGIONAL = smy.REGIONAL_STL COLLATE utf8mb4_unicode_ci
                         AND u.ID_REGIONAL = mr.ID_REGIONAL 
                         AND u.ID_ROLE = 4
+                        AND u.deleted_at IS NULL
             ";
             // SET TARGET
-            $tgtUB      = (12 * 14); // tgtUB * totArea
-            $tgtPS      = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
-            $tgtRetail  = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
+            $tgtUser    = app(TargetUser::class)->getRegional();
+            $tgtUB      = $tgtUser['acts']['UB'];
+            $tgtPS      = $tgtUser['acts']['PS'];
+            $tgtRetail  = $tgtUser['acts']['Retail'];
 
-            $tgtUST         = (80 * 3) * 14;
-            $tgtNONUST      = (1000 * 3) * 14;
-            $tgtSeleraku    = (180 * 3) * 14;
+            $tgtUST         = $tgtUser['prods']['UST'];
+            $tgtNONUST      = $tgtUser['prods']['NONUST'];
+            $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
+            $tgtRendang     = $tgtUser['prods']['Rendang'];
+            $tgtGeprek      = $tgtUser['prods']['Geprek'];
         }else if($area == "Location"){
             $groupBy = "GROUP BY stl.LOCATION_STL";
             $nameUser = "
-                SELECT DISTINCT(u.NAME_USER)
+                SELECT GROUP_CONCAT(u.NAME_USER)
                 FROM md_location ml
                 JOIN `user` u  
                     ON 
                         ml.NAME_LOCATION = smy.LOCATION_STL COLLATE utf8mb4_unicode_ci
                         AND u.ID_LOCATION = ml.ID_LOCATION 
                         AND u.ID_ROLE = 3
+                        AND u.deleted_at IS NULL
             ";
 
             // SET TARGET
-            $tgtUB      = (12 * 14) * 2; // (tgt * jmlarea) * totasmen
-            $tgtPS      = ((14 * 3) * 10 * 25) * 2; // ((tgt * jmluser) * 10PS) * totharikerja) * totasmen
-            $tgtRetail  = ((14 * 3) * 10 * 25) * 2; // ((tgt * jmluser) * 10RET) totharikerja) * totasmen
+            $tgtUser    = app(TargetUser::class)->getAsmen();
+            $tgtUB      = $tgtUser['acts']['UB'];
+            $tgtPS      = $tgtUser['acts']['PS'];
+            $tgtRetail  = $tgtUser['acts']['Retail'];
 
-            $tgtUST         = ((80 * 3) * 14) * 2;
-            $tgtNONUST      = ((1000 * 3) * 14) * 2;
-            $tgtSeleraku    = ((180 * 3) * 14) * 2;
-        }
-
-        // SET DAPUL OR LAPUL
-        $isInsideQry = "";
-        if($isInside == "1"){
-            $isInsideQry = "AND ml.ISINSIDE_LOCATION = 1";
-        }else if($isInside == "2"){
-            $isInsideQry = "AND ml.ISINSIDE_LOCATION = 0";
+            $tgtUST         = $tgtUser['prods']['UST'];
+            $tgtNONUST      = $tgtUser['prods']['NONUST'];
+            $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
+            $tgtRendang     = $tgtUser['prods']['Rendang'];
+            $tgtGeprek      = $tgtUser['prods']['Geprek'];
         }
 
         $resProds = DB::select("
@@ -214,26 +217,43 @@ class Cronjob extends Model
                 smy.REALSELERAKU_STL ,
                 (".$tgtSeleraku.") as TGTSELERAKU ,
                 smy.VSSELERAKU ,
-                ((smy.VSUST * ".$wUST.") / 100) + ((smy.VSNONUST * ".$wNONUST.") / 100) + ((smy.VSSELERAKU * ".$wSELERAKU.") / 100) as AVG_VS
+                smy.REALRENDANG_STL ,
+                (".$tgtRendang.") as TGTRENDANG ,
+                smy.VSRENDANG ,
+                smy.REALGEPREK_STL ,
+                (".$tgtGeprek.") as TGTGEPREK ,
+                smy.VSGEPREK ,
+                ((smy.VSUST * ".$wUST.") / 100) + ((smy.VSNONUST * ".$wNONUST.") / 100) + ((smy.VSSELERAKU * ".$wSELERAKU.") / 100) + ((smy.VSRENDANG * ".$wRENDANG.") / 100) + ((smy.VSGEPREK * ".$wGEPREK.") / 100) as AVG_VS
             FROM (
                 SELECT
-                    stl.*,
+                    stl.LOCATION_STL,
+                    stl.REGIONAL_STL,
+                    SUM(stl.REALUST_STL) as REALUST_STL,
+                    SUM(stl.REALNONUST_STL) as REALNONUST_STL,
+                    SUM(stl.REALSELERAKU_STL) as REALSELERAKU_STL,
+                    SUM(stl.REALRENDANG_STL) as REALRENDANG_STL,
+                    SUM(stl.REALGEPREK_STL) as REALGEPREK_STL,
                     (
-                        (stl.REALUST_STL / (".$tgtUST.")) * 100
+                        (SUM(stl.REALUST_STL) / (".$tgtUST.")) * 100
                     ) as VSUST,
                     (
-                        (stl.REALNONUST_STL / (".$tgtNONUST.")) * 100
+                        (SUM(stl.REALNONUST_STL) / (".$tgtNONUST.")) * 100
                     ) as VSNONUST,
                     (
-                        (stl.REALSELERAKU_STL / (".$tgtSeleraku.")) * 100
-                    ) as VSSELERAKU
+                        (SUM(stl.REALSELERAKU_STL) / (".$tgtSeleraku.")) * 100
+                    ) as VSSELERAKU,
+                    (
+                        (SUM(stl.REALRENDANG_STL) / (".$tgtRendang.")) * 100
+                    ) as VSRENDANG,
+                    (
+                        (SUM(stl.REALGEPREK_STL) / (".$tgtGeprek.")) * 100
+                    ) as VSGEPREK
                 FROM summary_trans_location stl
                 INNER JOIN md_location ml
                     ON 
                         stl.YEAR_STL = ".$year."
                         AND stl.MONTH_STL = ".$month."
                         AND ml.NAME_LOCATION = stl.LOCATION_STL COLLATE utf8mb4_unicode_ci
-                        ".$isInsideQry."
                     ".$groupBy."
             ) as smy
             ORDER BY AVG_VS DESC
@@ -256,15 +276,19 @@ class Cronjob extends Model
                 ((smy.VSUB * ".$wUB.") / 100) + ((smy.VSPS * ".$wPS.") / 100) + ((smy.VSRETAIL * ".$wRETAIL.") / 100) as AVG_VS
             FROM (
                 SELECT
-                    stl.*,
+                    stl.LOCATION_STL,
+                    stl.REGIONAL_STL,
+                    SUM(stl.REALACTUB_STL) as REALACTUB_STL,
+                    SUM(stl.REALACTPS_STL) as REALACTPS_STL,
+                    SUM(stl.REALACTRETAIL_STL) as REALACTRETAIL_STL,
                     (
-                        (stl.REALACTUB_STL / (".$tgtUB.")) * 100
+                        (SUM(stl.REALACTUB_STL) / (".$tgtUB.")) * 100
                     ) as VSUB,
                     (
-                        (stl.REALACTPS_STL / (".$tgtPS.")) * 100
+                        (SUM(stl.REALACTPS_STL) / (".$tgtPS.")) * 100
                     ) as VSPS,
                     (
-                        (stl.REALACTRETAIL_STL / (".$tgtRetail.")) * 100
+                        (SUM(stl.REALACTRETAIL_STL) / (".$tgtRetail.")) * 100
                     ) as VSRETAIL
                 FROM summary_trans_location stl
                 INNER JOIN md_location ml
@@ -272,7 +296,6 @@ class Cronjob extends Model
                         stl.YEAR_STL = ".$year."
                         AND stl.MONTH_STL = ".$month."
                         AND ml.NAME_LOCATION = stl.LOCATION_STL COLLATE utf8mb4_unicode_ci
-                        ".$isInsideQry."
                     ".$groupBy."
             ) as smy
             ORDER BY AVG_VS DESC    
@@ -281,15 +304,21 @@ class Cronjob extends Model
         $tot1 = 0;
         $tot2 = 0;
         $tot3 = 0;
+        $tot4 = 0;
+        $tot5 = 0;
         foreach ($resProds as $resProd) {
             $tot1 += $resProd->REALUST_STL;
             $tot2 += $resProd->REALNONUST_STL;
             $tot3 += $resProd->REALSELERAKU_STL;
+            $tot4 += $resProd->REALRENDANG_STL;
+            $tot5 += $resProd->REALGEPREK_STL;
         }
         $reportProds['DATAS']                = $resProds;
         $reportProds['wUST']                 = $wUST;
         $reportProds['wNONUST']              = $wNONUST;
         $reportProds['wSELERAKU']            = $wSELERAKU;
+        $reportProds['wRENDANG']             = $wRENDANG;
+        $reportProds['wGEPREK']              = $wGEPREK;
         $reportProds['AVG_REALUST']          = count($reportProds['DATAS']) == 0 ? 0 : round($tot1 / count($reportProds['DATAS']));
         $reportProds['AVG_TGTUST']           = $tgtUST;
         $reportProds['AVG_VSUST']            = $reportProds['AVG_REALUST'] / $reportProds['AVG_TGTUST'];
@@ -299,9 +328,17 @@ class Cronjob extends Model
         $reportProds['AVG_REALSELERAKU']     = count($reportProds['DATAS']) == 0 ? 0 : round($tot3 / count($reportProds['DATAS']));
         $reportProds['AVG_TGTSELERAKU']      = $tgtSeleraku;
         $reportProds['AVG_VSSELERAKU']       = $reportProds['AVG_REALSELERAKU'] / $reportProds['AVG_TGTSELERAKU'];
+        $reportProds['AVG_REALRENDANG']      = count($reportProds['DATAS']) == 0 ? 0 : round($tot4 / count($reportProds['DATAS']));
+        $reportProds['AVG_TGTRENDANG']       = $tgtRendang;
+        $reportProds['AVG_VSRENDANG']        = $reportProds['AVG_REALRENDANG'] / $reportProds['AVG_TGTRENDANG'];
+        $reportProds['AVG_REALGEPREK']       = count($reportProds['DATAS']) == 0 ? 0 : round($tot5 / count($reportProds['DATAS']));
+        $reportProds['AVG_TGTGEPREK']        = $tgtGeprek;
+        $reportProds['AVG_VSGEPREK']         = $reportProds['AVG_REALGEPREK'] / $reportProds['AVG_TGTGEPREK'];
         $reportProds['AVG_VS']               = (($reportProds['AVG_VSUST'] * $wUST) / 100);
         $reportProds['AVG_VS']               += (($reportProds['AVG_VSNONUST'] * $wNONUST) / 100);
         $reportProds['AVG_VS']               += (($reportProds['AVG_VSSELERAKU'] * $wSELERAKU) / 100);
+        $reportProds['AVG_VS']               += (($reportProds['AVG_VSRENDANG'] * $wRENDANG) / 100);
+        $reportProds['AVG_VS']               += (($reportProds['AVG_VSGEPREK'] * $wRENDANG) / 100);
         
         $tot1 = 0;
         $tot2 = 0;
