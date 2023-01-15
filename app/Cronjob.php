@@ -372,19 +372,24 @@ class Cronjob extends Model
         $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
         $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
         $wSELERAKU  = CategoryProduct::where("ID_PC", "3")->first()->PERCENTAGE_PC;
+        $wRENDANG   = CategoryProduct::where("ID_PC", "16")->first()->PERCENTAGE_PC;
+        $wGEPREK    = CategoryProduct::where("ID_PC", "17")->first()->PERCENTAGE_PC;
         
         $wUB        = ActivityCategory::where("ID_AC", "1")->first()->PERCENTAGE_AC;
         $wPS        = ActivityCategory::where("ID_AC", "2")->first()->PERCENTAGE_AC;
         $wRETAIL    = ActivityCategory::where("ID_AC", "3")->first()->PERCENTAGE_AC;
         
         // SET TARGET
-        $tgtUB      = 12; // tgt
-        $tgtPS      = 10 * 25; // ((tgt * jmluser) * 10PS totharikerja) * totasmen
-        $tgtRetail  = 10 * 25; // ((tgt * jmluser) * 10RET totharikerja) * totasmen
+        $tgtUser    = app(TargetUser::class)->getUser();
+        $tgtUB      = $tgtUser['acts']['UB']; 
+        $tgtPS      = $tgtUser['acts']['PS']; 
+        $tgtRetail  = $tgtUser['acts']['Retail']; 
 
-        $tgtUST         = 80;
-        $tgtNONUST      = 1000;
-        $tgtSeleraku    = 180;
+        $tgtUST         = $tgtUser['prods']['UST'];
+        $tgtNONUST      = $tgtUser['prods']['NONUST'];;
+        $tgtSeleraku    = $tgtUser['prods']['Seleraku'];;
+        $tgtRendang     = $tgtUser['prods']['Rendang'];;
+        $tgtGeprek      = $tgtUser['prods']['Geprek'];;
 
         $resActs = DB::select("
             SELECT 
@@ -446,7 +451,13 @@ class Cronjob extends Model
                 rp.REALSELERAKU_DM ,
                 (".$tgtSeleraku.") as TGTSELERAKU ,
                 rp.VSSELERAKU ,
-                ((rp.VSUST * ".$wUST.") / 100) + ((rp.VSNONUST * ".$wNONUST.") / 100) + ((rp.VSSELERAKU * ".$wSELERAKU.") / 100) as AVG_VS
+                rp.REALRENDANG_DM ,
+                (".$tgtRendang.") as TGTRENDANG ,
+                rp.VSRENDANG ,
+                rp.REALGEPREK_DM ,
+                (".$tgtGeprek.") as TGTGEPREK ,
+                rp.VSGEPREK ,
+                ((rp.VSUST * ".$wUST.") / 100) + ((rp.VSNONUST * ".$wNONUST.") / 100) + ((rp.VSSELERAKU * ".$wSELERAKU.") / 100) + ((rp.VSRENDANG * ".$wRENDANG.") / 100) + ((rp.VSGEPREK * ".$wGEPREK.") / 100) as AVG_VS
             FROM 
             (
                 SELECT 
@@ -461,7 +472,13 @@ class Cronjob extends Model
                     ) as VSNONUST,
                     (
                         (dm.REALSELERAKU_DM/ (".$tgtSeleraku.")) * 100
-                    ) as VSSELERAKU
+                    ) as VSSELERAKU,
+                    (
+                        (dm.REALRENDANG_DM/ (".$tgtRendang.")) * 100
+                    ) as VSRENDANG,
+                    (
+                        (dm.REALGEPREK_DM/ (".$tgtGeprek.")) * 100
+                    ) as VSGEPREK
                 FROM dashboard_mobile dm 
                 INNER JOIN `user` u 
                     ON
@@ -480,6 +497,8 @@ class Cronjob extends Model
         $reportProds['wUST']        = $wUST;
         $reportProds['wNONUST']     = $wNONUST;
         $reportProds['wSELERAKU']   = $wSELERAKU;
+        $reportProds['wRENDANG']    = $wRENDANG;
+        $reportProds['wGEPREK']     = $wGEPREK;
         
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
