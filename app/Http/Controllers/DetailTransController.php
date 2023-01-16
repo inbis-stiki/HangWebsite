@@ -184,8 +184,12 @@ class DetailTransController extends Controller
         $date     = $req->input('date');
         $type     = $req->input('type');
 
+        $data['all_sell']       = 0;
+        $data['prodCats']       = CategoryProduct::where('deleted_at', null)->get();
+        $data['transDetails']   = array();
+
         $transaction = DB::table('transaction')
-            ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER')
+            ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER', 'user.ID_AREA')
             ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
             ->where('transaction.ID_USER', '=', $id_user)
@@ -193,10 +197,18 @@ class DetailTransController extends Controller
             ->orderBy('transaction.DATE_TRANS', 'DESC')
             ->get();
 
+        $area = $transaction[0]->ID_AREA;
+    
+        $data_area = DB::table('md_district')
+            ->select('md_district.ID_DISTRICT')
+            ->leftJoin('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
+            ->where('md_area.ID_AREA', $area)
+            ->get()->pluck('ID_DISTRICT')->toArray();
+
         $data['transaction'] = array();
         foreach ($transaction as $Item_ts) {
             $transaction_detail       = DB::table('transaction_detail')
-                ->select('transaction_detail.QTY_TD', 'md_product.NAME_PRODUCT')
+                ->select('transaction_detail.QTY_TD', 'md_product.NAME_PRODUCT', 'md_product.ID_PC')
                 ->leftJoin('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
                 ->whereRaw("transaction_detail.ID_TRANS = '$Item_ts->ID_TRANS'")
                 ->get();
@@ -209,7 +221,13 @@ class DetailTransController extends Controller
                     $data_ts_detail,
                     $ts_detail
                 );
+
+                if(empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
+                if(empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
+                $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] += $ts_detail->QTY_TD;
             }
+
+            $data['all_sell'] += $TOT_PRODUCT;
 
             $data_image_trans = array();
             $transaction_image       = DB::table('transaction_image')
@@ -242,6 +260,7 @@ class DetailTransController extends Controller
             );
         }
 
+        // dd($data['transaction']);
         return view('transaction/detail_ub', $data);
     }
 
@@ -255,6 +274,10 @@ class DetailTransController extends Controller
         $date     = $req->input('date');
         $type     = $req->input('type');
 
+        $data['all_sell']       = 0;
+        $data['prodCats']       = CategoryProduct::where('deleted_at', null)->get();
+        $data['transDetails']   = array();
+
         $transaction = DB::table('transaction')
             ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER')
             ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
@@ -267,7 +290,7 @@ class DetailTransController extends Controller
         $data['transaction'] = array();
         foreach ($transaction as $Item_ts) {
             $transaction_detail       = DB::table('transaction_detail')
-                ->select('transaction_detail.QTY_TD', 'md_product.NAME_PRODUCT')
+                ->select('transaction_detail.QTY_TD', 'md_product.NAME_PRODUCT', 'md_product.ID_PC')
                 ->leftJoin('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
                 ->whereRaw("transaction_detail.ID_TRANS = '$Item_ts->ID_TRANS'")
                 ->get();
@@ -280,7 +303,13 @@ class DetailTransController extends Controller
                     $data_ts_detail,
                     $ts_detail
                 );
+                
+                if(empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
+                if(empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
+                $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] += $ts_detail->QTY_TD;
             }
+
+            $data['all_sell'] += $TOT_PRODUCT;
 
             $data_image_trans = array();
             $transaction_image       = DB::table('transaction_image')
