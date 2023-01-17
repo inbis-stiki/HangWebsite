@@ -15,6 +15,7 @@ use App\Http\Middleware\CheckRole;
 */
 // TES IMAGE S3
 Route::get('monitoringexcel', 'MonitoringExcel@index');
+Route::get('pdgsayurapoexcel', 'MonitoringExcel@pdgSayur');
 Route::get('testimage', 'ImageController@create');
 Route::get('testexcel', 'ImageController@excel');
 Route::post('testimage', 'ImageController@store');
