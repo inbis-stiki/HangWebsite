@@ -68,15 +68,18 @@ class ProductController extends Controller
             return redirect('master/product')->withErrors($validator);
         }
 
-        
-        $path = $req->file('image')->store('images', 's3');
+        if (!empty($req->file('image'))) {
+            $path = $req->file('image')->store('images', 's3');
+        }
         $product = Product::find($req->input('id'));
         $cek = $product->CODE_PRODUCT == strtoupper($req->input('code_product')); 
         if ($cek == true) {
             $product->NAME_PRODUCT          = $req->input('name_product');
             $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
             $product->ID_PC                 = $req->input('category_product');
-            $product->IMAGE_PRODUCT         = Storage::disk('s3')->url($path);
+            if (!empty($req->file('image'))) {
+                $product->IMAGE_PRODUCT     = Storage::disk('s3')->url($path);
+            }
             $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
             $product->save();
 
@@ -89,7 +92,9 @@ class ProductController extends Controller
                 $product->NAME_PRODUCT          = $req->input('name_product');
                 $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
                 $product->ID_PC                 = $req->input('category_product');
-                $product->IMAGE_PRODUCT         = Storage::disk('s3')->url($path);
+                if (!empty($req->file('image'))) {
+                    $product->IMAGE_PRODUCT     = Storage::disk('s3')->url($path);
+                }
                 $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
                 $product->save();
 
