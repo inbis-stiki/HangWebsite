@@ -141,12 +141,13 @@
                         </div>
                         <div class="col-md-6 ">
                             <label for="">Area</label>
-                            <select name="area" id="area_add" class="select2" required>
+                            <select id="area_add" class="select2" required>
                                 <option selected disabled value="">Pilih Area</option>
                                 @foreach ($areas as $area)
                                 <option value="{{ $area->ID_AREA }}">{{ $area->NAME_AREA }}</option>
                                 @endforeach
                             </select>
+                            <input type="hidden" name="area" value="" id="area_add_sa">
                         </div>
                     </div>
                     <div class="row form-group">
@@ -225,6 +226,7 @@
                                 <option value="{{ $area->ID_AREA }}">{{ $area->NAME_AREA }}</option>
                                 @endforeach
                             </select>
+                            <input type="hidden" name="area" value="" id="area_edit_sa">
                         </div>
                     </div>
                     <div class="row form-group">
@@ -281,17 +283,17 @@
             </div>
             <div class="modal-body">
                 <form action="{{ url('master/user/changePass') }}" method="POST">
-                @csrf
+                    @csrf
                     <div class="form-group">
-                    <label for="">Password Baru</label>
-                    <input type="text" class="form-control" name="pass">
-                </div>
+                        <label for="">Password Baru</label>
+                        <input type="text" class="form-control" name="pass">
+                    </div>
             </div>
-                <div class="modal-footer">
-                    <input type="hidden" name="id" id="mdlChangePass_id">
-                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
-                    <button type="submit" class="btn btn-primary">Ubah</button>
-                </div>
+            <div class="modal-footer">
+                <input type="hidden" name="id" id="mdlChangePass_id">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
+                <button type="submit" class="btn btn-primary">Ubah</button>
+            </div>
             </form>
         </div>
     </div>
@@ -310,11 +312,12 @@
             var val = $(this).val();
             console.log(val);
             $("#area_add").html()
-            if  (val == "1"){
-                $("#area_add").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-            }else if (val == "2") {
-                $("#area_add").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
-            }else if (val == "3") {
+            if (val == "1") {
+                $("#area_add").html("<option selected value='{{ $location[0]->ID_LOCATION }}' >Pilih Area</option>");
+                $("select#area_add").prop('disabled', true);
+            } else if (val == "2") {
+                $("#area_add").html("<option selected disabled value=''>Pilih Area</option>@foreach ($location as $loc)<option value='{{ $loc->ID_LOCATION }}'>{{ $loc->NAME_LOCATION }}</option>@endforeach");
+            } else if (val == "3") {
                 $("#area_add").html("<option selected disabled value=''>Pilih Area</option>@foreach ($location as $loc)<option value='{{ $loc->ID_LOCATION }}'>{{ $loc->NAME_LOCATION }}</option>@endforeach");
             } else if (val == "4") {
                 $("#area_add").html("<option selected disabled value=''>Pilih Area</option>@foreach ($regional as $reg)<option value='{{ $reg->ID_REGIONAL }}'>{{ $reg->NAME_REGIONAL }}</option>@endforeach");
@@ -323,10 +326,19 @@
             } else if (val == "6") {
                 $("#area_add").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
             }
+
+            if (val != 1) {
+                $("select#area_add").prop('disabled', false);
+            }
+        });
+
+        $("#area_add").change(function() {
+            $("#area_add_sa").val($(this).val());
         });
     });
 
-    function showMdlEdit(id, username, idrole, area, ktp, name, email, phone, status) { 
+    function showMdlEdit(id, username, idrole, area, ktp, name, email, phone, status) {
+        
         setDropdownAreaModalUpdate(idrole)
         $('#role_edit').on('change', function(e){
             setDropdownAreaModalUpdate($(this).val())
@@ -340,21 +352,23 @@
         $('#telepon_edit').val(phone)
         $('#role_edit').val(idrole).change()
         $('#area_edit').val(area).change()
+        $("#area_edit_sa").val(area)
         if (status == null || status == '') {
             $('#status_enable').prop('checked', true)
         } else {
             $('#status_disable').prop('checked', true)
         }
- 
+
         $('#mdlEdit').modal('show');
     }
 
     function setDropdownAreaModalUpdate(idrole){
         $("#area_edit").html()
         if (idrole == "1") {
-            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+            $("#area_edit").html("<option selected value='{{ $location[0]->ID_LOCATION }}' >Pilih Area</option>");
+            $("select#area_edit").prop('disabled', true);
         } else if (idrole == "2") {
-            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
+            $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($location as $loc)<option value='{{ $loc->ID_LOCATION }}'>{{ $loc->NAME_LOCATION }}</option>@endforeach");
         } else if (idrole == "3") {
             $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($location as $loc)<option value='{{ $loc->ID_LOCATION }}'>{{ $loc->NAME_LOCATION }}</option>@endforeach");
         } else if (idrole == "4") {
@@ -364,12 +378,21 @@
         } else if (idrole == "6") {
             $("#area_edit").html("<option selected disabled value=''>Pilih Area</option>@foreach ($areas as $area)<option value='{{ $area->ID_AREA }}'>{{ $area->NAME_AREA }}</option>@endforeach");
         }
+
+        if (idrole != 1) {
+            $("select#area_edit").prop('disabled', false);
+        }
+
+        $("#area_edit").change(function() {
+            $("#area_edit_sa").val($(this).val());
+        });
     }
 
     function showMdlDelete(id) {
         $('#mdlDelete_id').val(id)
         $('#mdlDelete').modal('show');
     }
+
     function showMdlChangePass(id) {
         $('#mdlChangePass_id').val(id)
         $('#mdlChangePass').modal('show');

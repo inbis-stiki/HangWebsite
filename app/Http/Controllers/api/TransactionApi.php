@@ -18,6 +18,7 @@ use App\Shop;
 use App\TransactionDaily;
 use App\TransactionDetailToday;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class TransactionApi extends Controller
@@ -713,5 +714,37 @@ class TransactionApi extends Controller
         }
 
         return implode(";", $newStok);
+    }
+    public function checkUBUBLP(Request $req, $idType){
+        try{
+            $date = date('Y-m-d');
+            $transUBUBLP = DB::select("
+                SELECT t.*
+                FROM `transaction` t
+                WHERE 
+                    DATE(t.DATE_TRANS) = '".$date."' 
+                    AND t.ID_USER = '".$req->input('id_user')."'
+                    AND t.ID_TYPE IN (2, 3)
+            ");
+
+            if($transUBUBLP != null){
+                return response([
+                    'status_code'       => 200,
+                    'status_message'    => 'Anda telah melakukan UB/UBLP',
+                    'status_allow'      => false
+                ], 200);
+            }else{
+                return response([
+                    'status_code'       => 200,
+                    'status_message'    => 'Anda dapat melakukan UB/UBLP',
+                    'status_allow'      => true
+                ], 200);
+            }
+        }catch(HttpResponseException $exp){
+            return response([
+                'status_code'       => $exp->getCode(),
+                'status_message'    => $exp->getMessage(),
+            ], $exp->getCode());
+        }
     }
 }

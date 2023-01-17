@@ -67,11 +67,12 @@
                                         <div class="tab-content">
                                             @php
                                             $isActive = "active";
+                                            $sumVal = 0;
                                             @endphp
                                             @foreach ($prodCats as $prodCat)
                                             <div id="navpills2-{{ $prodCat->ID_PC }}" class="tab-pane {{ $isActive }}" style="height: 290px;overflow: hidden;overflow-y: scroll;">
                                                 <div class="table-responsive">
-                                                    <table class="table table-bordered">
+                                                    <table id="table" class="table table-bordered">
                                                         <thead>
                                                             <tr>
                                                                 <th class="fs-12" scope="col">Nama</th>
@@ -81,6 +82,7 @@
                                                         <tbody>
                                                             @if (!empty($transDetails[$prodCat->ID_PC]))
                                                             @foreach ($transDetails[$prodCat->ID_PC] as $name => $total)
+                                                            @php $sumVal += $total; @endphp
                                                             <tr class="alert alert-dismissible fs-12">
                                                                 <td>{{ $name }} </td>
                                                                 <td>{{ $total }}</td>
@@ -92,10 +94,14 @@
                                                             </tr>
                                                             @endif
                                                         </tbody>
+                                                        Total: <?= $sumVal ?>
                                                     </table>
                                                 </div>
                                             </div>
-                                            @php $isActive = "";@endphp
+                                            @php 
+                                                $isActive = ""; 
+                                                $sumVal = 0;
+                                            @endphp
                                             @endforeach
                                         </div>
                                     </div>
@@ -142,14 +148,25 @@
                             $other_coords = array();
                             $other_coords_con2 = array();
                             foreach ($transaction as $data_spread) {
+                                $bg = "";
+                                $bg_border = "";
+                                if ($data_spread['TOTAL'] == 0) {
+                                    $bg = 'style="background: #1F51FF;border-color: #1F51FF;"';
+                                    $bg_border = 'style="border: 2px solid #1F51FF;"';
+                                }
+
+                                if ($data_spread['TOTAL'] != 0) {
+                                    $bg = "";
+                                    $bg_border = "";
+                                }
                             ?>
                                 <div class="accordion__item">
-                                    <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false">
+                                    <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false" <?= $bg ?>>
                                         <span class="accordion__header--text"><?= $data_spread['NAME_SHOP']; ?></span>
                                         <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_spread['DATE_TRANS']), 'j F Y - H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>
-                                    <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body" data-parent="#accordion-two">
+                                    <div id="bordered_collapse<?= $no; ?>" class="collapse accordion__body" data-parent="#accordion-two" <?= $bg_border ?>>
                                         <div class="accordion__body--text">
                                             <span class="fs-20 text-black d-block mb-3">Detail Informasi</span>
                                             <div class="row">

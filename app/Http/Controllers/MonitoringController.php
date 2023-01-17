@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use App\CategoryProduct;
+use App\Regional;
+use App\ReportPresence;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -194,5 +196,152 @@ class MonitoringController extends Controller
             'status_message'    => 'Data berhasil diambil!',
             'data'              => $All_Data
         ], 200);
+    }
+    public function downloadPresenceMonthly(){
+        $regionals          = Regional::where('deleted_at', NULL)->get();
+        $sundays            = [];
+        $totDate            = date('t');
+        $currDate           = date('j');
+        $yearMonth          = date('Y-m-');
+        $queryDatePresence  = "";
+        $presences          = [];
+
+
+        for ($x = 1; $x <= $totDate; $x++) {
+            if($x > (int)$currDate) break;
+            if(date_format(date_create($yearMonth.$x), "w") == "0") $sundays[$x] = true; // check if sunday
+            $queryDatePresence .= "
+                , COALESCE ((
+                    SELECT 'M'
+                    FROM presence p2
+                    WHERE DATE(p2.DATE_PRESENCE) = '".$yearMonth.$x."' AND p2.ID_USER = u.ID_USER
+                ), 'A') as TGL".$x."
+            ";
+        }
+
+        $index = 0;
+        foreach ($regionals as $regional) {
+            $datas = DB::select("
+                SELECT 
+                    u.NAME_USER ,
+                    ma.NAME_AREA ,
+                    mr.NAME_ROLE
+                    ".$queryDatePresence."
+                FROM `user` u
+                INNER JOIN md_area ma 
+                    ON 
+                        u.ID_REGIONAL = ".$regional->ID_REGIONAL." 
+                        AND u.ID_ROLE IN (5, 6)
+                        AND u.deleted_at IS NULL 
+                        AND ma.ID_AREA = u.ID_AREA 
+                INNER JOIN md_role mr 
+                    ON mr.ID_ROLE = u.ID_ROLE 
+                ORDER BY ma.NAME_AREA ASC , u.ID_ROLE ASC
+            ");
+
+            $presences[$index]['NAME_REGIONAL'] = $regional->NAME_REGIONAL;
+            $presences[$index++]['PRESENCES']   = $datas;
+        }
+
+        $report = new ReportPresence();
+        $report->generateMonthly($presences, $totDate, $sundays);
+    }
+    public function downloadPresenceDaily(){
+        $regionals          = Regional::where('deleted_at', NULL)->get();
+        $sundays            = [];
+        $totDate            = date('t');
+        $currDate           = date('Y-m-d');
+        $queryDatePresence  = "";
+        $presences          = [];
+
+        $index = 0;
+        foreach ($regionals as $regional) {
+            $presences[$index]['PRESENCES1'] = DB::select("
+                SELECT u.NAME_USER , mr.NAME_ROLE , ma.NAME_AREA , TIME(p.DATE_PRESENCE) as TIME
+                FROM presence p 
+                INNER JOIN `user` u
+                ON
+                    DATE(p.DATE_PRESENCE) = '".$currDate."'
+                    AND TIME(p.DATE_PRESENCE) < '07:01'
+                    AND p.ID_USER = u.ID_USER 
+                    AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                INNER JOIN md_area ma 
+                ON ma.ID_AREA = u.ID_AREA
+                INNER JOIN md_role mr 
+                ON mr.ID_ROLE = u.ID_ROLE 
+                ORDER BY TIME(p.DATE_PRESENCE) ASC
+            ");
+            $presences[$index]['PRESENCES2'] = DB::select("
+                SELECT u.NAME_USER , mr.NAME_ROLE , ma.NAME_AREA , TIME(p.DATE_PRESENCE) as TIME
+                FROM presence p 
+                INNER JOIN `user` u
+                ON
+                    DATE(p.DATE_PRESENCE) = '".$currDate."'
+                    AND TIME(p.DATE_PRESENCE) BETWEEN '07:01' AND '07:15'
+                    AND p.ID_USER = u.ID_USER 
+                    AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                INNER JOIN md_area ma 
+                ON ma.ID_AREA = u.ID_AREA
+                INNER JOIN md_role mr 
+                ON mr.ID_ROLE = u.ID_ROLE 
+                ORDER BY TIME(p.DATE_PRESENCE) ASC
+            ");
+            $presences[$index]['PRESENCES3'] = DB::select("
+                SELECT u.NAME_USER , mr.NAME_ROLE , ma.NAME_AREA , TIME(p.DATE_PRESENCE) as TIME
+                FROM presence p 
+                INNER JOIN `user` u
+                ON
+                    DATE(p.DATE_PRESENCE) = '".$currDate."'
+                    AND TIME(p.DATE_PRESENCE) BETWEEN '07:16' AND '07:30'
+                    AND p.ID_USER = u.ID_USER 
+                    AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                INNER JOIN md_area ma 
+                ON ma.ID_AREA = u.ID_AREA
+                INNER JOIN md_role mr 
+                ON mr.ID_ROLE = u.ID_ROLE 
+                ORDER BY TIME(p.DATE_PRESENCE) ASC
+            ");
+            $presences[$index]['PRESENCES4'] = DB::select("
+                SELECT u.NAME_USER , mr.NAME_ROLE , ma.NAME_AREA , TIME(p.DATE_PRESENCE) as TIME
+                FROM presence p 
+                INNER JOIN `user` u
+                ON
+                    DATE(p.DATE_PRESENCE) = '".$currDate."'
+                    AND TIME(p.DATE_PRESENCE) > '07:30'
+                    AND p.ID_USER = u.ID_USER 
+                    AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                INNER JOIN md_area ma 
+                ON ma.ID_AREA = u.ID_AREA
+                INNER JOIN md_role mr 
+                ON mr.ID_ROLE = u.ID_ROLE 
+                ORDER BY TIME(p.DATE_PRESENCE) ASC
+            ");
+            $presences[$index]['PRESENCES5'] = DB::select("
+                SELECT u.NAME_USER , mr.NAME_ROLE , ma.NAME_AREA 
+                FROM `user` u 
+                INNER JOIN md_area ma 
+                ON 
+                    u.ID_REGIONAL = ".$regional->ID_REGIONAL." 
+                    AND u.ID_ROLE IN (5, 6)
+                    AND u.deleted_at IS NULL
+                    AND ma.ID_AREA = u.ID_AREA
+                INNER JOIN md_role mr 
+                ON mr.ID_ROLE = u.ID_ROLE 
+                WHERE u.ID_USER NOT IN (
+                    SELECT p.ID_USER 
+                    FROM presence p 
+                    INNER JOIN `user` u2 
+                    ON 
+                        DATE(p.DATE_PRESENCE) = '".$currDate."' 
+                        AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                )
+                ORDER BY ma.NAME_AREA ASC, mr.ID_ROLE ASC
+            ");
+
+            $presences[$index++]['NAME_REGIONAL'] = $regional->NAME_REGIONAL;
+        }
+
+        $report = new ReportPresence();
+        $report->generateDaily($presences, $totDate, $sundays);
     }
 }
