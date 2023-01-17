@@ -89,6 +89,114 @@ class MonitoringExcel extends Controller
         $writer->save('php://output');
     }
 
+    public function pdgSayur(Request $req)
+    {
+        // Create new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+
+        $ObjSheet = $spreadsheet->getActiveSheet();
+        $ObjSheet->setTitle("PEDAGANG SAYUR APO");
+
+        $ObjSheet->getColumnDimension('B')->setWidth(15);
+        $ObjSheet->getColumnDimension('C')->setWidth(10);
+        $ObjSheet->getColumnDimension('E')->setWidth(10);
+        $ObjSheet->getColumnDimension('E')->setWidth(10);
+        $ObjSheet->getColumnDimension('E')->setWidth(10);
+
+        // PEDAGANG SAYUR {{TAHUN}}
+        // HEADER
+        $ObjSheet->mergeCells('B2:F2')->setCellValue('B2', 'JABODETABEK')->getStyle('B2:F2')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->mergeCells('B3:E3')->setCellValue('B3', 'PEDAGANG SAYUR 2022')->getStyle('B3:E3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->mergeCells('B4:B5')->setCellValue('B4', 'AREA')->getStyle('B4:B5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->mergeCells('C4:C5')->setCellValue('C4', 'TOTAL PS')->getStyle('C4:C5')->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'));
+        $ObjSheet->mergeCells('D4:D5')->setCellValue('D4', 'TOTAL RO PS 2022')->getStyle('D4:D5')->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+        $ObjSheet->mergeCells('E4:E5')->setCellValue('E4', '% RO VS TOTAL PS')->getStyle('E4:E5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
+        $ObjSheet->mergeCells('F3:F5')->setCellValue('F3', '% RO 2022 VS RO 2021')->getStyle('F3:F5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
+        
+        // ISI KONTEN
+        $row = 6;
+        $subrow = 0;
+        foreach (range(1, 15) as $data){
+            $ObjSheet->setCellValue('B'.$row, 'MALANG')->getStyle('B'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('C'.$row, '100')->getStyle('C'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('D'.$row, '50')->getStyle('D'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('E'.$row, '50%')->getStyle('E'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('F'.$row, '100%')->getStyle('F'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            
+            $row++;
+            $subrow = $row;
+        }
+        $ObjSheet->setCellValue('B'.$subrow, 'JABODETABEK')->getStyle('B'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('C'.$subrow, '11000')->getStyle('C'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('D'.$subrow, '1700')->getStyle('D'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('E'.$subrow, '50%')->getStyle('E'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('F'.$subrow, '100%')->getStyle('F'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        // RETAIL {{TAHUN}}
+        // HEADER
+        $ObjSheet->mergeCells('B24:E24')->setCellValue('B24', 'RETAIL 2022')->getStyle('B24:E24')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->mergeCells('B25:B26')->setCellValue('B25', 'AREA')->getStyle('B25:B26')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->mergeCells('C25:C26')->setCellValue('C25', 'TOTAL PS')->getStyle('C25:C26')->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'));
+        $ObjSheet->mergeCells('D25:D26')->setCellValue('D25', 'TOTAL RO PS 2022')->getStyle('D25:D26')->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+        $ObjSheet->mergeCells('E25:E26')->setCellValue('E25', '% RO VS TOTAL PS')->getStyle('E25:E26')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
+        $ObjSheet->mergeCells('F24:F26')->setCellValue('F24', '% RO 2022 VS RO 2021')->getStyle('F24:F26')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
+        
+        // ISI KONTEN
+        $row = 27;
+        $subrow = 0;
+        foreach (range(1, 15) as $data){
+            $ObjSheet->setCellValue('B'.$row, 'MALANG')->getStyle('B'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('C'.$row, '100')->getStyle('C'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('D'.$row, '50')->getStyle('D'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('E'.$row, '50%')->getStyle('E'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('F'.$row, '100%')->getStyle('F'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            
+            $row++;
+            $subrow = $row;
+        }
+        $ObjSheet->setCellValue('B'.$subrow, 'JABAR')->getStyle('B'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('C'.$subrow, '11000')->getStyle('C'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('D'.$subrow, '1700')->getStyle('D'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('E'.$subrow, '50%')->getStyle('E'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('F'.$subrow, '100%')->getStyle('F'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        // LOSS {{TAHUN}}
+        // HEADER
+        $ObjSheet->mergeCells('B45:E45')->setCellValue('B45', 'LOSS 2022')->getStyle('B45:E46')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->mergeCells('B46:B47')->setCellValue('B46', 'AREA')->getStyle('B46:B47')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->mergeCells('C46:C47')->setCellValue('C46', 'TOTAL PS')->getStyle('C46:C47')->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'));
+        $ObjSheet->mergeCells('D46:D47')->setCellValue('D46', 'TOTAL RO PS 2022')->getStyle('D46:D47')->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+        $ObjSheet->mergeCells('E46:E47')->setCellValue('E46', '% RO VS TOTAL PS')->getStyle('E46:E47')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
+        $ObjSheet->mergeCells('F45:F47')->setCellValue('F45', '% RO 2022 VS RO 2021')->getStyle('F45:F47')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
+        
+        // ISI KONTEN
+        $row = 48;
+        $subrow = 0;
+        foreach (range(1, 15) as $data){
+            $ObjSheet->setCellValue('B'.$row, 'MALANG')->getStyle('B'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('C'.$row, '100')->getStyle('C'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('D'.$row, '50')->getStyle('D'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('E'.$row, '50%')->getStyle('E'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('F'.$row, '100%')->getStyle('F'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            
+            $row++;
+            $subrow = $row;
+        }
+        $ObjSheet->setCellValue('B'.$subrow, 'JATENG')->getStyle('B'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('C'.$subrow, '11000')->getStyle('C'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('D'.$subrow, '1700')->getStyle('D'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('E'.$subrow, '50%')->getStyle('E'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('F'.$subrow, '100%')->getStyle('F'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        $fileName = 'Pedangang Sayur APO';
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel'); // generate excel file
+        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
     public function styling_default_template($FontSize, $ColorText)
     {
         $styleTitle['font']['bold']                           = true;
