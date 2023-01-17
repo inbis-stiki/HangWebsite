@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -262,12 +264,12 @@ class ReportRanking
         $ObjSheet->getRowDimension('6')->setRowHeight('30');
 
         // Activity RPO LAPUL
-        $ObjSheet->mergeCells('B2:Q2')->setCellValue('B2', strtoupper(date_format(date_create(date("Y-m")), 'F Y')))->getStyle('B2:Q2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+        $ObjSheet->mergeCells('B2:Q2')->setCellValue('B2', strtoupper(date_format(date_create($updated_at), 'F Y')))->getStyle('B2:Q2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
         $ObjSheet->setCellValue('B3', 'ACTIVITY RPO')->getStyle('B3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
         $ObjSheet->setCellValue('F3', 'Bobot '.$reports['reportActs']['wUB'].'%')->getStyle('F3')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('I3', 'Bobot '.$reports['reportActs']['wPS'].'%')->getStyle('I3')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('L3', 'Bobot '.$reports['reportActs']['wRETAIL'].'%')->getStyle('L3')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->mergeCells('N3:Q3')->setCellValue('N3', 'DATA PER ' . strtoupper(date_format(date_create(date("Y-m-d")), 'j F Y')))->getStyle('N3:Q3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
+        $ObjSheet->mergeCells('N3:Q3')->setCellValue('N3', 'DATA PER ' . strtoupper(date_format(date_create($updated_at), 'j F Y')))->getStyle('N3:Q3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
 
         $ObjSheet->mergeCells('B4:B6')->setCellValue('B4', 'NAMA')->getStyle('B4:B6')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('C4:C6')->setCellValue('C4', 'AREA')->getStyle('C4:C6')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
@@ -342,7 +344,7 @@ class ReportRanking
         $ObjSheet->setCellValue('L' . $rowStart2, 'Bobot '.$reports['reportProds']['wSELERAKU'].'%')->getStyle('L' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('O' . $rowStart2, 'Bobot '.$reports['reportProds']['wRENDANG'].'%')->getStyle('O' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('R' . $rowStart2, 'Bobot '.$reports['reportProds']['wGEPREK'].'%')->getStyle('R' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->mergeCells('T' . $rowStart2 . ':W' . $rowStart2)->setCellValue('T' . $rowStart2, 'DATA PER ' . strtoupper(date_format(date_create(date("Y-m-d")), 'j F Y')))->getStyle('T' . $rowStart2 . ':W' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FF000000'));
+        $ObjSheet->mergeCells('T' . $rowStart2 . ':W' . $rowStart2)->setCellValue('T' . $rowStart2, 'DATA PER ' . strtoupper(date_format(date_create($updated_at), 'j F Y')))->getStyle('T' . $rowStart2 . ':W' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FF000000'));
 
         $ObjSheet->mergeCells('B' . ($rowStart2 + 1) . ':B' . ($rowStart2 + 3))->setCellValue('B' . ($rowStart2 + 1), 'NAMA')->getStyle('B' . ($rowStart2 + 1) . ':B' . ($rowStart2 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('C' . ($rowStart2 + 1) . ':C' . ($rowStart2 + 3))->setCellValue('C' . ($rowStart2 + 1), 'AREA')->getStyle('C' . ($rowStart2 + 1) . ':C' . ($rowStart2 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
@@ -430,14 +432,32 @@ class ReportRanking
         $ObjSheet->setCellValue('R' . ($rowStart3 + 1), $reports['reportProds']['AVG_VSGEPREK'])->getStyle('R' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template("FF00FFFF", "FF000000"))->getAlignment()->setWrapText(true);
         $ObjSheet->setCellValue('S' . ($rowStart3 + 1), $reports['reportProds']['AVG_VS'])->getStyle('S' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template("FF00FFFF", "FF000000"))->getAlignment()->setWrapText(true);
         $ObjSheet->getStyle('T' . ($rowStart3 + 1))->applyFromArray($this->styling_title_template('FF000000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
-
-        $fileName = 'RANKING - RPO - ' . date_format(date_create(date("Y-m")), 'F Y');
+        
+        $fileName   = 'RANKING - RPO - ' . date_format(date_create($updated_at), 'F Y_'.date_format(date_create($updated_at), 'dmY'));
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file
         header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
+        
+        ob_start();
+        $writer->save('php://output');
+        $content    = ob_get_contents();
+        $path       = "report/rank/rpo/".$fileName.".xlsx";
+        $fullPath   = 'https://finna.is3.cloudhost.id/'.$path;
+        Storage::disk('s3')->put($path, $content);
+
+        $formData['NAME_RRR']       = $fileName;
+        $formData['DATE_RRR']       = $updated_at;
+        $formData['PATH_RRR']       = $fullPath;
+        $formData['ISACTIVE_RRR']   = 1;
+
+        // DB::update('report_rank_rpo');
+        DB::insert('report_rank_rpo', $formData);
+        ob_end_clean();
+        
+        // return ['path' => $fullPath, 'fileName' => $fileName];
     }
 
     public function generate_ranking_asmen($datas, $updated_at)
@@ -478,12 +498,12 @@ class ReportRanking
         
 
         // Activity Asmen
-        $ObjSheet->mergeCells('B2:Q2')->setCellValue('B2', strtoupper(date_format(date_create(date("Y-m")), 'F Y')))->getStyle('B2:Q2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+        $ObjSheet->mergeCells('B2:Q2')->setCellValue('B2', strtoupper(date_format(date_create($updated_at), 'F Y')))->getStyle('B2:Q2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
         $ObjSheet->setCellValue('B3', 'ACTIVITY ASMEN')->getStyle('B3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
         $ObjSheet->setCellValue('F3', 'Bobot '.$acts['wUB'].'%')->getStyle('F3')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('I3', 'Bobot '.$acts['wPS'].'%')->getStyle('I3')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('L3', 'Bobot '.$acts['wRETAIL'].'%')->getStyle('L3')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->mergeCells('N3:Q3')->setCellValue('N3', 'DATA PER ' . strtoupper(date_format(date_create(date("Y-m-d")), 'j F Y')))->getStyle('N3:Q3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
+        $ObjSheet->mergeCells('N3:Q3')->setCellValue('N3', 'DATA PER ' . strtoupper(date_format(date_create($updated_at), 'j F Y')))->getStyle('N3:Q3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
 
         $ObjSheet->mergeCells('B4:B6')->setCellValue('B4', 'NAMA')->getStyle('B4:B6')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('C4:C6')->setCellValue('C4', 'AREA')->getStyle('C4:C6')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
@@ -561,7 +581,7 @@ class ReportRanking
         $ObjSheet->setCellValue('L' . $rowStart2, 'Bobot '.$prods['wSELERAKU'].'%')->getStyle('L' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('O' . $rowStart2, 'Bobot '.$prods['wRENDANG'].'%')->getStyle('O' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('R' . $rowStart2, 'Bobot '.$prods['wGEPREK'].'%')->getStyle('R' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->mergeCells('T' . $rowStart2 . ':W' . $rowStart2)->setCellValue('T' . $rowStart2, 'DATA PER ' . strtoupper(date_format(date_create(date("Y-m-d")), 'j F Y')))->getStyle('T' . $rowStart2 . ':W' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FF000000'));
+        $ObjSheet->mergeCells('T' . $rowStart2 . ':W' . $rowStart2)->setCellValue('T' . $rowStart2, 'DATA PER ' . strtoupper(date_format(date_create($updated_at), 'j F Y')))->getStyle('T' . $rowStart2 . ':W' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FF000000'));
 
         $ObjSheet->mergeCells('B' . ($rowStart2 + 1) . ':B' . ($rowStart2 + 3))->setCellValue('B' . ($rowStart2 + 1), 'NAMA')->getStyle('B' . ($rowStart2 + 1) . ':B' . ($rowStart2 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('C' . ($rowStart2 + 1) . ':C' . ($rowStart2 + 3))->setCellValue('C' . ($rowStart2 + 1), 'AREA')->getStyle('C' . ($rowStart2 + 1) . ':C' . ($rowStart2 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
@@ -650,7 +670,7 @@ class ReportRanking
         $ObjSheet->setCellValue('S' . ($rowStart3 + 1), '=AVERAGE(S' . $firstRow . ':S' . $lastRow . ')')->getStyle('S' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
         $ObjSheet->getStyle('T' . ($rowStart3 + 1))->applyFromArray($this->styling_title_template('FF000000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
 
-        $fileName = 'RANKING - ASMEN - ' . date_format(date_create(date("Y-m")), 'F Y');
+        $fileName = 'RANKING - ASMEN - ' . date_format(date_create($updated_at), 'F Y');
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file
@@ -695,14 +715,14 @@ class ReportRanking
         $ObjSheet->getRowDimension('6')->setRowHeight('20');
         $ObjSheet->getRowDimension('7')->setRowHeight('30');
 
-        $ObjSheet->mergeCells('B2:N2')->setCellValue('B2', strtoupper(date_format(date_create(date("Y-m")), 'F Y')))->getStyle('B2:N2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+        $ObjSheet->mergeCells('B2:N2')->setCellValue('B2', strtoupper(date_format(date_create($updated_at), 'F Y')))->getStyle('B2:N2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
 
         // Activity APO
         $ObjSheet->setCellValue('B4', 'ACTIVITY APO')->getStyle('B4')->applyFromArray($this->styling_default_template(10, 'FF000000'));
         $ObjSheet->setCellValue('F4', 'Bobot '.$apos['reportActs']['wUB'].'%')->getStyle('F4')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('I4', 'Bobot '.$apos['reportActs']['wPS'].'%')->getStyle('I4')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('L4', 'Bobot '.$apos['reportActs']['wRETAIL'].'%')->getStyle('L4')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->mergeCells('K3:M3')->setCellValue('K3', ' RANGKING ' . strtoupper(date_format(date_create(date("Y-m")), 'F Y')))->getStyle('K3:M3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
+        $ObjSheet->mergeCells('K3:M3')->setCellValue('K3', ' RANGKING ' . strtoupper(date_format(date_create($updated_at), 'F Y')))->getStyle('K3:M3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
 
         $ObjSheet->mergeCells('B5:B7')->setCellValue('B5', 'NAMA')->getStyle('B5:B7')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('C5:C7')->setCellValue('C5', 'AREA')->getStyle('C5:C7')->applyFromArray($this->styling_title_template('FFC000', 'FF000000'));
@@ -761,7 +781,7 @@ class ReportRanking
         $ObjSheet->setCellValue('L' . $rowStart2, 'Bobot '.$apos['reportProds']['wSELERAKU'].'%')->getStyle('L' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('O' . $rowStart2, 'Bobot '.$apos['reportProds']['wRENDANG'].'%')->getStyle('O' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('R' . $rowStart2, 'Bobot '.$apos['reportProds']['wGEPREK'].'%')->getStyle('R' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->mergeCells('T' . $rowStart2 . ':W' . $rowStart2)->setCellValue('T' . $rowStart2, 'DATA PER ' . strtoupper(date_format(date_create(date("Y-m-d")), 'j F Y')))->getStyle('T' . $rowStart2 . ':W' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FF000000'));
+        $ObjSheet->mergeCells('T' . $rowStart2 . ':W' . $rowStart2)->setCellValue('T' . $rowStart2, 'DATA PER ' . strtoupper(date_format(date_create($updated_at), 'j F Y')))->getStyle('T' . $rowStart2 . ':W' . $rowStart2)->applyFromArray($this->styling_default_template(10, 'FF000000'));
 
         $ObjSheet->mergeCells('B' . ($rowStart2 + 1) . ':B' . ($rowStart2 + 3))->setCellValue('B' . ($rowStart2 + 1), 'NAMA')->getStyle('B' . ($rowStart2 + 1) . ':B' . ($rowStart2 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('C' . ($rowStart2 + 1) . ':C' . ($rowStart2 + 3))->setCellValue('C' . ($rowStart2 + 1), 'AREA')->getStyle('C' . ($rowStart2 + 1) . ':C' . ($rowStart2 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
@@ -830,7 +850,7 @@ class ReportRanking
         $ObjSheet->getRowDimension($rowStart4+2)->setRowHeight('20');
         $ObjSheet->getRowDimension($rowStart4+3)->setRowHeight('30');
 
-        $ObjSheet->mergeCells('B' . ($rowStart4 - 1) . ':N' . ($rowStart4 - 1))->setCellValue('B' . ($rowStart4 - 1), strtoupper(date_format(date_create(date("Y-m")), 'F Y')))->getStyle('B' . ($rowStart4 - 1) . ':N' . ($rowStart4 - 1))->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+        $ObjSheet->mergeCells('B' . ($rowStart4 - 1) . ':N' . ($rowStart4 - 1))->setCellValue('B' . ($rowStart4 - 1), strtoupper(date_format(date_create($updated_at), 'F Y')))->getStyle('B' . ($rowStart4 - 1) . ':N' . ($rowStart4 - 1))->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
         $ObjSheet->setCellValue('B' . $rowStart4, 'ACTIVITY SPG')->getStyle('B' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FF000000'));
         $ObjSheet->setCellValue('F' . $rowStart4, 'Bobot '.$spgs['reportActs']['wUB'].'%')->getStyle('F' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('I' . $rowStart4, 'Bobot '.$spgs['reportActs']['wPS'].'%')->getStyle('I' . $rowStart4)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
@@ -894,7 +914,7 @@ class ReportRanking
         $ObjSheet->setCellValue('L' . $rowStart6, 'Bobot '.$spgs['reportProds']['wSELERAKU'].'%')->getStyle('L' . $rowStart6)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('O' . $rowStart6, 'Bobot '.$spgs['reportProds']['wRENDANG'].'%')->getStyle('O' . $rowStart6)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('R' . $rowStart6, 'Bobot '.$spgs['reportProds']['wGEPREK'].'%')->getStyle('R' . $rowStart6)->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
-        $ObjSheet->mergeCells('T' . $rowStart6 . ':W' . $rowStart6)->setCellValue('T' . $rowStart6, 'DATA PER ' . strtoupper(date_format(date_create(date("Y-m-d")), 'j F Y')))->getStyle('T' . $rowStart6 . ':W' . $rowStart6)->applyFromArray($this->styling_default_template(10, 'FF000000'));
+        $ObjSheet->mergeCells('T' . $rowStart6 . ':W' . $rowStart6)->setCellValue('T' . $rowStart6, 'DATA PER ' . strtoupper(date_format(date_create($updated_at), 'j F Y')))->getStyle('T' . $rowStart6 . ':W' . $rowStart6)->applyFromArray($this->styling_default_template(10, 'FF000000'));
 
         $ObjSheet->mergeCells('B' . ($rowStart6 + 1) . ':B' . ($rowStart6 + 3))->setCellValue('B' . ($rowStart6 + 1), 'NAMA')->getStyle('B' . ($rowStart6 + 1) . ':B' . ($rowStart6 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
         $ObjSheet->mergeCells('C' . ($rowStart6 + 1) . ':C' . ($rowStart6 + 3))->setCellValue('C' . ($rowStart6 + 1), 'AREA')->getStyle('C' . ($rowStart6 + 1) . ':C' . ($rowStart6 + 3))->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
@@ -958,7 +978,7 @@ class ReportRanking
             $rowStart7++;
         }
 
-        $fileName = 'RANKING - APO - SPG - ' . date_format(date_create(date("Y-m")), 'F Y');
+        $fileName = 'RANKING - APO - SPG - ' . date_format(date_create($updated_at), 'F Y');
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file

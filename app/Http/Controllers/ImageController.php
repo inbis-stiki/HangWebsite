@@ -47,6 +47,7 @@ class ImageController extends Controller
         Image::create([
             'url'      => 'https://finna.is3.cloudhost.id/images/'.$new_name.'.xlsx'
         ]);
+        dd('https://finna.is3.cloudhost.id/images/'.$new_name.'.xlsx');
         ob_end_clean();
         
         // Storage::disk('local')->put("Testing.xlsx", $content); 

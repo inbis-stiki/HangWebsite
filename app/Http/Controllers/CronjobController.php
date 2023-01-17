@@ -180,8 +180,7 @@ class CronjobController extends Controller
         $year           = date('Y', strtotime('-1 days'));
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $datas['reports'] = Cronjob::queryGetSmy($year, $month, "Regional");
-        
+        $datas['reports'] = Cronjob::queryGetRankLocation($year, $month, "Regional");
         app(ReportRanking::class)->generate_ranking_rpo($datas, $updated_at);
     }
     public function genRankAsmen(){
@@ -189,19 +188,30 @@ class CronjobController extends Controller
         $year           = date('Y', strtotime('-1 days'));
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $datas['reports']   = Cronjob::queryGetSmy($year, $month, "Location");
+        $datas['reports']   = Cronjob::queryGetRankLocation($year, $month, "Location");
         app(ReportRanking::class)->generate_ranking_asmen($datas, $updated_at);
     }
     public function genRankAPOSPG(){
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $datas['reportApos'] = Cronjob::queryGetSmyUser(7, 5);
-        $datas['reportSpgs'] = Cronjob::queryGetSmyUser(7, 6);
+        $datas['reportApos'] = Cronjob::queryGetRankUser(7, 5);
+        $datas['reportSpgs'] = Cronjob::queryGetRankUser(7, 6);
 
         app(ReportRanking::class)->generate_ranking_apo_spg($datas, $updated_at);
     }
     public function genTrendRPO(){
-        app(ReportTrend::class)->generate_trend_rpo();
+        $year           = date('Y', strtotime('-1 days'));
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $reports = Cronjob::queryGetTrend($year, 'Regional');
+        app(ReportTrend::class)->generate_trend_rpo($reports, $updated_at);
+    }
+    public function genTrendAsmen(){
+        $year           = date('Y', strtotime('-1 days'));
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $reports = Cronjob::queryGetTrend($year, 'Location');
+        app(ReportTrend::class)->generate_trend_asmen($reports, $updated_at);
     }
     public function genTransDaily(){
         $products       = Product::get();
@@ -224,7 +234,7 @@ class CronjobController extends Controller
         }
 
         $querySumProd = implode(',', $querySumProd);
-        $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, "2022-12-07", "JABODETABEK");
+        $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, "2023-01-15", "JABODETABEK");
         if($transDaily != null){
             $idUsers    = implode(',', array_map(function ($entry){
                 return "'".$entry->ID_USER."'";

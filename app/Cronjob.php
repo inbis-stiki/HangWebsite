@@ -142,7 +142,7 @@ class Cronjob extends Model
             GROUP BY t.AREA_TRANS 
         ");
     }
-    public static function queryGetSmy($year, $month, $area){
+    public static function queryGetRankLocation($year, $month, $area){
         // SET WEIGHT
         $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
         $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
@@ -367,7 +367,7 @@ class Cronjob extends Model
 
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
-    public static function queryGetSmyUser($idRegional, $idRole){
+    public static function queryGetRankUser($idRegional, $idRole){
         // SET WEIGHT
         $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
         $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
@@ -502,18 +502,76 @@ class Cronjob extends Model
         
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
-    public static function queryGetDetailSmyRegional($regional){
-        return DB::select("
-            SELECT mr.NAME_REGIONAL , GROUP_CONCAT(u.NAME_USER) as NAME_USER , ml.ISINSIDE_LOCATION 
-            FROM md_regional mr 
-            INNER JOIN `user` u 
-                ON 
-                    mr.NAME_REGIONAL = '".$regional."'
-                    AND u.ID_ROLE = 4 
-                    AND u.deleted_at IS NULL AND u.ID_REGIONAL = mr.ID_REGIONAL 
-            INNER JOIN md_location ml 
-                ON ml.ID_LOCATION = mr.ID_LOCATION
+    public static function queryGetTrend($year, $area){
+        if($area == "Regional"){
+            $qWhere = "
+                stl2.REGIONAL_STL = stl.REGIONAL_STL
+                AND stl2.LOCATION_STL = stl.LOCATION_STL 
+            ";
+
+            $qGnO = "
+                GROUP By stl.REGIONAL_STL 
+                ORDER BY stl.REGIONAL_STL ASC
+            ";
+
+            $tgtUser = app(TargetUser::class)->getRegional();
+        }else if($area == "Location"){
+            $qWhere = "
+            stl2.LOCATION_STL = stl.LOCATION_STL 
+            ";
+            
+            $qGnO = "
+            GROUP By stl.LOCATION_STL 
+            ORDER BY stl.LOCATION_STL ASC
+            ";
+
+            $tgtUser = app(TargetUser::class)->getRegional();
+        }
+
+        $tgtUST         = $tgtUser['prods']['UST'];
+        $tgtNONUST      = $tgtUser['prods']['NONUST'];
+        $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
+        $tgtRendang     = $tgtUser['prods']['Rendang'];
+        $tgtGeprek      = $tgtUser['prods']['Geprek'];
+
+        $qRealMonths = [];
+        for($i = 1; $i <= 12; $i++){
+            $qRealMonths[] = "
+                (
+                    SELECT
+                        CONCAT(
+                            COALESCE((SUM(stl2.REALUST_STL)), 0), ';',
+                            COALESCE((SUM(stl2.REALNONUST_STL)), 0), ';',
+                            COALESCE((SUM(stl2.REALSELERAKU_STL)), 0), ';',
+                            COALESCE((SUM(stl2.REALRENDANG_STL)), 0), ';',
+                            COALESCE((SUM(stl2.REALGEPREK_STL)), 0)
+                        )
+                    FROM summary_trans_location stl2
+                    WHERE 
+                        ".$qWhere."
+                        AND stl2.YEAR_STL = ".$year."
+                        AND stl2.MONTH_STL = ".$i."
+                ) as M".$i."
+            ";
+        }
+        $qRealMonth = implode(', ', $qRealMonths);
+
+        $reports = DB::select("
+            SELECT
+            stl.LOCATION_STL,
+            stl.REGIONAL_STL,
+            ".$tgtUST." as TGTUST,
+            ".$tgtNONUST." as TGTNONUST,
+            ".$tgtSeleraku." as TGTSELERAKU,
+            ".$tgtRendang." as TGTRENDANG,
+            ".$tgtGeprek." as TGTGEPREK,
+            ".$qRealMonth."
+            FROM summary_trans_location stl 
+            WHERE stl.YEAR_STL = ".$year."
+            ".$qGnO."
         ");
+
+        return $reports;
     }
     public static function queryGetTransactionDaily($querySumProd, $date, $regional){
         return DB::select("
