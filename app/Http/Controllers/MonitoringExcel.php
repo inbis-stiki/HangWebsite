@@ -105,7 +105,7 @@ class MonitoringExcel extends Controller
 
         // PEDAGANG SAYUR {{TAHUN}}
         // HEADER
-        $ObjSheet->mergeCells('B2:F2')->setCellValue('B2', 'JABODETABEK')->getStyle('B2:F2')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->mergeCells('B2:P2')->setCellValue('B2', 'JABODETABEK')->getStyle('B2:P2')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
         $ObjSheet->mergeCells('B3:E3')->setCellValue('B3', 'PEDAGANG SAYUR 2022')->getStyle('B3:E3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
         $ObjSheet->mergeCells('B4:B5')->setCellValue('B4', 'AREA')->getStyle('B4:B5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
         $ObjSheet->mergeCells('C4:C5')->setCellValue('C4', 'TOTAL PS')->getStyle('C4:C5')->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'));
@@ -113,6 +113,19 @@ class MonitoringExcel extends Controller
         $ObjSheet->mergeCells('E4:E5')->setCellValue('E4', '% RO VS TOTAL PS')->getStyle('E4:E5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
         $ObjSheet->mergeCells('F3:F5')->setCellValue('F3', '% RO 2022 VS RO 2021')->getStyle('F3:F5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
         
+        $ObjSheet->mergeCells('H3:P3')->setCellValue('H3', 'DETAIL RO PS 2022')->getStyle('H3:P3')->applyFromArray($this->styling_title_template('00FF00', '000000'));        
+        $ObjSheet->mergeCells('H4:H5')->setCellValue('H4', 'TOTAL RO')->getStyle('H4:H5')->applyFromArray($this->styling_title_template('FFFF00', '000000'));        
+        $ObjSheet->mergeCells('I4:L4')->setCellValue('I4', 'RUTINITAS RO PEDAGANG SAYUR')->getStyle('I4:L4')->applyFromArray($this->styling_title_template('FFC000', '000000'));        
+        $ObjSheet->setCellValue('I5', '2-3x')->getStyle('I5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('J5', '4-5x')->getStyle('J5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('K5', '6-10x')->getStyle('K5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('L5', '11x UP')->getStyle('L5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->mergeCells('M4:P4')->setCellValue('M4', '% RUTINITAS RO PEDAGANG SAYUR')->getStyle('M4:P4')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));        
+        $ObjSheet->setCellValue('M5', '2-3x')->getStyle('M5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('N5', '4-5x')->getStyle('N5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('O5', '6-10x')->getStyle('O5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('P5', '11x UP')->getStyle('P5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+
         // ISI KONTEN
         $row = 6;
         $subrow = 0;
@@ -123,6 +136,16 @@ class MonitoringExcel extends Controller
             $ObjSheet->setCellValue('E'.$row, '50%')->getStyle('E'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->setCellValue('F'.$row, '100%')->getStyle('F'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
             
+            $ObjSheet->setCellValue('H'.$row, '50')->getStyle('H'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('I'.$row, '60')->getStyle('I'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('J'.$row, '70')->getStyle('J'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('K'.$row, '80')->getStyle('K'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('L'.$row, '90')->getStyle('L'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('M'.$row, '100%')->getStyle('M'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('N'.$row, '100%')->getStyle('N'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('O'.$row, '100%')->getStyle('O'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('P'.$row, '100%')->getStyle('P'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
             $row++;
             $subrow = $row;
         }
@@ -131,6 +154,26 @@ class MonitoringExcel extends Controller
         $ObjSheet->setCellValue('D'.$subrow, '1700')->getStyle('D'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
         $ObjSheet->setCellValue('E'.$subrow, '50%')->getStyle('E'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
         $ObjSheet->setCellValue('F'.$subrow, '100%')->getStyle('F'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        $ObjSheet->setCellValue('H'.$subrow, '1000')->getStyle('H'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('I'.$subrow, '900')->getStyle('I'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('J'.$subrow, '280')->getStyle('J'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('K'.$subrow, '254')->getStyle('K'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('L'.$subrow, '250')->getStyle('L'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('M'.$subrow, '100%')->getStyle('M'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('N'.$subrow, '100%')->getStyle('N'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('O'.$subrow, '100%')->getStyle('O'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('P'.$subrow, '100%')->getStyle('P'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        $ObjSheet->mergeCells('R3:R5')->setCellValue('R3', 'JUMLAH PEDAGANG SAYUR RO PEDAGANG SAYUR/APO')->getStyle('R3:R5')->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+        $ObjSheet->mergeCells('S3:S5')->setCellValue('S3', 'JUMLAH APO')->getStyle('S3:S5')->applyFromArray($this->styling_title_template('0000FF', '000000'));
+        $ObjSheet->mergeCells('T3:T5')->setCellValue('T3', 'RT2 PEDAGANG SAYUR RO/APO')->getStyle('T3:T5')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        //ISI
+        $ObjSheet->setCellValue('R6', '1700')->getStyle('R6')->applyFromArray($this->styling_default_template('11', '000000'));
+        $ObjSheet->setCellValue('S6', '15')->getStyle('S6')->applyFromArray($this->styling_default_template('11', '000000'));
+        $ObjSheet->setCellValue('T6', '120')->getStyle('T6')->applyFromArray($this->styling_default_template('11', '000000'));
+
 
         // RETAIL {{TAHUN}}
         // HEADER
@@ -141,6 +184,19 @@ class MonitoringExcel extends Controller
         $ObjSheet->mergeCells('E25:E26')->setCellValue('E25', '% RO VS TOTAL PS')->getStyle('E25:E26')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
         $ObjSheet->mergeCells('F24:F26')->setCellValue('F24', '% RO 2022 VS RO 2021')->getStyle('F24:F26')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
         
+        $ObjSheet->mergeCells('H24:P24')->setCellValue('H24', 'DETAIL RO RETAIL 2022')->getStyle('H24:P24')->applyFromArray($this->styling_title_template('00FF00', '000000'));        
+        $ObjSheet->mergeCells('H25:H26')->setCellValue('H25', 'TOTAL RO')->getStyle('H25:H26')->applyFromArray($this->styling_title_template('FFFF00', '000000'));        
+        $ObjSheet->mergeCells('I25:L25')->setCellValue('I25', 'RUTINITAS RO PEDAGANG SAYUR')->getStyle('I25:L25')->applyFromArray($this->styling_title_template('FFC000', '000000'));        
+        $ObjSheet->setCellValue('I26', '2-3x')->getStyle('I26')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('J26', '4-5x')->getStyle('J26')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('K26', '6-10x')->getStyle('K26')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('L26', '11x UP')->getStyle('L26')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->mergeCells('M25:P25')->setCellValue('M25', '% RUTINITAS RO PEDAGANG SAYUR')->getStyle('M25:P25')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));        
+        $ObjSheet->setCellValue('M26', '2-3x')->getStyle('M26')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('N26', '4-5x')->getStyle('N26')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('O26', '6-10x')->getStyle('O26')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('P26', '11x UP')->getStyle('P26')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+
         // ISI KONTEN
         $row = 27;
         $subrow = 0;
@@ -151,6 +207,16 @@ class MonitoringExcel extends Controller
             $ObjSheet->setCellValue('E'.$row, '50%')->getStyle('E'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->setCellValue('F'.$row, '100%')->getStyle('F'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
             
+            $ObjSheet->setCellValue('H'.$row, '50')->getStyle('H'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('I'.$row, '60')->getStyle('I'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('J'.$row, '70')->getStyle('J'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('K'.$row, '80')->getStyle('K'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('L'.$row, '90')->getStyle('L'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('M'.$row, '100%')->getStyle('M'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('N'.$row, '100%')->getStyle('N'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('O'.$row, '100%')->getStyle('O'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('P'.$row, '100%')->getStyle('P'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
             $row++;
             $subrow = $row;
         }
@@ -159,6 +225,26 @@ class MonitoringExcel extends Controller
         $ObjSheet->setCellValue('D'.$subrow, '1700')->getStyle('D'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
         $ObjSheet->setCellValue('E'.$subrow, '50%')->getStyle('E'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
         $ObjSheet->setCellValue('F'.$subrow, '100%')->getStyle('F'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        $ObjSheet->setCellValue('H'.$subrow, '1000')->getStyle('H'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('I'.$subrow, '900')->getStyle('I'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('J'.$subrow, '280')->getStyle('J'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('K'.$subrow, '254')->getStyle('K'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('L'.$subrow, '250')->getStyle('L'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('M'.$subrow, '100%')->getStyle('M'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('N'.$subrow, '100%')->getStyle('N'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('O'.$subrow, '100%')->getStyle('O'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('P'.$subrow, '100%')->getStyle('P'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        $ObjSheet->mergeCells('R24:R26')->setCellValue('R24', 'JUMLAH RETAIL RO PEDAGANG SAYUR/APO')->getStyle('R24:R26')->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+        $ObjSheet->mergeCells('S24:S26')->setCellValue('S24', 'JUMLAH APO')->getStyle('S24:S26')->applyFromArray($this->styling_title_template('0000FF', '000000'));
+        $ObjSheet->mergeCells('T24:T26')->setCellValue('T24', 'RT2 RETAIL RO / APO')->getStyle('T24:T26')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        //ISI
+        $ObjSheet->setCellValue('R27', '1700')->getStyle('R27')->applyFromArray($this->styling_default_template('11', '000000'));
+        $ObjSheet->setCellValue('S27', '15')->getStyle('S27')->applyFromArray($this->styling_default_template('11', '000000'));
+        $ObjSheet->setCellValue('T27', '120')->getStyle('T27')->applyFromArray($this->styling_default_template('11', '000000'));
+
 
         // LOSS {{TAHUN}}
         // HEADER
@@ -169,6 +255,19 @@ class MonitoringExcel extends Controller
         $ObjSheet->mergeCells('E46:E47')->setCellValue('E46', '% RO VS TOTAL PS')->getStyle('E46:E47')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
         $ObjSheet->mergeCells('F45:F47')->setCellValue('F45', '% RO 2022 VS RO 2021')->getStyle('F45:F47')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
         
+        $ObjSheet->mergeCells('H45:P45')->setCellValue('H45', 'DETAIL RO LOSS 2022')->getStyle('H45:P45')->applyFromArray($this->styling_title_template('00FF00', '000000'));        
+        $ObjSheet->mergeCells('H46:H47')->setCellValue('H46', 'TOTAL RO')->getStyle('H46:H47')->applyFromArray($this->styling_title_template('FFFF00', '000000'));        
+        $ObjSheet->mergeCells('I46:L47')->setCellValue('I46', 'RUTINITAS RO PEDAGANG SAYUR')->getStyle('I46:L47')->applyFromArray($this->styling_title_template('FFC000', '000000'));        
+        $ObjSheet->setCellValue('I47', '2-3x')->getStyle('I47')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('J47', '4-5x')->getStyle('J47')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('K47', '6-10x')->getStyle('K47')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('L47', '11x UP')->getStyle('L47')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->mergeCells('M46:P46')->setCellValue('M46', '% RUTINITAS RO PEDAGANG SAYUR')->getStyle('M46:P46')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));        
+        $ObjSheet->setCellValue('M47', '2-3x')->getStyle('M47')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('N47', '4-5x')->getStyle('N47')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('O47', '6-10x')->getStyle('O47')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('P47', '11x UP')->getStyle('P47')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+
         // ISI KONTEN
         $row = 48;
         $subrow = 0;
@@ -179,6 +278,16 @@ class MonitoringExcel extends Controller
             $ObjSheet->setCellValue('E'.$row, '50%')->getStyle('E'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->setCellValue('F'.$row, '100%')->getStyle('F'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
             
+            $ObjSheet->setCellValue('H'.$row, '50')->getStyle('H'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('I'.$row, '60')->getStyle('I'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('J'.$row, '70')->getStyle('J'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('K'.$row, '80')->getStyle('K'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('L'.$row, '90')->getStyle('L'.$row)->applyFromArray($this->styling_default_template('11', '000000'));
+            $ObjSheet->setCellValue('M'.$row, '100%')->getStyle('M'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('N'.$row, '100%')->getStyle('N'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('O'.$row, '100%')->getStyle('O'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->setCellValue('P'.$row, '100%')->getStyle('P'.$row)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
             $row++;
             $subrow = $row;
         }
@@ -188,7 +297,26 @@ class MonitoringExcel extends Controller
         $ObjSheet->setCellValue('E'.$subrow, '50%')->getStyle('E'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
         $ObjSheet->setCellValue('F'.$subrow, '100%')->getStyle('F'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-        $fileName = 'Pedangang Sayur APO';
+        $ObjSheet->setCellValue('H'.$subrow, '1000')->getStyle('H'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('I'.$subrow, '900')->getStyle('I'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('J'.$subrow, '280')->getStyle('J'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('K'.$subrow, '254')->getStyle('K'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('L'.$subrow, '250')->getStyle('L'.$subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+        $ObjSheet->setCellValue('M'.$subrow, '100%')->getStyle('M'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('N'.$subrow, '100%')->getStyle('N'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('O'.$subrow, '100%')->getStyle('O'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+        $ObjSheet->setCellValue('P'.$subrow, '100%')->getStyle('P'.$subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        $ObjSheet->mergeCells('R45:R47')->setCellValue('R45', 'JUMLAH LOSS/APO')->getStyle('R45:R47')->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+        $ObjSheet->mergeCells('S45:S47')->setCellValue('S45', 'JUMLAH APO')->getStyle('S45:S47')->applyFromArray($this->styling_title_template('0000FF', '000000'));
+        $ObjSheet->mergeCells('T45:T47')->setCellValue('T45', 'RT2 LOSS/APO')->getStyle('T45:T47')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+
+        //ISI
+        $ObjSheet->setCellValue('R48', '1700')->getStyle('R48')->applyFromArray($this->styling_default_template('11', '000000'));
+        $ObjSheet->setCellValue('S48', '15')->getStyle('S48')->applyFromArray($this->styling_default_template('11', '000000'));
+        $ObjSheet->setCellValue('T48', '120')->getStyle('T48')->applyFromArray($this->styling_default_template('11', '000000'));
+
+        $fileName = 'Pedagang Sayur APO';
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file
