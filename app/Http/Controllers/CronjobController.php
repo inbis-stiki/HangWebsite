@@ -15,11 +15,13 @@ use App\UserRankingActivity;
 use App\ReportRanking;
 use App\ReportTransaction;
 use App\ReportTrend;
+use App\ReportRepeatOrder;
 use App\Shop;
 use App\User;
 use App\Users;
 use Carbon\Carbon;
 use Exception;
+use App\TargetUser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
@@ -57,7 +59,14 @@ class CronjobController extends Controller
             DB::table('transaction_detail_today')->delete();
 
             $queryCategory = [];
-            $tgtUser = 0;
+            
+            $tgtUser        = app(TargetUser::class)->getUser();
+            $tgtUST         = $tgtUser['prods']['UST'];
+            $tgtNONUST      = $tgtUser['prods']['NONUST'];
+            $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
+            $tgtRendang     = $tgtUser['prods']['Rendang'];
+            $tgtGeprek      = $tgtUser['prods']['Geprek'];
+            $tgtTotal       = $tgtUST + $tgtNONUST + $tgtSeleraku + $tgtRendang + $tgtGeprek;
             foreach ($prodCategorys as $prodCategory) {
                 $queryCategory[] = "
                     COALESCE((
@@ -73,7 +82,6 @@ class CronjobController extends Controller
                                 AND td.ID_PC = ".$prodCategory->ID_PC."
                     ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC)))."_DM'
                 ";
-                $tgtUser += $prodCategory->TGTUSER_PC;
             }
             foreach ($actCategorys as $actCategory) {
                 $queryCategory[] = "
@@ -92,7 +100,7 @@ class CronjobController extends Controller
             
             $queryCategory = $queryCategory != null ? implode(', ', $queryCategory) : "";
             $datas = [];
-            $datas      = Cronjob::queryGetDashboardMobile($month, $year, $queryCategory, $tgtUser);
+            $datas      = Cronjob::queryGetDashboardMobile($month, $year, $queryCategory, $tgtTotal);
             
             foreach ($datas as $data) {
                 DB::table('dashboard_mobile')->insert([
@@ -173,30 +181,7 @@ class CronjobController extends Controller
         $year           = date('Y', strtotime('-1 days'));
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $datas['reportDapuls'] = Cronjob::queryGetSmy($year, $month, "Regional", 1);
-        $datas['reportLapuls'] = Cronjob::queryGetSmy($year, $month, "Regional", 0);
-
-        $datas['avgNat']['TGTUB']           = ($datas['reportDapuls']['reportActs']['AVG_TGTUB'] + $datas['reportLapuls']['reportActs']['AVG_TGTUB']) / 2; 
-        $datas['avgNat']['REALACTUB']       = ($datas['reportDapuls']['reportActs']['AVG_REALACTUB'] + $datas['reportLapuls']['reportActs']['AVG_REALACTUB']) / 2; 
-        $datas['avgNat']['VSUB']            = ($datas['reportDapuls']['reportActs']['AVG_VSUB'] + $datas['reportLapuls']['reportActs']['AVG_VSUB']) / 2;
-        $datas['avgNat']['TGTPS']           = ($datas['reportDapuls']['reportActs']['AVG_TGTPS'] + $datas['reportLapuls']['reportActs']['AVG_TGTPS']) / 2; 
-        $datas['avgNat']['REALACTPS']       = ($datas['reportDapuls']['reportActs']['AVG_REALACTPS'] + $datas['reportLapuls']['reportActs']['AVG_REALACTPS']) / 2; 
-        $datas['avgNat']['VSPS']            = ($datas['reportDapuls']['reportActs']['AVG_VSPS'] + $datas['reportLapuls']['reportActs']['AVG_VSPS']) / 2;
-        $datas['avgNat']['TGTRETAIL']       = ($datas['reportDapuls']['reportActs']['AVG_TGTRETAIL'] + $datas['reportLapuls']['reportActs']['AVG_TGTRETAIL']) / 2; 
-        $datas['avgNat']['REALACTRETAIL']   = ($datas['reportDapuls']['reportActs']['AVG_REALACTRETAIL'] + $datas['reportLapuls']['reportActs']['AVG_REALACTRETAIL']) / 2; 
-        $datas['avgNat']['VSRETAIL']        = ($datas['reportDapuls']['reportActs']['AVG_VSRETAIL'] + $datas['reportLapuls']['reportActs']['AVG_VSRETAIL']) / 2;
-        
-        $datas['avgNat']['TGTUST']          = ($datas['reportDapuls']['reportProds']['AVG_TGTUST'] + $datas['reportLapuls']['reportProds']['AVG_TGTUST']) / 2; 
-        $datas['avgNat']['REALUST']         = ($datas['reportDapuls']['reportProds']['AVG_REALUST'] + $datas['reportLapuls']['reportProds']['AVG_REALUST']) / 2; 
-        $datas['avgNat']['VSUST']           = ($datas['reportDapuls']['reportProds']['AVG_VSUST'] + $datas['reportLapuls']['reportProds']['AVG_VSUST']) / 2;
-        $datas['avgNat']['TGTNONUST']       = ($datas['reportDapuls']['reportProds']['AVG_TGTNONUST'] + $datas['reportLapuls']['reportProds']['AVG_TGTNONUST']) / 2; 
-        $datas['avgNat']['REALNONUST']      = ($datas['reportDapuls']['reportProds']['AVG_REALNONUST'] + $datas['reportLapuls']['reportProds']['AVG_REALNONUST']) / 2; 
-        $datas['avgNat']['VSNONUST']        = ($datas['reportDapuls']['reportProds']['AVG_VSNONUST'] + $datas['reportLapuls']['reportProds']['AVG_VSNONUST']) / 2;
-        $datas['avgNat']['TGTSELERAKU']     = ($datas['reportDapuls']['reportProds']['AVG_TGTSELERAKU'] + $datas['reportLapuls']['reportProds']['AVG_TGTSELERAKU']) / 2; 
-        $datas['avgNat']['REALSELERAKU']    = ($datas['reportDapuls']['reportProds']['AVG_REALSELERAKU'] + $datas['reportLapuls']['reportProds']['AVG_REALSELERAKU']) / 2; 
-        $datas['avgNat']['VSSELERAKU']      = ($datas['reportDapuls']['reportProds']['AVG_VSSELERAKU'] + $datas['reportLapuls']['reportProds']['AVG_VSSELERAKU']) / 2;
-
-        
+        $datas['reports'] = Cronjob::queryGetRankLocation($year, $month, "Regional");
         app(ReportRanking::class)->generate_ranking_rpo($datas, $updated_at);
     }
     public function genRankAsmen(){
@@ -204,19 +189,30 @@ class CronjobController extends Controller
         $year           = date('Y', strtotime('-1 days'));
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $datas['reports']   = Cronjob::queryGetSmy($year, $month, "Location", 3);
+        $datas['reports']   = Cronjob::queryGetRankLocation($year, $month, "Location");
         app(ReportRanking::class)->generate_ranking_asmen($datas, $updated_at);
     }
     public function genRankAPOSPG(){
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $datas['reportApos'] = Cronjob::queryGetSmyUser(7, 5);
-        $datas['reportSpgs'] = Cronjob::queryGetSmyUser(7, 6);
+        $datas['reportApos'] = Cronjob::queryGetRankUser(7, 5);
+        $datas['reportSpgs'] = Cronjob::queryGetRankUser(7, 6);
 
         app(ReportRanking::class)->generate_ranking_apo_spg($datas, $updated_at);
     }
     public function genTrendRPO(){
-        app(ReportTrend::class)->generate_trend_rpo();
+        $year           = date('Y', strtotime('-1 days'));
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $reports = Cronjob::queryGetTrend($year, 'Regional');
+        app(ReportTrend::class)->generate_trend_rpo($reports, $updated_at);
+    }
+    public function genTrendAsmen(){
+        $year           = date('Y', strtotime('-1 days'));
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $reports = Cronjob::queryGetTrend($year, 'Location');
+        app(ReportTrend::class)->generate_trend_asmen($reports, $updated_at);
     }
     public function genTransDaily(){
         $products       = Product::get();
@@ -239,7 +235,7 @@ class CronjobController extends Controller
         }
 
         $querySumProd = implode(',', $querySumProd);
-        $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, "2022-12-07", "JABODETABEK");
+        $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, "2023-01-15", "JABODETABEK");
         if($transDaily != null){
             $idUsers    = implode(',', array_map(function ($entry){
                 return "'".$entry->ID_USER."'";
@@ -249,6 +245,14 @@ class CronjobController extends Controller
         }
 
         print_r(app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, "JABODETABEK"));
+    }
+    public function genRORPO(){
+        $year           = date('Y', strtotime('-1 days'));
+        $month          = date('n', strtotime('-1 days'));
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+        
+        $rOs = Cronjob::queryGetRepeatOrder($year, $month);
+        app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
     }
 
     public function TestTemplate(ReportQuery $reportQuery)
