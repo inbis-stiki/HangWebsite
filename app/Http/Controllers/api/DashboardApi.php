@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\TargetUser;
 
 class DashboardApi extends Controller
 {
@@ -225,11 +226,12 @@ class DashboardApi extends Controller
             $realRendang    = (int)($AllData_temp <> null) ? (($AllData_temp->REALRENDANG_DM <> null) ? $AllData_temp->REALRENDANG_DM : 0) : 0;
             $realGeprek     = (int)($AllData_temp <> null) ? (($AllData_temp->REALGEPREK_DM <> null) ? $AllData_temp->REALGEPREK_DM : 0) : 0;
 
-            $tgtUST         = 80;
-            $tgtNONUST      = 660;
-            $tgtSeleraku    = 120;
-            $tgtRendang     = 250;
-            $tgtGeprek      = 250;
+            $tgtUser        = app(TargetUser::class)->getUser();
+            $tgtUST         = $tgtUser->get()['prods']['UST'];
+            $tgtNONUST      = $tgtUser->get()['prods']['NONUST'];
+            $tgtSeleraku    = $tgtUser->get()['prods']['Seleraku'];
+            $tgtRendang     = $tgtUser->get()['prods']['Rendang'];
+            $tgtGeprek      = $tgtUser->get()['prods']['Geprek'];
             $tgtTotal       = $tgtUST + $tgtNONUST + $tgtSeleraku + $tgtRendang + $tgtGeprek;
 
             $totUST         = $tdyUST + $realUST;

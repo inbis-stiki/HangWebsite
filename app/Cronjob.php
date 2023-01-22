@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\TargetUser;
 
 class Cronjob extends Model
 {
@@ -141,11 +142,13 @@ class Cronjob extends Model
             GROUP BY t.AREA_TRANS 
         ");
     }
-    public static function queryGetSmy($year, $month, $area, $isInside){
+    public static function queryGetRankLocation($year, $month, $area){
         // SET WEIGHT
         $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
         $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
         $wSELERAKU  = CategoryProduct::where("ID_PC", "3")->first()->PERCENTAGE_PC;
+        $wRENDANG   = CategoryProduct::where("ID_PC", "16")->first()->PERCENTAGE_PC;
+        $wGEPREK    = CategoryProduct::where("ID_PC", "17")->first()->PERCENTAGE_PC;
         
         $wUB        = ActivityCategory::where("ID_AC", "1")->first()->PERCENTAGE_AC;
         $wPS        = ActivityCategory::where("ID_AC", "2")->first()->PERCENTAGE_AC;
@@ -154,50 +157,50 @@ class Cronjob extends Model
         if($area == "Regional"){
             $groupBy = "GROUP BY stl.REGIONAL_STL";
             $nameUser = "
-                SELECT DISTINCT(u.NAME_USER)
+                SELECT GROUP_CONCAT(u.NAME_USER)
                 FROM md_regional mr 
                 JOIN `user` u  
                     ON 
                         mr.NAME_REGIONAL = smy.REGIONAL_STL COLLATE utf8mb4_unicode_ci
                         AND u.ID_REGIONAL = mr.ID_REGIONAL 
                         AND u.ID_ROLE = 4
+                        AND u.deleted_at IS NULL
             ";
             // SET TARGET
-            $tgtUB      = (12 * 14); // tgtUB * totArea
-            $tgtPS      = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
-            $tgtRetail  = (14 * 3) * 10 * 25; // (tgt * jmluser) * totharikerja
+            $tgtUser    = app(TargetUser::class)->getRegional();
+            $tgtUB      = $tgtUser['acts']['UB'];
+            $tgtPS      = $tgtUser['acts']['PS'];
+            $tgtRetail  = $tgtUser['acts']['Retail'];
 
-            $tgtUST         = (80 * 3) * 14;
-            $tgtNONUST      = (1000 * 3) * 14;
-            $tgtSeleraku    = (180 * 3) * 14;
+            $tgtUST         = $tgtUser['prods']['UST'];
+            $tgtNONUST      = $tgtUser['prods']['NONUST'];
+            $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
+            $tgtRendang     = $tgtUser['prods']['Rendang'];
+            $tgtGeprek      = $tgtUser['prods']['Geprek'];
         }else if($area == "Location"){
             $groupBy = "GROUP BY stl.LOCATION_STL";
             $nameUser = "
-                SELECT DISTINCT(u.NAME_USER)
+                SELECT GROUP_CONCAT(u.NAME_USER)
                 FROM md_location ml
                 JOIN `user` u  
                     ON 
                         ml.NAME_LOCATION = smy.LOCATION_STL COLLATE utf8mb4_unicode_ci
                         AND u.ID_LOCATION = ml.ID_LOCATION 
                         AND u.ID_ROLE = 3
+                        AND u.deleted_at IS NULL
             ";
 
             // SET TARGET
-            $tgtUB      = (12 * 14) * 2; // (tgt * jmlarea) * totasmen
-            $tgtPS      = ((14 * 3) * 10 * 25) * 2; // ((tgt * jmluser) * 10PS) * totharikerja) * totasmen
-            $tgtRetail  = ((14 * 3) * 10 * 25) * 2; // ((tgt * jmluser) * 10RET) totharikerja) * totasmen
+            $tgtUser    = app(TargetUser::class)->getAsmen();
+            $tgtUB      = $tgtUser['acts']['UB'];
+            $tgtPS      = $tgtUser['acts']['PS'];
+            $tgtRetail  = $tgtUser['acts']['Retail'];
 
-            $tgtUST         = ((80 * 3) * 14) * 2;
-            $tgtNONUST      = ((1000 * 3) * 14) * 2;
-            $tgtSeleraku    = ((180 * 3) * 14) * 2;
-        }
-
-        // SET DAPUL OR LAPUL
-        $isInsideQry = "";
-        if($isInside == "1"){
-            $isInsideQry = "AND ml.ISINSIDE_LOCATION = 1";
-        }else if($isInside == "2"){
-            $isInsideQry = "AND ml.ISINSIDE_LOCATION = 0";
+            $tgtUST         = $tgtUser['prods']['UST'];
+            $tgtNONUST      = $tgtUser['prods']['NONUST'];
+            $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
+            $tgtRendang     = $tgtUser['prods']['Rendang'];
+            $tgtGeprek      = $tgtUser['prods']['Geprek'];
         }
 
         $resProds = DB::select("
@@ -214,26 +217,43 @@ class Cronjob extends Model
                 smy.REALSELERAKU_STL ,
                 (".$tgtSeleraku.") as TGTSELERAKU ,
                 smy.VSSELERAKU ,
-                ((smy.VSUST * ".$wUST.") / 100) + ((smy.VSNONUST * ".$wNONUST.") / 100) + ((smy.VSSELERAKU * ".$wSELERAKU.") / 100) as AVG_VS
+                smy.REALRENDANG_STL ,
+                (".$tgtRendang.") as TGTRENDANG ,
+                smy.VSRENDANG ,
+                smy.REALGEPREK_STL ,
+                (".$tgtGeprek.") as TGTGEPREK ,
+                smy.VSGEPREK ,
+                ((smy.VSUST * ".$wUST.") / 100) + ((smy.VSNONUST * ".$wNONUST.") / 100) + ((smy.VSSELERAKU * ".$wSELERAKU.") / 100) + ((smy.VSRENDANG * ".$wRENDANG.") / 100) + ((smy.VSGEPREK * ".$wGEPREK.") / 100) as AVG_VS
             FROM (
                 SELECT
-                    stl.*,
+                    stl.LOCATION_STL,
+                    stl.REGIONAL_STL,
+                    SUM(stl.REALUST_STL) as REALUST_STL,
+                    SUM(stl.REALNONUST_STL) as REALNONUST_STL,
+                    SUM(stl.REALSELERAKU_STL) as REALSELERAKU_STL,
+                    SUM(stl.REALRENDANG_STL) as REALRENDANG_STL,
+                    SUM(stl.REALGEPREK_STL) as REALGEPREK_STL,
                     (
-                        (stl.REALUST_STL / (".$tgtUST.")) * 100
+                        (SUM(stl.REALUST_STL) / (".$tgtUST.")) * 100
                     ) as VSUST,
                     (
-                        (stl.REALNONUST_STL / (".$tgtNONUST.")) * 100
+                        (SUM(stl.REALNONUST_STL) / (".$tgtNONUST.")) * 100
                     ) as VSNONUST,
                     (
-                        (stl.REALSELERAKU_STL / (".$tgtSeleraku.")) * 100
-                    ) as VSSELERAKU
+                        (SUM(stl.REALSELERAKU_STL) / (".$tgtSeleraku.")) * 100
+                    ) as VSSELERAKU,
+                    (
+                        (SUM(stl.REALRENDANG_STL) / (".$tgtRendang.")) * 100
+                    ) as VSRENDANG,
+                    (
+                        (SUM(stl.REALGEPREK_STL) / (".$tgtGeprek.")) * 100
+                    ) as VSGEPREK
                 FROM summary_trans_location stl
                 INNER JOIN md_location ml
                     ON 
                         stl.YEAR_STL = ".$year."
                         AND stl.MONTH_STL = ".$month."
                         AND ml.NAME_LOCATION = stl.LOCATION_STL COLLATE utf8mb4_unicode_ci
-                        ".$isInsideQry."
                     ".$groupBy."
             ) as smy
             ORDER BY AVG_VS DESC
@@ -256,15 +276,19 @@ class Cronjob extends Model
                 ((smy.VSUB * ".$wUB.") / 100) + ((smy.VSPS * ".$wPS.") / 100) + ((smy.VSRETAIL * ".$wRETAIL.") / 100) as AVG_VS
             FROM (
                 SELECT
-                    stl.*,
+                    stl.LOCATION_STL,
+                    stl.REGIONAL_STL,
+                    SUM(stl.REALACTUB_STL) as REALACTUB_STL,
+                    SUM(stl.REALACTPS_STL) as REALACTPS_STL,
+                    SUM(stl.REALACTRETAIL_STL) as REALACTRETAIL_STL,
                     (
-                        (stl.REALACTUB_STL / (".$tgtUB.")) * 100
+                        (SUM(stl.REALACTUB_STL) / (".$tgtUB.")) * 100
                     ) as VSUB,
                     (
-                        (stl.REALACTPS_STL / (".$tgtPS.")) * 100
+                        (SUM(stl.REALACTPS_STL) / (".$tgtPS.")) * 100
                     ) as VSPS,
                     (
-                        (stl.REALACTRETAIL_STL / (".$tgtRetail.")) * 100
+                        (SUM(stl.REALACTRETAIL_STL) / (".$tgtRetail.")) * 100
                     ) as VSRETAIL
                 FROM summary_trans_location stl
                 INNER JOIN md_location ml
@@ -272,7 +296,6 @@ class Cronjob extends Model
                         stl.YEAR_STL = ".$year."
                         AND stl.MONTH_STL = ".$month."
                         AND ml.NAME_LOCATION = stl.LOCATION_STL COLLATE utf8mb4_unicode_ci
-                        ".$isInsideQry."
                     ".$groupBy."
             ) as smy
             ORDER BY AVG_VS DESC    
@@ -281,15 +304,21 @@ class Cronjob extends Model
         $tot1 = 0;
         $tot2 = 0;
         $tot3 = 0;
+        $tot4 = 0;
+        $tot5 = 0;
         foreach ($resProds as $resProd) {
             $tot1 += $resProd->REALUST_STL;
             $tot2 += $resProd->REALNONUST_STL;
             $tot3 += $resProd->REALSELERAKU_STL;
+            $tot4 += $resProd->REALRENDANG_STL;
+            $tot5 += $resProd->REALGEPREK_STL;
         }
         $reportProds['DATAS']                = $resProds;
         $reportProds['wUST']                 = $wUST;
         $reportProds['wNONUST']              = $wNONUST;
         $reportProds['wSELERAKU']            = $wSELERAKU;
+        $reportProds['wRENDANG']             = $wRENDANG;
+        $reportProds['wGEPREK']              = $wGEPREK;
         $reportProds['AVG_REALUST']          = count($reportProds['DATAS']) == 0 ? 0 : round($tot1 / count($reportProds['DATAS']));
         $reportProds['AVG_TGTUST']           = $tgtUST;
         $reportProds['AVG_VSUST']            = $reportProds['AVG_REALUST'] / $reportProds['AVG_TGTUST'];
@@ -299,9 +328,17 @@ class Cronjob extends Model
         $reportProds['AVG_REALSELERAKU']     = count($reportProds['DATAS']) == 0 ? 0 : round($tot3 / count($reportProds['DATAS']));
         $reportProds['AVG_TGTSELERAKU']      = $tgtSeleraku;
         $reportProds['AVG_VSSELERAKU']       = $reportProds['AVG_REALSELERAKU'] / $reportProds['AVG_TGTSELERAKU'];
+        $reportProds['AVG_REALRENDANG']      = count($reportProds['DATAS']) == 0 ? 0 : round($tot4 / count($reportProds['DATAS']));
+        $reportProds['AVG_TGTRENDANG']       = $tgtRendang;
+        $reportProds['AVG_VSRENDANG']        = $reportProds['AVG_REALRENDANG'] / $reportProds['AVG_TGTRENDANG'];
+        $reportProds['AVG_REALGEPREK']       = count($reportProds['DATAS']) == 0 ? 0 : round($tot5 / count($reportProds['DATAS']));
+        $reportProds['AVG_TGTGEPREK']        = $tgtGeprek;
+        $reportProds['AVG_VSGEPREK']         = $reportProds['AVG_REALGEPREK'] / $reportProds['AVG_TGTGEPREK'];
         $reportProds['AVG_VS']               = (($reportProds['AVG_VSUST'] * $wUST) / 100);
         $reportProds['AVG_VS']               += (($reportProds['AVG_VSNONUST'] * $wNONUST) / 100);
         $reportProds['AVG_VS']               += (($reportProds['AVG_VSSELERAKU'] * $wSELERAKU) / 100);
+        $reportProds['AVG_VS']               += (($reportProds['AVG_VSRENDANG'] * $wRENDANG) / 100);
+        $reportProds['AVG_VS']               += (($reportProds['AVG_VSGEPREK'] * $wRENDANG) / 100);
         
         $tot1 = 0;
         $tot2 = 0;
@@ -330,24 +367,29 @@ class Cronjob extends Model
 
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
-    public static function queryGetSmyUser($idRegional, $idRole){
+    public static function queryGetRankUser($idRegional, $idRole){
         // SET WEIGHT
         $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
         $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
         $wSELERAKU  = CategoryProduct::where("ID_PC", "3")->first()->PERCENTAGE_PC;
+        $wRENDANG   = CategoryProduct::where("ID_PC", "16")->first()->PERCENTAGE_PC;
+        $wGEPREK    = CategoryProduct::where("ID_PC", "17")->first()->PERCENTAGE_PC;
         
         $wUB        = ActivityCategory::where("ID_AC", "1")->first()->PERCENTAGE_AC;
         $wPS        = ActivityCategory::where("ID_AC", "2")->first()->PERCENTAGE_AC;
         $wRETAIL    = ActivityCategory::where("ID_AC", "3")->first()->PERCENTAGE_AC;
         
         // SET TARGET
-        $tgtUB      = 12; // tgt
-        $tgtPS      = 10 * 25; // ((tgt * jmluser) * 10PS totharikerja) * totasmen
-        $tgtRetail  = 10 * 25; // ((tgt * jmluser) * 10RET totharikerja) * totasmen
+        $tgtUser    = app(TargetUser::class)->getUser();
+        $tgtUB      = $tgtUser['acts']['UB']; 
+        $tgtPS      = $tgtUser['acts']['PS']; 
+        $tgtRetail  = $tgtUser['acts']['Retail']; 
 
-        $tgtUST         = 80;
-        $tgtNONUST      = 1000;
-        $tgtSeleraku    = 180;
+        $tgtUST         = $tgtUser['prods']['UST'];
+        $tgtNONUST      = $tgtUser['prods']['NONUST'];;
+        $tgtSeleraku    = $tgtUser['prods']['Seleraku'];;
+        $tgtRendang     = $tgtUser['prods']['Rendang'];;
+        $tgtGeprek      = $tgtUser['prods']['Geprek'];;
 
         $resActs = DB::select("
             SELECT 
@@ -409,7 +451,13 @@ class Cronjob extends Model
                 rp.REALSELERAKU_DM ,
                 (".$tgtSeleraku.") as TGTSELERAKU ,
                 rp.VSSELERAKU ,
-                ((rp.VSUST * ".$wUST.") / 100) + ((rp.VSNONUST * ".$wNONUST.") / 100) + ((rp.VSSELERAKU * ".$wSELERAKU.") / 100) as AVG_VS
+                rp.REALRENDANG_DM ,
+                (".$tgtRendang.") as TGTRENDANG ,
+                rp.VSRENDANG ,
+                rp.REALGEPREK_DM ,
+                (".$tgtGeprek.") as TGTGEPREK ,
+                rp.VSGEPREK ,
+                ((rp.VSUST * ".$wUST.") / 100) + ((rp.VSNONUST * ".$wNONUST.") / 100) + ((rp.VSSELERAKU * ".$wSELERAKU.") / 100) + ((rp.VSRENDANG * ".$wRENDANG.") / 100) + ((rp.VSGEPREK * ".$wGEPREK.") / 100) as AVG_VS
             FROM 
             (
                 SELECT 
@@ -424,7 +472,13 @@ class Cronjob extends Model
                     ) as VSNONUST,
                     (
                         (dm.REALSELERAKU_DM/ (".$tgtSeleraku.")) * 100
-                    ) as VSSELERAKU
+                    ) as VSSELERAKU,
+                    (
+                        (dm.REALRENDANG_DM/ (".$tgtRendang.")) * 100
+                    ) as VSRENDANG,
+                    (
+                        (dm.REALGEPREK_DM/ (".$tgtGeprek.")) * 100
+                    ) as VSGEPREK
                 FROM dashboard_mobile dm 
                 INNER JOIN `user` u 
                     ON
@@ -443,21 +497,81 @@ class Cronjob extends Model
         $reportProds['wUST']        = $wUST;
         $reportProds['wNONUST']     = $wNONUST;
         $reportProds['wSELERAKU']   = $wSELERAKU;
+        $reportProds['wRENDANG']    = $wRENDANG;
+        $reportProds['wGEPREK']     = $wGEPREK;
         
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
-    public static function queryGetDetailSmyRegional($regional){
-        return DB::select("
-            SELECT mr.NAME_REGIONAL , GROUP_CONCAT(u.NAME_USER) as NAME_USER , ml.ISINSIDE_LOCATION 
-            FROM md_regional mr 
-            INNER JOIN `user` u 
-                ON 
-                    mr.NAME_REGIONAL = '".$regional."'
-                    AND u.ID_ROLE = 4 
-                    AND u.deleted_at IS NULL AND u.ID_REGIONAL = mr.ID_REGIONAL 
-            INNER JOIN md_location ml 
-                ON ml.ID_LOCATION = mr.ID_LOCATION
+    public static function queryGetTrend($year, $area){
+        if($area == "Regional"){
+            $qWhere = "
+                stl2.REGIONAL_STL = stl.REGIONAL_STL
+                AND stl2.LOCATION_STL = stl.LOCATION_STL 
+            ";
+
+            $qGnO = "
+                GROUP By stl.REGIONAL_STL 
+                ORDER BY stl.REGIONAL_STL ASC
+            ";
+
+            $tgtUser = app(TargetUser::class)->getRegional();
+        }else if($area == "Location"){
+            $qWhere = "
+            stl2.LOCATION_STL = stl.LOCATION_STL 
+            ";
+            
+            $qGnO = "
+            GROUP By stl.LOCATION_STL 
+            ORDER BY stl.LOCATION_STL ASC
+            ";
+
+            $tgtUser = app(TargetUser::class)->getRegional();
+        }
+
+        $tgtUST         = $tgtUser['prods']['UST'];
+        $tgtNONUST      = $tgtUser['prods']['NONUST'];
+        $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
+        $tgtRendang     = $tgtUser['prods']['Rendang'];
+        $tgtGeprek      = $tgtUser['prods']['Geprek'];
+
+        $qRealMonths = [];
+        for($i = 1; $i <= 12; $i++){
+            $qRealMonths[] = "
+                (
+                    SELECT
+                        CONCAT(
+                            COALESCE((SUM(stl2.REALUST_STL)), 0), ';',
+                            COALESCE((SUM(stl2.REALNONUST_STL)), 0), ';',
+                            COALESCE((SUM(stl2.REALSELERAKU_STL)), 0), ';',
+                            COALESCE((SUM(stl2.REALRENDANG_STL)), 0), ';',
+                            COALESCE((SUM(stl2.REALGEPREK_STL)), 0)
+                        )
+                    FROM summary_trans_location stl2
+                    WHERE 
+                        ".$qWhere."
+                        AND stl2.YEAR_STL = ".$year."
+                        AND stl2.MONTH_STL = ".$i."
+                ) as M".$i."
+            ";
+        }
+        $qRealMonth = implode(', ', $qRealMonths);
+
+        $reports = DB::select("
+            SELECT
+            stl.LOCATION_STL,
+            stl.REGIONAL_STL,
+            ".$tgtUST." as TGTUST,
+            ".$tgtNONUST." as TGTNONUST,
+            ".$tgtSeleraku." as TGTSELERAKU,
+            ".$tgtRendang." as TGTRENDANG,
+            ".$tgtGeprek." as TGTGEPREK,
+            ".$qRealMonth."
+            FROM summary_trans_location stl 
+            WHERE stl.YEAR_STL = ".$year."
+            ".$qGnO."
         ");
+
+        return $reports;
     }
     public static function queryGetTransactionDaily($querySumProd, $date, $regional){
         return DB::select("
@@ -491,5 +605,228 @@ class Cronjob extends Model
                     ON mr.ID_ROLE = u.ID_ROLE 
                 ORDER BY td.AREA_TD ASC, u.NAME_USER ASC
         ");
+    }
+    public static function queryGetRepeatOrder($year, $month){
+        $areas = DB::select("
+            SELECT t.REGIONAL_TRANS , t.AREA_TRANS 
+            FROM `transaction` t 
+            WHERE YEAR(t.DATE_TRANS) = ".$year." AND MONTH(t.DATE_TRANS) = ".$month."
+            GROUP BY t.AREA_TRANS , t.REGIONAL_TRANS 
+            ORDER BY t.REGIONAL_TRANS ASC , t.AREA_TRANS ASC
+        ");
+
+        $rOs = [];
+        
+        foreach ($areas as $area) {
+            if(empty($rOs[$area->REGIONAL_TRANS])) $rOs[$area->REGIONAL_TRANS] = [];
+            $rOs[$area->REGIONAL_TRANS][$area->AREA_TRANS] = DB::select("
+                SELECT 
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 2 AND TOTAL <= 3
+                        ) as x	
+                    ) as 'PS_2-3',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 4 AND TOTAL <= 5
+                        ) as x	
+                    ) as 'PS_4-5',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 6 AND TOTAL <= 10
+                        ) as x	
+                    ) as 'PS_6-10',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 11
+                        ) as x	
+                    ) as 'PS_>11',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 2 AND TOTAL <= 3
+                        ) as x	
+                    ) as 'Retail_2-3',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 4 AND TOTAL <= 5
+                        ) as x	
+                    ) as 'Retail_4-5',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 6 AND TOTAL <= 10
+                        ) as x	
+                    ) as 'Retail_6-10',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 11
+                        ) as x	
+                    ) as 'Retail_>11',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 2 AND TOTAL <= 3
+                        ) as x	
+                    ) as 'Loss_2-3',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 4 AND TOTAL <= 5
+                        ) as x	
+                    ) as 'Loss_4-5',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 6 AND TOTAL <= 10
+                        ) as x	
+                    ) as 'Loss_6-10',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 11
+                        ) as x	
+                    ) as 'Loss_>11'
+            ")[0];
+        }
+        return $rOs;
     }
 }
