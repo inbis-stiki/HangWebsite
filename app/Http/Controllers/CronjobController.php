@@ -15,6 +15,7 @@ use App\UserRankingActivity;
 use App\ReportRanking;
 use App\ReportTransaction;
 use App\ReportTrend;
+use App\ReportRepeatOrder;
 use App\Shop;
 use App\User;
 use App\Users;
@@ -244,6 +245,14 @@ class CronjobController extends Controller
         }
 
         print_r(app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, "JABODETABEK"));
+    }
+    public function genRORPO(){
+        $year           = date('Y', strtotime('-1 days'));
+        $month          = date('n', strtotime('-1 days'));
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+        
+        $rOs = Cronjob::queryGetRepeatOrder($year, $month);
+        app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
     }
 
     public function TestTemplate(ReportQuery $reportQuery)

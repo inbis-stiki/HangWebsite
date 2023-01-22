@@ -42,6 +42,7 @@ Route::get('cronjob/gen-rank-rpo', 'CronjobController@genRankRPO');
 Route::get('cronjob/gen-rank-asmen', 'CronjobController@genRankAsmen');
 Route::get('cronjob/gen-trend-rpo', 'CronjobController@genTrendRPO');
 Route::get('cronjob/gen-trend-asmen', 'CronjobController@genTrendAsmen');
+Route::get('cronjob/gen-ro-rpo', 'CronjobController@genRORPO');
 Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
 Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');

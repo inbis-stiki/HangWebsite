@@ -606,4 +606,227 @@ class Cronjob extends Model
                 ORDER BY td.AREA_TD ASC, u.NAME_USER ASC
         ");
     }
+    public static function queryGetRepeatOrder($year, $month){
+        $areas = DB::select("
+            SELECT t.REGIONAL_TRANS , t.AREA_TRANS 
+            FROM `transaction` t 
+            WHERE YEAR(t.DATE_TRANS) = ".$year." AND MONTH(t.DATE_TRANS) = ".$month."
+            GROUP BY t.AREA_TRANS , t.REGIONAL_TRANS 
+            ORDER BY t.REGIONAL_TRANS ASC , t.AREA_TRANS ASC
+        ");
+
+        $rOs = [];
+        
+        foreach ($areas as $area) {
+            if(empty($rOs[$area->REGIONAL_TRANS])) $rOs[$area->REGIONAL_TRANS] = [];
+            $rOs[$area->REGIONAL_TRANS][$area->AREA_TRANS] = DB::select("
+                SELECT 
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 2 AND TOTAL <= 3
+                        ) as x	
+                    ) as 'PS_2-3',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 4 AND TOTAL <= 5
+                        ) as x	
+                    ) as 'PS_4-5',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 6 AND TOTAL <= 10
+                        ) as x	
+                    ) as 'PS_6-10',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 11
+                        ) as x	
+                    ) as 'PS_>11',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 2 AND TOTAL <= 3
+                        ) as x	
+                    ) as 'Retail_2-3',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 4 AND TOTAL <= 5
+                        ) as x	
+                    ) as 'Retail_4-5',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 6 AND TOTAL <= 10
+                        ) as x	
+                    ) as 'Retail_6-10',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 11
+                        ) as x	
+                    ) as 'Retail_>11',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 2 AND TOTAL <= 3
+                        ) as x	
+                    ) as 'Loss_2-3',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 4 AND TOTAL <= 5
+                        ) as x	
+                    ) as 'Loss_4-5',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 6 AND TOTAL <= 10
+                        ) as x	
+                    ) as 'Loss_6-10',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = ".$year."
+                                    AND MONTH(t.DATE_TRANS) = ".$month."
+                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
+                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP 
+                            HAVING TOTAL >= 11
+                        ) as x	
+                    ) as 'Loss_>11'
+            ")[0];
+        }
+        return $rOs;
+    }
 }
