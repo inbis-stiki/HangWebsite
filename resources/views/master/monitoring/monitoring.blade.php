@@ -40,8 +40,8 @@
                         <div class="card-body" id="table-presence">
                             <div class="row mb-4 mt-2">
                                 <div class="col text-right">
-                                    <a href="{{ url('monitoring/download-presence-daily') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan 12/Jan/23</a>
-                                    <a href="{{ url('monitoring/download-presence-monthly') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan Januari</a>
+                                    <a href="{{ url('monitoring/download-presence-daily') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('j/M/Y') }}</a>
+                                    <a href="{{ url('monitoring/download-presence-monthly') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ dtae('F') }}</a>
                                 </div>
                             </div>
                             <div class="table-responsive">
