@@ -126,7 +126,7 @@ class UserController extends Controller
             return redirect('master/user')->withErrors($validator);
         }
 
-        if ($req->input('role') == 3) {
+        if ($req->input('role') == 1 || $req->input('role') == 2 || $req->input('role') == 3) {
             $locations      = DB::table('md_location')
                 ->where('md_location.ID_LOCATION', $req->input('area'))
                 ->join('md_regional', 'md_regional.ID_LOCATION', '=', 'md_location.ID_LOCATION')
@@ -160,7 +160,7 @@ class UserController extends Controller
         $user->USERNAME_USER    = $req->input('username');
         $user->ID_ROLE          = $req->input('role');
 
-        if ($req->input('role') == 3) {
+        if ($req->input('role') == 1 || $req->input('role') == 2 || $req->input('role') == 3) {
             $user->ID_AREA          = $locations[0]->ID_AREA;
             $user->ID_REGIONAL      = $locations[0]->ID_REGIONAL;
             $user->ID_LOCATION      = $req->input('area');
@@ -261,7 +261,7 @@ class UserController extends Controller
 
         $user   = Users::find($req->input('id'));
 
-        if ($req->input('role') == 3) {
+        if ($req->input('role') == 1 || $req->input('role') == 2 || $req->input('role') == 3) {
             if ($user->ID_LOCATION != $req->input('area')) {
                 $locations      = DB::table('md_location')
                     ->where('md_location.ID_LOCATION', $req->input('area'))

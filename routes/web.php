@@ -15,6 +15,7 @@ use App\Http\Middleware\CheckRole;
 */
 // TES IMAGE S3
 Route::get('monitoringexcel', 'MonitoringExcel@index');
+Route::get('pdgsayurapoexcel', 'MonitoringExcel@pdgSayur');
 Route::get('testimage', 'ImageController@create');
 Route::get('testexcel', 'ImageController@excel');
 Route::post('testimage', 'ImageController@store');
@@ -144,6 +145,8 @@ Route::group(['middleware' => ['checkLogin']], function () {
 
     // MASTER MONITORING
     Route::get('monitoring', 'MonitoringController@index');
+    Route::get('monitoring/download-presence-daily', 'MonitoringController@downloadPresenceDaily');
+    Route::get('monitoring/download-presence-monthly', 'MonitoringController@downloadPresenceMonthly');
     Route::post('monitoring/monitoring-data', 'MonitoringController@monitoring_data');
 
     // PRESENCE
