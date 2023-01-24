@@ -233,6 +233,7 @@ class DashboardApi extends Controller
             $tgtRendang     = $tgtUser['prods']['Rendang'];
             $tgtGeprek      = $tgtUser['prods']['Geprek'];
             $tgtTotal       = $tgtUST + $tgtNONUST + $tgtSeleraku + $tgtRendang + $tgtGeprek;
+            
 
             $totUST         = $tdyUST + $realUST;
             $totNONUST      = $tdyNONUST + $realNONUST;
