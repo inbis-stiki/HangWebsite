@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\District;
 
 class ShopApi extends Controller
 {
@@ -95,6 +96,7 @@ class ShopApi extends Controller
                     ['ID_AREA', '=', $req->input('id_area')],
                     ['ISMARKET_DISTRICT', '=', '0']
                 ])->whereNull('deleted_at')->first();
+
             if ($district != null) {
                 $cek = Shop::where('NAME_SHOP', '=', '' . $req->input('name_shop') . '')
                     ->where('OWNER_SHOP', '=', $req->input('owner_shop'))
