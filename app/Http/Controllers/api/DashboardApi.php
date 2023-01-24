@@ -227,12 +227,13 @@ class DashboardApi extends Controller
             $realGeprek     = (int)($AllData_temp <> null) ? (($AllData_temp->REALGEPREK_DM <> null) ? $AllData_temp->REALGEPREK_DM : 0) : 0;
 
             $tgtUser        = app(TargetUser::class)->getUser();
-            $tgtUST         = $tgtUser->get()['prods']['UST'];
-            $tgtNONUST      = $tgtUser->get()['prods']['NONUST'];
-            $tgtSeleraku    = $tgtUser->get()['prods']['Seleraku'];
-            $tgtRendang     = $tgtUser->get()['prods']['Rendang'];
-            $tgtGeprek      = $tgtUser->get()['prods']['Geprek'];
+            $tgtUST         = $tgtUser['prods']['UST'];
+            $tgtNONUST      = $tgtUser['prods']['NONUST'];
+            $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
+            $tgtRendang     = $tgtUser['prods']['Rendang'];
+            $tgtGeprek      = $tgtUser['prods']['Geprek'];
             $tgtTotal       = $tgtUST + $tgtNONUST + $tgtSeleraku + $tgtRendang + $tgtGeprek;
+            
 
             $totUST         = $tdyUST + $realUST;
             $totNONUST      = $tdyNONUST + $realNONUST;
