@@ -122,12 +122,12 @@ class MonitoringController extends Controller
                     $data = array(
                         "NO" => ++$no,
                         "NAME_REGIONAL" => $data_regional[$i]->NAME_REGIONAL,
-                        "TRANS_1" => $trans_1 . " (" . round(($trans_1 / $data_regional[$i]->JML) * 100) . "%)",
-                        "TRANS_2" => $trans_2 . " (" . round(($trans_2 / $data_regional[$i]->JML) * 100) . "%)",
-                        "TRANS_3" => $trans_3 . " (" . round(($trans_3 / $data_regional[$i]->JML) * 100) . "%)",
-                        "TRANS_4" => $trans_4 . " (" . round(($trans_4 / $data_regional[$i]->JML) * 100) . "%)",
-                        "TRANS_5" => $trans_5 . " (" . round(($trans_5 / $data_regional[$i]->JML) * 100) . "%)",
-                        "NO_TRANS" => $trans_6 . " (" . round(($percentage_trans_6 / $data_regional[$i]->JML) * 100) . "%)"
+                        "TRANS_1" => $trans_1 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($trans_1 / $data_regional[$i]->JML) * 100) : 0) . "%)",
+                        "TRANS_2" => $trans_2 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($trans_2 / $data_regional[$i]->JML) * 100) : 0) . "%)",
+                        "TRANS_3" => $trans_3 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($trans_3 / $data_regional[$i]->JML) * 100) : 0) . "%)",
+                        "TRANS_4" => $trans_4 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($trans_4 / $data_regional[$i]->JML) * 100) : 0) . "%)",
+                        "TRANS_5" => $trans_5 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($trans_5 / $data_regional[$i]->JML) * 100) : 0) . "%)",
+                        "NO_TRANS" => $trans_6 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($percentage_trans_6 / $data_regional[$i]->JML) * 100) : 0) . "%)"
                     );
                     array_push($All_Data, $data);
                 }
@@ -135,6 +135,7 @@ class MonitoringController extends Controller
         } else {
             $All_Data = array();
 
+            
             $PRESENCE = DB::select('
                 SELECT
                     mr2.NAME_REGIONAL,
@@ -180,11 +181,11 @@ class MonitoringController extends Controller
                 $data = array(
                     "NO" => ++$no,
                     "NAME_REGIONAL" => $data_regional[$i]->NAME_REGIONAL,
-                    "PRESENCE_1" => $pres_1 . " (" . round(($pres_1 / $data_regional[$i]->JML) * 100) . "%)",
-                    "PRESENCE_2" => $pres_2 . " (" . round(($pres_2 / $data_regional[$i]->JML) * 100) . "%)",
-                    "PRESENCE_3" => $pres_3 . " (" . round(($pres_3 / $data_regional[$i]->JML) * 100) . "%)",
-                    "PRESENCE_4" => $pres_4 . " (" . round(($pres_4 / $data_regional[$i]->JML) * 100) . "%)",
-                    "PRESENCE_5" => $pres_5 . " (" . round(($pres_5 / $data_regional[$i]->JML) * 100) . "%)"
+                    "PRESENCE_1" => $pres_1 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($pres_1 / $data_regional[$i]->JML) * 100) : 0) . "%)",
+                    "PRESENCE_2" => $pres_2 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($pres_2 / $data_regional[$i]->JML) * 100) : 0) . "%)",
+                    "PRESENCE_3" => $pres_3 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($pres_3 / $data_regional[$i]->JML) * 100) : 0) . "%)",
+                    "PRESENCE_4" => $pres_4 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($pres_4 / $data_regional[$i]->JML) * 100) : 0) . "%)",
+                    "PRESENCE_5" => $pres_5 . " (" . ((!empty($data_regional[$i]->JML)) ? round(($pres_5 / $data_regional[$i]->JML) * 100) : 0) . "%)"
                 );
                 array_push($All_Data, $data);
             }
