@@ -18,7 +18,7 @@ class DetailTransController extends Controller
         $id_user        = $req->input('id_user');
         $date           = $req->input('date');
         $type           = $req->input('type');
-                
+
         $data['all_sell']       = 0;
         $data['prodCats']       = CategoryProduct::where('deleted_at', null)->get();
         $data['transDetails']   = array();
@@ -35,7 +35,7 @@ class DetailTransController extends Controller
             ->get();
 
         $area = $transaction[0]->ID_AREA;
-        
+
         $data_area = DB::table('md_district')
             ->select('md_district.ID_DISTRICT')
             ->leftJoin('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
@@ -62,10 +62,10 @@ class DetailTransController extends Controller
                     $ts_detail
                 );
 
-                if(empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
-                if(empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
+                if (empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
+                if (empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
                 $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] += $ts_detail->QTY_TD;
-                
+
                 if (!empty($ts_detail->PHOTO_TI)) {
                     $data_image_trans = explode(";", $ts_detail->PHOTO_TI);
                 }
@@ -115,19 +115,7 @@ class DetailTransController extends Controller
             GROUP BY
                 t.ID_SHOP
             ) as TOT_TRANS,
-            (
-                SELECT
-                    SUM(td.QTY_TD)
-                FROM
-                    `transaction` t
-                LEFT JOIN transaction_detail td ON
-                        td.ID_TRANS = t.ID_TRANS
-                WHERE
-                    td.ID_SHOP = `md_shop`.`ID_SHOP`
-                    AND t.ID_USER = "' . $id_user . '"
-                GROUP BY
-                    t.ID_SHOP
-            ) as TOTAL')
+            (transaction.QTY_TRANS) as TOTAL')
             ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
             ->whereIn('md_shop.ID_DISTRICT', $data_area)
             ->where('transaction.DATE_TRANS', '!=', $date)
@@ -139,29 +127,17 @@ class DetailTransController extends Controller
         $data['shop_no_con2_trans'] = DB::table('md_shop')
             ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'transaction.ISTRANS_TRANS')
             ->selectRaw('(
-                SELECT
-                    COUNT(t.ID_TRANS)
-                FROM
-                    `transaction` t
-                WHERE
-                    t.ID_TYPE = 1
-                    AND t.ID_SHOP = `md_shop`.`ID_SHOP`
-                GROUP BY
-                    t.ID_SHOP
-                ) as TOT_TRANS,
-                (
                     SELECT
-                        SUM(td.QTY_TD)
+                        COUNT(t.ID_TRANS)
                     FROM
                         `transaction` t
-                    LEFT JOIN transaction_detail td ON
-                            td.ID_TRANS = t.ID_TRANS
                     WHERE
-                        td.ID_SHOP = `md_shop`.`ID_SHOP`
-                        AND t.ID_USER = "' . $id_user . '"
+                        t.ID_TYPE = 1
+                        AND t.ID_SHOP = `md_shop`.`ID_SHOP`
                     GROUP BY
                         t.ID_SHOP
-                ) as TOTAL')
+                ) as TOT_TRANS,
+                (transaction.QTY_TRANS) as TOTAL')
             ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
             ->whereIn('md_shop.ID_DISTRICT', $data_area)
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
@@ -198,7 +174,7 @@ class DetailTransController extends Controller
             ->get();
 
         $area = $transaction[0]->ID_AREA;
-    
+
         $data_area = DB::table('md_district')
             ->select('md_district.ID_DISTRICT')
             ->leftJoin('md_area', 'md_area.ID_AREA', '=', 'md_district.ID_AREA')
@@ -222,8 +198,8 @@ class DetailTransController extends Controller
                     $ts_detail
                 );
 
-                if(empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
-                if(empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
+                if (empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
+                if (empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
                 $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] += $ts_detail->QTY_TD;
             }
 
@@ -303,9 +279,9 @@ class DetailTransController extends Controller
                     $data_ts_detail,
                     $ts_detail
                 );
-                
-                if(empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
-                if(empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
+
+                if (empty($data['transDetails'][$ts_detail->ID_PC])) $data['transDetails'][$ts_detail->ID_PC] = array();
+                if (empty($data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT])) $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] = 0;
                 $data['transDetails'][$ts_detail->ID_PC][$ts_detail->NAME_PRODUCT] += $ts_detail->QTY_TD;
             }
 
