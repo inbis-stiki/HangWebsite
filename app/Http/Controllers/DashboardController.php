@@ -441,7 +441,13 @@ class DashboardController extends Controller
     {
         $ranking_activity_asmen = DB::select("
             SELECT
-                ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
+                ROW_NUMBER() OVER(ORDER BY (ROUND((
+                    (
+                        ((((SUM(stl.REALACTUB_STL) + IF(TB_UB.TOT_QTYTD IS NOT NULL, TB_UB.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['UB'] . ") * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTPS_STL) + IF(TB_PS.TOT_QTYTD IS NOT NULL, TB_PS.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['PS'] . ") * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTRETAIL_STL) + IF(TB_RETAIL.TOT_QTYTD IS NOT NULL, TB_RETAIL.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['Retail'] . ") * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                    ) / 3
+                    ), 2)) DESC) AS NUM_ROW,
                 stl.LOCATION_STL AS NAME_LOCATION,
                 ROUND((
                     (
@@ -515,7 +521,13 @@ class DashboardController extends Controller
         ");
         $ranking_activity_rpo = DB::select("
             SELECT
-                ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
+                ROW_NUMBER() OVER(ORDER BY (ROUND((
+                (
+                    ((((SUM(stl.REALACTUB_STL) + IF(TB_UB.TOT_QTYTD IS NOT NULL, TB_UB.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['UB'] . ") * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                    ((((SUM(stl.REALACTPS_STL) + IF(TB_PS.TOT_QTYTD IS NOT NULL, TB_PS.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['PS'] . ") * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                    ((((SUM(stl.REALACTRETAIL_STL) + IF(TB_RETAIL.TOT_QTYTD IS NOT NULL, TB_RETAIL.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['Retail'] . ") * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                ) / 3
+                ), 2)) DESC) AS NUM_ROW,,
                 stl.REGIONAL_STL AS NAME_REGIONAL,
                 ROUND((
                     (
@@ -589,7 +601,13 @@ class DashboardController extends Controller
         ");
         $ranking_activity_apo = DB::select("
             SELECT
-                ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
+                ROW_NUMBER() OVER(ORDER BY (ROUND((
+                (
+                    ((((SUM(stl.REALACTUB_STL) + IF(TB_UB.TOT_QTYTD IS NOT NULL, TB_UB.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['UB'] . ") * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                    ((((SUM(stl.REALACTPS_STL) + IF(TB_PS.TOT_QTYTD IS NOT NULL, TB_PS.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['PS'] . ") * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                    ((((SUM(stl.REALACTRETAIL_STL) + IF(TB_RETAIL.TOT_QTYTD IS NOT NULL, TB_RETAIL.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['Retail'] . ") * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                ) / 3
+                ), 2)) DESC) AS NUM_ROW,,
                 stl.AREA_STL AS NAME_AREA,
                 ROUND((
                     (
