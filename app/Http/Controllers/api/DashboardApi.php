@@ -211,7 +211,7 @@ class DashboardApi extends Controller
                 ->first();
 
             $transToday = TransactionDetailToday::getData($req->input('id_user'));
-            $month = (int)date('j');
+            $day = (int)date('j');
 
             $tdyUST         = (int)($transToday <> null) ? (($transToday[0]->UST <> null) ? $transToday[0]->UST : 0) : 0;
             $tdyNONUST      = (int)($transToday <> null) ? (($transToday[0]->NON_UST <> null) ? $transToday[0]->NON_UST : 0) : 0;
@@ -242,11 +242,11 @@ class DashboardApi extends Controller
             $totGeprek      = $tdyGeprek + $realGeprek;
             $totTrans       = $totUST + $totNONUST + $totSeleraku + $totRendang + $totGeprek;
 
-            $avgUST         = number_format((float)($totUST / $month), 1, '.', '');
-            $avgNONUST      = number_format((float)($totNONUST / $month), 1, '.', '');
-            $avgSeleraku    = number_format((float)($totSeleraku / $month), 1, '.', '');
-            $avgRendang     = number_format((float)($totRendang / $month), 1, '.', '');
-            $avgGeprek      = number_format((float)($totGeprek / $month), 1, '.', '');
+            $avgUST         = number_format((float)($totUST / $day), 1, '.', '');
+            $avgNONUST      = number_format((float)($totNONUST / $day), 1, '.', '');
+            $avgSeleraku    = number_format((float)($totSeleraku / $day), 1, '.', '');
+            $avgRendang     = number_format((float)($totRendang / $day), 1, '.', '');
+            $avgGeprek      = number_format((float)($totGeprek / $day), 1, '.', '');
 
             $progUST        = number_format((float)($totUST / ($tgtUST * 25) * 100), 1, '.', '');
             $progNONUST     = number_format((float)($totNONUST / ($tgtNONUST * 25) * 100), 1, '.', '');
@@ -258,7 +258,7 @@ class DashboardApi extends Controller
             $AllData = array(
                 'SPREADNIG'     => ($AllData_temp <> null) ? (($AllData_temp->SPREADING_DM <> null) ? $AllData_temp->SPREADING_DM : 0) : 0,
                 'UB_UBLP'       => ($AllData_temp <> null) ? (($AllData_temp->UBUBLP_DM <> null) ? $AllData_temp->UBUBLP_DM : 0) : 0,
-                'DAYS'          => $transToday,
+                'DAYS'          => $day,
                 'OFF_TARGET'    => ($AllData_temp <> null) ? (($AllData_temp->OFFTARGET_DM <> null) ? $AllData_temp->OFFTARGET_DM : 0) : 0,
                 'PROGRESS'      => number_format((float)$progTotal, 1, '.', ''),
                 'DATA_CATEGORY' => 
@@ -269,21 +269,21 @@ class DashboardApi extends Controller
                             'NAME'          => 'UST', 
                             'AVG'           => $avgUST, 
                             'PROG_DETAIL'   => $progUST, 
-                            'REAL'          => $realUST,
+                            'REAL'          => $totUST,
                             'TGT'           => $tgtUST
                         ],
                         [
                             'NAME'          => 'NON-UST', 
                             'AVG'           => $avgNONUST, 
                             'PROG_DETAIL'   => $progNONUST, 
-                            'REAL'          => $realNONUST,
+                            'REAL'          => $totNONUST,
                             'TGT'           => $tgtNONUST
                         ],
                         [
                             'NAME'          => 'SELERAKU', 
                             'AVG'           => $avgSeleraku, 
                             'PROG_DETAIL'   => $progSeleraku, 
-                            'REAL'          => $realSeleraku,
+                            'REAL'          => $totSeleraku,
                             'TGT'           => $tgtSeleraku
                         ],
                         
@@ -293,14 +293,14 @@ class DashboardApi extends Controller
                             'NAME'          => 'RENDANG', 
                             'AVG'           => $avgRendang, 
                             'PROG_DETAIL'   => $progRendang, 
-                            'REAL'          => $realRendang,
+                            'REAL'          => $totRendang,
                             'TGT'           => $tgtRendang
                         ],
                         [
                             'NAME'          => 'GEPREK', 
                             'AVG'           => $avgGeprek, 
                             'PROG_DETAIL'   => $progGeprek, 
-                            'REAL'          => $realGeprek,
+                            'REAL'          => $totGeprek,
                             'TGT'           => $tgtGeprek
                         ]
                     ]
