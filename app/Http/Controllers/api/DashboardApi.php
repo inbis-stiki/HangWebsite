@@ -253,7 +253,7 @@ class DashboardApi extends Controller
             $progSeleraku   = number_format((float)($totSeleraku / ($tgtSeleraku * 25) * 100), 1, '.', '');
             $progRendang    = number_format((float)($totRendang / ($tgtRendang * 25) * 100), 1, '.', '');
             $progGeprek     = number_format((float)($totGeprek / ($tgtGeprek * 25) * 100), 1, '.', '');
-            $progTotal      = $totTrans / ($tgtTotal * 25) * 100;
+            $progTotal      = ($totTrans / $tgtTotal) * 100;
 
             $AllData = array(
                 'SPREADNIG'     => ($AllData_temp <> null) ? (($AllData_temp->SPREADING_DM <> null) ? $AllData_temp->SPREADING_DM : 0) : 0,
