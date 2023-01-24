@@ -380,7 +380,7 @@
                         const map = new mapboxgl.Map({
                             container: 'map',
                             style: MAPBOX_STYLE,
-                            center: [<?= $centerCord[1] ?>, <?= $centerCord[0] ?>],
+                            center: [<?= $coords[0]['lng']; ?>, <?= $coords[0]['lat']; ?>],
                             zoom: 15.5
                         });
 
