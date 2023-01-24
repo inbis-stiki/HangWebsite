@@ -48,8 +48,8 @@ class InvoiceApi extends Controller
             if(!$cekTrans){
                 return response([
                     'status_code'       => 500,
-                    'status_message'    => $exp->getMessage(),
-                ], 500);
+                    'status_message'    => 'Anda belum melakukan transaksi',
+                ], 200);
             }
 
             $ts = DB::table("transaction")
