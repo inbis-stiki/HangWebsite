@@ -40,6 +40,18 @@ class InvoiceApi extends Controller
             $dt = new DateTime($lastInvoice->DATE_TD);
             $date = $dt->format('Y-m-d');
 
+            $cekTrans = DB::table('transaction')
+                ->whereDate('DATE_TRANS', '=', $date)
+                ->where('ID_USER', $req->input('id_user'))
+                ->get();
+
+            if(!$cekTrans){
+                return response([
+                    'status_code'       => 500,
+                    'status_message'    => 'Anda belum melakukan transaksi',
+                ], 200);
+            }
+
             $ts = DB::table("transaction")
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction.ID_TYPE')
                 ->where('transaction.ID_USER', '=', $ID_USER)

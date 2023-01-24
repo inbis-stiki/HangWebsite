@@ -129,6 +129,16 @@
                                         Seleraku
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-12" data-toggle="tab" href="" role="tab" aria-selected="false" id="RENDANG" onclick="SetTypeTrend(this.id)">
+                                        Rendang
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-12" data-toggle="tab" href="" role="tab" aria-selected="false" id="GEPREK" onclick="SetTypeTrend(this.id)">
+                                        Geprek
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <div class="d-flex ml-auto">
@@ -187,7 +197,7 @@
                     trHTML_asmen +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>ASMEN ' + value.NAME_LOCATION +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
 
@@ -197,14 +207,14 @@
                     trHTML_rpo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
                 $.each(last_array_rpo, function(key, value) {
                     trHTML_rpo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
 
@@ -214,14 +224,14 @@
                     trHTML_apo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
                 $.each(last_array_apo, function(key, value) {
                     trHTML_apo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
 
@@ -247,7 +257,7 @@
                     trHTML_asmen +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>ASMEN ' + value.NAME_LOCATION +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
 
@@ -257,14 +267,14 @@
                     trHTML_rpo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
                 $.each(last_array_rpo, function(key, value) {
                     trHTML_rpo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>RPO ' + value.NAME_REGIONAL +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
 
@@ -274,14 +284,14 @@
                     trHTML_apo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
                 $.each(last_array_apo, function(key, value) {
                     trHTML_apo +=
                         '<tr><td>' + value.NUM_ROW +
                         '</td><td>APO ' + value.NAME_AREA +
-                        '</td><td>' + value.NEW_AVERAGE + "%"
+                        '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
 
@@ -308,7 +318,7 @@
 
     // TREND
     // Chart Trend
-    var data_trend_asmen = [];
+    var data_trend = [];
 
     var options = {
         // colors: ["#EC1D25", "#F26F21", "#F8C460"],
@@ -345,9 +355,12 @@
             markers: {
                 width: [0, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12], // hides first marker
             },
+            offsetX: 0,
+            offsetY: 0,
             onItemClick: {
                 toggleDataSeries: false
             },
+            height: 80,
             tooltipHoverFormatter: function(seriesName, opts) {
                 if (opts.seriesIndex == 0) return ''
                 return seriesName + ' : <strong>' + addCommas(opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex]) + '</strong>'
@@ -443,62 +456,92 @@
         chart.updateSeries()
         <?php if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 3) { ?>
             if (role_data == 3) {
-                for (let i = 0; i < data_trend_asmen[0].length; i++) {
+                for (let i = 0; i < data_trend[0].length; i++) {
                     chart.update
                     if (type == "UST") {
                         chart.appendSeries({
-                            name: "ASMEN " + data_trend_asmen[0][i].PLACE,
-                            data: data_trend_asmen[0][i].UST
+                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].UST
                         }, false)
                     } else if (type == "NONUST") {
                         chart.appendSeries({
-                            name: "ASMEN " + data_trend_asmen[0][i].PLACE,
-                            data: data_trend_asmen[0][i].NONUST
+                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].NONUST
                         }, false)
                     } else if (type == "SELERAKU") {
                         chart.appendSeries({
-                            name: "ASMEN " + data_trend_asmen[0][i].PLACE,
-                            data: data_trend_asmen[0][i].SELERAKU
+                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].SELERAKU
+                        }, false)
+                    } else if (type == "RENDANG") {
+                        chart.appendSeries({
+                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].RENDANG
+                        }, false)
+                    } else if (type == "GEPREK") {
+                        chart.appendSeries({
+                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].GEPREK
                         }, false)
                     }
                 }
             } else {
-                for (let i = 0; i < data_trend_asmen[0].length; i++) {
+                for (let i = 0; i < data_trend[0].length; i++) {
                     if (type == "UST") {
                         chart.appendSeries({
-                            name: "RPO " + data_trend_asmen[0][i].PLACE,
-                            data: data_trend_asmen[0][i].UST
+                            name: "RPO " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].UST
                         }, true)
                     } else if (type == "NONUST") {
                         chart.appendSeries({
-                            name: "RPO " + data_trend_asmen[0][i].PLACE,
-                            data: data_trend_asmen[0][i].NONUST
+                            name: "RPO " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].NONUST
                         }, true)
                     } else if (type == "SELERAKU") {
                         chart.appendSeries({
-                            name: "RPO " + data_trend_asmen[0][i].PLACE,
-                            data: data_trend_asmen[0][i].SELERAKU
+                            name: "RPO " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].SELERAKU
                         }, true)
+                    } else if (type == "RENDANG") {
+                        chart.appendSeries({
+                            name: "RPO " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].RENDANG
+                        }, false)
+                    } else if (type == "GEPREK") {
+                        chart.appendSeries({
+                            name: "RPO " + data_trend[0][i].PLACE,
+                            data: data_trend[0][i].GEPREK
+                        }, false)
                     }
                 }
             }
         <?php } else { ?>
-            for (let i = 0; i < data_trend_asmen[0].length; i++) {
+            for (let i = 0; i < data_trend[0].length; i++) {
                 if (type == "UST") {
                     chart.appendSeries({
-                        name: "APO " + data_trend_asmen[0][i].PLACE,
-                        data: data_trend_asmen[0][i].UST
+                        name: "APO " + data_trend[0][i].PLACE,
+                        data: data_trend[0][i].UST
                     }, true)
                 } else if (type == "NONUST") {
                     chart.appendSeries({
-                        name: "APO " + data_trend_asmen[0][i].PLACE,
-                        data: data_trend_asmen[0][i].NONUST
+                        name: "APO " + data_trend[0][i].PLACE,
+                        data: data_trend[0][i].NONUST
                     }, true)
                 } else if (type == "SELERAKU") {
                     chart.appendSeries({
-                        name: "APO " + data_trend_asmen[0][i].PLACE,
-                        data: data_trend_asmen[0][i].SELERAKU
+                        name: "APO " + data_trend[0][i].PLACE,
+                        data: data_trend[0][i].SELERAKU
                     }, true)
+                } else if (type == "RENDANG") {
+                    chart.appendSeries({
+                        name: "APO " + data_trend[0][i].PLACE,
+                        data: data_trend[0][i].RENDANG
+                    }, false)
+                } else if (type == "GEPREK") {
+                    chart.appendSeries({
+                        name: "APO " + data_trend[0][i].PLACE,
+                        data: data_trend[0][i].GEPREK
+                    }, false)
                 }
             }
         <?php } ?>
@@ -519,8 +562,8 @@
     })
 
     function callback(response) {
-        data_trend_asmen = []
-        data_trend_asmen.push(response)
+        data_trend = []
+        data_trend.push(response)
     }
 
     function addCommas(nStr) {

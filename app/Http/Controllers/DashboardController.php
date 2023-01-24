@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ActivityCategory;
-use App\CategoryProduct;
-use App\ReportQuery;
-use App\UserRankingActivity;
+use App\TargetUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Input\Input;
@@ -96,30 +93,9 @@ class DashboardController extends Controller
                                 tdt.LOCATION_TRANS
                         ), 0
                         ) AS total_activity_retail,
-                        (
-                            SELECT
-                                mac.TGTLOCATION_AC
-                            FROM
-                                md_activity_category mac
-                            WHERE
-                                mac.ID_AC = 1
-                        ) AS TGT_UB,
-                        (
-                            SELECT
-                                mac.TGTLOCATION_AC
-                            FROM
-                                md_activity_category mac
-                            WHERE
-                                mac.ID_AC = 2
-                        ) AS TGT_PS,
-                        (
-                            SELECT
-                                mac.TGTLOCATION_AC
-                            FROM
-                                md_activity_category mac
-                            WHERE
-                                mac.ID_AC = 3
-                        ) AS TGT_RETAIL
+                        ( " . (string)app(TargetUser::class)->getAsmen()['acts']['UB'] . " ) AS TGT_UB,
+                        ( " . (string)app(TargetUser::class)->getAsmen()['acts']['PS'] . " ) AS TGT_PS,
+                        ( " . (string)app(TargetUser::class)->getAsmen()['acts']['Retail'] . " ) AS TGT_RETAIL
                     FROM
                         summary_trans_location stl
                     RIGHT JOIN md_location ml ON
@@ -196,30 +172,9 @@ class DashboardController extends Controller
                                 tdt.REGIONAL_TRANS
                         ), 0
                         ) AS total_activity_retail,
-                        (
-                        SELECT
-                            mac.TGTREGIONAL_AC
-                        FROM
-                            md_activity_category mac
-                        WHERE
-                            mac.ID_AC = 1
-                        ) AS TGT_UB,
-                        (
-                        SELECT
-                            mac.TGTREGIONAL_AC
-                        FROM
-                            md_activity_category mac
-                        WHERE
-                            mac.ID_AC = 2
-                        ) AS TGT_PS,
-                        (
-                        SELECT
-                            mac.TGTREGIONAL_AC
-                        FROM
-                            md_activity_category mac
-                        WHERE
-                            mac.ID_AC = 3
-                        ) AS TGT_RETAIL
+                        ( " . (string)app(TargetUser::class)->getRegional()['acts']['UB'] . " ) AS TGT_UB,
+                        ( " . (string)app(TargetUser::class)->getRegional()['acts']['PS'] . " ) AS TGT_PS,
+                        ( " . (string)app(TargetUser::class)->getRegional()['acts']['Retail'] . " ) AS TGT_RETAIL
                     FROM
                         summary_trans_location stl
                     RIGHT JOIN md_regional mr ON
@@ -299,30 +254,9 @@ class DashboardController extends Controller
                                 tdt.LOCATION_TRANS
                         ), 0
                         ) AS total_activity_retail,
-                        (
-                            SELECT
-                                mac.TGTLOCATION_AC
-                            FROM
-                                md_activity_category mac
-                            WHERE
-                                mac.ID_AC = 1
-                        ) AS TGT_UB,
-                        (
-                            SELECT
-                                mac.TGTLOCATION_AC
-                            FROM
-                                md_activity_category mac
-                            WHERE
-                                mac.ID_AC = 2
-                        ) AS TGT_PS,
-                        (
-                            SELECT
-                                mac.TGTLOCATION_AC
-                            FROM
-                                md_activity_category mac
-                            WHERE
-                                mac.ID_AC = 3
-                        ) AS TGT_RETAIL
+                        ( " . (string)app(TargetUser::class)->getAsmen()['acts']['UB'] . " ) AS TGT_UB,
+                        ( " . (string)app(TargetUser::class)->getAsmen()['acts']['PS'] . " ) AS TGT_PS,
+                        ( " . (string)app(TargetUser::class)->getAsmen()['acts']['Retail'] . " ) AS TGT_RETAIL                        
                     FROM
                         summary_trans_location stl
                     RIGHT JOIN md_location ml ON
@@ -400,30 +334,9 @@ class DashboardController extends Controller
                                 tdt.REGIONAL_TRANS
                         ), 0
                         ) AS total_activity_retail,
-                        (
-                        SELECT
-                            mac.TGTREGIONAL_AC
-                        FROM
-                            md_activity_category mac
-                        WHERE
-                            mac.ID_AC = 1
-                        ) AS TGT_UB,
-                        (
-                        SELECT
-                            mac.TGTREGIONAL_AC
-                        FROM
-                            md_activity_category mac
-                        WHERE
-                            mac.ID_AC = 2
-                        ) AS TGT_PS,
-                        (
-                        SELECT
-                            mac.TGTREGIONAL_AC
-                        FROM
-                            md_activity_category mac
-                        WHERE
-                            mac.ID_AC = 3
-                        ) AS TGT_RETAIL
+                        ( " . (string)app(TargetUser::class)->getRegional()['acts']['UB'] . " ) AS TGT_UB,
+                        ( " . (string)app(TargetUser::class)->getRegional()['acts']['PS'] . " ) AS TGT_PS,
+                        ( " . (string)app(TargetUser::class)->getRegional()['acts']['Retail'] . " ) AS TGT_RETAIL
                     FROM
                         summary_trans_location stl
                     RIGHT JOIN md_regional mr ON
@@ -503,30 +416,9 @@ class DashboardController extends Controller
                             tdt.REGIONAL_TRANS
                     ), 0
                     ) AS total_activity_retail,
-                    (
-                    SELECT
-                        mac.TGTREGIONAL_AC
-                    FROM
-                        md_activity_category mac
-                    WHERE
-                        mac.ID_AC = 1
-                    ) AS TGT_UB,
-                    (
-                    SELECT
-                        mac.TGTREGIONAL_AC
-                    FROM
-                        md_activity_category mac
-                    WHERE
-                        mac.ID_AC = 2
-                    ) AS TGT_PS,
-                    (
-                    SELECT
-                        mac.TGTREGIONAL_AC
-                    FROM
-                        md_activity_category mac
-                    WHERE
-                        mac.ID_AC = 3
-                    ) AS TGT_RETAIL
+                    ( " . (string)app(TargetUser::class)->getRegional()['acts']['UB'] . " ) AS TGT_UB,
+                    ( " . (string)app(TargetUser::class)->getRegional()['acts']['PS'] . " ) AS TGT_PS,
+                    ( " . (string)app(TargetUser::class)->getRegional()['acts']['Retail'] . " ) AS TGT_RETAIL
                 FROM
                     summary_trans_location stl
                 RIGHT JOIN md_regional mr ON
@@ -547,15 +439,15 @@ class DashboardController extends Controller
 
     public function ranking_activity()
     {
-        $ranking_sale_asmen = DB::select("
+        $ranking_activity_asmen = DB::select("
             SELECT
                 ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
                 stl.LOCATION_STL AS NAME_LOCATION,
                 ROUND((
                     (
-                        ((((SUM(stl.REALACTUB_STL) + IF(TB_UB.TOT_QTYTD IS NOT NULL, TB_UB.TOT_QTYTD, 0)) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
-                        ((((SUM(stl.REALACTPS_STL) + IF(TB_PS.TOT_QTYTD IS NOT NULL, TB_PS.TOT_QTYTD, 0)) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
-                        ((((SUM(stl.REALACTRETAIL_STL) + IF(TB_RETAIL.TOT_QTYTD IS NOT NULL, TB_RETAIL.TOT_QTYTD, 0)) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                        ((((SUM(stl.REALACTUB_STL) + IF(TB_UB.TOT_QTYTD IS NOT NULL, TB_UB.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['UB'] . ") * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTPS_STL) + IF(TB_PS.TOT_QTYTD IS NOT NULL, TB_PS.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['PS'] . ") * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTRETAIL_STL) + IF(TB_RETAIL.TOT_QTYTD IS NOT NULL, TB_RETAIL.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['acts']['Retail'] . ") * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
                     ) / 3
                     ), 2) AS NEW_AVERAGE
             FROM
@@ -621,15 +513,15 @@ class DashboardController extends Controller
             ORDER BY
                 NEW_AVERAGE DESC
         ");
-        $ranking_sale_rpo = DB::select("
+        $ranking_activity_rpo = DB::select("
             SELECT
                 ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
                 stl.REGIONAL_STL AS NAME_REGIONAL,
                 ROUND((
                     (
-                        ((((SUM(stl.REALACTUB_STL) + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
-                        ((((SUM(stl.REALACTPS_STL) + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
-                        ((((SUM(stl.REALACTRETAIL_STL) + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                        ((((SUM(stl.REALACTUB_STL) + TB_UB.TOT_QTYTD) / " . (int)app(TargetUser::class)->getRegional()['acts']['UB'] . ") * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTPS_STL) + TB_PS.TOT_QTYTD) / " . (int)app(TargetUser::class)->getRegional()['acts']['PS'] . ") * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTRETAIL_STL) + TB_RETAIL.TOT_QTYTD) / " . (int)app(TargetUser::class)->getRegional()['acts']['Retail'] . ") * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
                     ) / 3
                     ), 2) AS NEW_AVERAGE
             FROM
@@ -695,15 +587,15 @@ class DashboardController extends Controller
             ORDER BY 
                 NEW_AVERAGE DESC
         ");
-        $ranking_sale_apo = DB::select("
+        $ranking_activity_apo = DB::select("
             SELECT
                 ROW_NUMBER() OVER(ORDER BY NEW_AVERAGE DESC) AS NUM_ROW,
                 stl.AREA_STL AS NAME_AREA,
                 ROUND((
                     (
-                        ((((SUM(stl.REALACTUB_STL) + TB_UB.TOT_QTYTD) / TB_UB.TGTREGIONAL_AC) * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
-                        ((((SUM(stl.REALACTPS_STL) + TB_PS.TOT_QTYTD) / TB_PS.TGTREGIONAL_AC) * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
-                        ((((SUM(stl.REALACTRETAIL_STL) + TB_RETAIL.TOT_QTYTD) / TB_RETAIL.TGTREGIONAL_AC) * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
+                        ((((SUM(stl.REALACTUB_STL) + TB_UB.TOT_QTYTD) / " . (int)app(TargetUser::class)->getUser()['acts']['UB'] . ") * 100) * (TB_UB.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTPS_STL) + TB_PS.TOT_QTYTD) / " . (int)app(TargetUser::class)->getUser()['acts']['PS'] . ") * 100) * (TB_PS.PERCENTAGE_AC / 100)) + 
+                        ((((SUM(stl.REALACTRETAIL_STL) + TB_RETAIL.TOT_QTYTD) / " . (int)app(TargetUser::class)->getUser()['acts']['Retail'] . ") * 100) * (TB_RETAIL.PERCENTAGE_AC / 100))
                     ) / 3
                     ), 2) AS NEW_AVERAGE
             FROM
@@ -769,12 +661,12 @@ class DashboardController extends Controller
             ORDER BY 
                 NEW_AVERAGE DESC
         ");
-        $ranking_sale = [
-            'asmen' => $ranking_sale_asmen,
-            'rpo' => $ranking_sale_rpo,
-            'apo' => $ranking_sale_apo
+        $ranking_activity = [
+            'asmen' => $ranking_activity_asmen,
+            'rpo' => $ranking_activity_rpo,
+            'apo' => $ranking_activity_apo
         ];
-        echo json_encode($ranking_sale);
+        echo json_encode($ranking_activity);
     }
 
     public function ranking_sale()
@@ -785,10 +677,12 @@ class DashboardController extends Controller
                 stl.LOCATION_STL AS NAME_LOCATION,
                 ROUND((
                     (
-                        ((((SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) / TB_UST.TGTLOCATION_PC) * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
-                        ((((SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) / TB_NONUST.TGTLOCATION_PC) * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
-                        ((((SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) / TB_SELERAKU.TGTLOCATION_PC) * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100))
-                    ) / 3
+                        ((((SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['prods']['UST'] . ") * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
+                        ((((SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['prods']['NONUST'] . ") * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
+                        ((((SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['prods']['Seleraku'] . ") * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100)) + 
+                        ((((SUM(stl.REALGEPREK_STL) + IF(TB_RENDANG.TOT_QTYTD IS NOT NULL, TB_RENDANG.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['prods']['Rendang'] . ") * 100) * (TB_RENDANG.PERCENTAGE_PC / 100)) + 
+                        ((((SUM(stl.REALRENDANG_STL) + IF(TB_GEPREK.TOT_QTYTD IS NOT NULL, TB_GEPREK.TOT_QTYTD, 0)) / " . (int)app(TargetUser::class)->getAsmen()['prods']['Geprek'] . ") * 100) * (TB_GEPREK.PERCENTAGE_PC / 100))
+                    ) / 5
                     ), 2) AS NEW_AVERAGE
             FROM
                 (
@@ -845,6 +739,42 @@ class DashboardController extends Controller
                     WHERE
                         mpc.ID_PC = 3
                 ) AS TB_SELERAKU,
+                (
+                    SELECT
+                        *,
+                        (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 16
+                ) AS TB_RENDANG,
+                (
+                    SELECT
+                        *,
+                        (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 17
+                ) AS TB_GEPREK,
                 summary_trans_location stl
             WHERE
                 stl.updated_at LIKE '" . date('Y-m') . "%'
@@ -860,69 +790,109 @@ class DashboardController extends Controller
                 stl.REGIONAL_STL AS NAME_REGIONAL,
                 ROUND((
                         (
-                            ((((stl.REALUST_STL + TB_UST.TOT_QTYTD) / TB_UST.TGTREGIONAL_PC) * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
-                            ((((stl.REALNONUST_STL + TB_NONUST.TOT_QTYTD) / TB_NONUST.TGTREGIONAL_PC) * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
-                            ((((stl.REALSELERAKU_STL + TB_SELERAKU.TOT_QTYTD) / TB_SELERAKU.TGTREGIONAL_PC) * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100))
-                        ) / 3
+                            ((((stl.REALUST_STL + TB_UST.TOT_QTYTD) / " . (int)app(TargetUser::class)->getRegional()['prods']['UST'] . ") * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
+                            ((((stl.REALNONUST_STL + TB_NONUST.TOT_QTYTD) / " . (int)app(TargetUser::class)->getRegional()['prods']['NONUST'] . ") * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
+                            ((((stl.REALSELERAKU_STL + TB_SELERAKU.TOT_QTYTD) / " . (int)app(TargetUser::class)->getRegional()['prods']['Seleraku'] . ") * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100)) + 
+                            ((((stl.REALGEPREK_STL + TB_RENDANG.TOT_QTYTD) / " . (int)app(TargetUser::class)->getRegional()['prods']['Rendang'] . ") * 100) * (TB_RENDANG.PERCENTAGE_PC / 100)) + 
+                            ((((stl.REALRENDANG_STL + TB_GEPREK.TOT_QTYTD) / " . (int)app(TargetUser::class)->getRegional()['prods']['Geprek'] . ") * 100) * (TB_GEPREK.PERCENTAGE_PC / 100))
+                        ) / 5
                         ), 2) AS NEW_AVERAGE
             FROM
                 (
-                SELECT
-                    *,
-                    (
                     SELECT
-                        SUM(QTY_TD)
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                        ) AS TOT_QTYTD
                     FROM
-                        transaction_detail_today tdt
+                        md_product_category mpc
                     WHERE
-                        tdt.ID_PC = mpc.ID_PC
-                    GROUP BY
-                        tdt.ID_PC
-                    ) AS TOT_QTYTD
-                FROM
-                    md_product_category mpc
-                WHERE
-                    mpc.ID_PC = 12
+                        mpc.ID_PC = 12
                 ) AS TB_UST,
                 (
-                SELECT
-                    *,
-                    (
                     SELECT
-                        SUM(QTY_TD)
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                        ) AS TOT_QTYTD
                     FROM
-                        transaction_detail_today tdt
+                        md_product_category mpc
                     WHERE
-                        tdt.ID_PC = mpc.ID_PC
-                    GROUP BY
-                        tdt.ID_PC
-                    ) AS TOT_QTYTD
-                FROM
-                    md_product_category mpc
-                WHERE
-                    mpc.ID_PC = 2
+                        mpc.ID_PC = 2
                 ) AS TB_NONUST,
                 (
-                SELECT
-                    *,
-                    (
                     SELECT
-                        SUM(QTY_TD)
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                        ) AS TOT_QTYTD
                     FROM
-                        transaction_detail_today tdt
+                        md_product_category mpc
                     WHERE
-                        tdt.ID_PC = mpc.ID_PC
-                    GROUP BY
-                        tdt.ID_PC
-                    ) AS TOT_QTYTD
-                FROM
-                    md_product_category mpc
-                WHERE
-                    mpc.ID_PC = 3
+                        mpc.ID_PC = 3
                 ) AS TB_SELERAKU,
+                (
+                    SELECT
+                        *,
+                        (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 16
+                ) AS TB_RENDANG,
+                (
+                    SELECT
+                        *,
+                        (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 17
+                ) AS TB_GEPREK,
                 summary_trans_location stl
             WHERE
                 stl.updated_at LIKE '" . date('Y-m') . "%'
+            GROUP BY 
+                stl.REGIONAL_STL 
             ORDER BY
                 NEW_AVERAGE DESC
         ");
@@ -933,66 +903,104 @@ class DashboardController extends Controller
                 ma.NAME_AREA,
                 ROUND((
                     (
-                        ((((dm.REALUST_DM + TB_UST.TOT_QTYTD) / TB_UST.TGTREGIONAL_PC) * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
-                        ((((dm.REALNONUST_DM + TB_NONUST.TOT_QTYTD) / TB_NONUST.TGTREGIONAL_PC) * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
-                        ((((dm.REALSELERAKU_DM + TB_SELERAKU.TOT_QTYTD) / TB_SELERAKU.TGTREGIONAL_PC) * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100))
-                    ) / 3
+                        ((((dm.REALUST_DM + TB_UST.TOT_QTYTD) / " . (int)app(TargetUser::class)->getUser()['prods']['UST'] . ") * 100) * (TB_UST.PERCENTAGE_PC / 100)) + 
+                        ((((dm.REALNONUST_DM + TB_NONUST.TOT_QTYTD) / " . (int)app(TargetUser::class)->getUser()['prods']['NONUST'] . ") * 100) * (TB_NONUST.PERCENTAGE_PC / 100)) + 
+                        ((((dm.REALSELERAKU_DM + TB_SELERAKU.TOT_QTYTD) / " . (int)app(TargetUser::class)->getUser()['prods']['Seleraku'] . ") * 100) * (TB_SELERAKU.PERCENTAGE_PC / 100)) + 
+                        ((((dm.REALGEPREK_DM + TB_RENDANG.TOT_QTYTD) / " . (int)app(TargetUser::class)->getUser()['prods']['Rendang'] . ") * 100) * (TB_RENDANG.PERCENTAGE_PC / 100)) + 
+                        ((((dm.REALRENDANG_DM + TB_GEPREK.TOT_QTYTD) / " . (int)app(TargetUser::class)->getUser()['prods']['Geprek'] . ") * 100) * (TB_GEPREK.PERCENTAGE_PC / 100))
+                    ) / 5
                 ), 2)  AS NEW_AVERAGE
             FROM
                 (
-                SELECT
-                    *,
-                    (
                     SELECT
-                        SUM(QTY_TD)
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                        ) AS TOT_QTYTD
                     FROM
-                        transaction_detail_today tdt
+                        md_product_category mpc
                     WHERE
-                        tdt.ID_PC = mpc.ID_PC
-                    GROUP BY
-                        tdt.ID_PC
-                    ) AS TOT_QTYTD
-                FROM
-                    md_product_category mpc
-                WHERE
-                    mpc.ID_PC = 12
+                        mpc.ID_PC = 12
                 ) AS TB_UST,
                 (
-                SELECT
-                    *,
-                    (
                     SELECT
-                        SUM(QTY_TD)
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                        ) AS TOT_QTYTD
                     FROM
-                        transaction_detail_today tdt
+                        md_product_category mpc
                     WHERE
-                        tdt.ID_PC = mpc.ID_PC
-                    GROUP BY
-                        tdt.ID_PC
-                    ) AS TOT_QTYTD
-                FROM
-                    md_product_category mpc
-                WHERE
-                    mpc.ID_PC = 2
+                        mpc.ID_PC = 2
                 ) AS TB_NONUST,
                 (
-                SELECT
-                    *,
-                    (
                     SELECT
-                        SUM(QTY_TD)
+                        *,
+                        (
+                        SELECT
+                            SUM(QTY_TD)
+                        FROM
+                            transaction_detail_today tdt
+                        WHERE
+                            tdt.ID_PC = mpc.ID_PC
+                        GROUP BY
+                            tdt.ID_PC
+                        ) AS TOT_QTYTD
                     FROM
-                        transaction_detail_today tdt
+                        md_product_category mpc
                     WHERE
-                        tdt.ID_PC = mpc.ID_PC
-                    GROUP BY
-                        tdt.ID_PC
-                    ) AS TOT_QTYTD
-                FROM
-                    md_product_category mpc
-                WHERE
-                    mpc.ID_PC = 3
+                        mpc.ID_PC = 3
                 ) AS TB_SELERAKU,
+                (
+                    SELECT
+                        *,
+                        (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 16
+                ) AS TB_RENDANG,
+                (
+                    SELECT
+                        *,
+                        (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                        ) AS TOT_QTYTD
+                    FROM
+                        md_product_category mpc
+                    WHERE
+                        mpc.ID_PC = 17
+                ) AS TB_GEPREK,
                 dashboard_mobile dm
             LEFT JOIN `user` u ON
                 u.ID_USER = dm.ID_USER
@@ -1043,68 +1051,108 @@ class DashboardController extends Controller
             $data['UST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $data['NONUST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $data['SELERAKU'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['RENDANG'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['GEPREK'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $trend_asmen = DB::select("
                 SELECT
                     stl.REGIONAL_STL,
                     stl.MONTH_STL AS bulan,
                     (SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) AS total_ust,
                     (SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) AS total_non_ust,
-                    (SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) AS total_seleraku
+                    (SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) AS total_seleraku,
+                    (SUM(stl.REALRENDANG_STL) + IF(TB_RENDANG.TOT_QTYTD IS NOT NULL, TB_RENDANG.TOT_QTYTD, 0)) AS total_rendang,
+                    (SUM(stl.REALGEPREK_STL) + IF(TB_GEPREK.TOT_QTYTD IS NOT NULL, TB_GEPREK.TOT_QTYTD, 0)) AS total_geprek
                 FROM
                     (
-                    SELECT
-                        *,
-                        (
                         SELECT
-                            SUM(QTY_TD)
+                            *,
+                            (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                            ) AS TOT_QTYTD
                         FROM
-                            transaction_detail_today tdt
+                            md_product_category mpc
                         WHERE
-                            tdt.ID_PC = mpc.ID_PC
-                        GROUP BY
-                            tdt.ID_PC
-                                        ) AS TOT_QTYTD
-                    FROM
-                        md_product_category mpc
-                    WHERE
-                        mpc.ID_PC = 12
-                                ) AS TB_UST,
+                            mpc.ID_PC = 12
+                    ) AS TB_UST,
                     (
-                    SELECT
-                        *,
-                        (
                         SELECT
-                            SUM(QTY_TD)
+                            *,
+                            (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                            ) AS TOT_QTYTD
                         FROM
-                            transaction_detail_today tdt
+                            md_product_category mpc
                         WHERE
-                            tdt.ID_PC = mpc.ID_PC
-                        GROUP BY
-                            tdt.ID_PC
-                                        ) AS TOT_QTYTD
-                    FROM
-                        md_product_category mpc
-                    WHERE
-                        mpc.ID_PC = 2
-                                ) AS TB_NONUST,
+                            mpc.ID_PC = 2
+                    ) AS TB_NONUST,
                     (
-                    SELECT
-                        *,
-                        (
                         SELECT
-                            SUM(QTY_TD)
+                            *,
+                            (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                            ) AS TOT_QTYTD
                         FROM
-                            transaction_detail_today tdt
+                            md_product_category mpc
                         WHERE
-                            tdt.ID_PC = mpc.ID_PC
-                        GROUP BY
-                            tdt.ID_PC
-                                        ) AS TOT_QTYTD
-                    FROM
-                        md_product_category mpc
-                    WHERE
-                        mpc.ID_PC = 3
-                                ) AS TB_SELERAKU,
+                            mpc.ID_PC = 3
+                    ) AS TB_SELERAKU,
+                    (
+                        SELECT
+                            *,
+                            (
+                                SELECT
+                                    SUM(QTY_TD)
+                                FROM
+                                    transaction_detail_today tdt
+                                WHERE
+                                    tdt.ID_PC = mpc.ID_PC
+                                GROUP BY
+                                    tdt.ID_PC
+                            ) AS TOT_QTYTD
+                        FROM
+                            md_product_category mpc
+                        WHERE
+                            mpc.ID_PC = 16
+                    ) AS TB_RENDANG,
+                    (
+                        SELECT
+                            *,
+                            (
+                                SELECT
+                                    SUM(QTY_TD)
+                                FROM
+                                    transaction_detail_today tdt
+                                WHERE
+                                    tdt.ID_PC = mpc.ID_PC
+                                GROUP BY
+                                    tdt.ID_PC
+                            ) AS TOT_QTYTD
+                        FROM
+                            md_product_category mpc
+                        WHERE
+                            mpc.ID_PC = 17
+                    ) AS TB_GEPREK,
                     summary_trans_location stl
                 WHERE
                     stl.YEAR_STL = " . $year . "
@@ -1118,6 +1166,8 @@ class DashboardController extends Controller
                 $data['UST'][($item->bulan - 1)] = ((!empty($item->total_ust)) ? $item->total_ust : 0);
                 $data['NONUST'][($item->bulan - 1)] = ((!empty($item->total_non_ust)) ? $item->total_non_ust : 0);
                 $data['SELERAKU'][($item->bulan - 1)] = ((!empty($item->total_seleraku)) ? $item->total_seleraku : 0);
+                $data['RENDANG'][($item->bulan - 1)] = ((!empty($item->total_rendang)) ? $item->total_rendang : 0);
+                $data['GEPREK'][($item->bulan - 1)] = ((!empty($item->total_geprek)) ? $item->total_geprek : 0);
             }
             array_push(
                 $data_trend,
@@ -1126,7 +1176,9 @@ class DashboardController extends Controller
                     "TARGET" => 0,
                     "UST" => $data['UST'],
                     "NONUST" => $data['NONUST'],
-                    "SELERAKU" => $data['SELERAKU']
+                    "SELERAKU" => $data['SELERAKU'],
+                    "RENDANG" => $data['RENDANG'],
+                    "GEPREK" => $data['GEPREK']
                 )
             );
         }
@@ -1163,68 +1215,108 @@ class DashboardController extends Controller
             $data['UST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $data['NONUST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $data['SELERAKU'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['RENDANG'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['GEPREK'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $trend_asmen = DB::select("
                 SELECT
                     stl.LOCATION_STL,
                     stl.MONTH_STL AS bulan,
                     (SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) AS total_ust,
                     (SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) AS total_non_ust,
-                    (SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) AS total_seleraku
+                    (SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) AS total_seleraku,
+                    (SUM(stl.REALRENDANG_STL) + IF(TB_RENDANG.TOT_QTYTD IS NOT NULL, TB_RENDANG.TOT_QTYTD, 0)) AS total_rendang,
+                    (SUM(stl.REALGEPREK_STL) + IF(TB_GEPREK.TOT_QTYTD IS NOT NULL, TB_GEPREK.TOT_QTYTD, 0)) AS total_geprek
                 FROM
                     (
-                    SELECT
-                        *,
-                        (
                         SELECT
-                            SUM(QTY_TD)
+                            *,
+                            (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                            ) AS TOT_QTYTD
                         FROM
-                            transaction_detail_today tdt
+                            md_product_category mpc
                         WHERE
-                            tdt.ID_PC = mpc.ID_PC
-                        GROUP BY
-                            tdt.ID_PC
-                                        ) AS TOT_QTYTD
-                    FROM
-                        md_product_category mpc
-                    WHERE
-                        mpc.ID_PC = 12
-                                ) AS TB_UST,
+                            mpc.ID_PC = 12
+                    ) AS TB_UST,
                     (
-                    SELECT
-                        *,
-                        (
                         SELECT
-                            SUM(QTY_TD)
+                            *,
+                            (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                            ) AS TOT_QTYTD
                         FROM
-                            transaction_detail_today tdt
+                            md_product_category mpc
                         WHERE
-                            tdt.ID_PC = mpc.ID_PC
-                        GROUP BY
-                            tdt.ID_PC
-                                        ) AS TOT_QTYTD
-                    FROM
-                        md_product_category mpc
-                    WHERE
-                        mpc.ID_PC = 2
-                                ) AS TB_NONUST,
+                            mpc.ID_PC = 2
+                    ) AS TB_NONUST,
                     (
-                    SELECT
-                        *,
-                        (
                         SELECT
-                            SUM(QTY_TD)
+                            *,
+                            (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                            ) AS TOT_QTYTD
                         FROM
-                            transaction_detail_today tdt
+                            md_product_category mpc
                         WHERE
-                            tdt.ID_PC = mpc.ID_PC
-                        GROUP BY
-                            tdt.ID_PC
-                                        ) AS TOT_QTYTD
-                    FROM
-                        md_product_category mpc
-                    WHERE
-                        mpc.ID_PC = 3
-                                ) AS TB_SELERAKU,
+                            mpc.ID_PC = 3
+                    ) AS TB_SELERAKU,
+                    (
+                        SELECT
+                            *,
+                            (
+                                SELECT
+                                    SUM(QTY_TD)
+                                FROM
+                                    transaction_detail_today tdt
+                                WHERE
+                                    tdt.ID_PC = mpc.ID_PC
+                                GROUP BY
+                                    tdt.ID_PC
+                            ) AS TOT_QTYTD
+                        FROM
+                            md_product_category mpc
+                        WHERE
+                            mpc.ID_PC = 16
+                    ) AS TB_RENDANG,
+                    (
+                        SELECT
+                            *,
+                            (
+                                SELECT
+                                    SUM(QTY_TD)
+                                FROM
+                                    transaction_detail_today tdt
+                                WHERE
+                                    tdt.ID_PC = mpc.ID_PC
+                                GROUP BY
+                                    tdt.ID_PC
+                            ) AS TOT_QTYTD
+                        FROM
+                            md_product_category mpc
+                        WHERE
+                            mpc.ID_PC = 17
+                    ) AS TB_GEPREK,
                     summary_trans_location stl
                 WHERE
                     stl.YEAR_STL = '" . $year . "'
@@ -1238,6 +1330,8 @@ class DashboardController extends Controller
                 $data['UST'][($item->bulan - 1)] = ((!empty($item->total_ust)) ? $item->total_ust : 0);
                 $data['NONUST'][($item->bulan - 1)] = ((!empty($item->total_non_ust)) ? $item->total_non_ust : 0);
                 $data['SELERAKU'][($item->bulan - 1)] = ((!empty($item->total_seleraku)) ? $item->total_seleraku : 0);
+                $data['RENDANG'][($item->bulan - 1)] = ((!empty($item->total_rendang)) ? $item->total_rendang : 0);
+                $data['GEPREK'][($item->bulan - 1)] = ((!empty($item->total_geprek)) ? $item->total_geprek : 0);
             }
             array_push(
                 $data_trend,
@@ -1246,7 +1340,9 @@ class DashboardController extends Controller
                     "TARGET" => 0,
                     "UST" => $data['UST'],
                     "NONUST" => $data['NONUST'],
-                    "SELERAKU" => $data['SELERAKU']
+                    "SELERAKU" => $data['SELERAKU'],
+                    "RENDANG" => $data['RENDANG'],
+                    "GEPREK" => $data['GEPREK']
                 )
             );
         }
@@ -1272,68 +1368,108 @@ class DashboardController extends Controller
             $data['UST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $data['NONUST'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $data['SELERAKU'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['RENDANG'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['GEPREK'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $trend_asmen = DB::select("
                 SELECT
                     stl.AREA_STL,
                     stl.MONTH_STL AS bulan,
                     (SUM(stl.REALUST_STL) + IF(TB_UST.TOT_QTYTD IS NOT NULL, TB_UST.TOT_QTYTD, 0)) AS total_ust,
                     (SUM(stl.REALNONUST_STL) + IF(TB_NONUST.TOT_QTYTD IS NOT NULL, TB_NONUST.TOT_QTYTD, 0)) AS total_non_ust,
-                    (SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) AS total_seleraku
+                    (SUM(stl.REALSELERAKU_STL) + IF(TB_SELERAKU.TOT_QTYTD IS NOT NULL, TB_SELERAKU.TOT_QTYTD, 0)) AS total_seleraku,
+                    (SUM(stl.REALRENDANG_STL) + IF(TB_RENDANG.TOT_QTYTD IS NOT NULL, TB_RENDANG.TOT_QTYTD, 0)) AS total_rendang,
+                    (SUM(stl.REALGEPREK_STL) + IF(TB_GEPREK.TOT_QTYTD IS NOT NULL, TB_GEPREK.TOT_QTYTD, 0)) AS total_geprek
                 FROM
                     (
-                    SELECT
-                        *,
-                        (
                         SELECT
-                            SUM(QTY_TD)
+                            *,
+                            (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                            ) AS TOT_QTYTD
                         FROM
-                            transaction_detail_today tdt
+                            md_product_category mpc
                         WHERE
-                            tdt.ID_PC = mpc.ID_PC
-                        GROUP BY
-                            tdt.ID_PC
-                                        ) AS TOT_QTYTD
-                    FROM
-                        md_product_category mpc
-                    WHERE
-                        mpc.ID_PC = 12
-                                ) AS TB_UST,
+                            mpc.ID_PC = 12
+                    ) AS TB_UST,
                     (
-                    SELECT
-                        *,
-                        (
                         SELECT
-                            SUM(QTY_TD)
+                            *,
+                            (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                            ) AS TOT_QTYTD
                         FROM
-                            transaction_detail_today tdt
+                            md_product_category mpc
                         WHERE
-                            tdt.ID_PC = mpc.ID_PC
-                        GROUP BY
-                            tdt.ID_PC
-                                        ) AS TOT_QTYTD
-                    FROM
-                        md_product_category mpc
-                    WHERE
-                        mpc.ID_PC = 2
-                                ) AS TB_NONUST,
+                            mpc.ID_PC = 2
+                    ) AS TB_NONUST,
                     (
-                    SELECT
-                        *,
-                        (
                         SELECT
-                            SUM(QTY_TD)
+                            *,
+                            (
+                            SELECT
+                                SUM(QTY_TD)
+                            FROM
+                                transaction_detail_today tdt
+                            WHERE
+                                tdt.ID_PC = mpc.ID_PC
+                            GROUP BY
+                                tdt.ID_PC
+                            ) AS TOT_QTYTD
                         FROM
-                            transaction_detail_today tdt
+                            md_product_category mpc
                         WHERE
-                            tdt.ID_PC = mpc.ID_PC
-                        GROUP BY
-                            tdt.ID_PC
-                                        ) AS TOT_QTYTD
-                    FROM
-                        md_product_category mpc
-                    WHERE
-                        mpc.ID_PC = 3
-                                ) AS TB_SELERAKU,
+                            mpc.ID_PC = 3
+                    ) AS TB_SELERAKU,
+                    (
+                        SELECT
+                            *,
+                            (
+                                SELECT
+                                    SUM(QTY_TD)
+                                FROM
+                                    transaction_detail_today tdt
+                                WHERE
+                                    tdt.ID_PC = mpc.ID_PC
+                                GROUP BY
+                                    tdt.ID_PC
+                            ) AS TOT_QTYTD
+                        FROM
+                            md_product_category mpc
+                        WHERE
+                            mpc.ID_PC = 16
+                    ) AS TB_RENDANG,
+                    (
+                        SELECT
+                            *,
+                            (
+                                SELECT
+                                    SUM(QTY_TD)
+                                FROM
+                                    transaction_detail_today tdt
+                                WHERE
+                                    tdt.ID_PC = mpc.ID_PC
+                                GROUP BY
+                                    tdt.ID_PC
+                            ) AS TOT_QTYTD
+                        FROM
+                            md_product_category mpc
+                        WHERE
+                            mpc.ID_PC = 17
+                    ) AS TB_GEPREK,
                     summary_trans_location stl
                 WHERE
                     stl.YEAR_STL = '" . $year . "'
@@ -1347,6 +1483,8 @@ class DashboardController extends Controller
                 $data['UST'][($item->bulan - 1)] = ((!empty($item->total_ust)) ? $item->total_ust : 0);
                 $data['NONUST'][($item->bulan - 1)] = ((!empty($item->total_non_ust)) ? $item->total_non_ust : 0);
                 $data['SELERAKU'][($item->bulan - 1)] = ((!empty($item->total_seleraku)) ? $item->total_seleraku : 0);
+                $data['RENDANG'][($item->bulan - 1)] = ((!empty($item->total_rendang)) ? $item->total_rendang : 0);
+                $data['GEPREK'][($item->bulan - 1)] = ((!empty($item->total_geprek)) ? $item->total_geprek : 0);
             }
             array_push(
                 $data_trend,
@@ -1355,7 +1493,9 @@ class DashboardController extends Controller
                     "TARGET" => 0,
                     "UST" => $data['UST'],
                     "NONUST" => $data['NONUST'],
-                    "SELERAKU" => $data['SELERAKU']
+                    "SELERAKU" => $data['SELERAKU'],
+                    "RENDANG" => $data['RENDANG'],
+                    "GEPREK" => $data['GEPREK']
                 )
             );
         }
