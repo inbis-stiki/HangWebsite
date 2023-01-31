@@ -84,9 +84,9 @@ class PresenceApi extends Controller
             $path = $req->file('image')->store('images', 's3');
 
             $cek = Presence::where('ID_USER', '=', ''.$req->input('id_user').'')
-            // ->where('ID_TYPE', '=', $req->input('id_type'))
-            ->whereDate('DATE_PRESENCE', '=', date('Y-m-d'))
-            ->exists();
+                // ->where('ID_TYPE', '=', $req->input('id_type'))
+                ->whereDate('DATE_PRESENCE', '=', date('Y-m-d'))
+                ->exists();
 
             $district = District::select("ID_DISTRICT")
             ->where([
@@ -103,6 +103,14 @@ class PresenceApi extends Controller
                     ], 200);
                 }else{
                     $dateFunc = new Datefunc();
+
+                    if (empty($dateFunc->currDate($req->input('longitude'), $req->input('latitude')))) {
+                        return response([
+                            "status_code"       => 403,
+                            "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+                        ], 200);
+                    }
+
                     $currDate = $dateFunc->currDate($req->input('longitude'), $req->input('latitude'));
 
                     $presence = new Presence();

@@ -48,6 +48,12 @@ class TransactionApi extends Controller
             }
 
             $dateFunc = new Datefunc();
+            if (empty($dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans')))) {
+                return response([
+                    "status_code"       => 403,
+                    "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+                ], 200);
+            }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
             $transaction        = new Transaction();
@@ -232,6 +238,12 @@ class TransactionApi extends Controller
             }
             
             $dateFunc = new Datefunc();
+            if (empty($dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans')))) {
+                return response([
+                    "status_code"       => 403,
+                    "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+                ], 200);
+            }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
             $cekDistrict = District::select('md_district.*')
@@ -406,6 +418,12 @@ class TransactionApi extends Controller
             }
 
             $dateFunc = new Datefunc();
+            if (empty($dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans')))) {
+                return response([
+                    "status_code"       => 403,
+                    "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+                ], 200);
+            }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
             $transaction        = new Transaction();

@@ -192,6 +192,12 @@ class InvoiceApi extends Controller
             }
 
             $dateFunc = new Datefunc();
+            if (empty($dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans')))) {
+                return response([
+                    "status_code"       => 403,
+                    "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+                ], 200);
+            }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
             
             $path_faktur1 = $req->file('photo_faktur_1')->store('images', 's3');
