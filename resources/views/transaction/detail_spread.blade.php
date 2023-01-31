@@ -33,8 +33,8 @@
                             </div>
                             <div class="card-body text-center">
                                 @php
-                                $totTrans = count($transaction);
-                                $totNoTrans = count($shop_no_con2_trans);
+                                $totTrans = count($shop_trans2);
+                                $totNoTrans = count($shop_no_trans2);
                                 $totAllTrans = $totTrans + $totNoTrans;
                                 @endphp
                                 <h1 class="text-primary">{{ ($totNoTrans != 0 ? number_format(($totTrans / $totAllTrans)*100, 0) : "100") }}%</h1>
