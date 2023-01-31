@@ -64,7 +64,7 @@ class ShopApi extends Controller
         try {
             $validator = Validator::make($req->all(), [
                 'id_district'           => 'required|numeric|exists:md_district,ID_DISTRICT',
-                'kecamatan'             => 'required|string|exists:md_district,NAME_DISTRICT',
+                'kecamatan'             => 'required',
                 'name_shop'             => 'required',
                 'owner_shop'            => 'required',
                 'isinside_market'       => 'required|numeric',
@@ -97,7 +97,7 @@ class ShopApi extends Controller
                     ['ISMARKET_DISTRICT', '=', '0']
                 ])->whereNull('deleted_at')->first();
 
-            if ($district != null) {
+            if (!empty($district)) {
                 $cek = Shop::where('NAME_SHOP', '=', '' . $req->input('name_shop') . '')
                     ->where('OWNER_SHOP', '=', $req->input('owner_shop'))
                     ->where('TELP_SHOP', '=', $req->input('telp_shop'))
@@ -132,7 +132,7 @@ class ShopApi extends Controller
             } else {
                 return response([
                     'status_code'       => 403,
-                    'status_message'    => "Cek lokasi anda!",
+                    'status_message'    => "Kecamatan tidak ditemukan. Cek lokasi anda!",
                 ], 200);
             }
         } catch (HttpResponseException $exp) {
