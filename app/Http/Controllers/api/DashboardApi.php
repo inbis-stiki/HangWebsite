@@ -211,13 +211,13 @@ class DashboardApi extends Controller
                 ->first();
 
             $transToday = TransactionDetailToday::getData($req->input('id_user'));
-            $day = (int)date('j');
+            $day = (int)date('j'); 
 
             $tdyUST         = (int)($transToday <> null) ? (($transToday[0]->UST <> null) ? $transToday[0]->UST : 0) : 0;
             $tdyNONUST      = (int)($transToday <> null) ? (($transToday[0]->NON_UST <> null) ? $transToday[0]->NON_UST : 0) : 0;
             $tdySeleraku    = (int)($transToday <> null) ? (($transToday[0]->SELERAKU <> null) ? $transToday[0]->SELERAKU : 0) : 0;
             $tdyRendang     = (int)($transToday <> null) ? (($transToday[0]->RENDANG <> null) ? $transToday[0]->RENDANG : 0) : 0;
-            $tdyGeprek      = (int)($transToday <> null) ? (($transToday[0]->GEPREK <> null) ? $transToday[0]->SELERAKU : 0) : 0;
+            $tdyGeprek      = (int)($transToday <> null) ? (($transToday[0]->GEPREK <> null) ? $transToday[0]->GEPREK : 0) : 0;
             $transToday     = $tdyUST+$tdyNONUST+$tdySeleraku+$tdyRendang+$tdyGeprek;
 
             $realUST        = (int)($AllData_temp <> null) ? (($AllData_temp->REALUST_DM <> null) ? $AllData_temp->REALUST_DM : 0) : 0;
@@ -258,7 +258,7 @@ class DashboardApi extends Controller
             $AllData = array(
                 'SPREADNIG'     => ($AllData_temp <> null) ? (($AllData_temp->SPREADING_DM <> null) ? $AllData_temp->SPREADING_DM : 0) : 0,
                 'UB_UBLP'       => ($AllData_temp <> null) ? (($AllData_temp->UBUBLP_DM <> null) ? $AllData_temp->UBUBLP_DM : 0) : 0,
-                'DAYS'          => $day,
+                'DAYS'          => $transToday,
                 'OFF_TARGET'    => ($AllData_temp <> null) ? (($AllData_temp->OFFTARGET_DM <> null) ? $AllData_temp->OFFTARGET_DM : 0) : 0,
                 'PROGRESS'      => number_format((float)$progTotal, 1, '.', ''),
                 'DATA_CATEGORY' => 
