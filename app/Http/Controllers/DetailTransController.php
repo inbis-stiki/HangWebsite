@@ -146,6 +146,18 @@ class DetailTransController extends Controller
             ->groupBy('md_shop.ID_SHOP')
             ->get();
 
+        $data['shop_no_trans2'] = DB::table('transaction')
+            ->select('*')
+            ->where('transaction.ID_USER', '=', $id_user)
+            ->where('transaction.DATE_TRANS', 'like', $date . '%')
+            ->where('transaction.ISTRANS_TRANS', 0)->get();
+
+        $data['shop_trans2'] = DB::table('transaction')
+            ->select('*')
+            ->where('transaction.ID_USER', '=', $id_user)
+            ->where('transaction.DATE_TRANS', 'like', $date . '%')
+            ->where('transaction.ISTRANS_TRANS', 1)->get();
+
         // dd($data['transaction']);
         return view('transaction.detail_spread', $data);
     }

@@ -48,6 +48,12 @@ class TransactionApi extends Controller
             }
 
             $dateFunc = new Datefunc();
+            if (empty($dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans')))) {
+                return response([
+                    "status_code"       => 403,
+                    "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+                ], 200);
+            }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
             $transaction        = new Transaction();
@@ -92,20 +98,25 @@ class TransactionApi extends Controller
             }
 
             $id_district = Presence::select('ID_DISTRICT')
-            ->whereDate('DATE_PRESENCE', date('Y-m-d'))->where('ID_USER',  $req->input("id_user"))
-            ->first()->ID_DISTRICT;
+                ->whereDate('DATE_PRESENCE', date('Y-m-d'))->where('ID_USER',  $req->input("id_user"))
+                ->first();
+
+            if (empty($id_district)) {
+                return response([
+                    'status_code'       => 404,
+                    'status_message'    => "Data kecamatan tidak ada!",
+                ], 200);
+            }
 
             $cekLokasi = District::select('ID_DISTRICT', 'ID_AREA','NAME_DISTRICT', 'ADDRESS_DISTRICT')
-            ->where([
-                ['ID_AREA', '=', $req->input("id_area")],
-                ['ID_DISTRICT', '=', $id_district]
-            ])->whereNull('deleted_at')->get();
+                ->where([
+                    ['ID_AREA', '=', $req->input("id_area")],
+                    ['ID_DISTRICT', '=', $id_district->ID_DISTRICT]
+                ])->whereNull('deleted_at')->get();
 
             $transDaily = TransactionDaily::whereDate('DATE_TD', '=', date('Y-m-d'))
                 ->where('ID_USER', '=', $req->input('id_user'))
                 ->first();
-
-            
     
             if ($cekLokasi->isNotEmpty()) {
                 if ($tdkLolos == 0) {
@@ -189,7 +200,7 @@ class TransactionApi extends Controller
                 return response([
                     'status_code'       => 500,
                     'status_message'    => "Cek lokasi anda!",
-                ], 500);
+                ], 200);
             }
             
             
@@ -227,6 +238,12 @@ class TransactionApi extends Controller
             }
             
             $dateFunc = new Datefunc();
+            if (empty($dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans')))) {
+                return response([
+                    "status_code"       => 403,
+                    "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+                ], 200);
+            }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
             $cekDistrict = District::select('md_district.*')
@@ -401,6 +418,12 @@ class TransactionApi extends Controller
             }
 
             $dateFunc = new Datefunc();
+            if (empty($dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans')))) {
+                return response([
+                    "status_code"       => 403,
+                    "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+                ], 200);
+            }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
             $transaction        = new Transaction();
