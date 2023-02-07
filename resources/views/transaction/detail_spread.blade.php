@@ -98,9 +98,9 @@
                                                     </table>
                                                 </div>
                                             </div>
-                                            @php
-                                            $isActive = "";
-                                            $sumVal = 0;
+                                            @php 
+                                                $isActive = ""; 
+                                                $sumVal = 0;
                                             @endphp
                                             @endforeach
                                         </div>
@@ -236,12 +236,437 @@
                                 $no++;
                             }
 
-                                
+                            foreach ($shop_trans as $other_shop) {
+                                array_push(
+                                    $coords,
+                                    array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP, 'total' => $other_shop->TOTAL)
+                                );
+                            }
+
+                            foreach ($shop_no_trans as $other_shop) {
+                                array_push(
+                                    $other_coords,
+                                    array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)
+                                );
+                            }
+
+                            foreach ($shop_no_con2_trans as $other_shop) {
+                                array_push(
+                                    $other_coords_con2,
+                                    array('loc' => $other_shop->NAME_SHOP, 'lat' => $other_shop->LAT_SHOP, 'lng' => $other_shop->LONG_SHOP)
+                                );
+                            }
                             ?>
                         </div>
                     </div>
-                    
-                    
+                    <?php
+                    $centerCord = get_center($coords);
+
+                    function get_center($coords)
+                    {
+                        $count_coords = count($coords);
+                        $xcos = 0.0;
+                        $ycos = 0.0;
+                        $zsin = 0.0;
+
+                        foreach ($coords as $lnglat) {
+                            $lat = $lnglat['lat'] * pi() / 180;
+                            $lon = $lnglat['lng'] * pi() / 180;
+
+                            $acos = cos($lat) * cos($lon);
+                            $bcos = cos($lat) * sin($lon);
+                            $csin = sin($lat);
+                            $xcos += $acos;
+                            $ycos += $bcos;
+                            $zsin += $csin;
+                        }
+
+                        $xcos /= $count_coords;
+                        $ycos /= $count_coords;
+                        $zsin /= $count_coords;
+                        $lon = atan2($ycos, $xcos);
+                        $sqrt = sqrt($xcos * $xcos + $ycos * $ycos);
+                        $lat = atan2($zsin, $sqrt);
+
+                        return array($lat * 180 / pi(), $lon * 180 / pi());
+                    }
+                    ?>
+                    <style>
+                        #map {
+                            width: 100%;
+                            height: 640px;
+                            border-radius: 10px;
+                        }
+
+                        @media screen and (max-width: 600px) {
+                            #map {
+                                max-height: 70vh;
+                            }
+                        }
+
+                        .filter-control label {
+                            display: flex;
+                            padding: 10px;
+                            font-weight: 600;
+                            color: #fff;
+                            text-transform: uppercase;
+                            cursor: pointer;
+                            background-color: #f26f21;
+                            border-radius: 3px;
+                            box-shadow: 0 0 2px rgba(255, 205, 56, 0.5);
+                        }
+
+                        .filter-control input[type="checkbox"]:checked:after {
+                            background-color: #5BB318;
+                        }
+                    </style>
+                    <script>
+                        const MAPBOX_API_KEY = 'pk.eyJ1IjoiZGV2aXNhcCIsImEiOiJjbDZ5aHY1bzUwdmh2M2JwZG1zNDhkaXRlIn0.Wl1xSypefSjvpjdL7iGb7Q';
+                        const MAPBOX_STYLE = 'mapbox://styles/mapbox/streets-v11';
+
+                        mapboxgl.accessToken = MAPBOX_API_KEY;
+
+                        let features = {
+                            'type': 'FeatureCollection',
+                            'features': [
+                                <?php for ($i = 0; $i < count($coords); $i++) { ?> {
+                                        'type': 'Feature',
+                                        'geometry': {
+                                            'type': 'Point',
+                                            // 'coordinates': [Longitude, Latitude]
+                                            'coordinates': [<?= $coords[$i]['lng']; ?>, <?= $coords[$i]['lat']; ?>]
+                                        },
+                                        'properties': {
+                                            "title": "<?= $coords[$i]['loc']; ?>",
+                                            "description": "<strong><?= $coords[$i]['loc']; ?></strong><p>Total Penjualan : <?= $coords[$i]['total']; ?></p>",
+                                            "availability": 'Available',
+                                            "iconSize": [40, 40]
+                                        }
+                                    },
+                                <?php } ?>
+                                <?php for ($i = 0; $i < count($other_coords); $i++) { ?> {
+                                        'type': 'Feature',
+                                        'geometry': {
+                                            'type': 'Point',
+                                            // 'coordinates': [Longitude, Latitude]
+                                            'coordinates': [<?= $other_coords[$i]['lng']; ?>, <?= $other_coords[$i]['lat']; ?>]
+                                        },
+                                        'properties': {
+                                            "title": "<?= $other_coords[$i]['loc']; ?>",
+                                            "description": "<strong><?= $other_coords[$i]['loc']; ?></strong><p>Toko dengan transaksi lain</p>",
+                                            "iconSize": [40, 40]
+                                        }
+                                    },
+                                <?php } ?>
+                                <?php for ($i = 0; $i < count($other_coords_con2); $i++) { ?> {
+                                        'type': 'Feature',
+                                        'geometry': {
+                                            'type': 'Point',
+                                            // 'coordinates': [Longitude, Latitude]
+                                            'coordinates': [<?= $other_coords_con2[$i]['lng']; ?>, <?= $other_coords_con2[$i]['lat']; ?>]
+                                        },
+                                        'properties': {
+                                            "title": "<?= $other_coords_con2[$i]['loc']; ?>",
+                                            "description": "<strong><?= $other_coords_con2[$i]['loc']; ?></strong><p>Toko tidak melakukan transaksi</p>",
+                                            "availability": 'Available-con2',
+                                            "iconSize": [40, 40]
+                                        }
+                                    },
+                                <?php } ?>
+                            ]
+                        };
+
+                        // Initialize map
+                        const map = new mapboxgl.Map({
+                            container: 'map',
+                            style: MAPBOX_STYLE,
+                            center: [<?= $coords[0]['lng']; ?>, <?= $coords[0]['lat']; ?>],
+                            zoom: 15.5
+                        });
+
+                        // Set up Popup
+                        const popup = new mapboxgl.Popup({
+                            closeButton: false,
+                            closeOnClick: false
+                        });
+
+                        // Get marker image TotalTrans = 0
+                        map.loadImage('<?= asset('images/icon/marker-red.png'); ?>', (err, image) => {
+                            if (err) console.error(err);
+                            map.addImage('marker', image);
+                        });
+
+                        // Get marker image isTrans = 0
+                        map.loadImage('<?= asset('images/icon/marker-blue.png'); ?>', (err, image3) => {
+                            if (err) console.error(err);
+                            map.addImage('marker-2', image3);
+                        });
+
+                        // Get marker image
+                        map.loadImage('<?= asset('images/icon/marker-green.png'); ?>', (err, image2) => {
+                            if (err) console.error(err);
+                            map.addImage('marker-3', image2);
+                        });
+
+                        map.setRenderWorldCopies(false);
+                        map.resize();
+                        // Add map controls
+                        map.addControl(new mapboxgl.NavigationControl({
+                            showCompass: false,
+                        }));
+                        map.addControl(new mapboxgl.AttributionControl({
+                            compact: true,
+                        }));
+                        map.addControl(new mapboxgl.FullscreenControl());
+
+                        function FilterControl() {}
+                        FilterControl.prototype.onAdd = function(map) {
+                            this._map = map;
+                            this._container = document.createElement('div');
+                            this._container.classList.add('mapboxgl-ctrl', 'filter-control');
+                            const html = '<div>FilterControl</div>';
+                            this._container.innerHTML = `
+                                <div>
+                                <label>
+                                    <input type="checkbox" id="filterToggle">
+                                    <span class="checkmark"></span>
+                                    &nbsp&nbspShow Shop With Other Transaction
+                                </label>
+                                </div>
+                            `;
+                            return this._container;
+                        }
+
+                        FilterControl.prototype.onRemove = function() {
+                            this._container.parentNode.removeChild(this._container);
+                            this._map = undefined;
+                        }
+
+                        FilterControl.prototype.getDefaultPosition = function() {
+                            return 'top-left';
+                        }
+
+                        map.addControl(new FilterControl());
+
+                        map.on('load', createMapMarkers);
+
+                        // Add markers to map
+                        function createMapMarkers() {
+                            // Add source data TotalTrans = 0
+                            map.addSource('properties', {
+                                type: 'geojson',
+                                data: {
+                                    type: "FeatureCollection",
+                                    features: features.features.filter((property) => property.properties.availability === 'Available')
+                                },
+                                cluster: true,
+                                clusterMaxZoom: 11,
+                                clusterRadius: 40,
+                            });
+
+                            // Add markers TotalTrans = 0
+                            map.addLayer({
+                                id: 'property-layer',
+                                type: 'symbol',
+                                source: 'properties',
+                                filter: ['!has', 'point_count'],
+                                layout: {
+                                    'symbol-placement': 'point',
+                                    'icon-image': 'marker',
+                                    'icon-size': 1,
+                                    'icon-anchor': 'bottom',
+                                    'icon-allow-overlap': true,
+                                    'text-field': ['get', 'title'],
+                                    'text-font': [
+                                        'Open Sans Semibold',
+                                        'Arial Unicode MS Bold'
+                                    ],
+                                    'text-offset': [0, 0],
+                                    'text-anchor': 'top'
+                                }
+                            });
+
+                            // Add source data isTrans = 0
+                            map.addSource('properties-con2', {
+                                type: 'geojson',
+                                data: {
+                                    type: "FeatureCollection",
+                                    features: features.features.filter((property) => property.properties.availability === 'Available-con2')
+                                },
+                                cluster: true,
+                                clusterMaxZoom: 11,
+                                clusterRadius: 40,
+                            });
+
+                            // Add markers isTrans = 0
+                            map.addLayer({
+                                id: 'property-layer-con2',
+                                type: 'symbol',
+                                source: 'properties-con2',
+                                filter: ['!has', 'point_count'],
+                                layout: {
+                                    'symbol-placement': 'point',
+                                    'icon-image': 'marker-2',
+                                    'icon-size': 1,
+                                    'icon-anchor': 'bottom',
+                                    'icon-allow-overlap': true,
+                                    'text-field': ['get', 'title'],
+                                    'text-font': [
+                                        'Open Sans Semibold',
+                                        'Arial Unicode MS Bold'
+                                    ],
+                                    'text-offset': [0, 0],
+                                    'text-anchor': 'top'
+                                }
+                            });
+
+                            // Add source data no condition
+                            map.addSource('other-properties', {
+                                type: 'geojson',
+                                data: {
+                                    type: "FeatureCollection",
+                                    features: features.features.filter((property) => property.properties.availability === 'Available')
+                                },
+                                cluster: true,
+                                clusterMaxZoom: 11,
+                                clusterRadius: 40,
+                            });
+
+                            // Add markers no condition
+                            map.addLayer({
+                                id: 'other-property-layer',
+                                type: 'symbol',
+                                source: 'other-properties',
+                                filter: ['!has', 'point_count'],
+                                layout: {
+                                    'symbol-placement': 'point',
+                                    'icon-image': 'marker-3',
+                                    'icon-size': 1,
+                                    'icon-anchor': 'bottom',
+                                    'icon-allow-overlap': true,
+                                    'text-field': ['get', 'title'],
+                                    'text-font': [
+                                        'Open Sans Semibold',
+                                        'Arial Unicode MS Bold'
+                                    ],
+                                    'text-offset': [0, 0],
+                                    'text-anchor': 'top'
+                                }
+                            });
+
+                            // Set up filtering
+                            const filterToggle = document.getElementById('filterToggle');
+                            map.getSource('properties').setData({
+                                type: "FeatureCollection",
+                                features: features.features.filter((property) => property.properties.availability === 'Available-con2')
+                            });
+                            filterToggle.addEventListener('change', function(e) {
+                                let properties_data;
+                                if (this.checked) {
+                                    properties_data = features;
+                                } else {
+                                    properties_data = {
+                                        type: "FeatureCollection",
+                                        features: features.features.filter((property) => property.properties.availability === 'Available-con2')
+                                    }
+                                }
+                                map.getSource('properties').setData(properties_data);
+                            });
+                            // End Filtering
+
+                            // POPUP
+                            // Set Popup TotalTrans = 0
+                            map.on('mouseenter', 'other-property-layer', (e) => {
+                                // Change the cursor style as a UI indicator.
+                                map.getCanvas().style.cursor = 'pointer';
+
+                                // Copy coordinates array.
+                                const coordinates = e.features[0].geometry.coordinates.slice();
+                                const description = e.features[0].properties.description;
+                                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                                }
+                                popup.setLngLat(coordinates).setHTML(description).addTo(map);
+                            });
+
+                            map.on('mouseleave', 'other-property-layer', () => {
+                                map.getCanvas().style.cursor = '';
+                                popup.remove();
+                            });
+
+                            // Set Popup no condition
+                            map.on('mouseenter', 'property-layer', (e) => {
+                                // Change the cursor style as a UI indicator.
+                                map.getCanvas().style.cursor = 'pointer';
+
+                                // Copy coordinates array.
+                                const coordinates = e.features[0].geometry.coordinates.slice();
+                                const description = e.features[0].properties.description;
+                                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                                }
+                                popup.setLngLat(coordinates).setHTML(description).addTo(map);
+                            });
+
+                            map.on('mouseleave', 'property-layer', () => {
+                                map.getCanvas().style.cursor = '';
+                                popup.remove();
+                            });
+
+                            // Set Popup no condition
+                            map.on('mouseenter', 'property-layer-con2', (e) => {
+                                // Change the cursor style as a UI indicator.
+                                map.getCanvas().style.cursor = 'pointer';
+
+                                // Copy coordinates array.
+                                const coordinates = e.features[0].geometry.coordinates.slice();
+                                const description = e.features[0].properties.description;
+                                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                                }
+                                popup.setLngLat(coordinates).setHTML(description).addTo(map);
+                            });
+
+                            map.on('mouseleave', 'property-layer-con2', () => {
+                                map.getCanvas().style.cursor = '';
+                                popup.remove();
+                            });
+                            // END POPUP
+
+                            // Add clusters
+                            map.addLayer({
+                                id: 'cluster-circles',
+                                type: 'circle',
+                                source: 'properties',
+                                filter: ['has', 'point_count'],
+                                paint: {
+                                    'circle-color': '#f26f21',
+                                    'circle-radius': [
+                                        'step',
+                                        ['get', 'point_count'], 15, 10, 20, 25, 30, 50, 35, 75, 50,
+                                    ],
+                                    'circle-opacity': 1,
+                                    'circle-stroke-width': 1,
+                                    'circle-stroke-color': '#fff',
+                                    'circle-stroke-opacity': 0.5,
+                                }
+                            });
+                            // Add cluster counter
+                            map.addLayer({
+                                id: 'cluster-count',
+                                type: 'symbol',
+                                source: 'properties',
+                                filter: ['has', 'point_count'],
+                                layout: {
+                                    'text-field': '{point_count_abbreviated}',
+                                    'text-size': 12,
+                                },
+                                paint: {
+                                    'text-color': '#fff'
+                                }
+                            });
+                        }
+                    </script>
                 </div>
             </div>
             <!-- Column ends -->
