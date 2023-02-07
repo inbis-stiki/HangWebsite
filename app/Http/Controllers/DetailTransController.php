@@ -158,7 +158,7 @@ class DetailTransController extends Controller
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
             ->where('transaction.ISTRANS_TRANS', 1)->get();
 
-        // dd($data['transaction']);
+        // dd($data);die;
         return view('transaction.detail_spread', $data);
     }
 
