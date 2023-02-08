@@ -95,7 +95,7 @@ class PresenceApi extends Controller
                 ['ISMARKET_DISTRICT', '=', '0']
             ])->whereNull('deleted_at')->first();
             
-            if ($district != null) {
+            if (!empty($district)) {
                 if ($cek == true) {
                     return response([
                         "status_code"       => 200,
@@ -151,14 +151,14 @@ class PresenceApi extends Controller
             }else{
                 return response([
                     'status_code'       => 403,
-                    'status_message'    => "Cek lokasi anda!",
+                    'status_message'    => "Kecamatan tidak terdaftar, Cek lokasi anda!",
                 ], 200);
             }
         } catch (HttpResponseException $exp) {
             return response([
                 'status_code'       => $exp->getCode(),
                 'status_message'    => $exp->getMessage(),
-            ], $exp->getCode());
+            ], 200);
         }
     }
 }
