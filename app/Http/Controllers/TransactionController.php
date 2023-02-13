@@ -93,7 +93,6 @@ class TransactionController extends Controller
                 $data['ACTION_BUTTON'] = '<a href="' . url("transaction/ublp/?id_user=$item->ID_USER&area=$item->AREA_TRANS&date=" . date_format(date_create($item->DATE_TRANS), 'Y-m-d') . "&type=$item->ID_TYPE") . '"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             }
 
-
             if ($id_role == 3 && $item->NAME_LOCATION == $data_loc->NAME_LOCATION) {
                 $counter_asmen++;
                 $data['NO'] = $counter_asmen;

@@ -39,6 +39,8 @@ class MonitoringController extends Controller
                 (u.ID_ROLE = 5 OR u.ID_ROLE = 6)
             WHERE 
                 u.deleted_at IS NULL
+                AND
+                mr.deleted_at IS NULL
             GROUP BY 
                 u.ID_REGIONAL
             ORDER BY 
@@ -99,6 +101,8 @@ class MonitoringController extends Controller
                     p.ID_USER = u.ID_USER
                 LEFT JOIN md_regional mr ON 
                     mr.ID_REGIONAL = u.ID_REGIONAL
+                    AND
+                    mr.deleted_at IS NULL
                 WHERE
                     u.ID_ROLE IN (5, 6)
                     AND 
@@ -135,7 +139,7 @@ class MonitoringController extends Controller
         } else {
             $All_Data = array();
 
-            
+
             $PRESENCE = DB::select('
                 SELECT
                     mr2.NAME_REGIONAL,
@@ -144,7 +148,7 @@ class MonitoringController extends Controller
                     IFNULL(tb_temp.DATA_TEMP_3, 0) AS DATA_3,
                     IFNULL(tb_temp.DATA_TEMP_4, 0) AS DATA_4
                 FROM 
-                md_regional mr2
+                    md_regional mr2
                 LEFT JOIN 
                     (
                         SELECT
@@ -191,14 +195,14 @@ class MonitoringController extends Controller
             }
         }
 
-
         return response([
             'status_code'       => 200,
             'status_message'    => 'Data berhasil diambil!',
             'data'              => $All_Data
         ], 200);
     }
-    public function downloadPresenceMonthly(){
+    public function downloadPresenceMonthly()
+    {
         $regionals          = Regional::where('deleted_at', NULL)->get();
         $sundays            = [];
         $totDate            = date('t');
@@ -209,14 +213,14 @@ class MonitoringController extends Controller
 
 
         for ($x = 1; $x <= $totDate; $x++) {
-            if($x > (int)$currDate) break;
-            if(date_format(date_create($yearMonth.$x), "w") == "0") $sundays[$x] = true; // check if sunday
+            if ($x > (int)$currDate) break;
+            if (date_format(date_create($yearMonth . $x), "w") == "0") $sundays[$x] = true; // check if sunday
             $queryDatePresence .= "
                 , COALESCE ((
                     SELECT 'M'
                     FROM presence p2
-                    WHERE DATE(p2.DATE_PRESENCE) = '".$yearMonth.$x."' AND p2.ID_USER = u.ID_USER
-                ), 'A') as TGL".$x."
+                    WHERE DATE(p2.DATE_PRESENCE) = '" . $yearMonth . $x . "' AND p2.ID_USER = u.ID_USER
+                ), 'A') as TGL" . $x . "
             ";
         }
 
@@ -227,11 +231,11 @@ class MonitoringController extends Controller
                     u.NAME_USER ,
                     ma.NAME_AREA ,
                     mr.NAME_ROLE
-                    ".$queryDatePresence."
+                    " . $queryDatePresence . "
                 FROM `user` u
                 INNER JOIN md_area ma 
                     ON 
-                        u.ID_REGIONAL = ".$regional->ID_REGIONAL." 
+                        u.ID_REGIONAL = " . $regional->ID_REGIONAL . " 
                         AND u.ID_ROLE IN (5, 6)
                         AND u.deleted_at IS NULL 
                         AND ma.ID_AREA = u.ID_AREA 
@@ -247,7 +251,8 @@ class MonitoringController extends Controller
         $report = new ReportPresence();
         $report->generateMonthly($presences, $totDate, $sundays);
     }
-    public function downloadPresenceDaily(){
+    public function downloadPresenceDaily()
+    {
         $regionals          = Regional::where('deleted_at', NULL)->get();
         $sundays            = [];
         $totDate            = date('t');
@@ -262,10 +267,10 @@ class MonitoringController extends Controller
                 FROM presence p 
                 INNER JOIN `user` u
                 ON
-                    DATE(p.DATE_PRESENCE) = '".$currDate."'
+                    DATE(p.DATE_PRESENCE) = '" . $currDate . "'
                     AND TIME(p.DATE_PRESENCE) < '07:01'
                     AND p.ID_USER = u.ID_USER 
-                    AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                    AND u.ID_REGIONAL = " . $regional->ID_REGIONAL . "
                 INNER JOIN md_area ma 
                 ON ma.ID_AREA = u.ID_AREA
                 INNER JOIN md_role mr 
@@ -277,10 +282,10 @@ class MonitoringController extends Controller
                 FROM presence p 
                 INNER JOIN `user` u
                 ON
-                    DATE(p.DATE_PRESENCE) = '".$currDate."'
+                    DATE(p.DATE_PRESENCE) = '" . $currDate . "'
                     AND TIME(p.DATE_PRESENCE) BETWEEN '07:01' AND '07:15'
                     AND p.ID_USER = u.ID_USER 
-                    AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                    AND u.ID_REGIONAL = " . $regional->ID_REGIONAL . "
                 INNER JOIN md_area ma 
                 ON ma.ID_AREA = u.ID_AREA
                 INNER JOIN md_role mr 
@@ -292,10 +297,10 @@ class MonitoringController extends Controller
                 FROM presence p 
                 INNER JOIN `user` u
                 ON
-                    DATE(p.DATE_PRESENCE) = '".$currDate."'
+                    DATE(p.DATE_PRESENCE) = '" . $currDate . "'
                     AND TIME(p.DATE_PRESENCE) BETWEEN '07:16' AND '07:30'
                     AND p.ID_USER = u.ID_USER 
-                    AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                    AND u.ID_REGIONAL = " . $regional->ID_REGIONAL . "
                 INNER JOIN md_area ma 
                 ON ma.ID_AREA = u.ID_AREA
                 INNER JOIN md_role mr 
@@ -307,10 +312,10 @@ class MonitoringController extends Controller
                 FROM presence p 
                 INNER JOIN `user` u
                 ON
-                    DATE(p.DATE_PRESENCE) = '".$currDate."'
+                    DATE(p.DATE_PRESENCE) = '" . $currDate . "'
                     AND TIME(p.DATE_PRESENCE) > '07:30'
                     AND p.ID_USER = u.ID_USER 
-                    AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                    AND u.ID_REGIONAL = " . $regional->ID_REGIONAL . "
                 INNER JOIN md_area ma 
                 ON ma.ID_AREA = u.ID_AREA
                 INNER JOIN md_role mr 
@@ -322,7 +327,7 @@ class MonitoringController extends Controller
                 FROM `user` u 
                 INNER JOIN md_area ma 
                 ON 
-                    u.ID_REGIONAL = ".$regional->ID_REGIONAL." 
+                    u.ID_REGIONAL = " . $regional->ID_REGIONAL . " 
                     AND u.ID_ROLE IN (5, 6)
                     AND u.deleted_at IS NULL
                     AND ma.ID_AREA = u.ID_AREA
@@ -333,8 +338,8 @@ class MonitoringController extends Controller
                     FROM presence p 
                     INNER JOIN `user` u2 
                     ON 
-                        DATE(p.DATE_PRESENCE) = '".$currDate."' 
-                        AND u.ID_REGIONAL = ".$regional->ID_REGIONAL."
+                        DATE(p.DATE_PRESENCE) = '" . $currDate . "' 
+                        AND u.ID_REGIONAL = " . $regional->ID_REGIONAL . "
                 )
                 ORDER BY ma.NAME_AREA ASC, mr.ID_ROLE ASC
             ");
