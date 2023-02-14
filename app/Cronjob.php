@@ -12,6 +12,11 @@ class Cronjob extends Model
         return DB::select("
             SELECT
                 u.ID_USER ,
+                u.NAME_USER,
+                u.ID_LOCATION ,
+                u.ID_REGIONAL ,
+                u.ID_AREA ,
+                u.ID_ROLE ,
                 COALESCE((
                     SELECT COUNT(*)
                     FROM `transaction` t
@@ -367,7 +372,7 @@ class Cronjob extends Model
 
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
-    public static function queryGetRankUser($idRegional, $idRole){
+    public static function queryGetRankUser($idRegional, $idRole, $year, $month){
         // SET WEIGHT
         $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
         $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
@@ -407,7 +412,6 @@ class Cronjob extends Model
                 ((rp.VSUB * ".$wUB.") / 100) + ((rp.VSPS * ".$wPS.") / 100) + ((rp.VSRETAIL * ".$wRETAIL.") / 100) as AVG_VS
             FROM (
                 SELECT 
-                    u.NAME_USER ,
                     ma.NAME_AREA ,
                     dm.*,
                     (
@@ -419,16 +423,14 @@ class Cronjob extends Model
                     (
                         (dm.REALACTRETAIL_DM/ (".$tgtRetail.")) * 100
                     ) as VSRETAIL
-                FROM dashboard_mobile dm 
-                INNER JOIN `user` u 
+                FROM summary_trans_user dm 
+                INNER JOIN md_area ma
                     ON
-                        dm.ID_USER = u.ID_USER
-                        AND u.ID_ROLE = ".$idRole."
-                        AND u.deleted_at IS NULL
-                INNER JOIN md_regional mr 
-                    ON mr.ID_REGIONAL = u.ID_REGIONAL AND mr.ID_REGIONAL = ".$idRegional."
-                INNER JOIN md_area ma 
-                    ON ma.ID_AREA = u.ID_AREA
+                        dm.YEAR = '".$year."'
+                        AND dm.MONTH = '".$month."'
+                        AND dm.ID_REGIONAL = '".$idRegional."'
+                        AND dm.ID_ROLE = '".$idRole."'
+                        AND dm.ID_AREA = ma.ID_AREA
             ) as rp
             ORDER BY AVG_VS DESC
         ");
@@ -461,7 +463,6 @@ class Cronjob extends Model
             FROM 
             (
                 SELECT 
-                    u.NAME_USER ,
                     ma.NAME_AREA ,
                     dm.* ,
                     (
@@ -479,16 +480,14 @@ class Cronjob extends Model
                     (
                         (dm.REALGEPREK_DM/ (".$tgtGeprek.")) * 100
                     ) as VSGEPREK
-                FROM dashboard_mobile dm 
-                INNER JOIN `user` u 
+                FROM summary_trans_user dm 
+                INNER JOIN md_area ma
                     ON
-                        dm.ID_USER = u.ID_USER
-                        AND u.ID_ROLE = ".$idRole."
-                        AND u.deleted_at IS NULL
-                INNER JOIN md_regional mr 
-                    ON mr.ID_REGIONAL = u.ID_REGIONAL AND mr.ID_REGIONAL = ".$idRegional."
-                INNER JOIN md_area ma 
-                    ON ma.ID_AREA = u.ID_AREA
+                        dm.YEAR = '".$year."'
+                        AND dm.MONTH = '".$month."'
+                        AND dm.ID_REGIONAL = '".$idRegional."'
+                        AND dm.ID_ROLE = '".$idRole."'
+                        AND dm.ID_AREA = ma.ID_AREA
             ) as rp
             ORDER BY AVG_VS DESC
         ");
@@ -525,7 +524,7 @@ class Cronjob extends Model
             ORDER BY stl.LOCATION_STL ASC
             ";
 
-            $tgtUser = app(TargetUser::class)->getRegional();
+            $tgtUser = app(TargetUser::class)->getAsmen();
         }
 
         $tgtUST         = $tgtUser['prods']['UST'];

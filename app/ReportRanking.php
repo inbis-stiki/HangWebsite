@@ -227,8 +227,15 @@ class ReportRanking
         return $styleContent;
     }
 
-    public function generate_ranking_rpo($datas, $updated_at)
+    public function generate_ranking_rpo($datas, $yearMonth)
     {
+        $currDate = date('Y-n');
+        if($currDate == $yearMonth){
+            $updated_at = date('Y-m-d', strtotime('-1 days'));
+        }else{
+            $updated_at = $yearMonth."-".date_format(date_create($yearMonth), 't');
+        }
+
         $spreadsheet = new Spreadsheet();
         
         $reports = $datas['reports'];
@@ -433,35 +440,24 @@ class ReportRanking
         $ObjSheet->setCellValue('S' . ($rowStart3 + 1), $reports['reportProds']['AVG_VS'])->getStyle('S' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template("FF00FFFF", "FF000000"))->getAlignment()->setWrapText(true);
         $ObjSheet->getStyle('T' . ($rowStart3 + 1))->applyFromArray($this->styling_title_template('FF000000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
         
-        $fileName   = 'RANKING - RPO - ' . date_format(date_create($updated_at), 'F Y_'.date_format(date_create($updated_at), 'dmY'));
+        $fileName = 'RANKING - RPO - ' . date_format(date_create($updated_at), 'F Y');
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file
         header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
-        
-        ob_start();
-        $writer->save('php://output');
-        $content    = ob_get_contents();
-        $path       = "report/rank/rpo/".$fileName.".xlsx";
-        $fullPath   = 'https://finna.is3.cloudhost.id/'.$path;
-        Storage::disk('s3')->put($path, $content);
-
-        $formData['NAME_RRR']       = $fileName;
-        $formData['DATE_RRR']       = $updated_at;
-        $formData['PATH_RRR']       = $fullPath;
-        $formData['ISACTIVE_RRR']   = 1;
-
-        // DB::update('report_rank_rpo');
-        DB::insert('report_rank_rpo', $formData);
-        ob_end_clean();
-        
-        // return ['path' => $fullPath, 'fileName' => $fileName];
     }
 
-    public function generate_ranking_asmen($datas, $updated_at)
+    public function generate_ranking_asmen($datas, $yearMonth)
     {
+        $currDate = date('Y-n');
+        if($currDate == $yearMonth){
+            $updated_at = date('Y-m-d', strtotime('-1 days'));
+        }else{
+            $updated_at = $yearMonth."-".date_format(date_create($yearMonth), 't');
+        }
+
         $acts   = $datas['reports']['reportActs'];
         $prods  = $datas['reports']['reportProds'];
         
@@ -679,8 +675,15 @@ class ReportRanking
         $writer->save('php://output');
     }
 
-    public function generate_ranking_apo_spg($datas, $updated_at)
+    public function generate_ranking_apo_spg($datas, $yearMonth)
     {
+        $currDate = date('Y-n');
+        if($currDate == $yearMonth){
+            $updated_at = date('Y-m-d', strtotime('-1 days'));
+        }else{
+            $updated_at = $yearMonth."-".date_format(date_create($yearMonth), 't');
+        }
+
         $apos = $datas['reportApos'];
         $spgs = $datas['reportSpgs'];
         $spreadsheet = new Spreadsheet();

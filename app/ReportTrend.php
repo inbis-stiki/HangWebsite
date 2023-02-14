@@ -302,7 +302,7 @@ class ReportTrend
         return $styleContent;
     }
 
-    public function generate_trend_rpo($reports, $updated_at)
+    public function generate_trend_rpo($reports, $year)
     {
         
         $spreadsheet = new Spreadsheet();
@@ -569,7 +569,7 @@ class ReportTrend
             $i += 4;
         }
 
-        $fileName = 'TREND - RPO - ' . date_format(date_create(date("Y-m")), 'F Y');
+        $fileName = 'TREND - RPO - ' . $year;
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file
@@ -577,7 +577,7 @@ class ReportTrend
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
-    public function generate_trend_asmen($reports, $updated_at)
+    public function generate_trend_asmen($reports, $year)
     {
         
         $spreadsheet = new Spreadsheet();
@@ -844,7 +844,7 @@ class ReportTrend
             $i += 4;
         }
 
-        $fileName = 'TREND - RPO - ' . date_format(date_create(date("Y-m")), 'F Y');
+        $fileName = 'TREND - ASMEN - '.$year;
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file
