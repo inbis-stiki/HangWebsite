@@ -54,21 +54,122 @@
                             </ul>
                         </div>
                     </div>
+                    @php
+                        $begin = new DateTime('2023-01-31');
+                        $end = new DateTime(date('Y-m'));
+
+                        $interval = DateInterval::createFromDateString('1 month');
+                        $period = new DatePeriod($begin, $interval, $end);
+                        foreach ($period as $dt) {
+                            $dates[] = $dt->format("Y-m-d");
+                        }
+                        $dates[] = date('Y-m-d');
+                        $dates   = array_reverse($dates);
+                    @endphp
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="datatable" class="display min-w850">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Regional</th>
-                                        <th>Area</th>
-                                        <th>Jumlah</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                            </table>
+                        <div class="tab-content">
+                            <div id="asmen" class="tab-pane active">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="table-responsive">
+                                            <table id="" class="display min-w850 datatable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Bulan</th>
+                                                        <th>Tahun</th>
+                                                        <th>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php
+                                                        $no = 1;
+                                                    @endphp
+                                                    @foreach ($dates as $dt)
+                                                    @php
+                                                        $year       = date_format(date_create($dt), 'Y');
+                                                        $month      = date_format(date_create($dt), 'n');
+                                                        $monthLat   = date_format(date_create($dt), 'F');
+                                                        $day        = date_format(date_create($dt), 'd');
+                
+                                                        if($day == "01") continue;
+                                                    @endphp
+                                                        <tr>
+                                                            <td>{{ $no++ }}</td>
+                                                            <td>{{ $monthLat }}</td>
+                                                            <td>{{ $year }}</td>
+                                                            <td><a href="{{ url('report/rank-asmen/'.$year.'-'.$month) }}" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> Download</a></td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="rpo" class="tab-pane">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="table-responsive">
+                                            <table id="" class="display min-w850 datatable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>No</th>
+                                                        <th>Bulan</th>
+                                                        <th>Tahun</th>
+                                                        <th>Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php
+                                                        $no = 1;
+                                                    @endphp
+                                                    @foreach ($dates as $dt)
+                                                    @php
+                                                        $year       = date_format(date_create($dt), 'Y');
+                                                        $month      = date_format(date_create($dt), 'n');
+                                                        $monthLat   = date_format(date_create($dt), 'F');
+                                                        $day        = date_format(date_create($dt), 'd');
+                
+                                                        if($day == "01") continue;
+                                                    @endphp
+                                                        <tr>
+                                                            <td>{{ $no++ }}</td>
+                                                            <td>{{ $monthLat }}</td>
+                                                            <td>{{ $year }}</td>
+                                                            <td><a href="{{ url('report/rank-rpo/'.$year.'-'.$month) }}" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> Download</a></td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="apo" class="tab-pane">
+                                <div class="row">
+                                    <div class="col">
+                                        <form action="{{ url('report/rank-apospg') }}" method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="">Pilih Area</label>
+                                                <select name="idRegional" id="slctArea" class="form-control">
+                                                    @foreach ($regionals as $regional)
+                                                        <option value="{{ $regional->ID_REGIONAL }}" {{ !empty($idReg) && $idReg == $regional->ID_REGIONAL ? "selected" : ""}}>{{ $regional->NAME_REGIONAL }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="">Pilih Tanggal</label>
+                                                <input value="<?= (date_format(date_create(date("Y-m")), 'F Y')); ?>" name="date" class="datepicker-default form-control">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-sm w-100 mb-3"><i class="fa fa-download"></i> Download Laporan</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -80,5 +181,13 @@
 ***********************************-->
 @include('template/footer')
 <script>
-    $('#datatable').DataTable();
+    $('.datatable').DataTable();
+    $(".datepicker-default").pickadate({
+        format: 'mmmm yyyy',
+        clear: 'All Time',
+        max: new Date(),
+        onSet: function() {
+            tgl_trans = this.get('select', 'yyyy-mm-dd');
+        }
+    });
 </script>
