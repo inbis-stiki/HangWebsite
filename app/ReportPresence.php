@@ -34,37 +34,40 @@ class ReportPresence
             $ObjSheet->mergeCells('A3:AP3')->setCellValue('A3', 'BULAN '.strtoupper(date('F')).' '.date('Y'))->getStyle('A3:AP3')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
             
             // HEADER
-            $ObjSheet->mergeCells('A8:A10')->setCellValue('A8', 'NO')->getStyle('A8:A10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('B8:B10')->setCellValue('B8', 'NAMA')->getStyle('B8:B10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('C8:C10')->setCellValue('C8', 'JABATAN')->getStyle('C8:C10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('D8:D10')->setCellValue('D8', 'AREA')->getStyle('D8:D10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('E8:AI9')->setCellValue('E8', 'BULAN '.strtoupper(date('F')).' TAHUN '.date('Y'))->getStyle('E8:AI9')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('A4:A6')->setCellValue('A4', 'NO')->getStyle('A4:A6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('B4:B6')->setCellValue('B4', 'NAMA')->getStyle('B4:B6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('C4:C6')->setCellValue('C4', 'JABATAN')->getStyle('C4:C6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('D4:D6')->setCellValue('D4', 'AREA')->getStyle('D4:D6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('E4:AI5')->setCellValue('E4', 'BULAN '.strtoupper(date('F')).' TAHUN '.date('Y'))->getStyle('E4:AI5')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
             
             $abjad = "E";
-            foreach (range(1, (int)$totDate) as $i) { 
-                $fillColor = "ffffff";
+            foreach (range(1, 31) as $i) { 
+                $fillColor = "fcd5b5";
                 $txtColor  = "000000";
                 if(!empty($sundays[$i])){
                     $fillColor = "c12807";
                     $txtColor  = "ffffff";
+                }else if($i > (int)$totDate){
+                    $fillColor = "535c68";
+                    $txtColor  = "000000";
                 }
 
-                $ObjSheet->setCellValue($abjad.'10', $i)->getStyle($abjad.'10')->applyFromArray($this->styling_title_template($fillColor, $txtColor));
+                $ObjSheet->setCellValue($abjad.'6', $i)->getStyle($abjad.'6')->applyFromArray($this->styling_title_template($fillColor, $txtColor));
                 $abjad++;
             }
     
-            $ObjSheet->mergeCells('AJ8:AJ10')->setCellValue('AJ8', 'HARI KERJA EFEKTIF')->getStyle('AJ8:AJ10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('AK8:AK10')->setCellValue('AK8', 'ABSENSI')->getStyle('AK8:AK10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('AL8:AO8')->setCellValue('AL8', 'TUNJANGAN TERKAIT JABATAN / POSISI KERJA')->getStyle('AL8:AO8')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('AL9:AO9')->setCellValue('AL9', 'Perhitungan Bulanan')->getStyle('AL9:AO9')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->setCellValue('AL10', 'Gaji Pokok')->getStyle('AL10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->setCellValue('AM10', 'Tunj. Kesehatan')->getStyle('AM10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->setCellValue('AN10', 'Tunj. Pulsa')->getStyle('AN10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->setCellValue('AO10', 'Gaji Diterima')->getStyle('AO10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('AP8:AP10')->setCellValue('AP8', 'KETERANGAN TAMBAHAN')->getStyle('AP8:AP10')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('AJ4:AJ6')->setCellValue('AJ4', 'HARI KERJA EFEKTIF')->getStyle('AJ4:AJ6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('AK4:AK6')->setCellValue('AK4', 'ABSENSI')->getStyle('AK4:AK6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('AL4:AO4')->setCellValue('AL4', 'TUNJANGAN TERKAIT JABATAN / POSISI KERJA')->getStyle('AL4:AO4')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('AL5:AO5')->setCellValue('AL5', 'Perhitungan Bulanan')->getStyle('AL5:AO5')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->setCellValue('AL6', 'Gaji Pokok')->getStyle('AL6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->setCellValue('AM6', 'Tunj. Kesehatan')->getStyle('AM6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->setCellValue('AN6', 'Tunj. Pulsa')->getStyle('AN6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->setCellValue('AO6', 'Gaji Diterima')->getStyle('AO6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('AP4:AP6')->setCellValue('AP4', 'KETERANGAN TAMBAHAN')->getStyle('AP4:AP6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
             
             // ISI KONTEN
-            $row = 11;
+            $row = 7;
             $no = 1;
             foreach ($presence['PRESENCES'] as $data){
                 $temp = (array)$data;
@@ -75,12 +78,15 @@ class ReportPresence
                 $abjad = "E";
                 $absent = 0;
                 
-                for ($i = 1; $i <= (int)$totDate; $i++) {
+                for ($i = 1; $i <= 31; $i++) {
                     $fillColor = "ffffff";
                     $txtColor  = "000000";
                     if(!empty($sundays[$i])){
                         $fillColor = "c12807";
                         $txtColor  = "ffffff";
+                    }else if($i > (int)$totDate){
+                        $fillColor = "535c68";
+                        $txtColor  = "000000";
                     }
     
                     if(!empty($temp["TGL".$i])){
