@@ -75,6 +75,7 @@ class DetailTransController extends Controller
             array_push(
                 $data['transaction'],
                 array(
+                    "ID_TRANS" => $Item_ts->ID_TRANS,
                     "ID_SHOP" => $Item_ts->ID_SHOP,
                     "NAME_SHOP" => $Item_ts->NAME_SHOP,
                     "DETLOC_SHOP" => $Item_ts->DETLOC_SHOP,
@@ -101,6 +102,7 @@ class DetailTransController extends Controller
             ->whereIn('md_shop.ID_DISTRICT', $data_area)
             ->groupBy('md_shop.ID_SHOP')
             ->get();
+            
 
         $data['shop_no_trans'] = DB::table('md_shop')
             ->select('md_shop.ID_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'transaction.ISTRANS_TRANS')
@@ -158,7 +160,6 @@ class DetailTransController extends Controller
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
             ->where('transaction.ISTRANS_TRANS', 1)->get();
 
-        // dd($data);die;
         return view('transaction.detail_spread', $data);
     }
 
