@@ -100,6 +100,8 @@ class DashboardController extends Controller
                         summary_trans_location stl
                     RIGHT JOIN md_location ml ON
                         ml.NAME_LOCATION COLLATE utf8mb4_unicode_ci = stl.LOCATION_STL
+                        AND 
+                        ml.deleted_at IS NULL
                     WHERE
                         stl.updated_at LIKE '" . date('Y-m') . "%'
                     GROUP BY
@@ -179,6 +181,8 @@ class DashboardController extends Controller
                         summary_trans_location stl
                     RIGHT JOIN md_regional mr ON
                         mr.NAME_REGIONAL COLLATE utf8mb4_unicode_ci = stl.REGIONAL_STL
+                        AND 
+                        mr.deleted_at IS NULL
                     WHERE
                         stl.updated_at LIKE '" . date('Y-m') . "%'
                     GROUP BY
@@ -261,6 +265,8 @@ class DashboardController extends Controller
                         summary_trans_location stl
                     RIGHT JOIN md_location ml ON
                         ml.NAME_LOCATION COLLATE utf8mb4_unicode_ci = stl.LOCATION_STL
+                        AND 
+                        ml.deleted_at IS NULL
                     WHERE
                         stl.updated_at LIKE '" . date('Y-m') . "%'
                         AND ml.ID_LOCATION = " . $id_location . "
@@ -341,6 +347,8 @@ class DashboardController extends Controller
                         summary_trans_location stl
                     RIGHT JOIN md_regional mr ON
                         mr.NAME_REGIONAL COLLATE utf8mb4_unicode_ci = stl.REGIONAL_STL
+                        AND 
+                        mr.deleted_at IS NULL
                     WHERE
                         stl.updated_at LIKE '" . date('Y-m') . "%'
                         AND mr.ID_LOCATION = " . $id_location . "
@@ -423,6 +431,8 @@ class DashboardController extends Controller
                     summary_trans_location stl
                 RIGHT JOIN md_regional mr ON
                     mr.NAME_REGIONAL COLLATE utf8mb4_unicode_ci = stl.REGIONAL_STL
+                    AND 
+                    mr.deleted_at IS NULL
                 WHERE
                     stl.updated_at LIKE '" . date('Y-m') . "%'
                     AND mr.ID_REGIONAL = " . $id_regional . "
@@ -1076,6 +1086,8 @@ class DashboardController extends Controller
                     mr.*
                 FROM
                     md_regional mr
+                WHERE
+                    mr.deleted_at IS NULL
             ");
         } else {
             $regional_targets = DB::select("
@@ -1085,6 +1097,8 @@ class DashboardController extends Controller
                     md_regional mr
                 WHERE
                     mr.ID_LOCATION = " . $id_location . "
+                AND
+                    mr.deleted_at IS NULL
             ");
         }
 
@@ -1237,18 +1251,22 @@ class DashboardController extends Controller
         if ($id_role == 1 || $id_role == 2) {
             $regional_targets = DB::select("
                 SELECT
-                    ml.*
+                    mr.*
                 FROM
-                    md_location ml
+                    md_regional mr
+                WHERE
+                    mr.deleted_at IS NULL
             ");
         } else {
             $regional_targets = DB::select("
                 SELECT
-                    ml.*
+                    mr.*
                 FROM
-                    md_location ml
+                    md_regional mr
                 WHERE
-                    ml.ID_LOCATION = " . $id_location . "
+                    mr.ID_LOCATION = " . $id_location . "
+                AND
+                    mr.deleted_at IS NULL
             ");
         }
 
@@ -1403,6 +1421,8 @@ class DashboardController extends Controller
                 md_area ma
             WHERE 
                 ma.ID_REGIONAL = " . $id_reg . "
+            WHERE
+                ma.deleted_at IS NULL
         ");
 
         $data_trend = array();
