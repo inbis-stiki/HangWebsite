@@ -1251,22 +1251,22 @@ class DashboardController extends Controller
         if ($id_role == 1 || $id_role == 2) {
             $regional_targets = DB::select("
                 SELECT
-                    mr.*
+                    ml.*
                 FROM
-                    md_regional mr
+                    md_location ml
                 WHERE
-                    mr.deleted_at IS NULL
+                    ml.deleted_at IS NULL
             ");
         } else {
             $regional_targets = DB::select("
                 SELECT
-                    mr.*
+                    ml.*
                 FROM
-                    md_regional mr
+                    md_location ml
                 WHERE
-                    mr.ID_LOCATION = " . $id_location . "
+                    ml.ID_LOCATION = " . $id_location . "
                 AND
-                    mr.deleted_at IS NULL
+                    ml.deleted_at IS NULL
             ");
         }
 
