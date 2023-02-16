@@ -25,7 +25,7 @@ class MonitoringController extends Controller
     public function monitoring_data(Request $req)
     {
         $type = $req->input('type');
-        $tgl_trans = $req->input('tgl_trans');
+        $tgl_trans = date('Y-m-d');
 
         $data_regional = DB::select('
             SELECT
@@ -36,7 +36,7 @@ class MonitoringController extends Controller
             LEFT JOIN `user` u ON
                 u.ID_REGIONAL = mr.ID_REGIONAL 
                 AND
-                (u.ID_ROLE = 5 OR u.ID_ROLE = 6)
+                u.ID_ROLE IN (5, 6)
             WHERE 
                 u.deleted_at IS NULL
                 AND
@@ -63,27 +63,31 @@ class MonitoringController extends Controller
                 FROM
                     md_regional mr2
                 LEFT JOIN 
-                                    (
-                    SELECT
-                        t.ID_USER,
-                        t.REGIONAL_TRANS,
-                        COUNT(t.ID_TRANS) <= 10 AS DATA_TEMP_1,
-                        (COUNT(t.ID_TRANS) BETWEEN 11 AND 15) AS DATA_TEMP_2,
-                        (COUNT(t.ID_TRANS) BETWEEN 16 AND 20) AS DATA_TEMP_3,
-                        (COUNT(t.ID_TRANS) BETWEEN 21 AND 25) AS DATA_TEMP_4,
-                        COUNT(t.ID_TRANS) >= 26 AS DATA_TEMP_5
-                    FROM
-                        `transaction` t
-                    WHERE
-                        DATE(t.DATE_TRANS) = "' . $tgl_trans . '" 
-                        AND 
-                        t.ISTRANS_TRANS = 1
-                        AND 
-                        t.ID_TYPE = 1
-                    GROUP BY
-                        t.ID_USER
-                                    ) tb_temp ON
-                    tb_temp.REGIONAL_TRANS = mr2.NAME_REGIONAL
+                    (
+                        SELECT 
+                            tdt.ID_USER,
+                            tdt.REGIONAL_TRANS,
+                            COUNT(tdt.ID_TRANS) <= 10 AS DATA_TEMP_1,
+                            (COUNT(tdt.ID_TRANS) BETWEEN 11 AND 15) AS DATA_TEMP_2,
+                            (COUNT(tdt.ID_TRANS) BETWEEN 16 AND 20) AS DATA_TEMP_3,
+                            (COUNT(tdt.ID_TRANS) BETWEEN 21 AND 25) AS DATA_TEMP_4,
+                            COUNT(tdt.ID_TRANS) >= 26 AS DATA_TEMP_5
+                        FROM 
+                            transaction_detail_today tdt
+                        LEFT JOIN `transaction` t ON
+                            t.ID_TRANS COLLATE utf8mb4_unicode_ci = tdt.ID_TRANS
+                            AND
+                            t.ISTRANS_TRANS = 1
+                            AND 
+                            t.ID_TYPE = 1
+                            AND 
+                            DATE(t.DATE_TRANS) = "' . $tgl_trans . '"
+                        GROUP BY
+                            tdt.ID_USER
+                    ) tb_temp ON
+                    tb_temp.REGIONAL_TRANS COLLATE utf8mb4_unicode_ci = mr2.NAME_REGIONAL
+                WHERE
+                    mr2.deleted_at IS NULL
                 GROUP BY
                     tb_temp.REGIONAL_TRANS
                 ORDER BY
@@ -92,25 +96,40 @@ class MonitoringController extends Controller
 
             $NO_TRANS = DB::select('
                 SELECT
-                    mr.NAME_REGIONAL,
-                    COUNT(u.ID_USER) AS DATA_NO_TRANS,
-                    p.DATE_PRESENCE
+                    mr2.NAME_REGIONAL,
+                    IFNULL(tb_temp.NO_TRANS, 0) AS DATA_NO_TRANS
                 FROM
-                    `user` u
-                LEFT JOIN presence p ON
-                    p.ID_USER = u.ID_USER
-                LEFT JOIN md_regional mr ON 
-                    mr.ID_REGIONAL = u.ID_REGIONAL
-                    AND
-                    mr.deleted_at IS NULL
+                    md_regional mr2
+                LEFT JOIN 
+                    (
+                        SELECT
+                            mr.NAME_REGIONAL,
+                            COUNT(u.ID_USER) AS NO_TRANS,
+                            p.DATE_PRESENCE
+                        FROM
+                            `user` u
+                        LEFT JOIN presence p ON
+                            p.ID_USER = u.ID_USER
+                        RIGHT JOIN md_regional mr ON 
+                            mr.ID_REGIONAL = u.ID_REGIONAL
+                            AND
+                            mr.deleted_at IS NULL
+                        WHERE
+                            u.ID_ROLE IN (5, 6)
+                            AND 
+                            DATE(p.DATE_PRESENCE) = "' . $tgl_trans . '"
+                        GROUP BY 
+                            u.ID_REGIONAL
+                        ORDER BY 
+                            mr.NAME_REGIONAL ASC
+                    ) tb_temp ON
+                    tb_temp.NAME_REGIONAL COLLATE utf8mb4_unicode_ci = mr2.NAME_REGIONAL
                 WHERE
-                    u.ID_ROLE IN (5, 6)
-                    AND 
-                    DATE(p.DATE_PRESENCE) = "' . $tgl_trans . '" 
-                GROUP BY 
-                    u.ID_REGIONAL
-                ORDER BY 
-                    mr.NAME_REGIONAL ASC
+                    mr2.deleted_at IS NULL
+                GROUP BY
+                    tb_temp.NAME_REGIONAL
+                ORDER BY
+                    mr2.NAME_REGIONAL ASC
             ');
 
             $no = 0;
@@ -153,9 +172,9 @@ class MonitoringController extends Controller
                     (
                         SELECT
                             u.ID_REGIONAL,
-                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 01:00:00" AND "' . $tgl_trans . ' 07:01:00")) AS DATA_TEMP_1,
-                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07.01:00" AND "' . $tgl_trans . ' 07:15:00")) AS DATA_TEMP_2,
-                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07:16:00" AND "' . $tgl_trans . ' 07:30:00")) AS DATA_TEMP_3,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 01:00:00" AND "' . $tgl_trans . ' 07:00:59")) AS DATA_TEMP_1,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07.01:00" AND "' . $tgl_trans . ' 07:15:59")) AS DATA_TEMP_2,
+                            SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07:16:00" AND "' . $tgl_trans . ' 07:30:59")) AS DATA_TEMP_3,
                             SUM((p.DATE_PRESENCE BETWEEN "' . $tgl_trans . ' 07:31:00" AND "' . $tgl_trans . ' 23:00:00")) AS DATA_TEMP_4
                         FROM
                             `user` u
@@ -166,11 +185,13 @@ class MonitoringController extends Controller
                             AND 
                             u.deleted_at IS NULL
                             AND 
-                            p.DATE_PRESENCE LIKE "' . $tgl_trans . '%"
+                            DATE(p.DATE_PRESENCE) = "' . $tgl_trans . '"
                         GROUP BY 
                             u.ID_REGIONAL
                     ) tb_temp ON 
                     tb_temp.ID_REGIONAL = mr2.ID_REGIONAL
+                WHERE
+                    mr2.deleted_at IS NULL
                 ORDER BY 
                     mr2.NAME_REGIONAL ASC
             ');
