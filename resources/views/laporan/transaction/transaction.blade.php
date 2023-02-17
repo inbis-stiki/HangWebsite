@@ -43,20 +43,22 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="datatable" class="display min-w850">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Regional</th>
-                                        <th>Area</th>
-                                        <th>Jumlah</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
+                        <form action="{{ url('report/trans-daily') }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="">Pilih Area</label>
+                                <select name="idRegional" id="slctArea" class="form-control">
+                                    @foreach ($regionals as $regional)
+                                        <option value="{{ $regional->ID_REGIONAL }}" {{ !empty($idReg) && $idReg == $regional->ID_REGIONAL ? "selected" : ""}}>{{ $regional->NAME_REGIONAL }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Pilih Tanggal</label>
+                                <input value="<?= (date_format(date_create(date("Y-m-d")), 'j F Y')); ?>" name="date" class="datepicker-default form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm w-100 mb-3"><i class="fa fa-download"></i> Download Laporan</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -69,4 +71,12 @@
 @include('template/footer')
 <script>
     $('#datatable').DataTable();
+    $(".datepicker-default").pickadate({
+        format: 'd\ mmmm yyyy',
+        clear: 'All Time',
+        max: new Date(),
+        onSet: function() {
+            tgl_trans = this.get('select', 'yyyy-mm-dd');
+        }
+    });
 </script>

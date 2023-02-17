@@ -203,21 +203,12 @@ class ReportTransaction
 
         $spreadsheet->setActiveSheetIndex(0);
 
-        $fileName = 'TRANSAKSI HARIAN - '.$regionalName.' - APO atau SALES - ' . date_format(date_create(date("Y-m-d")), 'j F Y');
+        $fileName = 'TRANSAKSI HARIAN - '.$regionalName.' - APO SPG - ' . date_format(date_create(date("Y-m-d")), 'j F Y');
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file
         header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
-
-        // $path_lapak = $writer->store('images', 's3');
-        // $url = Storage::temporaryUrl(
-        //     $writer->save('tes.xlsx'), now()->addMinutes(5)
-        // );
-
-        // return $url;
-
-            // $url_display = Storage::disk('s3')->url($path_display);
     }
 }

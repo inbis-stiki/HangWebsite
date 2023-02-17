@@ -71,7 +71,7 @@
                         <form action="{{ url("laporan/lpr-shop/download") }}" method="POST">
                             @csrf
                             <input type="hidden" name="idRegional" value="{{ !empty($idReg) ? $idReg : $regionals[0]->ID_REGIONAL }}">
-                            <button type="submit" class="btn btn-primary btn-sm w-100 mb-3">Download Laporan</button>
+                            <button type="submit" class="btn btn-primary btn-sm w-100 mb-3"><i class="fa fa-download"></i> Download Laporan</button>
                         </form>
                         <div class="row">
                             <div class="col-lg-12 overflow-hidden">

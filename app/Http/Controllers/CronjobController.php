@@ -119,8 +119,7 @@ class CronjobController extends Controller
                     'updated_at'            => $updated_at
                 ]);
             }
-            
-            
+
             return response([
                 "status_code"       => 200,
                 "status_message"    => 'Data berhasil diinsert!',
@@ -176,45 +175,141 @@ class CronjobController extends Controller
             ], 500);
         }
     }
-    public function genRankRPO(){
-        $month          = date('n', strtotime('-1 days'));
-        $year           = date('Y', strtotime('-1 days'));
-        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+    public function updateSmyTransUser(){
+        try {
+            $prodCategorys  = CategoryProduct::where('deleted_at', NULL)->get();
+            $actCategorys   = ActivityCategory::where('deleted_at', NULL)->get();
+
+            $month          = date('n', strtotime('-1 days'));
+            $year           = date('Y', strtotime('-1 days'));
+            $updated_at     = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
+
+            DB::table('summary_trans_user')->where([['YEAR', "=", $year], ['MONTH', "=", "$month"]])->delete();
+
+            $queryCategory = [];
+            
+            $tgtUser        = app(TargetUser::class)->getUser();
+            $tgtUST         = $tgtUser['prods']['UST'];
+            $tgtNONUST      = $tgtUser['prods']['NONUST'];
+            $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
+            $tgtRendang     = $tgtUser['prods']['Rendang'];
+            $tgtGeprek      = $tgtUser['prods']['Geprek'];
+            $tgtTotal       = $tgtUST + $tgtNONUST + $tgtSeleraku + $tgtRendang + $tgtGeprek;
+            foreach ($prodCategorys as $prodCategory) {
+                $queryCategory[] = "
+                    COALESCE((
+                    SELECT SUM(td.QTY_TD)
+                        FROM 
+                            `transaction` t
+                        INNER JOIN transaction_detail td
+                            ON 
+                                YEAR(t.DATE_TRANS) = '".$year."'
+                                AND MONTH(t.DATE_TRANS) = '".$month."'
+                                AND t.ID_USER = u.ID_USER 
+                                AND t.ID_TRANS = td.ID_TRANS
+                                AND td.ID_PC = ".$prodCategory->ID_PC."
+                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC)))."_DM'
+                ";
+            }
+            foreach ($actCategorys as $actCategory) {
+                $queryCategory[] = "
+                    COALESCE((
+                        SELECT COUNT(*)
+                        FROM `transaction` t
+                        WHERE 
+                            YEAR(t.DATE_TRANS) = ".$year."
+                            AND MONTH(t.DATE_TRANS) = ".$month."
+                            AND t.ID_USER = u.ID_USER 
+                            AND t.TYPE_ACTIVITY = '".$actCategory->NAME_AC."'
+                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $actCategory->NAME_AC)))."_DM'
+                ";
+            }
+
+            
+            $queryCategory = $queryCategory != null ? implode(', ', $queryCategory) : "";
+            $datas = [];
+            $datas      = Cronjob::queryGetDashboardMobile($month, $year, $queryCategory, $tgtTotal);
+            
+            foreach ($datas as $data) {
+                DB::table('summary_trans_user')->insert([
+                    'ID_USER'               => $data->ID_USER,
+                    'UBUBLP_DM'             => $data->UBUBLP_DM,
+                    'SPREADING_DM'          => $data->SPREADING_DM,
+                    'OFFTARGET_DM'          => $data->OFFTARGET_DM,
+                    'REALUST_DM'            => $data->REALUST_DM,
+                    'REALNONUST_DM'         => $data->REALNONUST_DM,
+                    'REALSELERAKU_DM'       => $data->REALSELERAKU_DM,
+                    'REALRENDANG_DM'        => $data->REALRENDANG_DM,
+                    'REALGEPREK_DM'         => $data->REALGEPREK_DM,
+                    'REALACTUB_DM'          => $data->REALAKTIVITASUB_DM,
+                    'REALACTPS_DM'          => $data->REALPEDAGANGSAYUR_DM,
+                    'REALACTRETAIL_DM'      => $data->REALRETAIL_DM,
+                    'updated_at'            => $updated_at,
+                    'ID_ROLE'               => $data->ID_ROLE,
+                    'ID_LOCATION'           => $data->ID_LOCATION,
+                    'ID_REGIONAL'           => $data->ID_REGIONAL,
+                    'ID_AREA'               => $data->ID_AREA,
+                    'YEAR'                  => $year,
+                    'MONTH'                 => $month,
+                    'NAME_USER'             => $data->NAME_USER
+                ]);
+            }
+
+            return response([
+                "status_code"       => 200,
+                "status_message"    => 'Data berhasil diinsert!',
+                "data"  => $datas
+            ], 200);
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
+    }
+    public function genRankRPO($yearMonth){
+        // $month          = date('n', strtotime('-1 days'));
+        // $year           = date('Y', strtotime('-1 days'));
+        // $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $year = date_format(date_create($yearMonth), 'Y');
+        $month = date_format(date_create($yearMonth), 'n');
 
         $datas['reports'] = Cronjob::queryGetRankLocation($year, $month, "Regional");
-        app(ReportRanking::class)->generate_ranking_rpo($datas, $updated_at);
+        app(ReportRanking::class)->generate_ranking_rpo($datas, $yearMonth);
     }
-    public function genRankAsmen(){
-        $month          = date('n', strtotime('-1 days'));
-        $year           = date('Y', strtotime('-1 days'));
-        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+    public function genRankAsmen($yearMonth){
+        // $month          = date('n', strtotime('-1 days'));
+        // $year           = date('Y', strtotime('-1 days'));
+        // $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $year = date_format(date_create($yearMonth), 'Y');
+        $month = date_format(date_create($yearMonth), 'n');
 
         $datas['reports']   = Cronjob::queryGetRankLocation($year, $month, "Location");
-        app(ReportRanking::class)->generate_ranking_asmen($datas, $updated_at);
+        app(ReportRanking::class)->generate_ranking_asmen($datas, $yearMonth);
     }
     public function genRankAPOSPG(){
-        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+        $year       = date_format(date_create($_POST['date']), 'Y');
+        $month      = date_format(date_create($_POST['date']), 'n');
+        $yearMonth  = date_format(date_create($_POST['date']), 'Y-n');
 
-        $datas['reportApos'] = Cronjob::queryGetRankUser(7, 5);
-        $datas['reportSpgs'] = Cronjob::queryGetRankUser(7, 6);
-
-        app(ReportRanking::class)->generate_ranking_apo_spg($datas, $updated_at);
+        $datas['reportApos'] = Cronjob::queryGetRankUser($_POST['idRegional'], 5, $year, $month);
+        $datas['reportSpgs'] = Cronjob::queryGetRankUser($_POST['idRegional'], 6, $year, $month);
+        
+        app(ReportRanking::class)->generate_ranking_apo_spg($datas, $yearMonth);
     }
-    public function genTrendRPO(){
-        $year           = date('Y', strtotime('-1 days'));
-        $updated_at     = date('Y-m-d', strtotime('-1 days'));
-
+    public function genTrendRPO($year){
         $reports = Cronjob::queryGetTrend($year, 'Regional');
-        app(ReportTrend::class)->generate_trend_rpo($reports, $updated_at);
+        app(ReportTrend::class)->generate_trend_rpo($reports, $year);
     }
-    public function genTrendAsmen(){
-        $year           = date('Y', strtotime('-1 days'));
-        $updated_at     = date('Y-m-d', strtotime('-1 days'));
-
+    public function genTrendAsmen($year){
         $reports = Cronjob::queryGetTrend($year, 'Location');
-        app(ReportTrend::class)->generate_trend_asmen($reports, $updated_at);
+        app(ReportTrend::class)->generate_trend_asmen($reports, $year);
     }
     public function genTransDaily(){
+        $nRegional  = Regional::find($_POST['idRegional'])->NAME_REGIONAL;
+        $date       = date_format(date_create($_POST['date']), 'Y-m-d');
         $products       = Product::get();
         $querySumProd   = [];
         $idUsers        = null;
@@ -235,16 +330,16 @@ class CronjobController extends Controller
         }
 
         $querySumProd = implode(',', $querySumProd);
-        $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, "2023-01-15", "JABODETABEK");
+        $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, $date, $nRegional);
         if($transDaily != null){
             $idUsers    = implode(',', array_map(function ($entry){
                 return "'".$entry->ID_USER."'";
             }, $transDaily));
 
-            $noTransDaily   = Users::getUserByRegional(3, $idUsers);
+            $noTransDaily   = Users::getUserByRegional($_POST['idRegional'], $idUsers);
         }
 
-        print_r(app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, "JABODETABEK"));
+        app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional);
     }
     public function genRORPO(){
         $year           = date('Y', strtotime('-1 days'));
