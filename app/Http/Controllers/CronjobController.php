@@ -339,7 +339,7 @@ class CronjobController extends Controller
             $noTransDaily   = Users::getUserByRegional($_POST['idRegional'], $idUsers);
         }
 
-        app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional);
+        app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional, $date);
     }
     public function genRORPO(){
         $year           = date('Y', strtotime('-1 days'));
@@ -347,7 +347,8 @@ class CronjobController extends Controller
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
         
         $rOs = Cronjob::queryGetRepeatOrder($year, $month);
-        app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
+        dd($rOs);
+        // app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
     }
 
     public function TestTemplate(ReportQuery $reportQuery)
