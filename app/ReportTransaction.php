@@ -71,7 +71,7 @@ class ReportTransaction
         return $styleContent;
     }
 
-    public function generate_transaksi_harian($products, $transDaily, $noTransDaily, $regionalName)
+    public function generate_transaksi_harian($products, $transDaily, $noTransDaily, $regionalName, $date)
     {
         $colData = ['I', "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB",
             "AC", "AD", "AE"
@@ -80,7 +80,7 @@ class ReportTransaction
         $totDetProd     = [];
         $totAllDisplay  = 0;
         $totAllOmzet    = 0;
-        $date    = date('j F Y', strtotime('-1 days'));
+        $date    = date_format(date_create($date), 'j F Y');
 
         $spreadsheet = new Spreadsheet();
 
