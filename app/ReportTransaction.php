@@ -80,7 +80,7 @@ class ReportTransaction
         $totDetProd     = [];
         $totAllDisplay  = 0;
         $totAllOmzet    = 0;
-        $date    = date_format(date_create($date), 'j F Y');
+        $date           = date_format(date_create($date), 'j F Y');
 
         $spreadsheet = new Spreadsheet();
 
