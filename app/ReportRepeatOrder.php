@@ -49,7 +49,8 @@ class ReportRepeatOrder {
             $rowIsi += 6;
             $subrow = 0;
             foreach ($areas as $area => $detRO){  
-                $detRO = (array)$detRO;
+                $detRO      = (array)$detRO;
+                // $totShop    = $ 
 
                 $ObjSheet->setCellValue('B'.$rowIsi, $area)->getStyle('B'.$rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
                 $ObjSheet->setCellValue('C'.$rowIsi, '??')->getStyle('C'.$rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
