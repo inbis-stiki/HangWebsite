@@ -347,7 +347,7 @@ class CronjobController extends Controller
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
         
         $rOs = Cronjob::queryGetRepeatOrder($year, $month);
-        // dd($rOs);
+        
         app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
     }
 
