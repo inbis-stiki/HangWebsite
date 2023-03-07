@@ -621,6 +621,16 @@ class Cronjob extends Model
             $rOs[$area->REGIONAL_TRANS][$area->AREA_TRANS] = DB::select("
                 SELECT 
                     (
+                        SELECT
+                            COUNT(ms.ID_SHOP)
+                        FROM
+                            md_shop ms
+                        JOIN md_district md ON md.ID_DISTRICT = ms.ID_DISTRICT
+                        JOIN md_area ma ON ma.ID_AREA = md.ID_AREA
+                        WHERE
+                            ms.TYPE_SHOP = 'Pedagang Sayur' AND ma.NAME_AREA = '".$area->AREA_TRANS."'
+                    ) as 'TOTAL_PS',
+                    (
                         SELECT COUNT(x.TOTAL)
                         FROM (
                             SELECT COUNT(t.ID_SHOP) as TOTAL 
@@ -689,6 +699,16 @@ class Cronjob extends Model
                         ) as x	
                     ) as 'PS_>11',
                     (
+                        SELECT
+                            COUNT(ms.ID_SHOP)
+                        FROM
+                            md_shop ms
+                        JOIN md_district md ON md.ID_DISTRICT = ms.ID_DISTRICT
+                        JOIN md_area ma ON ma.ID_AREA = md.ID_AREA
+                        WHERE
+                            ms.TYPE_SHOP = 'Retail' AND ma.NAME_AREA = '".$area->AREA_TRANS."'
+                    ) as 'TOTAL_RETAIL',
+                    (
                         SELECT COUNT(x.TOTAL)
                         FROM (
                             SELECT COUNT(t.ID_SHOP) as TOTAL 
@@ -756,6 +776,16 @@ class Cronjob extends Model
                             HAVING TOTAL >= 11
                         ) as x	
                     ) as 'Retail_>11',
+                    (
+                        SELECT
+                            COUNT(ms.ID_SHOP)
+                        FROM
+                            md_shop ms
+                        JOIN md_district md ON md.ID_DISTRICT = ms.ID_DISTRICT
+                        JOIN md_area ma ON ma.ID_AREA = md.ID_AREA
+                        WHERE
+                            ms.TYPE_SHOP = 'Loss' AND ma.NAME_AREA = '".$area->AREA_TRANS."'
+                    ) as 'TOTAL_LOSS',
                     (
                         SELECT COUNT(x.TOTAL)
                         FROM (
