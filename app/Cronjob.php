@@ -619,7 +619,19 @@ class Cronjob extends Model
         foreach ($areas as $area) {
             if(empty($rOs[$area->REGIONAL_TRANS])) $rOs[$area->REGIONAL_TRANS] = [];
             $rOs[$area->REGIONAL_TRANS][$area->AREA_TRANS] = DB::select("
-                SELECT 
+                SELECT
+                    (
+                        SELECT
+                            COUNT(u.ID_USER) 
+                        FROM
+                            user u
+                        JOIN md_regional mr ON 
+                            mr.ID_REGIONAL = u.ID_REGIONAL
+                        WHERE
+                            mr.NAME_REGIONAL = '".$area->REGIONAL_TRANS."'
+                            AND
+                            u.deleted_at IS NULL   
+                    ) AS TOTALAPO,
                     (
                         SELECT COUNT(ms.ID_SHOP) as TOTAL
                         FROM md_area ma
