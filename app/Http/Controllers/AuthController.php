@@ -32,12 +32,12 @@ class AuthController extends Controller
             ])->first();
             if ($user != null) {
                 $role = Role::where('ID_ROLE', $user->ID_ROLE)->first();
-                $this->setSession($req->input('username'), $user->NAME_USER, $user->ID_ROLE, $role->NAME_ROLE, $user->ID_LOCATION, $user->ID_REGIONAL, $user->ID_AREA, $user->ID_USER);
-
+                
                 if ($user->ID_ROLE < 5) {
+                    $this->setSession($req->input('username'), $user->NAME_USER, $user->ID_ROLE, $role->NAME_ROLE, $user->ID_LOCATION, $user->ID_REGIONAL, $user->ID_AREA, $user->ID_USER);
                     return redirect('dashboard');
                 } else {
-                    return redirect('/')->with('err_msg', 'Maaf akun anda tidak berhak membuka web !!');
+                    return redirect()->back()->with('err_msg', 'Maaf akun anda tidak berhak membuka web !!');
                 }
             } else {
                 $attempt = session('attempt');
