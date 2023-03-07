@@ -619,7 +619,52 @@ class Cronjob extends Model
         foreach ($areas as $area) {
             if(empty($rOs[$area->REGIONAL_TRANS])) $rOs[$area->REGIONAL_TRANS] = [];
             $rOs[$area->REGIONAL_TRANS][$area->AREA_TRANS] = DB::select("
-                SELECT 
+                SELECT
+                    (
+                        SELECT
+                            COUNT(u.ID_USER) 
+                        FROM
+                            user u
+                        JOIN md_regional mr ON 
+                            mr.ID_REGIONAL = u.ID_REGIONAL
+                        WHERE
+                            mr.NAME_REGIONAL = '".$area->REGIONAL_TRANS."'
+                            AND
+                            u.deleted_at IS NULL   
+                    ) AS TOTALAPO,
+                    (
+                        SELECT COUNT(ms.ID_SHOP) as TOTAL
+                        FROM md_area ma
+                        INNER JOIN md_district md
+                        ON 
+                            ma.NAME_AREA = '".$area->AREA_TRANS."' 
+                            AND ma.deleted_at IS NULL 
+                            AND md.ID_AREA = ma.ID_AREA
+                        INNER JOIN md_shop ms 
+                        ON ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Pedagang Sayur' 
+                    ) as 'TOTALPS',
+                    (
+                        SELECT COUNT(ms.ID_SHOP) as TOTAL
+                        FROM md_area ma
+                        INNER JOIN md_district md
+                        ON 
+                            ma.NAME_AREA = '".$area->AREA_TRANS."' 
+                            AND ma.deleted_at IS NULL 
+                            AND md.ID_AREA = ma.ID_AREA
+                        INNER JOIN md_shop ms 
+                        ON ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Loss' 
+                    ) as 'TOTALLOSS',
+                    (
+                        SELECT COUNT(ms.ID_SHOP) as TOTAL
+                        FROM md_area ma
+                        INNER JOIN md_district md
+                        ON 
+                            ma.NAME_AREA = '".$area->AREA_TRANS."' 
+                            AND ma.deleted_at IS NULL 
+                            AND md.ID_AREA = ma.ID_AREA
+                        INNER JOIN md_shop ms 
+                        ON ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Retail' 
+                    ) as 'TOTALRETAIL',
                     (
                         SELECT COUNT(x.TOTAL)
                         FROM (
