@@ -341,9 +341,9 @@ class CronjobController extends Controller
 
         app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional, $date);
     }
-    public function genRORPO(){
-        $year           = date('Y', strtotime('-1 days'));
-        $month          = date('n', strtotime('-1 days'));
+    public function genRORPO($yearMonth){
+        $year = date_format(date_create($yearMonth), 'Y');
+        $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
         
         $rOs = Cronjob::queryGetRepeatOrder($year, $month);
