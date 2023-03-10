@@ -33,10 +33,17 @@
                         <h4 class="card-title">Laporan Repeat Order</h4>
                     </div>
                     @php
-                    
-                    $year = date('Y');
-                    $month = date('F');
+                    $start = new DateTime('2023-01-31');
+                    $end = new DateTime(date('Y-m'));
+                    $current = new DateTime($start->format('Y-m-01'));
+                    $dates = array();
 
+                    while($current <= $end) {
+                        $dates[] = $current->format('Y-m-d');
+                        $current->modify('+1 month');
+                    }
+
+                    $dates = array_reverse($dates);
                     @endphp
                     <div class="card-body">
                         <div class="tab-content">
@@ -54,11 +61,23 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @php
+                                                        $no = 1;
+                                                    @endphp
+                                                    @foreach ($dates as $dt)
+                                                        @php
+                                                            $year = date_format(date_create($dt), 'Y');
+                                                            $month = date_format(date_create($dt), 'm');
+                                                            $monthLat = date_format(date_create($dt), 'F');
+                                                            $day = date_format(date_create($dt), 'd');
+                                                        @endphp
                                                     <tr>
-                                                        <td>1</td>
-                                                        <td>{{ $month }}</td>
+                                                        <td>{{ $no++ }}</td>
+                                                        <td>{{ $monthLat }}</td>
                                                         <td>{{ $year }}</td>
-                                                        <td><a href="{{ url('cronjob/gen-ro-rpo') }}" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> Download</a></td>
+                                                        <td><a href="{{ url('cronjob/gen-ro-rpo/'.$year.'-'.$month) }}" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> Download</a></td>
+                                                    </tr>
+                                                    @endforeach
                                                     </tr>
                                                 </tbody>
                                             </table>
