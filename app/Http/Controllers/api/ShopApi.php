@@ -322,8 +322,6 @@ class ShopApi extends Controller
     {
         try {
             $validator = Validator::make($req->all(), [
-                'lat_user'      => 'required|numeric',
-                'lng_user'      => 'required|numeric',
                 'start'      => 'required|numeric',
                 'end'      => 'required|numeric'
             ], [
