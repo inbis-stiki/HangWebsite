@@ -310,7 +310,7 @@ class CronjobController extends Controller
     public function genTransDaily(){
         $nRegional  = Regional::find($_POST['idRegional'])->NAME_REGIONAL;
         $date       = date_format(date_create($_POST['date']), 'Y-m-d');
-        $products       = Product::get();
+        $products       = Product::orderBy('ORDER_PRODUCT', 'ASC')->get();
         $querySumProd   = [];
         $idUsers        = null;
         $noTransDaily   = null;
