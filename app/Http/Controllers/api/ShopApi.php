@@ -322,8 +322,6 @@ class ShopApi extends Controller
     {
         try {
             $validator = Validator::make($req->all(), [
-                'lat_user'      => 'required|numeric',
-                'lng_user'      => 'required|numeric',
                 'start'      => 'required|numeric',
                 'end'      => 'required|numeric'
             ], [
@@ -357,7 +355,7 @@ class ShopApi extends Controller
             // $CheckPresence->ID_DISTRICT
             $id_district = 1183;
             $shop = DB::table("md_shop")
-                ->select("md_shop.NAME_SHOP", "md_shop.LONG_SHOP", "md_shop.LAT_SHOP", "md_shop.KELURAHAN")
+                ->select("md_shop.ID_SHOP", "md_shop.NAME_SHOP", "md_shop.LONG_SHOP", "md_shop.LAT_SHOP", "md_shop.KELURAHAN")
                 ->where('md_shop.ID_DISTRICT', '=', $id_district)
                 ->orderBy('NAME_SHOP', 'asc')
                 ->offset($req->input("start"))
