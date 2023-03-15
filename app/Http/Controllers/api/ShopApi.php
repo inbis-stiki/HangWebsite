@@ -317,4 +317,124 @@ class ShopApi extends Controller
         $items = $items instanceof Collection ? $items : Collection::make($items);
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
+
+    public function new_list(Request $req)
+    {
+        try {
+            $validator = Validator::make($req->all(), [
+                'start'      => 'required|numeric',
+                'end'      => 'required|numeric'
+            ], [
+                'required'      => 'Parameter :attribute tidak boleh kosong!',
+                'string'        => 'Parameter :attribute harus bertipe string!',
+                'numeric'       => 'Parameter :attribute harus bertipe angka!',
+            ]);
+
+            if ($validator->fails()) {
+                return response([
+                    "status_code"       => 400,
+                    "status_message"    => $validator->errors()->first()
+                ], 400);
+            }
+
+            $latitude = $req->get('lat_user'); // "-7.965769846888459"
+            $longitude = $req->get('lng_user'); // "112.60750389398623"
+
+            // $CheckPresence = DB::table("presence")
+            //     ->select("presence.*")
+            //     ->whereDate('presence.DATE_PRESENCE', '=', date('Y-m-d'))
+            //     ->where('presence.ID_USER', '=', $req->input("id_user"))
+            //     ->first();
+
+            // if ($CheckPresence == NULL) {
+            //     return response([
+            //         "status_code"       => 403,
+            //         "status_message"    => "Silahkan Melakukan Presensi Terlebih Dahulu!"
+            //     ], 404);
+            // }
+            // $CheckPresence->ID_DISTRICT
+            $id_district = 1183;
+            $shop = DB::table("md_shop")
+                ->select("md_shop.ID_SHOP", "md_shop.NAME_SHOP", "md_shop.LONG_SHOP", "md_shop.LAT_SHOP", "md_shop.KELURAHAN")
+                ->where('md_shop.ID_DISTRICT', '=', $id_district)
+                ->orderBy('NAME_SHOP', 'asc')
+                ->offset($req->input("start"))
+                ->limit($req->input("end"))
+                ->get()
+                ->toArray();
+
+            $dataRespon = array();
+            foreach ($shop as $shopData) {
+                array_push(
+                    $dataRespon,
+                    array(
+                        "NAME_SHOP" => $shopData->NAME_SHOP,
+                        "LONG_SHOP" => $shopData->LONG_SHOP,
+                        "LAT_SHOP" => $shopData->LAT_SHOP,
+                        "KELURAHAN" => $shopData->KELURAHAN
+                    )
+                );
+            }
+
+            // var_dump($shop);
+
+            $dataPagination = array();
+            array_push(
+                $dataPagination,
+                array(
+                    "START" => $req->input("start"),
+                    "END" => $req->input("end")
+                )
+            );
+
+            return response([
+                'status_code'       => 200,
+                'status_message'    => 'Data berhasil diambil!',
+                'data'              => $dataRespon,
+                'pagination'        => $dataPagination
+            ], 200);
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function saveShop_test(Request $req)
+    {
+        try {
+            $validator = Validator::make($req->all(), [
+                'id_shop'               => 'required|numeric|exists:md_district,ID_DISTRICT',
+                'kelurahan'             => 'required'
+            ], [
+                'required'  => 'Parameter :attribute tidak boleh kosong!',
+                'string'    => 'Parameter :attribute harus bertipe string!',
+                'numeric'   => 'Parameter :attribute harus bertipe angka!',
+                'exists'    => 'Parameter :attribute tidak ditemukan!',
+            ]);
+
+            if ($validator->fails()) {
+                return response([
+                    "status_code"       => 400,
+                    "status_message"    => $validator->errors()->first()
+                ], 400);
+            }
+
+            $shop = Shop::firstOrNew(['ID_SHOP' => $req->input('id_shop')]);;
+            $shop->KELURAHAN            = $req->input('kelurahan');
+            $shop->save();
+
+            return response([
+                "status_code"       => 200,
+                "status_message"    => 'Data berhasil disimpan!',
+                "data"              => ['ID_SHOP' => $shop->ID_SHOP]
+            ], 200);
+        } catch (HttpResponseException $exp) {
+            return response([
+                'status_code'       => $exp->getCode(),
+                'status_message'    => $exp->getMessage(),
+            ], $exp->getCode());
+        }
+    }
 }
