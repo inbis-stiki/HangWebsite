@@ -66,10 +66,10 @@
                                                     @endphp
                                                     @foreach ($dates as $dt)
                                                         @php
-                                                            $year = date_format(date_create($dt), 'Y');
-                                                            $month = date_format(date_create($dt), 'm');
+                                                            $year     = date_format(date_create($dt), 'Y');
+                                                            $month    = date_format(date_create($dt), 'm');
                                                             $monthLat = date_format(date_create($dt), 'F');
-                                                            $day = date_format(date_create($dt), 'd');
+                                                            $day      = date_format(date_create($dt), 'd');
                                                         @endphp
                                                     <tr>
                                                         <td>{{ $no++ }}</td>
