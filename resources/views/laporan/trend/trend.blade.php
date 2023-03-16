@@ -36,7 +36,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link active" data-toggle="tab" href="#asmen" role="tab"
                                         aria-selected="false">
-                                        Asmen
+                                        RPC
                                     </a>
                                 </li>
                                 <li class="nav-item">

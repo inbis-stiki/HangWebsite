@@ -463,7 +463,7 @@ class ReportRanking
         
         $spreadsheet = new Spreadsheet();
         $ObjSheet = $spreadsheet->getActiveSheet();
-        $ObjSheet->setTitle("RANGKING ASMEN");
+        $ObjSheet->setTitle("RANGKING RPC");
 
         $ObjSheet->getColumnDimension('B')->setWidth('25');
         $ObjSheet->getColumnDimension('C')->setWidth('25');
@@ -495,7 +495,7 @@ class ReportRanking
 
         // Activity Asmen
         $ObjSheet->mergeCells('B2:Q2')->setCellValue('B2', strtoupper(date_format(date_create($updated_at), 'F Y')))->getStyle('B2:Q2')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
-        $ObjSheet->setCellValue('B3', 'ACTIVITY ASMEN')->getStyle('B3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
+        $ObjSheet->setCellValue('B3', 'ACTIVITY RPC')->getStyle('B3')->applyFromArray($this->styling_default_template(10, 'FF000000'));
         $ObjSheet->setCellValue('F3', 'Bobot '.$acts['wUB'].'%')->getStyle('F3')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('I3', 'Bobot '.$acts['wPS'].'%')->getStyle('I3')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
         $ObjSheet->setCellValue('L3', 'Bobot '.$acts['wRETAIL'].'%')->getStyle('L3')->applyFromArray($this->styling_default_template(10, 'FFFF0000'));
@@ -666,7 +666,7 @@ class ReportRanking
         $ObjSheet->setCellValue('S' . ($rowStart3 + 1), '=AVERAGE(S' . $firstRow . ':S' . $lastRow . ')')->getStyle('S' . ($rowStart3 + 1))->applyFromArray($this->styling_content_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
         $ObjSheet->getStyle('T' . ($rowStart3 + 1))->applyFromArray($this->styling_title_template('FF000000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
 
-        $fileName = 'RANKING - ASMEN - ' . date_format(date_create($updated_at), 'F Y');
+        $fileName = 'RANKING - RPC - ' . date_format(date_create($updated_at), 'F Y');
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file

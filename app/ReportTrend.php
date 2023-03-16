@@ -582,7 +582,7 @@ class ReportTrend
         
         $spreadsheet = new Spreadsheet();
         $ObjSheet = $spreadsheet->getActiveSheet(0);
-        $ObjSheet->setTitle("TREND ASMEN");
+        $ObjSheet->setTitle("TREND RPC");
 
         $ObjSheet->getColumnDimension('A')->setWidth('2');
         $ObjSheet->getColumnDimension('B')->setWidth('2');
@@ -844,7 +844,7 @@ class ReportTrend
             $i += 4;
         }
 
-        $fileName = 'TREND - ASMEN - '.$year;
+        $fileName = 'TREND - RPC - '.$year;
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file
