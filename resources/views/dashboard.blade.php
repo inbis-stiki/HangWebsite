@@ -15,7 +15,7 @@
                         <h3 class="fs-16 font-weight-bolder text-black mb-0">Aktivitas</h3>
                         <div class="d-flex ml-auto">
                             <select name="" id="role_act" class="form-control default-select fs-12 mr-3" {{ (Session::get('role') != 1 && Session::get('role') != 2 && Session::get('role') != 3) ? "disabled" : "" }}>
-                                <option value="asmen" {{ (Session::get('role') == 1 || Session::get('role') == 2) ? "selected" : "" }}>ASMEN</option>
+                                <option value="asmen" {{ (Session::get('role') == 1 || Session::get('role') == 2) ? "selected" : "" }}>RPC</option>
                                 <option value="rpo" {{ (Session::get('role') == 3 || Session::get('role') == 4) ? "selected" : "" }}>{{ (Session::get('role') == 4) ? "AREA" : "RPO" }}</option>
                             </select>
                             <select name="" id="cat_act" class="form-control default-select fs-12 mr-3">
@@ -60,7 +60,7 @@
                             <div class="col-sm-4">
                                 <div class="card text-black mb-3" style="background-color: #F3F2F0;">
                                     <div class="card-body">
-                                        <h5 class="card-title fs-14">ASMEN</h5>
+                                        <h5 class="card-title fs-14">RPC</h5>
                                         <div class="d-flex justify-content-center">
                                             <img src="{{ asset('images/loader.gif') }}" id="loader_1" style="max-width: 150px;">
                                         </div>
@@ -143,7 +143,7 @@
                         </div>
                         <div class="d-flex ml-auto">
                             <select name="" id="role_trend" class="form-control default-select fs-12" {{ (Session::get('role') != 1 && Session::get('role') != 2 && Session::get('role') != 3) ? "disabled" : "" }}>
-                                <option value="3" {{ (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 3) ? "selected" : "" }}>Asmen</option>
+                                <option value="3" {{ (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 3) ? "selected" : "" }}>RPC</option>
                                 <option value="4" {{ (Session::get('role') == 4) ? "selected" : "" }}>{{ (Session::get('role') == 4) ? "AREA" : "RPO" }}</option>
                             </select>
                             <select name="" id="year_trend" class="form-control default-select fs-12">
@@ -196,7 +196,7 @@
                 $.each(response.asmen, function(key, value) {
                     trHTML_asmen +=
                         '<tr><td>' + value.NUM_ROW +
-                        '</td><td>ASMEN ' + value.NAME_LOCATION +
+                        '</td><td>RPC ' + value.NAME_LOCATION +
                         '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
@@ -256,7 +256,7 @@
                 $.each(response.asmen, function(key, value) {
                     trHTML_asmen +=
                         '<tr><td>' + value.NUM_ROW +
-                        '</td><td>ASMEN ' + value.NAME_LOCATION +
+                        '</td><td>RPC ' + value.NAME_LOCATION +
                         '</td><td>' + value.NEW_AVERAGE.toFixed(2) + "%"
                     '</td></tr>';
                 });
@@ -460,27 +460,27 @@
                     chart.update
                     if (type == "UST") {
                         chart.appendSeries({
-                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            name: "RPC " + data_trend[0][i].PLACE,
                             data: data_trend[0][i].UST
                         }, false)
                     } else if (type == "NONUST") {
                         chart.appendSeries({
-                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            name: "RPC " + data_trend[0][i].PLACE,
                             data: data_trend[0][i].NONUST
                         }, false)
                     } else if (type == "SELERAKU") {
                         chart.appendSeries({
-                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            name: "RPC " + data_trend[0][i].PLACE,
                             data: data_trend[0][i].SELERAKU
                         }, false)
                     } else if (type == "RENDANG") {
                         chart.appendSeries({
-                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            name: "RPC " + data_trend[0][i].PLACE,
                             data: data_trend[0][i].RENDANG
                         }, false)
                     } else if (type == "GEPREK") {
                         chart.appendSeries({
-                            name: "ASMEN " + data_trend[0][i].PLACE,
+                            name: "RPC " + data_trend[0][i].PLACE,
                             data: data_trend[0][i].GEPREK
                         }, false)
                     }
