@@ -873,4 +873,82 @@ class Cronjob extends Model
         }
         return $rOs;
     }
+
+    public static function getreg($year, $month)
+    {
+        $areas = DB::select("
+            SELECT t.REGIONAL_TRANS 
+            FROM `transaction` t 
+            WHERE YEAR(t.DATE_TRANS) = ".$year." AND MONTH(t.DATE_TRANS) = ".$month."
+            GROUP BY t.REGIONAL_TRANS 
+            ORDER BY t.REGIONAL_TRANS ASC
+        ");
+
+        return $areas;
+    }
+
+    public static function queryGetRepeatOrderShop($year, $month){
+        
+        $rOs = DB::select("
+        SELECT
+            ms.ID_SHOP,
+            ms.NAME_SHOP,
+            md.NAME_DISTRICT,
+            ms.OWNER_SHOP,
+            ms.DETLOC_SHOP,
+            ms.TYPE_SHOP,
+            ms.TELP_SHOP,
+            ma.NAME_AREA,
+            mr.NAME_REGIONAL,
+            COUNT(t.ID_SHOP) AS TOTAL_TEST
+        FROM
+            `transaction` t
+        INNER JOIN (
+            SELECT
+                ID_SHOP
+            FROM
+                `transaction`
+            WHERE
+                YEAR(DATE_TRANS) = ".$year."
+                AND MONTH(DATE_TRANS) = ".$month."
+            GROUP BY
+                ID_SHOP
+            HAVING
+                COUNT(*) BETWEEN 2 AND 100
+        ) t2 ON
+            t2.ID_SHOP = t.ID_SHOP
+        LEFT JOIN md_shop ms ON
+            ms.ID_SHOP = t.ID_SHOP
+            AND 
+            ms.TYPE_SHOP = 'Pedagang Sayur'
+        INNER JOIN md_district md ON
+            md.ID_DISTRICT = ms.ID_DISTRICT
+        INNER JOIN md_area ma ON
+            ma.ID_AREA = md.ID_AREA
+        INNER JOIN md_regional mr ON
+            mr.ID_REGIONAL = ma.ID_REGIONAL
+        WHERE
+            ms.ID_SHOP IS NOT NULL
+        GROUP BY
+            t.ID_SHOP
+        ORDER BY
+            mr.ID_REGIONAL ASC
+        ");
+
+        return $rOs;
+    }
+
+    public static function getallcat()
+    {
+        $cat = DB::select("
+        SELECT
+            *
+        FROM
+            md_range_repeat
+        WHERE
+            ISNULL(deleted_at)
+        ");
+
+        return $cat;
+    }
 }

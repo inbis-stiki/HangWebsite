@@ -15,8 +15,11 @@ use App\UserRankingActivity;
 use App\ReportRanking;
 use App\ReportTransaction;
 use App\ReportTrend;
+use App\RangeRepeat;
 use App\ReportRepeatOrder;
 use App\Shop;
+use App\ReportShopHead;
+use App\ReportShopDet;
 use App\User;
 use App\Users;
 use Carbon\Carbon;
@@ -345,10 +348,71 @@ class CronjobController extends Controller
         $year = date_format(date_create($yearMonth), 'Y');
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
-        
+
         $rOs = Cronjob::queryGetRepeatOrder($year, $month);
+        dd($rOs);die;
         
         app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
+    }
+
+    public function genRORPOS(){
+        $year = date_format(date_create('2022-12'), 'Y');
+        $month = date_format(date_create('2022-12'), 'n');
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+        
+        $rOs = Cronjob::queryGetRepeatOrderShop($year, $month);
+
+        $area = Cronjob::getreg($year, $month);
+
+        $cat = Cronjob::getallcat();
+
+        // dd($cat);die;    
+
+        if (!empty($rOs)) {
+            foreach ($area as $reg) {
+                $ReportHead        = new ReportShopHead();
+                $unik                           = md5($reg->REGIONAL_TRANS);
+                $ReportHead->ID_HEAD          = "REP_" . $unik;
+                $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
+                $ReportHead->BULAN            = $month;
+                $ReportHead->TAHUN            = $year;
+                $ReportHead->save();
+            }
+
+            foreach ($rOs as $item) {
+                $ReportDet        = new ReportShopDet();
+                $unik2                             = md5($item->NAME_REGIONAL);
+                $ReportDet->ID_HEAD               = "REP_" . $unik2;
+                $ReportDet->NAME_AREA             = $item->NAME_AREA;
+                $ReportDet->NAME_REGIONAL         = $item->NAME_REGIONAL;
+                $ReportDet->NAME_DISTRICT         = $item->NAME_DISTRICT;
+                $ReportDet->NAME_SHOP             = $item->NAME_SHOP;
+                $ReportDet->DETLOC_SHOP           = $item->DETLOC_SHOP;
+                $ReportDet->TELP_SHOP             = $item->TELP_SHOP;
+                $ReportDet->TYPE_SHOP             = $item->TYPE_SHOP;
+                $ReportDet->OWNER_SHOP            = $item->OWNER_SHOP;
+                $ReportDet->TOTAL_RO              = $item->TOTAL_TEST;
+
+                $ReportDet->save();
+            }
+
+            $ranges = DB::table('md_range_repeat')->select('ID_RANGE', 'START', 'END')->get();
+        
+            foreach ($ranges as $range) {
+                $range_id = $range->ID_RANGE;
+                $min_total_ro = $range->START;
+                $max_total_ro = $range->END;
+                
+                // Execute the SQL query for the current range
+                DB::table('report_shop_detail')
+                ->whereBetween('TOTAL_RO', [$min_total_ro, $max_total_ro])
+                ->update(['CATEGORY_RO' => $range_id]);
+            }
+        }
+
+        dd($rOs);die;
+        
+        // app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
     }
 
     public function TestTemplate(ReportQuery $reportQuery)
