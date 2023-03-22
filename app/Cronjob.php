@@ -8,7 +8,8 @@ use App\TargetUser;
 
 class Cronjob extends Model
 {
-    public static function queryGetDashboardMobile($month, $year, $queryCategory, $tgtUser){
+    public static function queryGetDashboardMobile($month, $year, $queryCategory, $tgtUser)
+    {
         return DB::select("
             SELECT
                 u.ID_USER ,
@@ -21,8 +22,8 @@ class Cronjob extends Model
                     SELECT COUNT(*)
                     FROM `transaction` t
                     WHERE 
-                    	YEAR(t.DATE_TRANS) = ".$year."
-						AND MONTH(t.DATE_TRANS) = ".$month."
+                    	YEAR(t.DATE_TRANS) = " . $year . "
+						AND MONTH(t.DATE_TRANS) = " . $month . "
 						AND t.ID_USER = u.ID_USER 
                     	AND (t.ID_TYPE = 2 OR t.ID_TYPE = 3)
                 ), 0) as UBUBLP_DM,
@@ -30,8 +31,8 @@ class Cronjob extends Model
                     SELECT COUNT(*)
                     FROM `transaction` t
                     WHERE 
-                    	YEAR(t.DATE_TRANS) = ".$year."
-						AND MONTH(t.DATE_TRANS) = ".$month."
+                    	YEAR(t.DATE_TRANS) = " . $year . "
+						AND MONTH(t.DATE_TRANS) = " . $month . "
 						AND t.ID_USER = u.ID_USER 
                     	AND t.ID_TYPE = 1
                 ), 0) as SPREADING_DM,
@@ -41,21 +42,22 @@ class Cronjob extends Model
 						SELECT t2.ID_USER
 						FROM `transaction` t2
 						WHERE 
-							YEAR(t2.DATE_TRANS) = ".$year."
-							AND MONTH(t2.DATE_TRANS) = ".$month."
+							YEAR(t2.DATE_TRANS) = " . $year . "
+							AND MONTH(t2.DATE_TRANS) = " . $month . "
 						GROUP BY t2.ID_USER, DATE(t2.DATE_TRANS)
-						HAVING SUM(t2.QTY_TRANS) < ".$tgtUser."
+						HAVING SUM(t2.QTY_TRANS) < " . $tgtUser . "
 					) as t
 					WHERE t.ID_USER = u.ID_USER  
                 ), 0) as OFFTARGET_DM,
-                ".$queryCategory."
+                " . $queryCategory . "
             FROM `user` u 
             WHERE 
                 u.ID_ROLE IN (5, 6) 
                 AND u.deleted_at IS NULL
         ");
     }
-    public static function queryGetSmyTransLocation($year, $month){
+    public static function queryGetSmyTransLocation($year, $month)
+    {
         return DB::select("
             SELECT
                 t.LOCATION_TRANS ,
@@ -66,8 +68,8 @@ class Cronjob extends Model
                     FROM `transaction` t2 
                     INNER JOIN transaction_detail td 
                         ON 
-                            YEAR(t2.DATE_TRANS) = ".$year."
-                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            YEAR(t2.DATE_TRANS) = " . $year . "
+                            AND MONTH(t2.DATE_TRANS) = " . $month . "
                             AND t2.AREA_TRANS = t.AREA_TRANS 
                             AND td.ID_TRANS = t2.ID_TRANS 
                             AND td.ID_PC = 12
@@ -77,8 +79,8 @@ class Cronjob extends Model
                     FROM `transaction` t2 
                     INNER JOIN transaction_detail td 
                         ON 
-                            YEAR(t2.DATE_TRANS) = ".$year."
-                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            YEAR(t2.DATE_TRANS) = " . $year . "
+                            AND MONTH(t2.DATE_TRANS) = " . $month . "
                             AND t2.AREA_TRANS = t.AREA_TRANS 
                             AND td.ID_TRANS = t2.ID_TRANS 
                             AND td.ID_PC = 2
@@ -88,8 +90,8 @@ class Cronjob extends Model
                     FROM `transaction` t2 
                     INNER JOIN transaction_detail td 
                         ON 
-                            YEAR(t2.DATE_TRANS) = ".$year."
-                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            YEAR(t2.DATE_TRANS) = " . $year . "
+                            AND MONTH(t2.DATE_TRANS) = " . $month . "
                             AND t2.AREA_TRANS = t.AREA_TRANS 
                             AND td.ID_TRANS = t2.ID_TRANS 
                             AND td.ID_PC = 3
@@ -99,8 +101,8 @@ class Cronjob extends Model
                     FROM `transaction` t2 
                     INNER JOIN transaction_detail td 
                         ON 
-                            YEAR(t2.DATE_TRANS) = ".$year."
-                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            YEAR(t2.DATE_TRANS) = " . $year . "
+                            AND MONTH(t2.DATE_TRANS) = " . $month . "
                             AND t2.AREA_TRANS = t.AREA_TRANS 
                             AND td.ID_TRANS = t2.ID_TRANS 
                             AND td.ID_PC = 16
@@ -110,8 +112,8 @@ class Cronjob extends Model
                     FROM `transaction` t2 
                     INNER JOIN transaction_detail td 
                         ON 
-                            YEAR(t2.DATE_TRANS) = ".$year."
-                            AND MONTH(t2.DATE_TRANS) = ".$month."
+                            YEAR(t2.DATE_TRANS) = " . $year . "
+                            AND MONTH(t2.DATE_TRANS) = " . $month . "
                             AND t2.AREA_TRANS = t.AREA_TRANS 
                             AND td.ID_TRANS = t2.ID_TRANS 
                             AND td.ID_PC = 17
@@ -120,8 +122,8 @@ class Cronjob extends Model
                     SELECT COUNT(*)
                     FROM `transaction` t2
                     WHERE 
-                        YEAR(t2.DATE_TRANS) = ".$year."
-                        AND MONTH(t2.DATE_TRANS) = ".$month."
+                        YEAR(t2.DATE_TRANS) = " . $year . "
+                        AND MONTH(t2.DATE_TRANS) = " . $month . "
                         AND t2.AREA_TRANS = t.AREA_TRANS 
                         AND t2.TYPE_ACTIVITY = 'AKTIVITAS UB'
                 ), 0) as 'REALACTUB_STL',
@@ -129,8 +131,8 @@ class Cronjob extends Model
                     SELECT COUNT(*)
                     FROM `transaction` t2
                     WHERE 
-                        YEAR(t2.DATE_TRANS) = ".$year."
-                        AND MONTH(t2.DATE_TRANS) = ".$month."
+                        YEAR(t2.DATE_TRANS) = " . $year . "
+                        AND MONTH(t2.DATE_TRANS) = " . $month . "
                         AND t2.AREA_TRANS = t.AREA_TRANS 
                         AND t2.TYPE_ACTIVITY = 'Pedagang Sayur'
                 ), 0) as 'REALACTPS_STL',
@@ -138,8 +140,8 @@ class Cronjob extends Model
                     SELECT COUNT(*)
                     FROM `transaction` t2
                     WHERE 
-                        YEAR(t2.DATE_TRANS) = ".$year."
-                        AND MONTH(t2.DATE_TRANS) = ".$month."
+                        YEAR(t2.DATE_TRANS) = " . $year . "
+                        AND MONTH(t2.DATE_TRANS) = " . $month . "
                         AND t2.AREA_TRANS = t.AREA_TRANS 
                         AND t2.TYPE_ACTIVITY = 'Retail'
                 ), 0) as 'REALACTRETAIL_STL'
@@ -147,19 +149,20 @@ class Cronjob extends Model
             GROUP BY t.AREA_TRANS 
         ");
     }
-    public static function queryGetRankLocation($year, $month, $area){
+    public static function queryGetRankLocation($year, $month, $area)
+    {
         // SET WEIGHT
         $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
         $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
         $wSELERAKU  = CategoryProduct::where("ID_PC", "3")->first()->PERCENTAGE_PC;
         $wRENDANG   = CategoryProduct::where("ID_PC", "16")->first()->PERCENTAGE_PC;
         $wGEPREK    = CategoryProduct::where("ID_PC", "17")->first()->PERCENTAGE_PC;
-        
+
         $wUB        = ActivityCategory::where("ID_AC", "1")->first()->PERCENTAGE_AC;
         $wPS        = ActivityCategory::where("ID_AC", "2")->first()->PERCENTAGE_AC;
         $wRETAIL    = ActivityCategory::where("ID_AC", "3")->first()->PERCENTAGE_AC;
         // SET AREA
-        if($area == "Regional"){
+        if ($area == "Regional") {
             $groupBy = "GROUP BY stl.REGIONAL_STL";
             $nameUser = "
                 SELECT GROUP_CONCAT(u.NAME_USER)
@@ -182,7 +185,7 @@ class Cronjob extends Model
             $tgtSeleraku    = $tgtUser['prods']['Seleraku'];
             $tgtRendang     = $tgtUser['prods']['Rendang'];
             $tgtGeprek      = $tgtUser['prods']['Geprek'];
-        }else if($area == "Location"){
+        } else if ($area == "Location") {
             $groupBy = "GROUP BY stl.LOCATION_STL";
             $nameUser = "
                 SELECT GROUP_CONCAT(u.NAME_USER)
@@ -210,25 +213,25 @@ class Cronjob extends Model
 
         $resProds = DB::select("
             SELECT 
-                ( ".$nameUser." ) as NAME_USER,
+                ( " . $nameUser . " ) as NAME_USER,
                 smy.LOCATION_STL,
                 smy.REGIONAL_STL,
                 smy.REALUST_STL ,
-                (".$tgtUST.") as TGTUST ,
+                (" . $tgtUST . ") as TGTUST ,
                 smy.VSUST ,
                 smy.REALNONUST_STL ,
-                (".$tgtNONUST.") as TGTNONUST ,
+                (" . $tgtNONUST . ") as TGTNONUST ,
                 smy.VSNONUST ,
                 smy.REALSELERAKU_STL ,
-                (".$tgtSeleraku.") as TGTSELERAKU ,
+                (" . $tgtSeleraku . ") as TGTSELERAKU ,
                 smy.VSSELERAKU ,
                 smy.REALRENDANG_STL ,
-                (".$tgtRendang.") as TGTRENDANG ,
+                (" . $tgtRendang . ") as TGTRENDANG ,
                 smy.VSRENDANG ,
                 smy.REALGEPREK_STL ,
-                (".$tgtGeprek.") as TGTGEPREK ,
+                (" . $tgtGeprek . ") as TGTGEPREK ,
                 smy.VSGEPREK ,
-                ((smy.VSUST * ".$wUST.") / 100) + ((smy.VSNONUST * ".$wNONUST.") / 100) + ((smy.VSSELERAKU * ".$wSELERAKU.") / 100) + ((smy.VSRENDANG * ".$wRENDANG.") / 100) + ((smy.VSGEPREK * ".$wGEPREK.") / 100) as AVG_VS
+                ((smy.VSUST * " . $wUST . ") / 100) + ((smy.VSNONUST * " . $wNONUST . ") / 100) + ((smy.VSSELERAKU * " . $wSELERAKU . ") / 100) + ((smy.VSRENDANG * " . $wRENDANG . ") / 100) + ((smy.VSGEPREK * " . $wGEPREK . ") / 100) as AVG_VS
             FROM (
                 SELECT
                     stl.LOCATION_STL,
@@ -239,46 +242,46 @@ class Cronjob extends Model
                     SUM(stl.REALRENDANG_STL) as REALRENDANG_STL,
                     SUM(stl.REALGEPREK_STL) as REALGEPREK_STL,
                     (
-                        (SUM(stl.REALUST_STL) / (".$tgtUST.")) * 100
+                        (SUM(stl.REALUST_STL) / (" . $tgtUST . ")) * 100
                     ) as VSUST,
                     (
-                        (SUM(stl.REALNONUST_STL) / (".$tgtNONUST.")) * 100
+                        (SUM(stl.REALNONUST_STL) / (" . $tgtNONUST . ")) * 100
                     ) as VSNONUST,
                     (
-                        (SUM(stl.REALSELERAKU_STL) / (".$tgtSeleraku.")) * 100
+                        (SUM(stl.REALSELERAKU_STL) / (" . $tgtSeleraku . ")) * 100
                     ) as VSSELERAKU,
                     (
-                        (SUM(stl.REALRENDANG_STL) / (".$tgtRendang.")) * 100
+                        (SUM(stl.REALRENDANG_STL) / (" . $tgtRendang . ")) * 100
                     ) as VSRENDANG,
                     (
-                        (SUM(stl.REALGEPREK_STL) / (".$tgtGeprek.")) * 100
+                        (SUM(stl.REALGEPREK_STL) / (" . $tgtGeprek . ")) * 100
                     ) as VSGEPREK
                 FROM summary_trans_location stl
                 INNER JOIN md_location ml
                     ON 
-                        stl.YEAR_STL = ".$year."
-                        AND stl.MONTH_STL = ".$month."
+                        stl.YEAR_STL = " . $year . "
+                        AND stl.MONTH_STL = " . $month . "
                         AND ml.NAME_LOCATION = stl.LOCATION_STL COLLATE utf8mb4_unicode_ci
-                    ".$groupBy."
+                    " . $groupBy . "
             ) as smy
             ORDER BY AVG_VS DESC
         ");
 
         $resActs = DB::select("
             SELECT 
-                ( ".$nameUser." ) as NAME_USER,
+                ( " . $nameUser . " ) as NAME_USER,
                 smy.LOCATION_STL,
                 smy.REGIONAL_STL,
                 smy.REALACTUB_STL ,
-                (".$tgtUB.") as TGTUB ,
+                (" . $tgtUB . ") as TGTUB ,
                 smy.VSUB ,
                 smy.REALACTPS_STL ,
-                (".$tgtPS.") as TGTPS ,
+                (" . $tgtPS . ") as TGTPS ,
                 smy.VSPS ,
                 smy.REALACTRETAIL_STL ,
-                (".$tgtRetail.") as TGTRETAIL ,
+                (" . $tgtRetail . ") as TGTRETAIL ,
                 smy.VSRETAIL ,
-                ((smy.VSUB * ".$wUB.") / 100) + ((smy.VSPS * ".$wPS.") / 100) + ((smy.VSRETAIL * ".$wRETAIL.") / 100) as AVG_VS
+                ((smy.VSUB * " . $wUB . ") / 100) + ((smy.VSPS * " . $wPS . ") / 100) + ((smy.VSRETAIL * " . $wRETAIL . ") / 100) as AVG_VS
             FROM (
                 SELECT
                     stl.LOCATION_STL,
@@ -287,21 +290,21 @@ class Cronjob extends Model
                     SUM(stl.REALACTPS_STL) as REALACTPS_STL,
                     SUM(stl.REALACTRETAIL_STL) as REALACTRETAIL_STL,
                     (
-                        (SUM(stl.REALACTUB_STL) / (".$tgtUB.")) * 100
+                        (SUM(stl.REALACTUB_STL) / (" . $tgtUB . ")) * 100
                     ) as VSUB,
                     (
-                        (SUM(stl.REALACTPS_STL) / (".$tgtPS.")) * 100
+                        (SUM(stl.REALACTPS_STL) / (" . $tgtPS . ")) * 100
                     ) as VSPS,
                     (
-                        (SUM(stl.REALACTRETAIL_STL) / (".$tgtRetail.")) * 100
+                        (SUM(stl.REALACTRETAIL_STL) / (" . $tgtRetail . ")) * 100
                     ) as VSRETAIL
                 FROM summary_trans_location stl
                 INNER JOIN md_location ml
                     ON 
-                        stl.YEAR_STL = ".$year."
-                        AND stl.MONTH_STL = ".$month."
+                        stl.YEAR_STL = " . $year . "
+                        AND stl.MONTH_STL = " . $month . "
                         AND ml.NAME_LOCATION = stl.LOCATION_STL COLLATE utf8mb4_unicode_ci
-                    ".$groupBy."
+                    " . $groupBy . "
             ) as smy
             ORDER BY AVG_VS DESC    
         ");
@@ -344,7 +347,7 @@ class Cronjob extends Model
         $reportProds['AVG_VS']               += (($reportProds['AVG_VSSELERAKU'] * $wSELERAKU) / 100);
         $reportProds['AVG_VS']               += (($reportProds['AVG_VSRENDANG'] * $wRENDANG) / 100);
         $reportProds['AVG_VS']               += (($reportProds['AVG_VSGEPREK'] * $wRENDANG) / 100);
-        
+
         $tot1 = 0;
         $tot2 = 0;
         $tot3 = 0;
@@ -372,23 +375,24 @@ class Cronjob extends Model
 
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
-    public static function queryGetRankUser($idRegional, $idRole, $year, $month){
+    public static function queryGetRankUser($idRegional, $idRole, $year, $month)
+    {
         // SET WEIGHT
         $wUST       = CategoryProduct::where("ID_PC", "12")->first()->PERCENTAGE_PC;
         $wNONUST    = CategoryProduct::where("ID_PC", "2")->first()->PERCENTAGE_PC;
         $wSELERAKU  = CategoryProduct::where("ID_PC", "3")->first()->PERCENTAGE_PC;
         $wRENDANG   = CategoryProduct::where("ID_PC", "16")->first()->PERCENTAGE_PC;
         $wGEPREK    = CategoryProduct::where("ID_PC", "17")->first()->PERCENTAGE_PC;
-        
+
         $wUB        = ActivityCategory::where("ID_AC", "1")->first()->PERCENTAGE_AC;
         $wPS        = ActivityCategory::where("ID_AC", "2")->first()->PERCENTAGE_AC;
         $wRETAIL    = ActivityCategory::where("ID_AC", "3")->first()->PERCENTAGE_AC;
-        
+
         // SET TARGET
         $tgtUser    = app(TargetUser::class)->getUser();
-        $tgtUB      = $tgtUser['acts']['UB']; 
-        $tgtPS      = $tgtUser['acts']['PS']; 
-        $tgtRetail  = $tgtUser['acts']['Retail']; 
+        $tgtUB      = $tgtUser['acts']['UB'];
+        $tgtPS      = $tgtUser['acts']['PS'];
+        $tgtRetail  = $tgtUser['acts']['Retail'];
 
         $tgtUST         = $tgtUser['prods']['UST'];
         $tgtNONUST      = $tgtUser['prods']['NONUST'];;
@@ -401,35 +405,35 @@ class Cronjob extends Model
                 rp.NAME_USER ,
                 rp.NAME_AREA ,
                 rp.REALACTUB_DM ,
-                (".$tgtUB.") as TGTUB ,
+                (" . $tgtUB . ") as TGTUB ,
                 rp.VSUB ,
                 rp.REALACTPS_DM ,
-                (".$tgtPS.") as TGTPS ,
+                (" . $tgtPS . ") as TGTPS ,
                 rp.VSPS ,
                 rp.REALACTRETAIL_DM ,
-                (".$tgtRetail.") as TGTRETAIL ,
+                (" . $tgtRetail . ") as TGTRETAIL ,
                 rp.VSRETAIL ,
-                ((rp.VSUB * ".$wUB.") / 100) + ((rp.VSPS * ".$wPS.") / 100) + ((rp.VSRETAIL * ".$wRETAIL.") / 100) as AVG_VS
+                ((rp.VSUB * " . $wUB . ") / 100) + ((rp.VSPS * " . $wPS . ") / 100) + ((rp.VSRETAIL * " . $wRETAIL . ") / 100) as AVG_VS
             FROM (
                 SELECT 
                     ma.NAME_AREA ,
                     dm.*,
                     (
-                        (dm.REALACTUB_DM/ (".$tgtUB.")) * 100
+                        (dm.REALACTUB_DM/ (" . $tgtUB . ")) * 100
                     ) as VSUB,
                     (
-                        (dm.REALACTPS_DM/ (".$tgtPS.")) * 100
+                        (dm.REALACTPS_DM/ (" . $tgtPS . ")) * 100
                     ) as VSPS,
                     (
-                        (dm.REALACTRETAIL_DM/ (".$tgtRetail.")) * 100
+                        (dm.REALACTRETAIL_DM/ (" . $tgtRetail . ")) * 100
                     ) as VSRETAIL
                 FROM summary_trans_user dm 
                 INNER JOIN md_area ma
                     ON
-                        dm.YEAR = '".$year."'
-                        AND dm.MONTH = '".$month."'
-                        AND dm.ID_REGIONAL = '".$idRegional."'
-                        AND dm.ID_ROLE = '".$idRole."'
+                        dm.YEAR = '" . $year . "'
+                        AND dm.MONTH = '" . $month . "'
+                        AND dm.ID_REGIONAL = '" . $idRegional . "'
+                        AND dm.ID_ROLE = '" . $idRole . "'
                         AND dm.ID_AREA = ma.ID_AREA
             ) as rp
             ORDER BY AVG_VS DESC
@@ -445,48 +449,48 @@ class Cronjob extends Model
                 rp.NAME_USER,
                 rp.NAME_AREA,
                 rp.REALUST_DM ,
-                (".$tgtUST.") as TGTUST ,
+                (" . $tgtUST . ") as TGTUST ,
                 rp.VSUST ,
                 rp.REALNONUST_DM ,
-                (".$tgtNONUST.") as TGTNONUST ,
+                (" . $tgtNONUST . ") as TGTNONUST ,
                 rp.VSNONUST ,
                 rp.REALSELERAKU_DM ,
-                (".$tgtSeleraku.") as TGTSELERAKU ,
+                (" . $tgtSeleraku . ") as TGTSELERAKU ,
                 rp.VSSELERAKU ,
                 rp.REALRENDANG_DM ,
-                (".$tgtRendang.") as TGTRENDANG ,
+                (" . $tgtRendang . ") as TGTRENDANG ,
                 rp.VSRENDANG ,
                 rp.REALGEPREK_DM ,
-                (".$tgtGeprek.") as TGTGEPREK ,
+                (" . $tgtGeprek . ") as TGTGEPREK ,
                 rp.VSGEPREK ,
-                ((rp.VSUST * ".$wUST.") / 100) + ((rp.VSNONUST * ".$wNONUST.") / 100) + ((rp.VSSELERAKU * ".$wSELERAKU.") / 100) + ((rp.VSRENDANG * ".$wRENDANG.") / 100) + ((rp.VSGEPREK * ".$wGEPREK.") / 100) as AVG_VS
+                ((rp.VSUST * " . $wUST . ") / 100) + ((rp.VSNONUST * " . $wNONUST . ") / 100) + ((rp.VSSELERAKU * " . $wSELERAKU . ") / 100) + ((rp.VSRENDANG * " . $wRENDANG . ") / 100) + ((rp.VSGEPREK * " . $wGEPREK . ") / 100) as AVG_VS
             FROM 
             (
                 SELECT 
                     ma.NAME_AREA ,
                     dm.* ,
                     (
-                        (dm.REALUST_DM/ (".$tgtUST.")) * 100
+                        (dm.REALUST_DM/ (" . $tgtUST . ")) * 100
                     ) as VSUST,
                     (
-                        (dm.REALNONUST_DM/ (".$tgtNONUST.")) * 100
+                        (dm.REALNONUST_DM/ (" . $tgtNONUST . ")) * 100
                     ) as VSNONUST,
                     (
-                        (dm.REALSELERAKU_DM/ (".$tgtSeleraku.")) * 100
+                        (dm.REALSELERAKU_DM/ (" . $tgtSeleraku . ")) * 100
                     ) as VSSELERAKU,
                     (
-                        (dm.REALRENDANG_DM/ (".$tgtRendang.")) * 100
+                        (dm.REALRENDANG_DM/ (" . $tgtRendang . ")) * 100
                     ) as VSRENDANG,
                     (
-                        (dm.REALGEPREK_DM/ (".$tgtGeprek.")) * 100
+                        (dm.REALGEPREK_DM/ (" . $tgtGeprek . ")) * 100
                     ) as VSGEPREK
                 FROM summary_trans_user dm 
                 INNER JOIN md_area ma
                     ON
-                        dm.YEAR = '".$year."'
-                        AND dm.MONTH = '".$month."'
-                        AND dm.ID_REGIONAL = '".$idRegional."'
-                        AND dm.ID_ROLE = '".$idRole."'
+                        dm.YEAR = '" . $year . "'
+                        AND dm.MONTH = '" . $month . "'
+                        AND dm.ID_REGIONAL = '" . $idRegional . "'
+                        AND dm.ID_ROLE = '" . $idRole . "'
                         AND dm.ID_AREA = ma.ID_AREA
             ) as rp
             ORDER BY AVG_VS DESC
@@ -498,11 +502,12 @@ class Cronjob extends Model
         $reportProds['wSELERAKU']   = $wSELERAKU;
         $reportProds['wRENDANG']    = $wRENDANG;
         $reportProds['wGEPREK']     = $wGEPREK;
-        
+
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
-    public static function queryGetTrend($year, $area){
-        if($area == "Regional"){
+    public static function queryGetTrend($year, $area)
+    {
+        if ($area == "Regional") {
             $qWhere = "
                 stl2.REGIONAL_STL = stl.REGIONAL_STL
                 AND stl2.LOCATION_STL = stl.LOCATION_STL 
@@ -514,11 +519,11 @@ class Cronjob extends Model
             ";
 
             $tgtUser = app(TargetUser::class)->getRegional();
-        }else if($area == "Location"){
+        } else if ($area == "Location") {
             $qWhere = "
             stl2.LOCATION_STL = stl.LOCATION_STL 
             ";
-            
+
             $qGnO = "
             GROUP By stl.LOCATION_STL 
             ORDER BY stl.LOCATION_STL ASC
@@ -534,7 +539,7 @@ class Cronjob extends Model
         $tgtGeprek      = $tgtUser['prods']['Geprek'];
 
         $qRealMonths = [];
-        for($i = 1; $i <= 12; $i++){
+        for ($i = 1; $i <= 12; $i++) {
             $qRealMonths[] = "
                 (
                     SELECT
@@ -547,10 +552,10 @@ class Cronjob extends Model
                         )
                     FROM summary_trans_location stl2
                     WHERE 
-                        ".$qWhere."
-                        AND stl2.YEAR_STL = ".$year."
-                        AND stl2.MONTH_STL = ".$i."
-                ) as M".$i."
+                        " . $qWhere . "
+                        AND stl2.YEAR_STL = " . $year . "
+                        AND stl2.MONTH_STL = " . $i . "
+                ) as M" . $i . "
             ";
         }
         $qRealMonth = implode(', ', $qRealMonths);
@@ -559,20 +564,21 @@ class Cronjob extends Model
             SELECT
             stl.LOCATION_STL,
             stl.REGIONAL_STL,
-            ".$tgtUST." as TGTUST,
-            ".$tgtNONUST." as TGTNONUST,
-            ".$tgtSeleraku." as TGTSELERAKU,
-            ".$tgtRendang." as TGTRENDANG,
-            ".$tgtGeprek." as TGTGEPREK,
-            ".$qRealMonth."
+            " . $tgtUST . " as TGTUST,
+            " . $tgtNONUST . " as TGTNONUST,
+            " . $tgtSeleraku . " as TGTSELERAKU,
+            " . $tgtRendang . " as TGTRENDANG,
+            " . $tgtGeprek . " as TGTGEPREK,
+            " . $qRealMonth . "
             FROM summary_trans_location stl 
-            WHERE stl.YEAR_STL = ".$year."
-            ".$qGnO."
+            WHERE stl.YEAR_STL = " . $year . "
+            " . $qGnO . "
         ");
 
         return $reports;
     }
-    public static function queryGetTransactionDaily($querySumProd, $date, $regional){
+    public static function queryGetTransactionDaily($querySumProd, $date, $regional)
+    {
         return DB::select("
                 SELECT 
                     u.ID_USER,
@@ -594,10 +600,10 @@ class Cronjob extends Model
                     mr.NAME_ROLE ,
                     td.ISFINISHED_TD,
                     td.TOTAL_TD ,
-                    ".$querySumProd."
+                    " . $querySumProd . "
                 FROM transaction_daily td 
                 INNER JOIN md_type mt 
-                    ON DATE(td.DATE_TD) = '".$date."' AND td.REGIONAL_TD = '".$regional."' AND mt.ID_TYPE = td.ID_TYPE
+                    ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "' AND mt.ID_TYPE = td.ID_TYPE
                 INNER JOIN `user` u
                     ON u.ID_USER = td.ID_USER
                 INNER JOIN md_role mr 
@@ -605,19 +611,20 @@ class Cronjob extends Model
                 ORDER BY td.AREA_TD ASC, u.NAME_USER ASC
         ");
     }
-    public static function queryGetRepeatOrder($year, $month){
+    public static function queryGetRepeatOrder($year, $month)
+    {
         $areas = DB::select("
             SELECT t.REGIONAL_TRANS , t.AREA_TRANS 
             FROM `transaction` t 
-            WHERE YEAR(t.DATE_TRANS) = ".$year." AND MONTH(t.DATE_TRANS) = ".$month."
+            WHERE YEAR(t.DATE_TRANS) = " . $year . " AND MONTH(t.DATE_TRANS) = " . $month . "
             GROUP BY t.AREA_TRANS , t.REGIONAL_TRANS 
             ORDER BY t.REGIONAL_TRANS ASC , t.AREA_TRANS ASC
         ");
 
         $rOs = [];
-        
+
         foreach ($areas as $area) {
-            if(empty($rOs[$area->REGIONAL_TRANS])) $rOs[$area->REGIONAL_TRANS] = [];
+            if (empty($rOs[$area->REGIONAL_TRANS])) $rOs[$area->REGIONAL_TRANS] = [];
             $rOs[$area->REGIONAL_TRANS][$area->AREA_TRANS] = DB::select("
                 SELECT
                     (
@@ -628,7 +635,7 @@ class Cronjob extends Model
                         JOIN md_regional mr ON 
                             mr.ID_REGIONAL = u.ID_REGIONAL
                         WHERE
-                            mr.NAME_REGIONAL = '".$area->REGIONAL_TRANS."'
+                            mr.NAME_REGIONAL = '" . $area->REGIONAL_TRANS . "'
                             AND
                             u.deleted_at IS NULL   
                     ) AS TOTALAPO,
@@ -637,7 +644,7 @@ class Cronjob extends Model
                         FROM md_area ma
                         INNER JOIN md_district md
                         ON 
-                            ma.NAME_AREA = '".$area->AREA_TRANS."' 
+                            ma.NAME_AREA = '" . $area->AREA_TRANS . "' 
                             AND ma.deleted_at IS NULL 
                             AND md.ID_AREA = ma.ID_AREA
                         INNER JOIN md_shop ms 
@@ -648,7 +655,7 @@ class Cronjob extends Model
                         FROM md_area ma
                         INNER JOIN md_district md
                         ON 
-                            ma.NAME_AREA = '".$area->AREA_TRANS."' 
+                            ma.NAME_AREA = '" . $area->AREA_TRANS . "' 
                             AND ma.deleted_at IS NULL 
                             AND md.ID_AREA = ma.ID_AREA
                         INNER JOIN md_shop ms 
@@ -659,7 +666,7 @@ class Cronjob extends Model
                         FROM md_area ma
                         INNER JOIN md_district md
                         ON 
-                            ma.NAME_AREA = '".$area->AREA_TRANS."' 
+                            ma.NAME_AREA = '" . $area->AREA_TRANS . "' 
                             AND ma.deleted_at IS NULL 
                             AND md.ID_AREA = ma.ID_AREA
                         INNER JOIN md_shop ms 
@@ -672,10 +679,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Pedagang Sayur'
                             GROUP BY t.ID_SHOP 
@@ -689,10 +696,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Pedagang Sayur'
                             GROUP BY t.ID_SHOP 
@@ -706,10 +713,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Pedagang Sayur'
                             GROUP BY t.ID_SHOP 
@@ -723,10 +730,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Pedagang Sayur'
                             GROUP BY t.ID_SHOP 
@@ -740,10 +747,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Retail'
                             GROUP BY t.ID_SHOP 
@@ -757,10 +764,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Retail'
                             GROUP BY t.ID_SHOP 
@@ -774,10 +781,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Retail'
                             GROUP BY t.ID_SHOP 
@@ -791,10 +798,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Retail'
                             GROUP BY t.ID_SHOP 
@@ -808,10 +815,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Loss'
                             GROUP BY t.ID_SHOP 
@@ -825,10 +832,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Loss'
                             GROUP BY t.ID_SHOP 
@@ -842,10 +849,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Loss'
                             GROUP BY t.ID_SHOP 
@@ -859,10 +866,10 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
-                                    YEAR(t.DATE_TRANS) = ".$year."
-                                    AND MONTH(t.DATE_TRANS) = ".$month."
-                                    AND t.AREA_TRANS = '".$area->AREA_TRANS."'
-                                    AND t.REGIONAL_TRANS = '".$area->REGIONAL_TRANS."'
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND MONTH(t.DATE_TRANS) = " . $month . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
                                     AND ms.ID_SHOP = t.ID_SHOP
                                     AND ms.TYPE_SHOP = 'Loss'
                             GROUP BY t.ID_SHOP 

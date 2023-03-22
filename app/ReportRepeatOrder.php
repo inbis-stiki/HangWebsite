@@ -11,14 +11,12 @@ class ReportRepeatOrder
     {
         // Create new Spreadsheet object
         $spreadsheet = new Spreadsheet();
-        $countSheet = 0;
         foreach ($rOs as $regional => $areas) {
             $rowIsi = 0;
             $rowHeader = 0;
             $TotalAPO = 0;
-            $spreadsheet->createSheet();
-            $spreadsheet->setActiveSheetIndex($countSheet++);
-            $ObjSheet = $spreadsheet->getActiveSheet()->setTitle($regional);
+            $ObjSheet = $spreadsheet->createSheet();
+            $ObjSheet->setTitle($regional);
 
             $ObjSheet->getColumnDimension('B')->setWidth('25');
             $ObjSheet->getColumnDimension('G')->setWidth('2');
@@ -72,7 +70,7 @@ class ReportRepeatOrder
                 $percentROPS[1] = (!empty($TotalData) ? (($detRO['PS_4-5'] / $TotalData) * 100) : 0);
                 $percentROPS[2] = (!empty($TotalData) ? (($detRO['PS_6-10'] / $TotalData) * 100) : 0);
                 $percentROPS[3] = (!empty($TotalData) ? (($detRO['PS_>11'] / $TotalData) * 100) : 0);
-                $percentROPS[4] = (!empty($TotalData) ? (($TotalData / $detRO['TOTALPS']) * 100) : 0);
+                $percentROPS[4] = (!empty($detRO['TOTALPS']) ? (($TotalData / $detRO['TOTALPS']) * 100) : 0);
 
 
                 $ObjSheet->setCellValue('B' . $rowIsi, $area)->getStyle('B' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
@@ -171,7 +169,7 @@ class ReportRepeatOrder
                 $percentRORetail[1] = (!empty($TotalData) ? (($detRO['Retail_4-5'] / $TotalData) * 100) : 0);
                 $percentRORetail[2] = (!empty($TotalData) ? (($detRO['Retail_6-10'] / $TotalData) * 100) : 0);
                 $percentRORetail[3] = (!empty($TotalData) ? (($detRO['Retail_>11'] / $TotalData) * 100) : 0);
-                $percentRORetail[4] = (!empty($TotalData) ? (($TotalData / $detRO['TOTALRETAIL']) * 100) : 0);
+                $percentRORetail[4] = (!empty($detRO['TOTALRETAIL']) ? (($TotalData / $detRO['TOTALRETAIL']) * 100) : 0);
 
                 $ObjSheet->setCellValue('B' . $rowIsi2, $area)->getStyle('B' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
                 $ObjSheet->setCellValue('C' . $rowIsi2, $detRO['TOTALRETAIL'])->getStyle('C' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
@@ -263,7 +261,7 @@ class ReportRepeatOrder
                 $percentROLoss[1] = (!empty($TotalData) ? (($detRO['Loss_4-5'] / $TotalData) * 100) : 0);
                 $percentROLoss[2] = (!empty($TotalData) ? (($detRO['Loss_6-10'] / $TotalData) * 100) : 0);
                 $percentROLoss[3] = (!empty($TotalData) ? (($detRO['Loss_>11'] / $TotalData) * 100) : 0);
-                $percentROLoss[4] = (!empty($TotalData) ? (($TotalData / $detRO['TOTALLOSS']) * 100) : 0);
+                $percentROLoss[4] = (!empty($detRO['TOTALLOSS']) ? (($TotalData / $detRO['TOTALLOSS']) * 100) : 0);
 
                 $ObjSheet->setCellValue('B' . $rowIsi3, $area)->getStyle('B' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
                 $ObjSheet->setCellValue('C' . $rowIsi3, $detRO['TOTALLOSS'])->getStyle('C' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
@@ -284,7 +282,7 @@ class ReportRepeatOrder
                 $rowIsi3++;
                 $subrow3 = $rowIsi3;
             }
-            
+
             $percentROLoss[4] = (!empty($totalROLoss[5]) ? (($totalROLoss[4] / $totalROLoss[5]) * 100) : 0);
 
             $ObjSheet->setCellValue('B' . $subrow3, $regional)->getStyle('B' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
@@ -302,7 +300,7 @@ class ReportRepeatOrder
             $ObjSheet->setCellValue('N' . $subrow3, number_format($percentROLoss[1], 2, '.', '') . '%')->getStyle('N' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->setCellValue('O' . $subrow3, number_format($percentROLoss[2], 2, '.', '') . '%')->getStyle('O' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->setCellValue('P' . $subrow3, number_format($percentROLoss[3], 2, '.', '') . '%')->getStyle('P' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            
+
             //ISI
             $ObjSheet->mergeCells('R' . ($rowHeader3 + 1) . ':R' . ($rowHeader3 + 3))->setCellValue('R' . ($rowHeader3 + 1), 'JUMLAH LOSS RO LOSS/APO')->getStyle('R' . ($rowHeader3 + 1) . ':R' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('S' . ($rowHeader3 + 1) . ':S' . ($rowHeader3 + 3))->setCellValue('S' . ($rowHeader3 + 1), 'JUMLAH APO')->getStyle('S' . ($rowHeader3 + 1) . ':S' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('0000FF', '000000'))->getAlignment()->setWrapText(true);
@@ -313,7 +311,129 @@ class ReportRepeatOrder
             $ObjSheet->setCellValue('T' . ($rowHeader3 + 4), (!empty($TotalAPO) ? round($totalROLoss[4] / $TotalAPO) : 0))->getStyle('T' . ($rowHeader3 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
         }
 
+        $spreadsheet->removeSheetByIndex(0);
+
         $fileName = 'Repeat Order APO';
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel'); // generate excel file
+        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
+    public function gen_ro_shop($rOs, $updated_at)
+    {
+        // Create new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+        foreach ($rOs as $area => $item) {
+            $rowIsi = 0;
+            $ObjSheet = $spreadsheet->createSheet();
+            $ObjSheet->setTitle($area);
+
+            $ObjSheet->getColumnDimension('B')->setWidth('25');
+            $ObjSheet->getColumnDimension('C')->setWidth('45');
+            $ObjSheet->getColumnDimension('D')->setWidth('20');
+            $ObjSheet->getColumnDimension('E')->setWidth('20');
+            $ObjSheet->getColumnDimension('F')->setWidth('15');
+            $ObjSheet->getColumnDimension('G')->setWidth('1');
+            $ObjSheet->getColumnDimension('H')->setWidth('0');
+            $ObjSheet->getColumnDimension('I')->setWidth('25');
+            $ObjSheet->getColumnDimension('J')->setWidth('45');
+            $ObjSheet->getColumnDimension('K')->setWidth('20');
+            $ObjSheet->getColumnDimension('L')->setWidth('20');
+            $ObjSheet->getColumnDimension('M')->setWidth('15');
+
+            // PEDAGANG SAYUR
+            // HEADER
+            $ObjSheet->mergeCells('B2:M3')->setCellValue('B2', $area)->getStyle('B2:M3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+            $rowIsi += 4;
+            foreach ($item as $key => $itemArea) {
+                $ObjSheet->mergeCells('B' . $rowIsi . ':M' . $rowIsi)->setCellValue('B' . $rowIsi, 'DETAIL RO ' . $key)->getStyle('B' . $rowIsi . ':M' . $rowIsi)->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+                
+                // DETAIL
+                $ObjSheet->mergeCells('B' . ($rowIsi + 1) . ':F' . ($rowIsi + 1))->setCellValue('B' . ($rowIsi + 1), 'REPEAT ORDER 2-3')->getStyle('B' . ($rowIsi + 1) . ':F' . ($rowIsi + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('B' . ($rowIsi + 2), 'NAMA TOKO')->getStyle('B' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('C' . ($rowIsi + 2), 'ALAMAT')->getStyle('C' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('D' . ($rowIsi + 2), 'PEMILIK')->getStyle('D' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('E' . ($rowIsi + 2), 'NOMOR TELEPON')->getStyle('E' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('F' . ($rowIsi + 2), 'TOTAL RO')->getStyle('F' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+
+                $ObjSheet->mergeCells('I' . ($rowIsi + 1) . ':M' . ($rowIsi + 1))->setCellValue('I' . ($rowIsi + 1), 'REPEAT ORDER 4-5')->getStyle('I' . ($rowIsi + 1) . ':M' . ($rowIsi + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('I' . ($rowIsi + 2), 'NAMA TOKO')->getStyle('I' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('J' . ($rowIsi + 2), 'ALAMAT')->getStyle('J' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('K' . ($rowIsi + 2), 'PEMILIK')->getStyle('K' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('L' . ($rowIsi + 2), 'NOMOR TELEPON')->getStyle('L' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('M' . ($rowIsi + 2), 'TOTAL RO')->getStyle('M' . ($rowIsi + 2))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+
+                // ISI KONTEN
+                $rowIsi2 = ($rowIsi + 3);
+                foreach ($itemArea["2-3"] as $itemDet) {
+                    $ObjSheet->setCellValue('B' . $rowIsi2, $itemDet['NAMA_TOKO'])->getStyle('B' . $rowIsi2)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('C' . $rowIsi2, $itemDet['ALAMAT'])->getStyle('C' . $rowIsi2)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('D' . $rowIsi2, $itemDet['OWNER'])->getStyle('D' . $rowIsi2)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('E' . $rowIsi2, $itemDet['TELP'])->getStyle('E' . $rowIsi2)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('F' . $rowIsi2, $itemDet['TOT_RO'])->getStyle('F' . $rowIsi2)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                    $rowIsi2++;
+                }
+
+                $rowIsi3 = ($rowIsi + 3);
+                foreach ($itemArea["4-5"] as $itemDet) {
+                    $ObjSheet->setCellValue('I' . $rowIsi3, $itemDet['NAMA_TOKO'])->getStyle('I' . $rowIsi3)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('J' . $rowIsi3, $itemDet['ALAMAT'])->getStyle('J' . $rowIsi3)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('K' . $rowIsi3, $itemDet['OWNER'])->getStyle('K' . $rowIsi3)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('L' . $rowIsi3, $itemDet['TELP'])->getStyle('L' . $rowIsi3)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('M' . $rowIsi3, $itemDet['TOT_RO'])->getStyle('M' . $rowIsi3)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                    $rowIsi3++;
+                }
+
+                $ObjSheet->mergeCells('B' . ($rowIsi3 + 2) . ':F' . ($rowIsi3 + 2))->setCellValue('B' . ($rowIsi3 + 2), 'REPEAT ORDER 6-10')->getStyle('B' . ($rowIsi3 + 2) . ':F' . ($rowIsi3 + 2))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('B' . ($rowIsi3 + 3), 'NAMA TOKO')->getStyle('B' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('C' . ($rowIsi3 + 3), 'ALAMAT')->getStyle('C' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('D' . ($rowIsi3 + 3), 'PEMILIK')->getStyle('D' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('E' . ($rowIsi3 + 3), 'NOMOR TELEPON')->getStyle('E' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('F' . ($rowIsi3 + 3), 'TOTAL RO')->getStyle('F' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                
+                $ObjSheet->mergeCells('I' . ($rowIsi3 + 2) . ':M' . ($rowIsi3 + 2))->setCellValue('I' . ($rowIsi3 + 2), 'REPEAT ORDER >11')->getStyle('I' . ($rowIsi3 + 2) . ':M' . ($rowIsi3 + 2))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('I' . ($rowIsi3 + 3), 'NAMA TOKO')->getStyle('I' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('J' . ($rowIsi3 + 3), 'ALAMAT')->getStyle('J' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('K' . ($rowIsi3 + 3), 'PEMILIK')->getStyle('K' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('L' . ($rowIsi3 + 3), 'NOMOR TELEPON')->getStyle('L' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('M' . ($rowIsi3 + 3), 'TOTAL RO')->getStyle('M' . ($rowIsi3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+
+                
+                // ISI KONTEN
+                $rowIsi4 = ($rowIsi3 + 4);
+                foreach ($itemArea["6-10"] as $itemDet) {
+                    $ObjSheet->setCellValue('B' . $rowIsi4, $itemDet['NAMA_TOKO'])->getStyle('B' . $rowIsi4)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('C' . $rowIsi4, $itemDet['ALAMAT'])->getStyle('C' . $rowIsi4)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('D' . $rowIsi4, $itemDet['OWNER'])->getStyle('D' . $rowIsi4)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('E' . $rowIsi4, $itemDet['TELP'])->getStyle('E' . $rowIsi4)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('F' . $rowIsi4, $itemDet['TOT_RO'])->getStyle('F' . $rowIsi4)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                    $rowIsi4++;
+                }
+
+                $rowIsi5 = ($rowIsi3 + 3);
+                foreach ($itemArea[">11"] as $itemDet) {
+                    $ObjSheet->setCellValue('I' . $rowIsi5, $itemDet['NAMA_TOKO'])->getStyle('I' . $rowIsi5)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('J' . $rowIsi5, $itemDet['ALAMAT'])->getStyle('J' . $rowIsi5)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('K' . $rowIsi5, $itemDet['OWNER'])->getStyle('K' . $rowIsi5)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('L' . $rowIsi5, $itemDet['TELP'])->getStyle('L' . $rowIsi5)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('M' . $rowIsi5, $itemDet['TOT_RO'])->getStyle('M' . $rowIsi5)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                    $rowIsi5++;
+                }
+
+                $rowIsi = ($rowIsi5 + 4);           
+            }
+        }
+
+        $spreadsheet->removeSheetByIndex(0);
+
+        $fileName = 'Repeat Order Toko';
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file
