@@ -15,8 +15,11 @@ use App\UserRankingActivity;
 use App\ReportRanking;
 use App\ReportTransaction;
 use App\ReportTrend;
+use App\RangeRepeat;
 use App\ReportRepeatOrder;
 use App\Shop;
+use App\ReportShopHead;
+use App\ReportShopDet;
 use App\User;
 use App\Users;
 use Carbon\Carbon;
@@ -357,7 +360,6 @@ class CronjobController extends Controller
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
         $rOs = Cronjob::queryGetRepeatOrder($year, $month);
-
         app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
     }
     public function genROSHOP($yearMonth)
@@ -366,7 +368,6 @@ class CronjobController extends Controller
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        // $rOs = Cronjob::queryGetRepeatOrderShop($year, $month);
         $rOs_dummy = [
             "MATARAM 1" => [
                 "PS" => [
@@ -444,33 +445,64 @@ class CronjobController extends Controller
 
         app(ReportRepeatOrder::class)->gen_ro_shop($rOs_dummy, $updated_at);
     }
-    public function TestTemplate(ReportQuery $reportQuery)
+    public function genRORPOS()
     {
-        // app(ReportRanking::class)->generate_ranking_rpo($reportQuery->AktivitasRPOLapul(), $reportQuery->AktivitasRPODapul(), $reportQuery->PencapaianRPOLapul(), $reportQuery->PencapaianRPODapul());
-        // app(ReportRanking::class)->generate_ranking_asmen($reportQuery->AktivitasAsmen(), $reportQuery->PencapaianAsmen());
-        // app(ReportRanking::class)->generate_ranking_apo_spg();
+        
+        $year = date_format(date_create('2022-12'), 'Y');
+        $month = date_format(date_create('2022-12'), 'n');
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+        
+        $rOs = Cronjob::queryGetRepeatOrderShop($year, $month);
 
-        // app(ReportTransaction::class)->set_data_transaction();
+        $area = Cronjob::getreg($year, $month);
 
+        $cat = Cronjob::getallcat();
 
-        // $regionals  = Regional::where('deleted_at', NULL)->get();
-        // Http::get(url('cronjob/generate-transaction/'."JATIM 1"));
-        // foreach ($regionals as $regional) {
-        // }
+        // dd($cat);die;    
 
+        if (!empty($rOs)) {
+            foreach ($area as $reg) {
+                $ReportHead        = new ReportShopHead();
+                $unik                           = md5($reg->REGIONAL_TRANS);
+                $ReportHead->ID_HEAD          = "REP_" . $unik;
+                $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
+                $ReportHead->BULAN            = $month;
+                $ReportHead->TAHUN            = $year;
+                $ReportHead->save();
+            }
 
-        // dd($transDaily);
-        // dd($noTransDaily);
+            foreach ($rOs as $item) {
+                $ReportDet        = new ReportShopDet();
+                $unik2                             = md5($item->NAME_REGIONAL);
+                $ReportDet->ID_HEAD               = "REP_" . $unik2;
+                $ReportDet->NAME_AREA             = $item->NAME_AREA;
+                $ReportDet->NAME_REGIONAL         = $item->NAME_REGIONAL;
+                $ReportDet->NAME_DISTRICT         = $item->NAME_DISTRICT;
+                $ReportDet->NAME_SHOP             = $item->NAME_SHOP;
+                $ReportDet->DETLOC_SHOP           = $item->DETLOC_SHOP;
+                $ReportDet->TELP_SHOP             = $item->TELP_SHOP;
+                $ReportDet->TYPE_SHOP             = $item->TYPE_SHOP;
+                $ReportDet->OWNER_SHOP            = $item->OWNER_SHOP;
+                $ReportDet->TOTAL_RO              = $item->TOTAL_TEST;
 
-        // $regionals  = Regional::where('deleted_at', NULL)->get();
+                $ReportDet->save();
+            }
 
+            $ranges = DB::table('md_range_repeat')->select('ID_RANGE', 'START', 'END')->get();
+        
+            foreach ($ranges as $range) {
+                $range_id = $range->ID_RANGE;
+                $min_total_ro = $range->START;
+                $max_total_ro = $range->END;
+                
+                // Execute the SQL query for the current range
+                DB::table('report_shop_detail')
+                ->whereBetween('TOTAL_RO', [$min_total_ro, $max_total_ro])
+                ->update(['CATEGORY_RO' => $range_id]);
+            }
+        }
 
-        // dd(date("Y-m-d H:i:s")); // returns a date in UTC timezone
-
-        app(ReportRanking::class)->generate_ranking_rpo();
-
-        // app(ReportTrend::class)->generate_trend_asmen();
-        // app(ReportTrend::class)->generate_trend_rpo();
+        // dd($rOs);die;
     }
     public function Testing(ReportQuery $reportQuery)
     {
