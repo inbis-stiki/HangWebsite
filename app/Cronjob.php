@@ -940,15 +940,29 @@ class Cronjob extends Model
 
     public static function getallcat()
     {
-        $cat = DB::select("
-        SELECT
-            *
-        FROM
-            md_range_repeat
-        WHERE
-            ISNULL(deleted_at)
-        ");
+        $results = DB::select('SELECT * FROM report_shop_detail');
 
-        return $cat;
+        // Initialize an empty array to store the sorted data
+        $sortedData = [];
+
+        // Loop through the query results and group them by NAME_AREA
+        foreach ($results as $row) {
+            $nameArea = $row->NAME_AREA;
+
+            // If this is the first row for this NAME_AREA, create an empty array for it
+            if (!isset($sortedData[$nameArea])) {
+                $sortedData[$nameArea] = [];
+            }
+
+            // If this is the first row for this CATEGORY_RO, create an empty array for it
+            if (!isset($sortedData[$nameArea][$row->CATEGORY_RO])) {
+                $sortedData[$nameArea][$row->CATEGORY_RO] = [];
+            }
+
+            // Add the row to the array for this CATEGORY_RO
+            $sortedData[$nameArea][$row->CATEGORY_RO][] = $row;
+        }
+        
+        return $sortedData;
     }
 }
