@@ -368,82 +368,9 @@ class CronjobController extends Controller
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $rOs_dummy = [
-            "MATARAM 1" => [
-                "PS" => [
-                    "2-3" => [
-                        [
-                            "NAMA_TOKO" => "TOKO ANDI",
-                            "ALAMAT" => "JL. Selatan",
-                            "OWNER" => "BUDI",
-                            "TELP" => "012812721",
-                            "TOT_RO" => 3
-                        ],
-                        [
-                            "NAMA_TOKO" => "TOKO MARKONAH",
-                            "ALAMAT" => "JL. Simpang Selatan",
-                            "OWNER" => "BUDI",
-                            "TELP" => "012812721",
-                            "TOT_RO" => 2
-                        ]
-                    ],
-                    "4-5" => [
-                        [
-                            "NAMA_TOKO" => "TOKO BUDI",
-                            "ALAMAT" => "JL. Selatan",
-                            "OWNER" => "BUDI",
-                            "TELP" => "012812721",
-                            "TOT_RO" => 5
-                        ]
-                    ],
-                    "6-10" => [],
-                    ">11" => []
-                ],
-                "RETAIL" => [
-                    "2-3" => [],
-                    "4-5" => [],
-                    "6-10" => [],
-                    ">11" => []
-                ],
-                "LOSS" => [
-                    "2-3" => [],
-                    "4-5" => [],
-                    "6-10" => [],
-                    ">11" => []
-                ]
-            ],
-            "PONTIANAK" => [
-                "PS" => [
-                    "2-3" => [],
-                    "4-5" => [
-                        [
-                            "NAMA_TOKO" => "TOKO SITI",
-                            "ALAMAT" => "JL. Selatan",
-                            "OWNER" => "BUDI",
-                            "TELP" => "012812721",
-                            "TOT_RO" => 5
-                        ]
-                    ],
-                    "6-10" => [],
-                    ">11" => []
-                ],
-                "RETAIL" => [
-                    "2-3" => [],
-                    "4-5" => [],
-                    "6-10" => [],
-                    ">11" => []
-                ],
-                "LOSS" => [
-                    "2-3" => [],
-                    "4-5" => [],
-                    "6-10" => [],
-                    ">11" => []
-                ]
-            ]
-        ];
-        // dd($rOs_dummy);die;
+        $rOs = Cronjob::getallcat();
 
-        app(ReportRepeatOrder::class)->gen_ro_shop($rOs_dummy, $updated_at);
+        app(ReportRepeatOrder::class)->gen_ro_shop($rOs, $updated_at);
     }
     public function genRORPOS()
     {
@@ -454,11 +381,7 @@ class CronjobController extends Controller
         
         $rOs = Cronjob::queryGetRepeatOrderShop($year, $month);
 
-        $area = Cronjob::getreg($year, $month);
-
-        $cat = Cronjob::getallcat();
-
-        // dd($cat);die;    
+        $area = Cronjob::getreg($year, $month);  
 
         if (!empty($rOs)) {
             foreach ($area as $reg) {

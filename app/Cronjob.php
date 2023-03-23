@@ -886,7 +886,7 @@ class Cronjob extends Model
         $areas = DB::select("
             SELECT t.REGIONAL_TRANS 
             FROM `transaction` t 
-            WHERE YEAR(t.DATE_TRANS) = ".$year." AND MONTH(t.DATE_TRANS) = ".$month."
+            WHERE YEAR(t.DATE_TRANS) = " . $year . " AND MONTH(t.DATE_TRANS) = " . $month . "
             GROUP BY t.REGIONAL_TRANS 
             ORDER BY t.REGIONAL_TRANS ASC
         ");
@@ -894,8 +894,9 @@ class Cronjob extends Model
         return $areas;
     }
 
-    public static function queryGetRepeatOrderShop($year, $month){
-        
+    public static function queryGetRepeatOrderShop($year, $month)
+    {
+
         $rOs = DB::select("
         SELECT
             ms.ID_SHOP,
@@ -916,8 +917,8 @@ class Cronjob extends Model
             FROM
                 `transaction`
             WHERE
-                YEAR(DATE_TRANS) = ".$year."
-                AND MONTH(DATE_TRANS) = ".$month."
+                YEAR(DATE_TRANS) = " . $year . "
+                AND MONTH(DATE_TRANS) = " . $month . "
             GROUP BY
                 ID_SHOP
             HAVING
@@ -947,36 +948,57 @@ class Cronjob extends Model
 
     public static function getallcat()
     {
-        $results = DB::select('SELECT * FROM report_shop_detail ORDER BY NAME_AREA ASC');
+        $results = json_decode(json_encode(DB::select('SELECT * FROM report_shop_detail')), true);
 
         // Initialize an empty array to store the sorted data
         $sortedData = [];
+        $temp = [];
 
         // Loop through the query results and group them by NAME_AREA
         foreach ($results as $row) {
-            $nameArea = $row->NAME_AREA;
-            $typeShop = $row->TYPE_SHOP;
-            $categoryRo = $row->CATEGORY_RO;
+            $nameArea = $row['NAME_AREA'];
 
             // If this is the first row for this NAME_AREA, create an empty array for it
             if (!isset($sortedData[$nameArea])) {
                 $sortedData[$nameArea] = [];
             }
 
-            // If this is the first row for this TYPE_SHOP, create an empty array for it
-            if (!isset($sortedData[$nameArea][$typeShop])) {
-                $sortedData[$nameArea][$typeShop] = [];
+            // If this is the first row for this ['CATEGORY_RO'], create an empty array for it
+            if (!isset($sortedData[$nameArea]["PS"])) {
+                $sortedData[$nameArea]["PS"]["2-3"] = [];
+                $sortedData[$nameArea]["PS"]["4-5"] = [];
+                $sortedData[$nameArea]["PS"]["6-10"] = [];
+                $sortedData[$nameArea]["PS"][">11"] = [];
             }
-
-            // If this is the first row for this CATEGORY_RO, create an empty array for it
-            if (!isset($sortedData[$nameArea][$typeShop][$categoryRo])) {
-                $sortedData[$nameArea][$typeShop][$categoryRo] = [];
+            
+            if (!isset($sortedData[$nameArea]["RETAIL"])) {
+                $sortedData[$nameArea]["RETAIL"]["2-3"] = [];
+                $sortedData[$nameArea]["RETAIL"]["4-5"] = [];
+                $sortedData[$nameArea]["RETAIL"]["6-10"] = [];
+                $sortedData[$nameArea]["RETAIL"][">11"] = [];
             }
+            
+            if (!isset($sortedData[$nameArea]["LOSS"])) {
+                $sortedData[$nameArea]["LOSS"]["2-3"] = [];
+                $sortedData[$nameArea]["LOSS"]["4-5"] = [];
+                $sortedData[$nameArea]["LOSS"]["6-10"] = [];
+                $sortedData[$nameArea]["LOSS"][">11"] = [];
+            }            
 
-            // Add the row to the array for this NAME_AREA, TYPE_SHOP, and CATEGORY_RO
-            $sortedData[$nameArea][$typeShop][$categoryRo][] = $row;
+            // Add the row to the array for this ['CATEGORY_RO']
+            if ($row['TYPE_SHOP'] == "Pedagang Sayur") {
+                if ((int)$row['CATEGORY_RO'] == 1) {
+                    array_push($sortedData[$nameArea]["PS"]["2-3"], $row);
+                } else if ((int)$row['CATEGORY_RO'] == 2) {
+                    array_push($sortedData[$nameArea]["PS"]["4-5"], $row);
+                } else if ((int)$row['CATEGORY_RO'] == 3) {
+                    array_push($sortedData[$nameArea]["PS"]["6-10"], $row);
+                } else if ((int)$row['CATEGORY_RO'] == 4) {
+                    array_push($sortedData[$nameArea]["PS"][">11"], $row);
+                }
+            }
         }
-        
+
         return $sortedData;
     }
 }
