@@ -947,7 +947,7 @@ class Cronjob extends Model
 
     public static function getallcat()
     {
-        $results = DB::select('SELECT * FROM report_shop_detail');
+        $results = DB::select('SELECT * FROM report_shop_detail ORDER BY NAME_AREA ASC');
 
         // Initialize an empty array to store the sorted data
         $sortedData = [];
@@ -955,19 +955,26 @@ class Cronjob extends Model
         // Loop through the query results and group them by NAME_AREA
         foreach ($results as $row) {
             $nameArea = $row->NAME_AREA;
+            $typeShop = $row->TYPE_SHOP;
+            $categoryRo = $row->CATEGORY_RO;
 
             // If this is the first row for this NAME_AREA, create an empty array for it
             if (!isset($sortedData[$nameArea])) {
                 $sortedData[$nameArea] = [];
             }
 
-            // If this is the first row for this CATEGORY_RO, create an empty array for it
-            if (!isset($sortedData[$nameArea][$row->CATEGORY_RO])) {
-                $sortedData[$nameArea][$row->CATEGORY_RO] = [];
+            // If this is the first row for this TYPE_SHOP, create an empty array for it
+            if (!isset($sortedData[$nameArea][$typeShop])) {
+                $sortedData[$nameArea][$typeShop] = [];
             }
 
-            // Add the row to the array for this CATEGORY_RO
-            $sortedData[$nameArea][$row->CATEGORY_RO][] = $row;
+            // If this is the first row for this CATEGORY_RO, create an empty array for it
+            if (!isset($sortedData[$nameArea][$typeShop][$categoryRo])) {
+                $sortedData[$nameArea][$typeShop][$categoryRo] = [];
+            }
+
+            // Add the row to the array for this NAME_AREA, TYPE_SHOP, and CATEGORY_RO
+            $sortedData[$nameArea][$typeShop][$categoryRo][] = $row;
         }
         
         return $sortedData;
