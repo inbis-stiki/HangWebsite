@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Product;
 use App\Regional;
 use App\TargetSale;
+use App\logmd;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
+use Session;
 
 class TargetSaleController extends Controller
 {
@@ -112,6 +114,14 @@ class TargetSaleController extends Controller
         $target_sale->QUANTITY           = $request->input('quantity');
         $target_sale->DELETED_AT         = $request->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $target_sale->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating Target Sale ' . (string)$request->input('id'); 
+        $log->log_time          = now();
+        $log->save();
+
         // dd($regional_price);
         return redirect('master/target-sale')->with('succ_msg', 'Berhasil mengubah data target penjualan!');
         //

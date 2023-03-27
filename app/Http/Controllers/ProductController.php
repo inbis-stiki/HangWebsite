@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\logmd;
 use App\CategoryProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Session;
 
 class ProductController extends Controller
 {
@@ -83,6 +85,13 @@ class ProductController extends Controller
             $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
             $product->save();
 
+            $id_userU = SESSION::get('id_user');
+            $log                    = new logmd();
+            $log->UPDATED_BY        = $id_userU;
+            $log->DETAIL            = 'Updating Product ' . (string)$req->input('id'); 
+            $log->log_time          = now();
+            $log->save();   
+
             return redirect('master/product')->with('succ_msg', 'Berhasil mengubah data produk!');
         }else{
             $cek_code = Product::where('CODE_PRODUCT', '=', $req->input('code_product'))->exists();
@@ -97,6 +106,13 @@ class ProductController extends Controller
                 }
                 $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
                 $product->save();
+
+                $id_userU = SESSION::get('id_user');
+                $log                    = new logmd();
+                $log->UPDATED_BY        = $id_userU;
+                $log->DETAIL            = 'Updating Product ' . (string)$req->input('id'); 
+                $log->log_time          = now();
+                $log->save();   
 
                 return redirect('master/product')->with('succ_msg', 'Berhasil mengubah data produk!');
             }

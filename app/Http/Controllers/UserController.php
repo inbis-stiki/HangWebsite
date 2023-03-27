@@ -8,6 +8,7 @@ use App\Area;
 use App\Location;
 use App\Regional;
 use App\UserTarget;
+use App\logmd;
 use App\TargetSale;
 use App\TargetActivity;
 use Illuminate\Http\Request;
@@ -311,6 +312,13 @@ class UserController extends Controller
         $user->ID_ROLE          = $req->input('role');
         $user->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $user->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating user ' . (string)$req->input('id'); 
+        $log->log_time          = now();
+        $log->save();        
 
         return redirect('master/user')->with('succ_msg', 'Berhasil mengubah data user!');
     }

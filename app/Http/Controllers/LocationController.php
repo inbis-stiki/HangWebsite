@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Location;
+use App\logmd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -58,6 +59,13 @@ class LocationController extends Controller
         $location->NAME_LOCATION = Str::upper($req->input('name'));
         $location->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $location->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating Location ' . (string)$req->input('id'); 
+        $log->log_time          = now();
+        $log->save();   
 
         return redirect('master/location/national')->with('succ_msg', 'Berhasil mengubah data nasional!');
     }

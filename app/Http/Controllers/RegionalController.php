@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Location;
 use App\Regional;
+use App\logmd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -81,6 +82,13 @@ class RegionalController extends Controller
         $regional->NAME_REGIONAL = Str::upper($req->input('regional'));
         $regional->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $regional->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating Regional ' . (string)$req->input('id'); 
+        $log->log_time          = now();
+        $log->save();   
 
         return redirect('master/location/regional')->with('succ_msg', 'Berhasil mengubah data regional!');
     }

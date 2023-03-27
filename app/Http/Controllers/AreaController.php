@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Area;
+use App\logmd;
 use App\Regional;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -93,6 +94,13 @@ class AreaController extends Controller
         $area->NAME_AREA = Str::upper($req->input('area'));
         $area->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $area->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating Area ' . (string)$req->input('id'); 
+        $log->log_time          = now();
+        $log->save();   
 
         return redirect('master/location/area')->with('succ_msg', 'Berhasil mengubah data area!');
     }

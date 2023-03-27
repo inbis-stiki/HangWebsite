@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Shop;
+use App\logmd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -122,6 +123,13 @@ class ShopController extends Controller
         $shop->DETLOC_SHOP     = $req->input('detlok');
         $shop->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $shop->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating Shop ' . (string)$req->input('id'); 
+        $log->log_time          = now();
+        $log->save();   
 
         return redirect('master/shop')->with('succ_msg', 'Berhasil mengubah data Toko!');
     }

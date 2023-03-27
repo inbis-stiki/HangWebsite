@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\ActivityCategory;
 use App\Regional;
 use App\TargetActivity;
+use App\logmd;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
+use Session;
 
 class TargetActivityController extends Controller
 {
@@ -112,6 +114,14 @@ class TargetActivityController extends Controller
         $target_activity->QUANTITY           = $request->input('quantity');
         $target_activity->DELETED_AT         = $request->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $target_activity->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating Target Activity ' . (string)$request->input('id'); 
+        $log->log_time          = now();
+        $log->save();   
+
         // dd($regional_price);
         return redirect('master/target-activity')->with('succ_msg', 'Berhasil mengubah data target aktivitas!');
         //

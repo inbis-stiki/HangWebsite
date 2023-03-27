@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Role;
+use App\logmd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Session;
 
 class RoleController extends Controller
 {
@@ -55,6 +57,13 @@ class RoleController extends Controller
         $role->NAME_ROLE        = $req->input('nama_role');
         $role->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $role->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating Role ' . (string)$req->input('id'); 
+        $log->log_time          = now();
+        $log->save();   
 
         return redirect('master/role')->with('succ_msg', 'Berhasil mengubah data role!');
     }

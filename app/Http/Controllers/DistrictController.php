@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Area;
+use App\logmd;
 use App\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -124,6 +125,13 @@ class DistrictController extends Controller
         $district->NAME_DISTRICT    = Str::upper($req->input('district'));
         $district->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $district->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating District ' . (string)$req->input('id'); 
+        $log->log_time          = now();
+        $log->save();   
 
         return redirect('master/location/district')->with('succ_msg', 'Berhasil mengubah data kecamatan!');
     }

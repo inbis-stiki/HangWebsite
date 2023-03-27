@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Area;
+use App\logmd;
 use App\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -169,6 +170,13 @@ class MarketController extends Controller
         $district->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $district->PARENT_DISTRICT  = $req->input('districtK');
         $district->save();
+
+        $id_userU = SESSION::get('id_user');
+        $log                    = new logmd();
+        $log->UPDATED_BY        = $id_userU;
+        $log->DETAIL            = 'Updating Market ' . (string)$req->input('id'); 
+        $log->log_time          = now();
+        $log->save();   
 
         return redirect('master/location/market')->with('succ_msg', 'Berhasil mengubah data pasar!');
     }

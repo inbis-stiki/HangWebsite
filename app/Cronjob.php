@@ -971,19 +971,19 @@ class Cronjob extends Model
                 $sortedData[$nameArea]["PS"][">11"] = [];
             }
             
-            if (!isset($sortedData[$nameArea]["RETAIL"])) {
-                $sortedData[$nameArea]["RETAIL"]["2-3"] = [];
-                $sortedData[$nameArea]["RETAIL"]["4-5"] = [];
-                $sortedData[$nameArea]["RETAIL"]["6-10"] = [];
-                $sortedData[$nameArea]["RETAIL"][">11"] = [];
-            }
+            // if (!isset($sortedData[$nameArea]["RETAIL"])) {
+            //     $sortedData[$nameArea]["RETAIL"]["2-3"] = [];
+            //     $sortedData[$nameArea]["RETAIL"]["4-5"] = [];
+            //     $sortedData[$nameArea]["RETAIL"]["6-10"] = [];
+            //     $sortedData[$nameArea]["RETAIL"][">11"] = [];
+            // }
             
-            if (!isset($sortedData[$nameArea]["LOSS"])) {
-                $sortedData[$nameArea]["LOSS"]["2-3"] = [];
-                $sortedData[$nameArea]["LOSS"]["4-5"] = [];
-                $sortedData[$nameArea]["LOSS"]["6-10"] = [];
-                $sortedData[$nameArea]["LOSS"][">11"] = [];
-            }            
+            // if (!isset($sortedData[$nameArea]["LOSS"])) {
+            //     $sortedData[$nameArea]["LOSS"]["2-3"] = [];
+            //     $sortedData[$nameArea]["LOSS"]["4-5"] = [];
+            //     $sortedData[$nameArea]["LOSS"]["6-10"] = [];
+            //     $sortedData[$nameArea]["LOSS"][">11"] = [];
+            // }            
 
             // Add the row to the array for this ['CATEGORY_RO']
             if ($row['TYPE_SHOP'] == "Pedagang Sayur") {
