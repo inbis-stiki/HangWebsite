@@ -370,7 +370,7 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::getallcat();
 
-        dd($rOs);die;
+        // dd($rOs);die;
 
         app(ReportRepeatOrder::class)->gen_ro_shop($rOs, $updated_at);
     }
