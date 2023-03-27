@@ -997,6 +997,30 @@ class Cronjob extends Model
                     array_push($sortedData[$nameArea]["PS"][">11"], $row);
                 }
             }
+            
+            // if ($row['TYPE_SHOP'] == "Retail") {
+            //     if ((int)$row['CATEGORY_RO'] == 1) {
+            //         array_push($sortedData[$nameArea]["RETAIL"]["2-3"], $row);
+            //     } else if ((int)$row['CATEGORY_RO'] == 2) {
+            //         array_push($sortedData[$nameArea]["RETAIL"]["4-5"], $row);
+            //     } else if ((int)$row['CATEGORY_RO'] == 3) {
+            //         array_push($sortedData[$nameArea]["RETAIL"]["6-10"], $row);
+            //     } else if ((int)$row['CATEGORY_RO'] == 4) {
+            //         array_push($sortedData[$nameArea]["RETAIL"][">11"], $row);
+            //     }
+            // }
+            
+            // if ($row['TYPE_SHOP'] == "Loss") {
+            //     if ((int)$row['CATEGORY_RO'] == 1) {
+            //         array_push($sortedData[$nameArea]["LOSS"]["2-3"], $row);
+            //     } else if ((int)$row['CATEGORY_RO'] == 2) {
+            //         array_push($sortedData[$nameArea]["LOSS"]["4-5"], $row);
+            //     } else if ((int)$row['CATEGORY_RO'] == 3) {
+            //         array_push($sortedData[$nameArea]["LOSS"]["6-10"], $row);
+            //     } else if ((int)$row['CATEGORY_RO'] == 4) {
+            //         array_push($sortedData[$nameArea]["LOSS"][">11"], $row);
+            //     }
+            // }
         }
 
         return $sortedData;
