@@ -53,17 +53,33 @@ class RoleController extends Controller
         }
 
         
+
         $role                   = Role::find($req->input('id'));
+
+        $oldValues = $role->getOriginal();
+
         $role->NAME_ROLE        = $req->input('nama_role');
         $role->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+
+        $changedFields = array_keys($role->getDirty());
         $role->save();
 
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $role->getAttribute($field);
+        }
+
         $id_userU = SESSION::get('id_user');
-        $log                    = new logmd();
-        $log->UPDATED_BY        = $id_userU;
-        $log->DETAIL            = 'Updating Role ' . (string)$req->input('id'); 
-        $log->log_time          = now();
-        $log->save();   
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating Role ' . (string)$req->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        }    
 
         return redirect('master/role')->with('succ_msg', 'Berhasil mengubah data role!');
     }

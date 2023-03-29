@@ -78,17 +78,32 @@ class RegionalController extends Controller
 
         
         $regional = Regional::find($req->input('id'));
+
+        $oldValues = $regional->getOriginal();
+
         $regional->ID_LOCATION   = $req->input('location');
         $regional->NAME_REGIONAL = Str::upper($req->input('regional'));
         $regional->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+
+        $changedFields = array_keys($regional->getDirty());
         $regional->save();
 
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $regional->getAttribute($field);
+        }
+
         $id_userU = SESSION::get('id_user');
-        $log                    = new logmd();
-        $log->UPDATED_BY        = $id_userU;
-        $log->DETAIL            = 'Updating Regional ' . (string)$req->input('id'); 
-        $log->log_time          = now();
-        $log->save();   
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating Regional ' . (string)$req->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        } 
 
         return redirect('master/location/regional')->with('succ_msg', 'Berhasil mengubah data regional!');
     }

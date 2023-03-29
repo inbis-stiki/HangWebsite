@@ -109,18 +109,34 @@ class TargetActivityController extends Controller
         }
         
         $target_activity = TargetActivity::find($request->input('id'));
+
+        $oldValues = $target_activity->getOriginal();
+
         $target_activity->ID_ACTIVITY        = $request->input('aktivitas_edit');
         $target_activity->ID_REGIONAL        = $request->input('regional_edit');
         $target_activity->QUANTITY           = $request->input('quantity');
         $target_activity->DELETED_AT         = $request->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $target_activity->save();
 
+        $changedFields = array_keys($target_activity->getDirty());
+        $target_activity->save();
+
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $target_activity->getAttribute($field);
+        }
+
         $id_userU = SESSION::get('id_user');
-        $log                    = new logmd();
-        $log->UPDATED_BY        = $id_userU;
-        $log->DETAIL            = 'Updating Target Activity ' . (string)$request->input('id'); 
-        $log->log_time          = now();
-        $log->save();   
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating Target Activity ' . (string)$request->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        }    
 
         // dd($regional_price);
         return redirect('master/target-activity')->with('succ_msg', 'Berhasil mengubah data target aktivitas!');

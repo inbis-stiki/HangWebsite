@@ -303,6 +303,8 @@ class UserController extends Controller
             }
         }
 
+        $oldValues = $user->getOriginal();
+
         $user->USERNAME_USER    = $req->input('username');
         $user->NAME_USER        = $req->input('name');
         $user->EMAIL_USER       = $req->input('email');
@@ -311,14 +313,26 @@ class UserController extends Controller
         // $user->ID_AREA          = $req->input('area');
         $user->ID_ROLE          = $req->input('role');
         $user->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+
+        $changedFields = array_keys($user->getDirty());
         $user->save();
 
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $user->getAttribute($field);
+        }
+
         $id_userU = SESSION::get('id_user');
-        $log                    = new logmd();
-        $log->UPDATED_BY        = $id_userU;
-        $log->DETAIL            = 'Updating user ' . (string)$req->input('id'); 
-        $log->log_time          = now();
-        $log->save();        
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating User ' . (string)$req->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        }    
 
         return redirect('master/user')->with('succ_msg', 'Berhasil mengubah data user!');
     }
