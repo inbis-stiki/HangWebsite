@@ -370,19 +370,19 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::getallcat();
 
-        dd($rOs);die;
+        // dd($rOs);die;
 
         app(ReportRepeatOrder::class)->gen_ro_shop($rOs, $updated_at);
     }
-    public function genRORPOS($yearMonth)
+    public function genRORPOS()
     {
-        $year = date_format(date_create($yearMonth), 'Y');
-        $month = date_format(date_create($yearMonth), 'n');
+        $year = date_format(date_create('2022-12'), 'Y');
+        $month = date_format(date_create('2022-12'), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
         
         $rOs = Cronjob::queryGetRepeatOrderShop($year, $month);
 
-        dd($rOs);die;
+        // dd($rOs);die;
 
         $area = Cronjob::getreg($year, $month);  
 
