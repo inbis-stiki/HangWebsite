@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Product;
 use App\Regional;
 use App\TargetSale;
+use App\logmd;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
+use Session;
 
 class TargetSaleController extends Controller
 {
@@ -107,11 +109,33 @@ class TargetSaleController extends Controller
         }
         
         $target_sale = TargetSale::find($request->input('id'));
+
+        $oldValues = $target_sale->getOriginal();
+
         $target_sale->ID_PRODUCT         = $request->input('product_edit');
         $target_sale->ID_REGIONAL        = $request->input('regional_edit');
         $target_sale->QUANTITY           = $request->input('quantity');
         $target_sale->DELETED_AT         = $request->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+
+        $changedFields = array_keys($target_sale->getDirty());
         $target_sale->save();
+
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $target_sale->getAttribute($field);
+        }
+
+        $id_userU = SESSION::get('id_user');
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating Target Sale ' . (string)$request->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        }  
         // dd($regional_price);
         return redirect('master/target-sale')->with('succ_msg', 'Berhasil mengubah data target penjualan!');
         //

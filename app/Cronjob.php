@@ -927,8 +927,6 @@ class Cronjob extends Model
             t2.ID_SHOP = t.ID_SHOP
         LEFT JOIN md_shop ms ON
             ms.ID_SHOP = t.ID_SHOP
-            AND 
-            ms.TYPE_SHOP = 'Pedagang Sayur'
         INNER JOIN md_district md ON
             md.ID_DISTRICT = ms.ID_DISTRICT
         INNER JOIN md_area ma ON
@@ -952,7 +950,6 @@ class Cronjob extends Model
 
         // Initialize an empty array to store the sorted data
         $sortedData = [];
-        $temp = [];
 
         // Loop through the query results and group them by NAME_AREA
         foreach ($results as $row) {
@@ -960,67 +957,24 @@ class Cronjob extends Model
 
             // If this is the first row for this NAME_AREA, create an empty array for it
             if (!isset($sortedData[$nameArea])) {
-                $sortedData[$nameArea] = [];
+                $sortedData[$nameArea] = [
+                    "2-3" => [],
+                    "4-5" => [],
+                    "6-10" => [],
+                    ">11" => []
+                ];
             }
 
-            // If this is the first row for this ['CATEGORY_RO'], create an empty array for it
-            if (!isset($sortedData[$nameArea]["PS"])) {
-                $sortedData[$nameArea]["PS"]["2-3"] = [];
-                $sortedData[$nameArea]["PS"]["4-5"] = [];
-                $sortedData[$nameArea]["PS"]["6-10"] = [];
-                $sortedData[$nameArea]["PS"][">11"] = [];
+            // Add the row to the array for this NAME_AREA and CATEGORY_RO combination
+            if ((int)$row['CATEGORY_RO'] == 1) {
+                array_push($sortedData[$nameArea]["2-3"], $row);
+            } else if ((int)$row['CATEGORY_RO'] == 2) {
+                array_push($sortedData[$nameArea]["4-5"], $row);
+            } else if ((int)$row['CATEGORY_RO'] == 3) {
+                array_push($sortedData[$nameArea]["6-10"], $row);
+            } else if ((int)$row['CATEGORY_RO'] == 4) {
+                array_push($sortedData[$nameArea][">11"], $row);
             }
-            
-            // if (!isset($sortedData[$nameArea]["RETAIL"])) {
-            //     $sortedData[$nameArea]["RETAIL"]["2-3"] = [];
-            //     $sortedData[$nameArea]["RETAIL"]["4-5"] = [];
-            //     $sortedData[$nameArea]["RETAIL"]["6-10"] = [];
-            //     $sortedData[$nameArea]["RETAIL"][">11"] = [];
-            // }
-            
-            // if (!isset($sortedData[$nameArea]["LOSS"])) {
-            //     $sortedData[$nameArea]["LOSS"]["2-3"] = [];
-            //     $sortedData[$nameArea]["LOSS"]["4-5"] = [];
-            //     $sortedData[$nameArea]["LOSS"]["6-10"] = [];
-            //     $sortedData[$nameArea]["LOSS"][">11"] = [];
-            // }            
-
-            // Add the row to the array for this ['CATEGORY_RO']
-            if ($row['TYPE_SHOP'] == "Pedagang Sayur") {
-                if ((int)$row['CATEGORY_RO'] == 1) {
-                    array_push($sortedData[$nameArea]["PS"]["2-3"], $row);
-                } else if ((int)$row['CATEGORY_RO'] == 2) {
-                    array_push($sortedData[$nameArea]["PS"]["4-5"], $row);
-                } else if ((int)$row['CATEGORY_RO'] == 3) {
-                    array_push($sortedData[$nameArea]["PS"]["6-10"], $row);
-                } else if ((int)$row['CATEGORY_RO'] == 4) {
-                    array_push($sortedData[$nameArea]["PS"][">11"], $row);
-                }
-            }
-            
-            // if ($row['TYPE_SHOP'] == "Retail") {
-            //     if ((int)$row['CATEGORY_RO'] == 1) {
-            //         array_push($sortedData[$nameArea]["RETAIL"]["2-3"], $row);
-            //     } else if ((int)$row['CATEGORY_RO'] == 2) {
-            //         array_push($sortedData[$nameArea]["RETAIL"]["4-5"], $row);
-            //     } else if ((int)$row['CATEGORY_RO'] == 3) {
-            //         array_push($sortedData[$nameArea]["RETAIL"]["6-10"], $row);
-            //     } else if ((int)$row['CATEGORY_RO'] == 4) {
-            //         array_push($sortedData[$nameArea]["RETAIL"][">11"], $row);
-            //     }
-            // }
-            
-            // if ($row['TYPE_SHOP'] == "Loss") {
-            //     if ((int)$row['CATEGORY_RO'] == 1) {
-            //         array_push($sortedData[$nameArea]["LOSS"]["2-3"], $row);
-            //     } else if ((int)$row['CATEGORY_RO'] == 2) {
-            //         array_push($sortedData[$nameArea]["LOSS"]["4-5"], $row);
-            //     } else if ((int)$row['CATEGORY_RO'] == 3) {
-            //         array_push($sortedData[$nameArea]["LOSS"]["6-10"], $row);
-            //     } else if ((int)$row['CATEGORY_RO'] == 4) {
-            //         array_push($sortedData[$nameArea]["LOSS"][">11"], $row);
-            //     }
-            // }
         }
 
         return $sortedData;

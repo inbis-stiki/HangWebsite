@@ -370,23 +370,26 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::getallcat();
 
+        dd($rOs);die;
+
         app(ReportRepeatOrder::class)->gen_ro_shop($rOs, $updated_at);
     }
-    public function genRORPOS()
+    public function genRORPOS($yearMonth)
     {
-        
-        $year = date_format(date_create('2022-12'), 'Y');
-        $month = date_format(date_create('2022-12'), 'n');
+        $year = date_format(date_create($yearMonth), 'Y');
+        $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
         
         $rOs = Cronjob::queryGetRepeatOrderShop($year, $month);
+
+        dd($rOs);die;
 
         $area = Cronjob::getreg($year, $month);  
 
         if (!empty($rOs)) {
             foreach ($area as $reg) {
                 $ReportHead        = new ReportShopHead();
-                $unik                           = md5($reg->REGIONAL_TRANS);
+                $unik                           = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS).$year.$month);
                 $ReportHead->ID_HEAD          = "REP_" . $unik;
                 $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
                 $ReportHead->BULAN            = $month;
@@ -396,7 +399,7 @@ class CronjobController extends Controller
 
             foreach ($rOs as $item) {
                 $ReportDet        = new ReportShopDet();
-                $unik2                             = md5($item->NAME_REGIONAL);
+                $unik2                             = md5($item->NAME_REGIONAL.$year.$month);
                 $ReportDet->ID_HEAD               = "REP_" . $unik2;
                 $ReportDet->NAME_AREA             = $item->NAME_AREA;
                 $ReportDet->NAME_REGIONAL         = $item->NAME_REGIONAL;

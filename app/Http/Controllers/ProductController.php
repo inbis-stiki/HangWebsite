@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\logmd;
 use App\CategoryProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Session;
 
 class ProductController extends Controller
 {
@@ -72,6 +74,9 @@ class ProductController extends Controller
             $path = $req->file('image')->store('images', 's3');
         }
         $product = Product::find($req->input('id'));
+
+        $oldValues = $product->getOriginal();
+
         $cek = $product->CODE_PRODUCT == strtoupper($req->input('code_product')); 
         if ($cek == true) {
             $product->NAME_PRODUCT          = $req->input('name_product');
@@ -81,7 +86,26 @@ class ProductController extends Controller
                 $product->IMAGE_PRODUCT     = Storage::disk('s3')->url($path);
             }
             $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+
+            $changedFields = array_keys($product->getDirty());
             $product->save();
+    
+            $newValues = [];
+            foreach($changedFields as $field) {
+                $newValues[$field] = $product->getAttribute($field);
+            }
+    
+            $id_userU = SESSION::get('id_user');
+    
+            if (!empty($newValues)) {
+                DB::table('log_md')->insert([
+                    'UPDATED_BY' => $id_userU,
+                    'DETAIL' => 'Updating Product ' . (string)$req->input('id'),
+                    'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                    'NEW_VALUES' => json_encode($newValues),
+                    'log_time' => now(),
+                ]);
+            } 
 
             return redirect('master/product')->with('succ_msg', 'Berhasil mengubah data produk!');
         }else{
@@ -97,6 +121,13 @@ class ProductController extends Controller
                 }
                 $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
                 $product->save();
+
+                $id_userU = SESSION::get('id_user');
+                $log                    = new logmd();
+                $log->UPDATED_BY        = $id_userU;
+                $log->DETAIL            = 'Updating Product ' . (string)$req->input('id'); 
+                $log->log_time          = now();
+                $log->save();   
 
                 return redirect('master/product')->with('succ_msg', 'Berhasil mengubah data produk!');
             }

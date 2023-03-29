@@ -45,7 +45,7 @@ Route::get('report/trend-asmen/{year}', 'CronjobController@genTrendAsmen');
 Route::post('report/trans-daily', 'CronjobController@genTransDaily');
 Route::get('cronjob/gen-ro-rpo/{yearMonth}', 'CronjobController@genRORPO');
 Route::get('cronjob/gen-ro-shop/{yearMonth}', 'CronjobController@genROSHOP');
-Route::get('cronjob/gen-ro-rpo-s', 'CronjobController@genRORPOS');
+Route::get('cronjob/gen-ro-rpo-s/{yearMonth}', 'CronjobController@genRORPOS');
 Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
 Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
