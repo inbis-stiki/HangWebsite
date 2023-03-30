@@ -101,7 +101,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="toko" class="tab-pane active">
+                            <div id="toko" class="tab-pane">
                                 <div class="row">
                                     <div class="col">
                                         <div class="table-responsive">
@@ -144,6 +144,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-12" style="margin-bottom: 5px;">
+                <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h4 class="card-title">Cetak Report Toko</h4>
+                            <div class="form-group">
+                                <label for="start_date">Start Date:</label>
+                                <input id="start_date" name="start_date" class="datepicker-default form-control" type="text">
+                            </div>
+                            <div class="form-group">
+                                <label for="end_date">End Date:</label>
+                                <input id="end_date" name="end_date" class="datepicker-default form-control" type="text">
+                            </div>
+                            <button id="generate_report" class="btn btn-primary">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!--**********************************
@@ -151,5 +174,30 @@
 ***********************************-->
 @include('template/footer')
 <script>
+    var startDatePicker = $('#start_date').pickadate({
+        format: 'yyyy-mm-dd'
+    });
+
+    var endDatePicker = $('#end_date').pickadate({
+        format: 'yyyy-mm-dd'
+    });
+
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    const generateReportButton = document.getElementById('generate_report');
+
+    // Add a click event listener to the button
+    generateReportButton.addEventListener('click', function() {
+        // Get the values of the datepicker inputs
+        const startDateValue = startDateInput.value;
+        const endDateValue = endDateInput.value;
+
+        // Build the URL with the date range parameters
+        const url = `{{ url('cronjob/gen-ro-shop-range') }}?start=${startDateValue}&end=${endDateValue}`;
+
+        // Redirect to the URL
+        window.location.href = url;
+    });
+
     $('.datatable').DataTable();
 </script>

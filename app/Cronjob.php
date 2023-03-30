@@ -946,7 +946,7 @@ class Cronjob extends Model
 
     public static function getallcat()
     {
-        $results = json_decode(json_encode(DB::select('SELECT * FROM report_shop_detail')), true);
+        $results = json_decode(json_encode(DB::select('SELECT rsd.* FROM report_shop_head rsh JOIN report_shop_detail rsd ON rsd.ID_HEAD = rsh.ID_HEAD')), true);
 
         // Initialize an empty array to store the sorted data
         $sortedData = [];
