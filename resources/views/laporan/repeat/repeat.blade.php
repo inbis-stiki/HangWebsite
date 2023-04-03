@@ -129,7 +129,7 @@
                                                         <td>{{ $no++ }}</td>
                                                         <td>{{ $monthLat }}</td>
                                                         <td>{{ $year }}</td>
-                                                        <td><a href="{{ url('cronjob/gen-ro-rpo/'.$year.'-'.$month) }}" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> Download</a></td>
+                                                        <td><a href="{{ url('cronjob/gen-ro-shop/'.$year.'-'.$month) }}" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> Download</a></td>
                                                     </tr>
                                                     @endforeach
                                                     </tr>
