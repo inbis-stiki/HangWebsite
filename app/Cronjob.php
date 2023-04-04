@@ -580,35 +580,59 @@ class Cronjob extends Model
     public static function queryGetTransactionDaily($querySumProd, $date, $regional)
     {
         return DB::select("
-                SELECT 
+                SELECT
                     u.ID_USER,
                     u.NAME_USER,
                     mt.NAME_TYPE ,
                     td.AREA_TD ,
                     (
-                        SELECT IF(t.DISTRICT IS NOT NULL, t.DISTRICT, t.KECAMATAN)
-                        FROM `transaction` t
-                        WHERE t.ID_TD = td.ID_TD AND t.ID_TYPE = mt.ID_TYPE 
-                        LIMIT 1
-                    ) as DISTRICT ,
+                    SELECT
+                        IF(t.DISTRICT IS NOT NULL,
+                        t.DISTRICT,
+                        t.KECAMATAN)
+                    FROM
+                        `transaction` t
+                    WHERE
+                        t.ID_TD = td.ID_TD
+                        AND t.ID_TYPE = mt.ID_TYPE
+                    LIMIT 1 ) AS DISTRICT ,
                     (
-                    	SELECT t.DETAIL_LOCATION
-                        FROM `transaction` t
-                        WHERE t.ID_TD = td.ID_TD AND t.ID_TYPE = mt.ID_TYPE 
-                        LIMIT 1
-                    ) as DETAIL_LOCATION ,
+                    SELECT
+                        t.DETAIL_LOCATION
+                    FROM
+                        `transaction` t
+                    WHERE
+                        t.ID_TD = td.ID_TD
+                        AND t.ID_TYPE = mt.ID_TYPE
+                    LIMIT 1 ) AS DETAIL_LOCATION ,
                     mr.NAME_ROLE ,
                     td.ISFINISHED_TD,
                     td.TOTAL_TD ,
                     " . $querySumProd . "
-                FROM transaction_daily td 
-                INNER JOIN md_type mt 
-                    ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "' AND mt.ID_TYPE = td.ID_TYPE
-                INNER JOIN `user` u
-                    ON u.ID_USER = td.ID_USER
-                INNER JOIN md_role mr 
-                    ON mr.ID_ROLE = u.ID_ROLE 
-                ORDER BY td.AREA_TD ASC, u.NAME_USER ASC
+                FROM
+                    transaction_daily td
+                INNER JOIN md_type mt ON
+                    DATE(td.DATE_TD) = '" . $date . "'
+                    AND td.REGIONAL_TD = '" . $regional . "'
+                    AND mt.ID_TYPE = td.ID_TYPE
+                INNER JOIN `user` u ON
+                    u.ID_USER = td.ID_USER
+                INNER JOIN md_role mr ON
+                    mr.ID_ROLE = u.ID_ROLE
+                INNER JOIN md_area ma ON
+                    u.deleted_at IS NULL
+                    AND ma.ID_AREA = u.ID_AREA
+                    AND ma.ID_REGIONAL = (
+                        SELECT 
+                            mr2.ID_REGIONAL
+                        FROM 
+                            md_regional mr2 
+                        WHERE 
+                            mr2.NAME_REGIONAL = '" . $regional . "'
+                    )
+                ORDER BY
+                    td.AREA_TD ASC,
+                    u.NAME_USER ASC
         ");
     }
     public static function queryGetRepeatOrder($year, $month)
