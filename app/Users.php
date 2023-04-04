@@ -21,7 +21,7 @@ class Users extends Model
                 ON u.deleted_at IS NULL AND ma.ID_AREA = u.ID_AREA
             INNER JOIN md_role mr
                 ON mr.ID_ROLE = u.ID_ROLE
-            WHERE u.ID_REGIONAL = '".$idRegional."' AND u.ID_ROLE IN (5, 6) AND u.ID_USER NOT IN (".$idUsers.")
+            WHERE ma.ID_REGIONAL = '".$idRegional."' AND u.ID_ROLE IN (5, 6) AND u.ID_USER NOT IN (".$idUsers.")
             ORDER BY ma.NAME_AREA ASC, u.NAME_USER ASC
         ");
     }
