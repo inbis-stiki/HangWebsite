@@ -379,20 +379,16 @@ class CronjobController extends Controller
     }
     public function genROSHOPbyRange()
     {
-        $start = $_GET['start'];
-        $end = $_GET['end'];
+        $startM = $_GET['start_month'];
+        $startY = $_GET['start_year'];
+        $endM = $_GET['end_month'];
+        $endY = $_GET['end_year'];
 
-        $yearS = date_format(date_create($start), 'Y');
-        $monthS = date_format(date_create($start), 'n');
-        $yearE = date_format(date_create($end), 'Y');
-        $monthE = date_format(date_create($end), 'n');
-        $updated_at     = date('Y-m-d', strtotime('-1 days'));
-
-        $rOs = Cronjob::queryGetShopByRange($yearS, $monthS, $yearE, $monthE);
+        $rOs = Cronjob::queryGetShopByRange($startM, $startY, $endM, $endY);
 
         dd($rOs);die;
 
-        app(ReportRepeatOrder::class)->gen_ro_shop($rOs, $updated_at);
+        app(ReportRepeatOrder::class)->gen_ro_shop($rOs);
     }
     public function genRORPOS($yearMonth)
     {
