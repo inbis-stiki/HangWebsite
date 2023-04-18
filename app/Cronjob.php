@@ -967,13 +967,40 @@ class Cronjob extends Model
             ORDER BY mr.NAME_REGIONAL, ma.NAME_AREA ASC
         ");
 
-        $data = [];
-        for ($y = $startY; $y <= $endY; $y++) { 
-            for ($i = $startM; $i <= $endM; $i++) {
+        $dataValue = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
                 array_push(
-                    $data,
-                    "SUM(CASE WHEN rh.BULAN = " . $i . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO ELSE 0 END) AS Bulan" . $i . "Tahun" .$y
+                    $dataValue,
+                    "SUM(CASE WHEN rh.BULAN = " . $m . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO ELSE 0 END) AS 'VALUE" . $no . "'"
                 );
+                $no++;
+            }
+        }
+
+
+        $dataKey = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataKey,
+                    "('" . $m . ";" . $y . "') AS 'KEY" . $no . "'"
+                );
+                $no++;
             }
         }
 
@@ -984,7 +1011,12 @@ class Cronjob extends Model
             $rOs[$area->NAME_REGIONAL][$area->NAME_AREA] = DB::select("
                 SELECT 
                     s.NAME_SHOP,
-                    " . implode(',',  $data) . "
+                    s.OWNER_SHOP,
+                    s.DETLOC_SHOP,
+                    s.TYPE_SHOP,
+                    s.TELP_SHOP" . (!empty($dataKey) ? ',' : '') . "
+                    " . implode(',',  $dataKey) . "" . (!empty($dataValue) ? ',' : '') . "
+                    " . implode(',',  $dataValue) . "
                 FROM md_shop s
                 JOIN md_district md ON md.ID_DISTRICT = s.ID_DISTRICT
                 JOIN md_area ma ON ma.ID_AREA = md.ID_AREA
@@ -1037,8 +1069,8 @@ class Cronjob extends Model
     public static function getallcatRange($yearS, $monthS, $yearE, $monthE)
     {
         $resultsq = DB::table('report_shop_head as rsh')
-             ->join('report_shop_detail as rsd', 'rsd.ID_HEAD', '=', 'rsh.ID_HEAD')
-             ->select(DB::raw('SUM(rsd.TOTAL_RO) as TOTAL_RO, 
+            ->join('report_shop_detail as rsd', 'rsd.ID_HEAD', '=', 'rsh.ID_HEAD')
+            ->select(DB::raw('SUM(rsd.TOTAL_RO) as TOTAL_RO, 
              rsd.ID_SHOP,
              rsd.NAME_SHOP,
              rsd.NAME_DISTRICT,
@@ -1049,10 +1081,10 @@ class Cronjob extends Model
              rsd.NAME_AREA,
              rsd.NAME_REGIONAL,
              rsd.CATEGORY_RO'))
-             ->whereBetween('rsh.TAHUN', [$yearS, $yearE])
-             ->whereBetween('rsh.BULAN', [$monthS, $monthE])
-             ->groupBy('rsd.ID_SHOP')
-             ->get();
+            ->whereBetween('rsh.TAHUN', [$yearS, $yearE])
+            ->whereBetween('rsh.BULAN', [$monthS, $monthE])
+            ->groupBy('rsd.ID_SHOP')
+            ->get();
 
         $results = json_decode(json_encode($resultsq), true);
 

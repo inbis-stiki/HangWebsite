@@ -447,6 +447,69 @@ class ReportRepeatOrder
         $writer->save('php://output');
     }
 
+    public function gen_ro_shop_range($rOs, $totMonth)
+    {
+        $spreadsheet = new Spreadsheet();
+
+        $regional = '';
+        $lastRange = '';
+        $dataRange = range('G', 'Z');
+        $months = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec");
+        foreach ($rOs as $regional => $detRegional) {
+            foreach ($detRegional as $key => $item) {
+                $ObjSheet = $spreadsheet->createSheet();
+                $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $key));
+
+                $ObjSheet->getColumnDimension('B')->setWidth('25');
+                $ObjSheet->getColumnDimension('C')->setWidth('45');
+                $ObjSheet->getColumnDimension('D')->setWidth('20');
+                $ObjSheet->getColumnDimension('E')->setWidth('20');
+                $ObjSheet->getColumnDimension('F')->setWidth('15');
+
+                // HEADER
+                $ObjSheet->mergeCells('B2:B3')->setCellValue('B2', 'NAMA TOKO')->getStyle('B2:B3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('C2:C3')->setCellValue('C2', 'ALAMAT')->getStyle('C2:C3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('D2:D3')->setCellValue('D2', 'PEMILIK')->getStyle('D2:D3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('E2:E3')->setCellValue('E2', 'NOMOR TELEPON')->getStyle('E2:E3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('F2:F3')->setCellValue('F2', 'TIPE TOKO')->getStyle('F2:F3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+
+                $rowData = 4;
+                foreach ($item as $detItem) {
+                    // ISI KONTEN
+                    $ObjSheet->setCellValue('B' . $rowData, $detItem->NAME_SHOP)->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('C' . $rowData, $detItem->DETLOC_SHOP)->getStyle('C' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('D' . $rowData, $detItem->OWNER_SHOP)->getStyle('D' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('E' . $rowData, $detItem->TELP_SHOP)->getStyle('E' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('F' . $rowData, $detItem->TYPE_SHOP)->getStyle('F' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                    // HEADER
+                    $tmpArray = json_decode(json_encode($detItem), true);
+                    for ($i = 0; $i < $totMonth; $i++) {
+                        $ObjSheet->getColumnDimension($dataRange[$i])->setWidth('20');
+                        $keyData = $tmpArray["KEY" . $i];
+                        $ObjSheet->setCellValue($dataRange[$i] . '3', $months[(explode(';', $keyData)[0] - 1)] . '' . explode(';', $keyData)[1])->getStyle($dataRange[$i] . '3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                        $lastRange = $dataRange[$i];
+
+                        // ISI KONTEN
+                        $ObjSheet->setCellValue($dataRange[$i] . '' . $rowData, $tmpArray["VALUE" . $i])->getStyle($dataRange[$i] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    }
+                    $rowData++;
+                }
+                $ObjSheet->mergeCells($dataRange[0] . '2:' . $lastRange . '2')->setCellValue($dataRange[0] . '2', 'Total RO')->getStyle($dataRange[0] . '2:' . $lastRange . '2')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+            }
+        }
+
+        $spreadsheet->removeSheetByIndex(0);
+
+        $fileName = 'Repeat Order Toko ' . $regional;
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel'); // generate excel file
+        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
     public function styling_default_template($FontSize, $ColorText)
     {
         $styleTitle['font']['bold']                           = true;
