@@ -383,8 +383,9 @@ class CronjobController extends Controller
         $startY = $_GET['start_year'];
         $endM = $_GET['end_month'];
         $endY = $_GET['end_year'];
+        $idRegional = $_GET['regional'];
 
-        $rOs = Cronjob::queryGetShopByRange($startM, $startY, $endM, $endY);
+        $rOs = Cronjob::queryGetShopByRange($startM, $startY, $endM, $endY, $idRegional);
 
         dd($rOs);die;
 

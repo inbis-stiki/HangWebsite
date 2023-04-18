@@ -954,26 +954,47 @@ class Cronjob extends Model
         return $rOs;
     }
 
-    public static function queryGetShopByRange($startM, $startY, $endM, $endY)
+    public static function queryGetShopByRange($startM, $startY, $endM, $endY, $idRegional)
     {
-        $data = [];
-        for ($i = $startM; $i <= $endM; $i++) {
-            array_push(
-                $data,
-                "SUM(CASE WHEN rh.BULAN = " . $i . " THEN rd.TOTAL_RO ELSE 0 END) AS Bulan" . $i
-            );
-        }
-
-        $rOs = DB::select("
-        SELECT 
-            s.NAME_SHOP,
-            " . implode(',',  $data) . "
-        FROM md_shop s
-        JOIN report_shop_detail rd ON s.ID_SHOP = rd.ID_SHOP
-        JOIN report_shop_head rh ON rd.ID_HEAD = rh.ID_HEAD
-        GROUP BY s.NAME_SHOP;
+        $areas = DB::select("
+            SELECT mr.NAME_REGIONAL, ma.NAME_AREA
+            FROM `md_shop` ms
+            JOIN `md_district` md ON md.ID_DISTRICT = ms.ID_DISTRICT
+            JOIN `md_area` ma ON ma.ID_AREA = md.ID_AREA
+            JOIN `md_regional` mr ON mr.ID_REGIONAL = ma.ID_REGIONAL
+            WHERE mr.ID_REGIONAL = " . $idRegional . "
+            GROUP BY mr.NAME_REGIONAL, ma.NAME_AREA
+            ORDER BY mr.NAME_REGIONAL, ma.NAME_AREA ASC
         ");
 
+        $data = [];
+        for ($y = $startY; $y <= $endY; $y++) { 
+            for ($i = $startM; $i <= $endM; $i++) {
+                array_push(
+                    $data,
+                    "SUM(CASE WHEN rh.BULAN = " . $i . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO ELSE 0 END) AS Bulan" . $i . "Tahun" .$y
+                );
+            }
+        }
+
+        $rOs = [];
+
+        foreach ($areas as $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) $rOs[$area->NAME_REGIONAL] = [];
+            $rOs[$area->NAME_REGIONAL][$area->NAME_AREA] = DB::select("
+                SELECT 
+                    s.NAME_SHOP,
+                    " . implode(',',  $data) . "
+                FROM md_shop s
+                JOIN md_district md ON md.ID_DISTRICT = s.ID_DISTRICT
+                JOIN md_area ma ON ma.ID_AREA = md.ID_AREA
+                JOIN md_regional mr ON mr.ID_REGIONAL = ma.ID_REGIONAL
+                JOIN report_shop_detail rd ON s.ID_SHOP = rd.ID_SHOP
+                JOIN report_shop_head rh ON rd.ID_HEAD = rh.ID_HEAD
+                WHERE mr.NAME_REGIONAL = '" . $area->NAME_REGIONAL . "' AND ma.NAME_AREA = '" . $area->NAME_AREA . "'
+                GROUP BY s.NAME_SHOP
+            ");
+        }
         return $rOs;
     }
 
