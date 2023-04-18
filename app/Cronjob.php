@@ -603,11 +603,13 @@ class Cronjob extends Model
                     " . $querySumProd . "
                 FROM transaction_daily td 
                 INNER JOIN md_type mt 
-                    ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "' AND mt.ID_TYPE = td.ID_TYPE
+                    ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "' AND (mt.ID_TYPE = td.ID_TYPE OR td.ID_TYPE IS NULL)
                 INNER JOIN `user` u
                     ON u.ID_USER = td.ID_USER
                 INNER JOIN md_role mr 
-                    ON mr.ID_ROLE = u.ID_ROLE 
+                    ON mr.ID_ROLE = u.ID_ROLE
+                GROUP by
+	                u.NAME_USER
                 ORDER BY td.AREA_TD ASC, u.NAME_USER ASC
         ");
     }
@@ -939,6 +941,30 @@ class Cronjob extends Model
             t.ID_SHOP
         ORDER BY
             mr.ID_REGIONAL ASC
+        LIMIT 10
+        ");
+
+        return $rOs;
+    }
+
+    public static function queryGetShopByRange($yearS, $monthS, $yearE, $monthE)
+    {
+        $data = [];
+        for ($i = 1; $i <= 4; $i++) {
+            array_push(
+                $data,
+                "SUM(CASE WHEN rh.BULAN = " . $i . " THEN rd.TOTAL_RO ELSE 0 END) AS Bulan" . $i
+            );
+        }
+
+        $rOs = DB::select("
+        SELECT 
+            s.NAME_SHOP,
+            " . implode(',',  $data) . "
+        FROM md_shop s
+        JOIN report_shop_detail rd ON s.ID_SHOP = rd.ID_SHOP
+        JOIN report_shop_head rh ON rd.ID_HEAD = rh.ID_HEAD
+        GROUP BY s.NAME_SHOP;
         ");
 
         return $rOs;
@@ -972,7 +998,61 @@ class Cronjob extends Model
                 array_push($sortedData[$nameArea]["4-5"], $row);
             } else if ((int)$row['CATEGORY_RO'] == 3) {
                 array_push($sortedData[$nameArea]["6-10"], $row);
-            } else if ((int)$row['CATEGORY_RO'] == 4) {
+            } else {
+                array_push($sortedData[$nameArea][">11"], $row);
+            }
+        }
+
+        return $sortedData;
+    }
+
+    public static function getallcatRange($yearS, $monthS, $yearE, $monthE)
+    {
+        $resultsq = DB::table('report_shop_head as rsh')
+             ->join('report_shop_detail as rsd', 'rsd.ID_HEAD', '=', 'rsh.ID_HEAD')
+             ->select(DB::raw('SUM(rsd.TOTAL_RO) as TOTAL_RO, 
+             rsd.ID_SHOP,
+             rsd.NAME_SHOP,
+             rsd.NAME_DISTRICT,
+             rsd.OWNER_SHOP,
+             rsd.DETLOC_SHOP,
+             rsd.TYPE_SHOP,
+             rsd.TELP_SHOP,
+             rsd.NAME_AREA,
+             rsd.NAME_REGIONAL,
+             rsd.CATEGORY_RO'))
+             ->whereBetween('rsh.TAHUN', [$yearS, $yearE])
+             ->whereBetween('rsh.BULAN', [$monthS, $monthE])
+             ->groupBy('rsd.ID_SHOP')
+             ->get();
+
+        $results = json_decode(json_encode($resultsq), true);
+
+        // Initialize an empty array to store the sorted data
+        $sortedData = [];
+
+        // Loop through the query results and group them by NAME_AREA
+        foreach ($results as $row) {
+            $nameArea = $row['NAME_AREA'];
+
+            // If this is the first row for this NAME_AREA, create an empty array for it
+            if (!isset($sortedData[$nameArea])) {
+                $sortedData[$nameArea] = [
+                    "2-3" => [],
+                    "4-5" => [],
+                    "6-10" => [],
+                    ">11" => []
+                ];
+            }
+
+            // Add the row to the array for this NAME_AREA and CATEGORY_RO combination
+            if ((int)$row['CATEGORY_RO'] == 1) {
+                array_push($sortedData[$nameArea]["2-3"], $row);
+            } else if ((int)$row['CATEGORY_RO'] == 2) {
+                array_push($sortedData[$nameArea]["4-5"], $row);
+            } else if ((int)$row['CATEGORY_RO'] == 3) {
+                array_push($sortedData[$nameArea]["6-10"], $row);
+            } else {
                 array_push($sortedData[$nameArea][">11"], $row);
             }
         }

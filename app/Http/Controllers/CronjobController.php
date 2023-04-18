@@ -343,12 +343,15 @@ class CronjobController extends Controller
 
         $querySumProd = implode(',', $querySumProd);
         $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, $date, $nRegional);
+        // dd($transDaily);die;
         if ($transDaily != null) {
             $idUsers    = implode(',', array_map(function ($entry) {
                 return "'" . $entry->ID_USER . "'";
             }, $transDaily));
 
             $noTransDaily   = Users::getUserByRegional($_POST['idRegional'], $idUsers);
+
+            // dd($noTransDaily);die;
         }
 
         app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional, $date);
@@ -385,9 +388,9 @@ class CronjobController extends Controller
         $monthE = date_format(date_create($end), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $rOs = Cronjob::getallcat();
+        $rOs = Cronjob::queryGetShopByRange($yearS, $monthS, $yearE, $monthE);
 
-        dd($yearS);die;
+        dd($rOs);die;
 
         app(ReportRepeatOrder::class)->gen_ro_shop($rOs, $updated_at);
     }
