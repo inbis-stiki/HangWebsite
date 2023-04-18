@@ -580,23 +580,31 @@ class Cronjob extends Model
     public static function queryGetTransactionDaily($querySumProd, $date, $regional)
     {
         return DB::select("
-                SELECT 
+                SELECT
                     u.ID_USER,
                     u.NAME_USER,
                     mt.NAME_TYPE ,
                     td.AREA_TD ,
                     (
-                        SELECT IF(t.DISTRICT IS NOT NULL, t.DISTRICT, t.KECAMATAN)
-                        FROM `transaction` t
-                        WHERE t.ID_TD = td.ID_TD AND t.ID_TYPE = mt.ID_TYPE 
-                        LIMIT 1
-                    ) as DISTRICT ,
+                    SELECT
+                        IF(t.DISTRICT IS NOT NULL,
+                        t.DISTRICT,
+                        t.KECAMATAN)
+                    FROM
+                        `transaction` t
+                    WHERE
+                        t.ID_TD = td.ID_TD
+                        AND t.ID_TYPE = mt.ID_TYPE
+                    LIMIT 1 ) AS DISTRICT ,
                     (
-                    	SELECT t.DETAIL_LOCATION
-                        FROM `transaction` t
-                        WHERE t.ID_TD = td.ID_TD AND t.ID_TYPE = mt.ID_TYPE 
-                        LIMIT 1
-                    ) as DETAIL_LOCATION ,
+                    SELECT
+                        t.DETAIL_LOCATION
+                    FROM
+                        `transaction` t
+                    WHERE
+                        t.ID_TD = td.ID_TD
+                        AND t.ID_TYPE = mt.ID_TYPE
+                    LIMIT 1 ) AS DETAIL_LOCATION ,
                     mr.NAME_ROLE ,
                     td.ISFINISHED_TD,
                     td.TOTAL_TD ,
