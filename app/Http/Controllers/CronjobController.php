@@ -25,6 +25,7 @@ use App\Users;
 use Carbon\Carbon;
 use Exception;
 use App\TargetUser;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
@@ -385,28 +386,39 @@ class CronjobController extends Controller
         $endY = $_GET['end_year'];
         $idRegional = $_GET['regional'];
 
+        $totalMonth = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                $totalMonth++;
+            }
+        }
+
         $rOs = Cronjob::queryGetShopByRange($startM, $startY, $endM, $endY, $idRegional);
 
-        dd($rOs);die;
-
-        app(ReportRepeatOrder::class)->gen_ro_shop($rOs);
+        app(ReportRepeatOrder::class)->gen_ro_shop_range($rOs, $totalMonth);
     }
     public function genRORPOS($yearMonth)
     {
         $year = date_format(date_create($yearMonth), 'Y');
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
-        
+
         $rOs = Cronjob::queryGetRepeatOrderShop($year, $month);
 
         // dd($rOs);die;
 
-        $area = Cronjob::getreg($year, $month);  
+        $area = Cronjob::getreg($year, $month);
 
         if (!empty($rOs)) {
             foreach ($area as $reg) {
                 $ReportHead        = new ReportShopHead();
-                $unik                           = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS).$year.$month);
+                $unik                           = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
                 $ReportHead->ID_HEAD          = "REP_" . $unik;
                 $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
                 $ReportHead->BULAN            = $month;
@@ -416,7 +428,7 @@ class CronjobController extends Controller
 
             foreach ($rOs as $item) {
                 $ReportDet        = new ReportShopDet();
-                $unik2                             = md5($item->NAME_REGIONAL.$year.$month);
+                $unik2                             = md5($item->NAME_REGIONAL . $year . $month);
                 $ReportDet->ID_HEAD               = "REP_" . $unik2;
                 $ReportDet->NAME_AREA             = $item->NAME_AREA;
                 $ReportDet->NAME_REGIONAL         = $item->NAME_REGIONAL;
@@ -433,16 +445,16 @@ class CronjobController extends Controller
             }
 
             $ranges = DB::table('md_range_repeat')->select('ID_RANGE', 'START', 'END')->get();
-        
+
             foreach ($ranges as $range) {
                 $range_id = $range->ID_RANGE;
                 $min_total_ro = $range->START;
                 $max_total_ro = $range->END;
-                
+
                 // Execute the SQL query for the current range
                 DB::table('report_shop_detail')
-                ->whereBetween('TOTAL_RO', [$min_total_ro, $max_total_ro])
-                ->update(['CATEGORY_RO' => $range_id]);
+                    ->whereBetween('TOTAL_RO', [$min_total_ro, $max_total_ro])
+                    ->update(['CATEGORY_RO' => $range_id]);
             }
         }
 
