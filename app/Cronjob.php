@@ -949,16 +949,15 @@ class Cronjob extends Model
             t.ID_SHOP
         ORDER BY
             mr.ID_REGIONAL ASC
-        LIMIT 10
         ");
 
         return $rOs;
     }
 
-    public static function queryGetShopByRange($yearS, $monthS, $yearE, $monthE)
+    public static function queryGetShopByRange($startM, $startY, $endM, $endY)
     {
         $data = [];
-        for ($i = 1; $i <= 4; $i++) {
+        for ($i = $startM; $i <= $endM; $i++) {
             array_push(
                 $data,
                 "SUM(CASE WHEN rh.BULAN = " . $i . " THEN rd.TOTAL_RO ELSE 0 END) AS Bulan" . $i
