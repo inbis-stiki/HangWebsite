@@ -141,7 +141,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
             <div class="col-12" style="margin-bottom: 5px;">
                 <div class="card">
@@ -149,6 +148,14 @@
                         <h4 class="card-title">Cetak Report Toko</h4>
                     </div>
                     <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="regional">Regional:</label>
+                                <select id="regional" name="regional" class="form-control">
+                                    <option selected disabled value=''>Pilih Regional</option>@foreach ($regional as $reg)<option value='{{ $reg->ID_REGIONAL }}'>{{ $reg->NAME_REGIONAL }}</option>@endforeach
+                                </select>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="start_month">Start Month:</label>
@@ -225,8 +232,9 @@
             var start_year = $('#start_year').val();
             var end_month = $('#end_month').val();
             var end_year = $('#end_year').val();
+            var regional = $('#regional').val();
 
-            var url = 'cronjob/gen-ro-shop-range?start_month=' + start_month + '&start_year=' + start_year + '&end_month=' + end_month + '&end_year=' + end_year;
+            var url = '{{ url("cronjob/gen-ro-shop-range") }}?start_month=' + start_month + '&start_year=' + start_year + '&end_month=' + end_month + '&end_year=' + end_year + '&regional=' + regional;
 
             window.location.href = url;
         });
