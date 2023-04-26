@@ -142,6 +142,8 @@ class ReportTransaction
             $totDisplay = 0;
             foreach ($products as $product) {
                 if($trans->ISFINISHED_TD == "0"){
+                    $arrTrans = json_decode(json_encode($trans), true);
+                    $ObjSheet->setCellValue($colData[$colIndex] . $rowStart, $arrTrans[$product->CODE_PRODUCT])->getStyle($colData[$colIndex] . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
                     $colIndex++;
                 } else{
                     $arrTrans = json_decode(json_encode($trans), true);
