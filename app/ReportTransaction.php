@@ -141,12 +141,16 @@ class ReportTransaction
             $colIndex   = 0;
             $totDisplay = 0;
             foreach ($products as $product) {
-                $arrTrans = json_decode(json_encode($trans), true);
-                $ObjSheet->setCellValue($colData[$colIndex] . $rowStart, $arrTrans[$product->CODE_PRODUCT])->getStyle($colData[$colIndex] . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-                
-                $totDisplay += $arrTrans[$product->CODE_PRODUCT];
-                $totDetProd[$product->CODE_PRODUCT] += $arrTrans[$product->CODE_PRODUCT];
-                $colIndex++;
+                if($trans->ISFINISHED_TD == "0"){
+                    $colIndex++;
+                } else{
+                    $arrTrans = json_decode(json_encode($trans), true);
+                    $ObjSheet->setCellValue($colData[$colIndex] . $rowStart, $arrTrans[$product->CODE_PRODUCT])->getStyle($colData[$colIndex] . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+
+                    $totDisplay += $arrTrans[$product->CODE_PRODUCT];
+                    $totDetProd[$product->CODE_PRODUCT] += $arrTrans[$product->CODE_PRODUCT];
+                    $colIndex++;   
+                }
             }
             $totAllDisplay += $totDisplay;
 
