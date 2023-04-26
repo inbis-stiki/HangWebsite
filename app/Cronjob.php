@@ -616,8 +616,6 @@ class Cronjob extends Model
                     ON u.ID_USER = td.ID_USER
                 INNER JOIN md_role mr 
                     ON mr.ID_ROLE = u.ID_ROLE
-                GROUP by
-	                u.NAME_USER
                 ORDER BY td.AREA_TD ASC, u.NAME_USER ASC
         ");
     }
