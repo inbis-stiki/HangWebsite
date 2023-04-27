@@ -595,7 +595,7 @@ SELECT
 	td.TOTAL_TD
 FROM
 	transaction_daily td
-JOIN md_type mt ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "' AND (mt.ID_TYPE = td.ID_TYPE OR td.ID_TYPE IS NULL
+JOIN md_type mt ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "' AND (mt.ID_TYPE = td.ID_TYPE OR td.ID_TYPE IS NULL)
 INNER JOIN `user` u ON
 	u.ID_USER = td.ID_USER
 INNER JOIN md_role mr ON
