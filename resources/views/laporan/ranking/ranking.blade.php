@@ -36,7 +36,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link active" data-toggle="tab" href="#asmen" role="tab"
                                         aria-selected="false">
-                                        Asmen
+                                        RPC
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                     @php
-                        $begin = new DateTime('2023-01-31');
+                        $begin = new DateTime('2023-01-01');
                         $end = new DateTime(date('Y-m'));
 
                         $interval = DateInterval::createFromDateString('1 month');
@@ -91,8 +91,6 @@
                                                         $month      = date_format(date_create($dt), 'n');
                                                         $monthLat   = date_format(date_create($dt), 'F');
                                                         $day        = date_format(date_create($dt), 'd');
-                
-                                                        if($day == "01") continue;
                                                     @endphp
                                                         <tr>
                                                             <td>{{ $no++ }}</td>

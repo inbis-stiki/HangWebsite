@@ -15,13 +15,17 @@ use App\UserRankingActivity;
 use App\ReportRanking;
 use App\ReportTransaction;
 use App\ReportTrend;
+use App\RangeRepeat;
 use App\ReportRepeatOrder;
 use App\Shop;
+use App\ReportShopHead;
+use App\ReportShopDet;
 use App\User;
 use App\Users;
 use Carbon\Carbon;
 use Exception;
 use App\TargetUser;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
@@ -34,7 +38,7 @@ class CronjobController extends Controller
                 ISRECOMMEND_SHOP = '0'
                 AND LASTTRANS_SHOP < DATE_SUB(CURDATE(), INTERVAL 14 DAY)
             ")->update(['ISRECOMMEND_SHOP' => 1]);
-            
+
             return response([
                 "status_code"       => 200,
                 "status_message"    => 'Data berhasil diubah!'
@@ -46,20 +50,21 @@ class CronjobController extends Controller
             ], 500);
         }
     }
-    public function updateDashboardMobile(){
+    public function updateDashboardMobile()
+    {
         try {
             $prodCategorys  = CategoryProduct::where('deleted_at', NULL)->get();
             $actCategorys   = ActivityCategory::where('deleted_at', NULL)->get();
 
             $month          = date('n', strtotime('-1 days'));
             $year           = date('Y', strtotime('-1 days'));
-            $updated_at     = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
+            $updated_at     = date('Y-m-d', strtotime('-1 days')) . " 23:59:59";
 
             DB::table('dashboard_mobile')->delete();
             DB::table('transaction_detail_today')->delete();
 
             $queryCategory = [];
-            
+
             $tgtUser        = app(TargetUser::class)->getUser();
             $tgtUST         = $tgtUser['prods']['UST'];
             $tgtNONUST      = $tgtUser['prods']['NONUST'];
@@ -75,12 +80,12 @@ class CronjobController extends Controller
                             `transaction` t
                         INNER JOIN transaction_detail td
                             ON 
-                                YEAR(t.DATE_TRANS) = '".$year."'
-                                AND MONTH(t.DATE_TRANS) = '".$month."'
+                                YEAR(t.DATE_TRANS) = '" . $year . "'
+                                AND MONTH(t.DATE_TRANS) = '" . $month . "'
                                 AND t.ID_USER = u.ID_USER 
                                 AND t.ID_TRANS = td.ID_TRANS
-                                AND td.ID_PC = ".$prodCategory->ID_PC."
-                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC)))."_DM'
+                                AND td.ID_PC = " . $prodCategory->ID_PC . "
+                    ), 0) as 'REAL" . strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC))) . "_DM'
                 ";
             }
             foreach ($actCategorys as $actCategory) {
@@ -89,19 +94,19 @@ class CronjobController extends Controller
                         SELECT COUNT(*)
                         FROM `transaction` t
                         WHERE 
-                            YEAR(t.DATE_TRANS) = ".$year."
-                            AND MONTH(t.DATE_TRANS) = ".$month."
+                            YEAR(t.DATE_TRANS) = " . $year . "
+                            AND MONTH(t.DATE_TRANS) = " . $month . "
                             AND t.ID_USER = u.ID_USER 
-                            AND t.TYPE_ACTIVITY = '".$actCategory->NAME_AC."'
-                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $actCategory->NAME_AC)))."_DM'
+                            AND t.TYPE_ACTIVITY = '" . $actCategory->NAME_AC . "'
+                    ), 0) as 'REAL" . strtoupper(str_replace(' ', '', str_replace('-', '', $actCategory->NAME_AC))) . "_DM'
                 ";
             }
 
-            
+
             $queryCategory = $queryCategory != null ? implode(', ', $queryCategory) : "";
             $datas = [];
             $datas      = Cronjob::queryGetDashboardMobile($month, $year, $queryCategory, $tgtTotal);
-            
+
             foreach ($datas as $data) {
                 DB::table('dashboard_mobile')->insert([
                     'ID_USER'               => $data->ID_USER,
@@ -132,18 +137,19 @@ class CronjobController extends Controller
             ], 500);
         }
     }
-    public function updateSmyTransLocation(){
+    public function updateSmyTransLocation()
+    {
         try {
             $month          = date('n', strtotime('-1 days'));
             $year           = date('Y', strtotime('-1 days'));
-            $updated_at     = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
+            $updated_at     = date('Y-m-d', strtotime('-1 days')) . " 23:59:59";
 
             DB::table('summary_trans_location')->where('YEAR_STL', $year)->where('MONTH_STL', $month)->delete();
 
 
             $datas = [];
             $datas  = Cronjob::queryGetSmyTransLocation($year, $month);
-            
+
             foreach ($datas as $data) {
                 DB::table('summary_trans_location')->insert([
                     'LOCATION_STL'      => $data->LOCATION_TRANS,
@@ -175,19 +181,20 @@ class CronjobController extends Controller
             ], 500);
         }
     }
-    public function updateSmyTransUser(){
+    public function updateSmyTransUser()
+    {
         try {
             $prodCategorys  = CategoryProduct::where('deleted_at', NULL)->get();
             $actCategorys   = ActivityCategory::where('deleted_at', NULL)->get();
 
             $month          = date('n', strtotime('-1 days'));
             $year           = date('Y', strtotime('-1 days'));
-            $updated_at     = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
+            $updated_at     = date('Y-m-d', strtotime('-1 days')) . " 23:59:59";
 
             DB::table('summary_trans_user')->where([['YEAR', "=", $year], ['MONTH', "=", "$month"]])->delete();
 
             $queryCategory = [];
-            
+
             $tgtUser        = app(TargetUser::class)->getUser();
             $tgtUST         = $tgtUser['prods']['UST'];
             $tgtNONUST      = $tgtUser['prods']['NONUST'];
@@ -203,12 +210,12 @@ class CronjobController extends Controller
                             `transaction` t
                         INNER JOIN transaction_detail td
                             ON 
-                                YEAR(t.DATE_TRANS) = '".$year."'
-                                AND MONTH(t.DATE_TRANS) = '".$month."'
+                                YEAR(t.DATE_TRANS) = '" . $year . "'
+                                AND MONTH(t.DATE_TRANS) = '" . $month . "'
                                 AND t.ID_USER = u.ID_USER 
                                 AND t.ID_TRANS = td.ID_TRANS
-                                AND td.ID_PC = ".$prodCategory->ID_PC."
-                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC)))."_DM'
+                                AND td.ID_PC = " . $prodCategory->ID_PC . "
+                    ), 0) as 'REAL" . strtoupper(str_replace(' ', '', str_replace('-', '', $prodCategory->NAME_PC))) . "_DM'
                 ";
             }
             foreach ($actCategorys as $actCategory) {
@@ -217,19 +224,19 @@ class CronjobController extends Controller
                         SELECT COUNT(*)
                         FROM `transaction` t
                         WHERE 
-                            YEAR(t.DATE_TRANS) = ".$year."
-                            AND MONTH(t.DATE_TRANS) = ".$month."
+                            YEAR(t.DATE_TRANS) = " . $year . "
+                            AND MONTH(t.DATE_TRANS) = " . $month . "
                             AND t.ID_USER = u.ID_USER 
-                            AND t.TYPE_ACTIVITY = '".$actCategory->NAME_AC."'
-                    ), 0) as 'REAL".strtoupper(str_replace(' ', '', str_replace('-', '', $actCategory->NAME_AC)))."_DM'
+                            AND t.TYPE_ACTIVITY = '" . $actCategory->NAME_AC . "'
+                    ), 0) as 'REAL" . strtoupper(str_replace(' ', '', str_replace('-', '', $actCategory->NAME_AC))) . "_DM'
                 ";
             }
 
-            
+
             $queryCategory = $queryCategory != null ? implode(', ', $queryCategory) : "";
             $datas = [];
             $datas      = Cronjob::queryGetDashboardMobile($month, $year, $queryCategory, $tgtTotal);
-            
+
             foreach ($datas as $data) {
                 DB::table('summary_trans_user')->insert([
                     'ID_USER'               => $data->ID_USER,
@@ -267,7 +274,8 @@ class CronjobController extends Controller
             ], 500);
         }
     }
-    public function genRankRPO($yearMonth){
+    public function genRankRPO($yearMonth)
+    {
         // $month          = date('n', strtotime('-1 days'));
         // $year           = date('Y', strtotime('-1 days'));
         // $updated_at     = date('Y-m-d', strtotime('-1 days'));
@@ -278,7 +286,8 @@ class CronjobController extends Controller
         $datas['reports'] = Cronjob::queryGetRankLocation($year, $month, "Regional");
         app(ReportRanking::class)->generate_ranking_rpo($datas, $yearMonth);
     }
-    public function genRankAsmen($yearMonth){
+    public function genRankAsmen($yearMonth)
+    {
         // $month          = date('n', strtotime('-1 days'));
         // $year           = date('Y', strtotime('-1 days'));
         // $updated_at     = date('Y-m-d', strtotime('-1 days'));
@@ -289,28 +298,32 @@ class CronjobController extends Controller
         $datas['reports']   = Cronjob::queryGetRankLocation($year, $month, "Location");
         app(ReportRanking::class)->generate_ranking_asmen($datas, $yearMonth);
     }
-    public function genRankAPOSPG(){
+    public function genRankAPOSPG()
+    {
         $year       = date_format(date_create($_POST['date']), 'Y');
         $month      = date_format(date_create($_POST['date']), 'n');
         $yearMonth  = date_format(date_create($_POST['date']), 'Y-n');
 
         $datas['reportApos'] = Cronjob::queryGetRankUser($_POST['idRegional'], 5, $year, $month);
         $datas['reportSpgs'] = Cronjob::queryGetRankUser($_POST['idRegional'], 6, $year, $month);
-        
+
         app(ReportRanking::class)->generate_ranking_apo_spg($datas, $yearMonth);
     }
-    public function genTrendRPO($year){
+    public function genTrendRPO($year)
+    {
         $reports = Cronjob::queryGetTrend($year, 'Regional');
         app(ReportTrend::class)->generate_trend_rpo($reports, $year);
     }
-    public function genTrendAsmen($year){
+    public function genTrendAsmen($year)
+    {
         $reports = Cronjob::queryGetTrend($year, 'Location');
         app(ReportTrend::class)->generate_trend_asmen($reports, $year);
     }
-    public function genTransDaily(){
+    public function genTransDaily()
+    {
         $nRegional  = Regional::find($_POST['idRegional'])->NAME_REGIONAL;
         $date       = date_format(date_create($_POST['date']), 'Y-m-d');
-        $products       = Product::get();
+        $products       = Product::where('deleted_at', NULL)->orderBy('ORDER_PRODUCT', 'ASC')->get();
         $querySumProd   = [];
         $idUsers        = null;
         $noTransDaily   = null;
@@ -318,77 +331,143 @@ class CronjobController extends Controller
         foreach ($products as $product) {
             $querySumProd[] = "
                 COALESCE((
-                    SELECT SUM(td2.QTY_TD) 
+                    SELECT sum(td2.QTY_TD)
                     FROM transaction_detail td2
-                    WHERE td2.ID_TRANS IN (
-                        SELECT t.ID_TRANS 
-                        FROM `transaction` t 
-                        WHERE t.ID_TD = td.ID_TD 
-                    ) AND td2.ID_PRODUCT = ".$product->ID_PRODUCT."
-                ), 0) as '".$product->CODE_PRODUCT."'
+                    JOIN transaction t ON t.ID_TRANS  = td2.ID_TRANS  
+                    JOIN md_type mt2 ON t.ID_TYPE = mt2.ID_TYPE
+                    WHERE t.ID_TD = td.ID_TD
+                    AND td2.ID_PRODUCT = " . $product->ID_PRODUCT . " AND mt.NAME_TYPE = mt2.NAME_TYPE
+                ), 0) as '" . $product->CODE_PRODUCT . "'
             ";
         }
 
         $querySumProd = implode(',', $querySumProd);
         $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, $date, $nRegional);
-        if($transDaily != null){
-            $idUsers    = implode(',', array_map(function ($entry){
-                return "'".$entry->ID_USER."'";
+        // dd($transDaily);die;
+        if ($transDaily != null) {
+            $idUsers    = implode(',', array_map(function ($entry) {
+                return "'" . $entry->ID_USER . "'";
             }, $transDaily));
 
             $noTransDaily   = Users::getUserByRegional($_POST['idRegional'], $idUsers);
+
+            // dd($noTransDaily);die;
         }
 
         app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional, $date);
     }
-    public function genRORPO($yearMonth){
+    public function genRORPO($yearMonth)
+    {
         $year = date_format(date_create($yearMonth), 'Y');
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
-        
+
         $rOs = Cronjob::queryGetRepeatOrder($year, $month);
-        
         app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
     }
-
-    public function TestTemplate(ReportQuery $reportQuery)
+    public function genROSHOP($yearMonth)
     {
-        // app(ReportRanking::class)->generate_ranking_rpo($reportQuery->AktivitasRPOLapul(), $reportQuery->AktivitasRPODapul(), $reportQuery->PencapaianRPOLapul(), $reportQuery->PencapaianRPODapul());
-        // app(ReportRanking::class)->generate_ranking_asmen($reportQuery->AktivitasAsmen(), $reportQuery->PencapaianAsmen());
-        // app(ReportRanking::class)->generate_ranking_apo_spg();
+        $year = date_format(date_create($yearMonth), 'Y');
+        $month = date_format(date_create($yearMonth), 'n');
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        // app(ReportTransaction::class)->set_data_transaction();
+        $rOs = Cronjob::getallcat();
 
-        
-        // $regionals  = Regional::where('deleted_at', NULL)->get();
-        // Http::get(url('cronjob/generate-transaction/'."JATIM 1"));
-        // foreach ($regionals as $regional) {
-        // }
-        
+        // dd($rOs);die;
 
-        // dd($transDaily);
-        // dd($noTransDaily);
-
-        // $regionals  = Regional::where('deleted_at', NULL)->get();
-        
-
-        // dd(date("Y-m-d H:i:s")); // returns a date in UTC timezone
-        
-        app(ReportRanking::class)->generate_ranking_rpo();
-
-        // app(ReportTrend::class)->generate_trend_asmen();
-        // app(ReportTrend::class)->generate_trend_rpo();
+        app(ReportRepeatOrder::class)->gen_ro_shop($rOs, $updated_at);
     }
+    public function genROSHOPbyRange()
+    {
+        $startM = $_GET['start_month'];
+        $startY = $_GET['start_year'];
+        $endM = $_GET['end_month'];
+        $endY = $_GET['end_year'];
+        $idRegional = $_GET['regional'];
 
-    public function Testing(ReportQuery $reportQuery){
+        $totalMonth = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                $totalMonth++;
+            }
+        }
+
+        $rOs = Cronjob::queryGetShopByRange($startM, $startY, $endM, $endY, $idRegional);
+
+        app(ReportRepeatOrder::class)->gen_ro_shop_range($rOs, $totalMonth);
+    }
+    public function genRORPOS($yearMonth)
+    {
+        $year = date_format(date_create($yearMonth), 'Y');
+        $month = date_format(date_create($yearMonth), 'n');
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $rOs = Cronjob::queryGetRepeatOrderShop($year, $month);
+
+        // dd($rOs);die;
+
+        $area = Cronjob::getreg($year, $month);
+
+        if (!empty($rOs)) {
+            foreach ($area as $reg) {
+                $ReportHead        = new ReportShopHead();
+                $unik                           = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
+                $ReportHead->ID_HEAD          = "REP_" . $unik;
+                $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
+                $ReportHead->BULAN            = $month;
+                $ReportHead->TAHUN            = $year;
+                $ReportHead->save();
+            }
+
+            foreach ($rOs as $item) {
+                $ReportDet        = new ReportShopDet();
+                $unik2                             = md5($item->NAME_REGIONAL . $year . $month);
+                $ReportDet->ID_HEAD               = "REP_" . $unik2;
+                $ReportDet->NAME_AREA             = $item->NAME_AREA;
+                $ReportDet->NAME_REGIONAL         = $item->NAME_REGIONAL;
+                $ReportDet->NAME_DISTRICT         = $item->NAME_DISTRICT;
+                $ReportDet->ID_SHOP               = $item->ID_SHOP;
+                $ReportDet->NAME_SHOP             = $item->NAME_SHOP;
+                $ReportDet->DETLOC_SHOP           = $item->DETLOC_SHOP;
+                $ReportDet->TELP_SHOP             = $item->TELP_SHOP;
+                $ReportDet->TYPE_SHOP             = $item->TYPE_SHOP;
+                $ReportDet->OWNER_SHOP            = $item->OWNER_SHOP;
+                $ReportDet->TOTAL_RO              = $item->TOTAL_TEST;
+
+                $ReportDet->save();
+            }
+
+            $ranges = DB::table('md_range_repeat')->select('ID_RANGE', 'START', 'END')->get();
+
+            foreach ($ranges as $range) {
+                $range_id = $range->ID_RANGE;
+                $min_total_ro = $range->START;
+                $max_total_ro = $range->END;
+
+                // Execute the SQL query for the current range
+                DB::table('report_shop_detail')
+                    ->whereBetween('TOTAL_RO', [$min_total_ro, $max_total_ro])
+                    ->update(['CATEGORY_RO' => $range_id]);
+            }
+        }
+
+        // dd($rOs);die;
+    }
+    public function Testing(ReportQuery $reportQuery)
+    {
         return $reportQuery->TrendRpo();
     }
-
     public function updateDailyRankingAchievement()
     {
-        
+
         $currDate       = date('Y-m-d', strtotime('-1 days'));
-        $currDateTime   = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
+        $currDateTime   = date('Y-m-d', strtotime('-1 days')) . " 23:59:59";
 
         $formData = [];
         $targetRegionals = $this->queryGetTargetRegional($currDate);
@@ -465,9 +544,9 @@ class CronjobController extends Controller
     //ACTIVITY RANK
     public function updateDailyRankingActivity()
     {
-        
+
         $currDate       = date('Y-m-d', strtotime('-1 days'));
-        $currDateTime   = date('Y-m-d', strtotime('-1 days'))." 23:59:59";
+        $currDateTime   = date('Y-m-d', strtotime('-1 days')) . " 23:59:59";
         $formData = [];
 
         $targetRegionals = $this->queryGetTargetRegionalActivity($currDate);
@@ -529,7 +608,6 @@ class CronjobController extends Controller
         }
         dd($formData);
     }
-
     public function queryGetTargetRegional($currDate)
     {
         return DB::select("

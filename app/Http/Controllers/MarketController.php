@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Area;
+use App\logmd;
 use App\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -163,12 +164,34 @@ class MarketController extends Controller
 
 
         $district = District::find($req->input('id'));
+
+        $oldValues = $district->getOriginal();
+
         $district->ID_AREA          = $req->input('area');
         $district->NAME_DISTRICT    = Str::upper($req->input('district'));
         $district->ISFOCUS_DISTRICT = !empty($req->input('statusMarket')) ? '1' : '0';
         $district->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $district->PARENT_DISTRICT  = $req->input('districtK');
+
+        $changedFields = array_keys($district->getDirty());
         $district->save();
+
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $district->getAttribute($field);
+        }
+
+        $id_userU = SESSION::get('id_user');
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating Market ' . (string)$req->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        }   
 
         return redirect('master/location/market')->with('succ_msg', 'Berhasil mengubah data pasar!');
     }

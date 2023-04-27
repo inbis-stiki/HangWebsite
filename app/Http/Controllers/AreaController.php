@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Area;
+use App\logmd;
 use App\Regional;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -89,10 +90,32 @@ class AreaController extends Controller
 
         
         $area = Area::find($req->input('id'));
+
+        $oldValues = $area->getOriginal();
+
         $area->ID_REGIONAL   = $req->input('regional');
         $area->NAME_AREA = Str::upper($req->input('area'));
         $area->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+        
+        $changedFields = array_keys($area->getDirty());
         $area->save();
+
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $area->getAttribute($field);
+        }
+
+        $id_userU = SESSION::get('id_user');
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating Area ' . (string)$req->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        }    
 
         return redirect('master/location/area')->with('succ_msg', 'Berhasil mengubah data area!');
     }

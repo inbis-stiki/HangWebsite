@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Role;
+use App\logmd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Session;
 
 class RoleController extends Controller
 {
@@ -51,10 +53,33 @@ class RoleController extends Controller
         }
 
         
+
         $role                   = Role::find($req->input('id'));
+
+        $oldValues = $role->getOriginal();
+
         $role->NAME_ROLE        = $req->input('nama_role');
         $role->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+
+        $changedFields = array_keys($role->getDirty());
         $role->save();
+
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $role->getAttribute($field);
+        }
+
+        $id_userU = SESSION::get('id_user');
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating Role ' . (string)$req->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        }    
 
         return redirect('master/role')->with('succ_msg', 'Berhasil mengubah data role!');
     }

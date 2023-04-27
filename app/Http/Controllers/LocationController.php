@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Location;
+use App\logmd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -55,9 +56,32 @@ class LocationController extends Controller
 
         
         $location = Location::find($req->input('id'));
+
+        $oldValues = $location->getOriginal();
+
         $location->NAME_LOCATION = Str::upper($req->input('name'));
         $location->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $location->save();
+
+        $changedFields = array_keys($location->getDirty());
+        $location->save();
+
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $location->getAttribute($field);
+        }
+
+        $id_userU = SESSION::get('id_user');
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating Location ' . (string)$req->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        }    
 
         return redirect('master/location/national')->with('succ_msg', 'Berhasil mengubah data nasional!');
     }

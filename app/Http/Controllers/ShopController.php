@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Shop;
+use App\logmd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -117,11 +118,34 @@ class ShopController extends Controller
         }
 
         $shop                = Shop::find($req->input('id'));
+
+        $oldValues = $shop->getOriginal();
+
         $shop->NAME_SHOP     = Str::upper($req->input('shop'));
         $shop->OWNER_SHOP     = $req->input('owner');
         $shop->DETLOC_SHOP     = $req->input('detlok');
         $shop->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $shop->save();
+
+        $changedFields = array_keys($shop->getDirty());
+        $shop->save();
+
+        $newValues = [];
+        foreach($changedFields as $field) {
+            $newValues[$field] = $shop->getAttribute($field);
+        }
+
+        $id_userU = SESSION::get('id_user');
+
+        if (!empty($newValues)) {
+            DB::table('log_md')->insert([
+                'UPDATED_BY' => $id_userU,
+                'DETAIL' => 'Updating Shop ' . (string)$req->input('id'),
+                'OLD_VALUES' => json_encode(array_intersect_key($oldValues, $newValues)),
+                'NEW_VALUES' => json_encode($newValues),
+                'log_time' => now(),
+            ]);
+        }     
 
         return redirect('master/shop')->with('succ_msg', 'Berhasil mengubah data Toko!');
     }
