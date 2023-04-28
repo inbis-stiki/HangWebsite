@@ -17,7 +17,7 @@ class ReportTransactionController extends Controller
                     ->select('md_regional.ID_REGIONAL', 'md_regional.NAME_REGIONAL')
                     ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
                     ->join('user', 'user.ID_LOCATION', '=', 'md_location.ID_LOCATION')
-                    ->where('user.USERNAME_USER', '=', $user)
+                    ->where('user.ID_USER', '=', $user)
                     ->get();
         
 
