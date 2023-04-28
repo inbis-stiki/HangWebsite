@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Regional;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Session;
 
 class ReportTransactionController extends Controller
 {
