@@ -12,7 +12,7 @@ class ReportTransactionController extends Controller
     public function index(Request $req)
     {
         $user = $req->session()->get('id_user');
-        $data['title']          = "Transaction";
+        $data['title']          = "Transaksi Harian";
         $data['sidebar']        = "transaction";
         $data['sidebar2']       = "";
         $data['regionals']      = DB::table('md_regional')
