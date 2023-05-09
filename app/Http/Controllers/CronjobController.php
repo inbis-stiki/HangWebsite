@@ -417,7 +417,11 @@ class CronjobController extends Controller
         if (!empty($rOs)) {
             foreach ($area as $reg) {
                 $ReportHead        = new ReportShopHead();
-                $unik                           = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
+                if ($reg->REGIONAL_TRANS == 'SUM 1') {
+                    $unik = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
+                }else{
+                    $unik = md5($reg->REGIONAL_TRANS . $year . $month);
+                }
                 $ReportHead->ID_HEAD          = "REP_" . $unik;
                 $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
                 $ReportHead->BULAN            = $month;
@@ -427,7 +431,11 @@ class CronjobController extends Controller
 
             foreach ($rOs as $item) {
                 $ReportDet        = new ReportShopDet();
-                $unik2                             = md5($item->NAME_REGIONAL . $year . $month);
+                if ($reg->REGIONAL_TRANS == 'SUM 1') {
+                    $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
+                }else{
+                    $unik2 = md5($reg->REGIONAL_TRANS . $year . $month);
+                }
                 $ReportDet->ID_HEAD               = "REP_" . $unik2;
                 $ReportDet->NAME_AREA             = $item->NAME_AREA;
                 $ReportDet->NAME_REGIONAL         = $item->NAME_REGIONAL;
@@ -458,6 +466,139 @@ class CronjobController extends Controller
         }
 
         // dd($rOs);die;
+    }
+    public function genROTEST()
+    {
+        $rOs = array(
+            'JATIM 1' => [
+                0 => [
+                    'AREA' => 'SURABAYA 1',
+                    'CATEGORY' => [
+                        'NONUST' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 200,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ],
+                        'UGP' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 18,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ],
+                        'URD' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 20,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ],
+                        'UST' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 21,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ]
+                    ]
+                ],
+                1 => [
+                    'AREA' => 'SURABAYA 2',
+                    'CATEGORY' => [
+                        'NONUST' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 200,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ],
+                        'UGP' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 200,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ],
+                        'URD' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 200,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ],
+                        'UST' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 200,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ]
+                    ]
+                ]
+            ],
+            'JATIM 2' => [
+                0 => [
+                    'AREA' => 'MALANG',
+                    'CATEGORY' => [
+                        'NONUST' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 200,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ],
+                        'UGP' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 200,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ],
+                        'URD' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 200,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ],
+                        'UST' => [
+                            'OMST2020' => 0,
+                            'OMST2021' => 0,
+                            'OMST2022' => 0,
+                            'TGT' => 200,
+                            'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                            'RT2022' => 120,
+                            'VSTGT' => 64
+                        ]
+                    ]
+                ]
+            ]
+        );
+        app(ReportRepeatOrder::class)->gen_ro_test($rOs);
     }
     public function Testing(ReportQuery $reportQuery)
     {
