@@ -510,6 +510,126 @@ class ReportRepeatOrder
         $writer->save('php://output');
     }
 
+    public function gen_ro_test($rOs)
+    {
+        $spreadsheet = new Spreadsheet();
+
+        $regional = '';
+        $lastRange = '';
+        $dataRange = range('H', 'S');
+        $months = array(
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
+        );
+        foreach ($rOs as $key => $item) {
+            $ObjSheet = $spreadsheet->createSheet();
+            $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $key));
+
+            $ObjSheet->getColumnDimension('B')->setWidth('8');
+            $ObjSheet->getColumnDimension('C')->setWidth('8');
+            $ObjSheet->getColumnDimension('D')->setWidth('8');
+            $ObjSheet->getColumnDimension('E')->setWidth('40');
+            $ObjSheet->getColumnDimension('F')->setWidth('15');
+            $ObjSheet->getColumnDimension('G')->setWidth('20');
+            $ObjSheet->getColumnDimension('G')->setWidth('12');
+
+            $ObjSheet->getColumnDimension('H')->setWidth('9');
+            $ObjSheet->getColumnDimension('I')->setWidth('9');
+            $ObjSheet->getColumnDimension('J')->setWidth('9');
+            $ObjSheet->getColumnDimension('K')->setWidth('9');
+            $ObjSheet->getColumnDimension('L')->setWidth('9');
+            $ObjSheet->getColumnDimension('M')->setWidth('9');
+            $ObjSheet->getColumnDimension('N')->setWidth('9');
+            $ObjSheet->getColumnDimension('O')->setWidth('9');
+            $ObjSheet->getColumnDimension('P')->setWidth('9');
+            $ObjSheet->getColumnDimension('Q')->setWidth('9');
+            $ObjSheet->getColumnDimension('R')->setWidth('9');
+            $ObjSheet->getColumnDimension('S')->setWidth('9');
+
+            $ObjSheet->getColumnDimension('T')->setWidth('15');
+            $ObjSheet->getColumnDimension('U')->setWidth('15');
+
+            // HEADER
+            $ObjSheet->mergeCells('B3:D3')->setCellValue('B3', 'REAL OMSET')->getStyle('B3:D3')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFF'));
+            $ObjSheet->setCellValue('B4', '2020')->getStyle('B4')->applyFromArray($this->styling_title_template('FFFFFF00', '000000'));
+            $ObjSheet->setCellValue('C4', '2020')->getStyle('C4')->applyFromArray($this->styling_title_template('FFFFFF00', '000000'));
+            $ObjSheet->setCellValue('D4', '2020')->getStyle('D4')->applyFromArray($this->styling_title_template('FFFFFF00', '000000'));
+            $ObjSheet->mergeCells('E3:E4')->setCellValue('E3', 'AREA')->getStyle('E3:E4')->applyFromArray($this->styling_title_template('FF66FFFF', '000000'));
+            $ObjSheet->mergeCells('F3:F4')->setCellValue('F3', 'KATEGORI')->getStyle('F3:F4')->applyFromArray($this->styling_title_template('FF00FF00', '000000'));
+            $ObjSheet->mergeCells('G3:G4')->setCellValue('G3', 'TARGET STANDAR')->getStyle('G3:G4')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
+
+            $ObjSheet->mergeCells('H3:U3')->setCellValue('H3', 'REAL OMSET ' . date('Y'))->getStyle('H3:U3')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFF'));
+            foreach ($months as $key => $detItem) {
+                $ObjSheet->setCellValue($dataRange[$key] . '4', $detItem)->getStyle($dataRange[$key] . '4')->applyFromArray($this->styling_title_template('FFFFFF00', '000000'));
+            }
+            $ObjSheet->setCellValue('T4', 'RT 2022')->getStyle('T4')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFF'));
+            $ObjSheet->setCellValue('U4', '% RT2 VS TGT')->getStyle('U4')->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
+
+            // ISI KONTEN
+            $RangeRowData = 4;
+            $rowData = 5;
+            foreach ($item as $detItem) {
+                $ObjSheet->mergeCells('E' . $rowData . ':E' . ($rowData + ($RangeRowData - 1)))->setCellValue('E' . $rowData, $detItem['AREA'])->getStyle('E' . $rowData . ':E' . ($rowData + ($RangeRowData - 1)))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                
+                $pathNonUST = $detItem['CATEGORY']['NONUST'];
+                $ObjSheet->setCellValue('B' . $rowData, $pathNonUST['OMST2020'])->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('C' . $rowData, $pathNonUST['OMST2021'])->getStyle('C' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('D' . $rowData, $pathNonUST['OMST2022'])->getStyle('D' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('F' . $rowData, 'NONUST')->getStyle('F' . $rowData)->applyFromArray($this->styling_title_template('FFFFFF00', '000000'));
+                $ObjSheet->setCellValue('G' . $rowData, $pathNonUST['TGT'])->getStyle('G' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                
+                $ObjSheet->setCellValue('T' . $rowData, $pathNonUST['RT2022'])->getStyle('T' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('U' . $rowData, $pathNonUST['VSTGT'])->getStyle('U' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                $pathUGP = $detItem['CATEGORY']['UGP'];
+                $ObjSheet->setCellValue('B' . ($rowData + 1), $pathUGP['OMST2020'])->getStyle('B' . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('C' . ($rowData + 1), $pathUGP['OMST2021'])->getStyle('C' . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('D' . ($rowData + 1), $pathUGP['OMST2022'])->getStyle('D' . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('F' . ($rowData + 1), 'UGP')->getStyle('F' . ($rowData + 1))->applyFromArray($this->styling_title_template('FF833C0C', 'FFFFFF'));
+                $ObjSheet->setCellValue('G' . ($rowData + 1), $pathUGP['TGT'])->getStyle('G' . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('T' . ($rowData + 1), $pathUGP['RT2022'])->getStyle('T' . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('U' . ($rowData + 1), $pathUGP['VSTGT'])->getStyle('U' . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                
+                $pathURD = $detItem['CATEGORY']['URD'];
+                $ObjSheet->setCellValue('B' . ($rowData + 2), $pathURD['OMST2020'])->getStyle('B' . ($rowData + 2))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('C' . ($rowData + 2), $pathURD['OMST2021'])->getStyle('C' . ($rowData + 2))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('D' . ($rowData + 2), $pathURD['OMST2022'])->getStyle('D' . ($rowData + 2))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('F' . ($rowData + 2), 'URD')->getStyle('F' . ($rowData + 2))->applyFromArray($this->styling_title_template('FFFF00FF', '000000'));
+                $ObjSheet->setCellValue('G' . ($rowData + 2), $pathURD['TGT'])->getStyle('G' . ($rowData + 2))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('T' . ($rowData + 2), $pathURD['RT2022'])->getStyle('T' . ($rowData + 2))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('U' . ($rowData + 2), $pathURD['VSTGT'])->getStyle('U' . ($rowData + 2))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                $pathUST = $detItem['CATEGORY']['UST'];
+                $ObjSheet->setCellValue('B' . ($rowData + 3), $pathUST['OMST2020'])->getStyle('B' . ($rowData + 3))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('C' . ($rowData + 3), $pathUST['OMST2021'])->getStyle('C' . ($rowData + 3))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('D' . ($rowData + 3), $pathUST['OMST2022'])->getStyle('D' . ($rowData + 3))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('F' . ($rowData + 3), 'UST')->getStyle('F' . ($rowData + 3))->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFF'));
+                $ObjSheet->setCellValue('G' . ($rowData + 3), $pathUST['TGT'])->getStyle('G' . ($rowData + 3))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('T' . ($rowData + 3), $pathUST['RT2022'])->getStyle('T' . ($rowData + 3))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                $ObjSheet->setCellValue('U' . ($rowData + 3), $pathUST['VSTGT'])->getStyle('U' . ($rowData + 3))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                foreach ($months as $key => $detItem) {
+                    $ObjSheet->setCellValue($dataRange[$key] . $rowData, $pathNonUST['MONTH'][$key])->getStyle($dataRange[$key] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue($dataRange[$key] . ($rowData + 2), $pathURD['MONTH'][$key])->getStyle($dataRange[$key] . ($rowData + 2))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue($dataRange[$key] . ($rowData + 3), $pathUST['MONTH'][$key])->getStyle($dataRange[$key] . ($rowData + 3))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue($dataRange[$key] . ($rowData + 1), $pathUGP['MONTH'][$key])->getStyle($dataRange[$key] . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                }
+
+                $rowData += $RangeRowData;
+            }
+        }
+
+        $spreadsheet->removeSheetByIndex(0);
+
+        $fileName = 'Repeat Order Test';
+
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel'); // generate excel file
+        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
     public function styling_default_template($FontSize, $ColorText)
     {
         $styleTitle['font']['bold']                           = true;
