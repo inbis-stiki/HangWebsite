@@ -331,13 +331,12 @@ class CronjobController extends Controller
         foreach ($products as $product) {
             $querySumProd[] = "
                 COALESCE((
-                    SELECT SUM(td2.QTY_TD) 
+                    SELECT sum(td2.QTY_TD)
                     FROM transaction_detail td2
-                    WHERE td2.ID_TRANS IN (
-                        SELECT t.ID_TRANS 
-                        FROM `transaction` t 
-                        WHERE t.ID_TD = td.ID_TD 
-                    ) AND td2.ID_PRODUCT = " . $product->ID_PRODUCT . "
+                    JOIN transaction t ON t.ID_TRANS  = td2.ID_TRANS  
+                    JOIN md_type mt2 ON t.ID_TYPE = mt2.ID_TYPE
+                    WHERE t.ID_TD = td.ID_TD
+                    AND td2.ID_PRODUCT = " . $product->ID_PRODUCT . " AND mt.NAME_TYPE = mt2.NAME_TYPE
                 ), 0) as '" . $product->CODE_PRODUCT . "'
             ";
         }
