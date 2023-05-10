@@ -227,6 +227,8 @@
 @include('template/footer')
 <script>
     $(document).ready(function() {
+        $('.datatable').DataTable();
+        
         $('#generate_report').on('click', function() {
             var start_month = $('#start_month').val();
             var start_year = $('#start_year').val();
