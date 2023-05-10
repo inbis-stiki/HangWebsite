@@ -417,11 +417,7 @@ class CronjobController extends Controller
         if (!empty($rOs)) {
             foreach ($area as $reg) {
                 $ReportHead        = new ReportShopHead();
-                if ($reg->REGIONAL_TRANS == 'SUM 1') {
-                    $unik = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
-                }else{
-                    $unik = md5($reg->REGIONAL_TRANS . $year . $month);
-                }
+                $unik = md5($reg->REGIONAL_TRANS . $year . $month);
                 $ReportHead->ID_HEAD          = "REP_" . $unik;
                 $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
                 $ReportHead->BULAN            = $month;
@@ -431,11 +427,7 @@ class CronjobController extends Controller
 
             foreach ($rOs as $item) {
                 $ReportDet        = new ReportShopDet();
-                if ($reg->REGIONAL_TRANS == 'SUM 1') {
-                    $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
-                }else{
-                    $unik2 = md5($reg->REGIONAL_TRANS . $year . $month);
-                }
+                $unik2 = md5($reg->REGIONAL_TRANS . $year . $month);
                 $ReportDet->ID_HEAD               = "REP_" . $unik2;
                 $ReportDet->NAME_AREA             = $item->NAME_AREA;
                 $ReportDet->NAME_REGIONAL         = $item->NAME_REGIONAL;
