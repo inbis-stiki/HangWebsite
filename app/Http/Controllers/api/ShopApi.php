@@ -368,6 +368,7 @@ class ShopApi extends Controller
                 array_push(
                     $dataRespon,
                     array(
+                        "ID_SHOP" => $shopData->ID_SHOP,
                         "NAME_SHOP" => $shopData->NAME_SHOP,
                         "LONG_SHOP" => $shopData->LONG_SHOP,
                         "LAT_SHOP" => $shopData->LAT_SHOP,
