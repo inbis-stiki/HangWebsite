@@ -11,7 +11,7 @@ class Datefunc
         do {
             // $response = Http::get('https://api.wheretheiss.at/v1/coordinates/' . $lat . ',' . $long);
 
-            $response = Http::get('https://api.timezonedb.com/v2.1/get-time-zone?key=DHQJPS68JTER&format=json&by=position&lat='.$lat.'&lng='.$long.);
+            $response = Http::get('https://vip.timezonedb.com/v2.1/get-time-zone?key=DHQJPS68JTER&format=json&by=position&lat='.$lat.'&lng='.$long.);
             sleep(3);
 
         } while (!isset($response->json()['zoneName']));
