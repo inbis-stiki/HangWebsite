@@ -10,12 +10,15 @@ class Datefunc
     {
         do {
             // $response = Http::get('https://api.wheretheiss.at/v1/coordinates/' . $lat . ',' . $long);
-            $response = Http::get('http://api.geonames.org/timezoneJSON?lat='.$lat.'&lng='.$long.'&username=firnasreyhan');
-            sleep(1);
-        } while (!isset($response->json()['timezoneId']));
+            $response = Http::get('https://api.timezonedb.com/v2.1/get-time-zone?key=DHQJPS68JTER&format=json&by=position&lat='.$lat.'&lng='.$long);
+            sleep(3);
+
+        } while (!isset($response->json()['zoneName']));
         
-        if (isset($response['timezoneId'])) {
-            date_default_timezone_set($response->json()['timezoneId']);
+        if (isset($response['zoneName'])) {
+        
+            $timezone = stripcslashes($response->json()['zoneName']);
+            date_default_timezone_set($timezone);
             return date('Y-m-d H:i:s');
         }
     }
