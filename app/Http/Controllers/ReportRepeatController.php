@@ -9,7 +9,7 @@ class ReportRepeatController extends Controller
 {
     public function index()
     {
-        $data['title']          = "Repeat";
+        $data['title']          = "";
         $data['sidebar']        = "repeat";
         $data['sidebar2']       = "";
 
