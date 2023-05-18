@@ -159,7 +159,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="start_month">Start Month:</label>
-                                <select id="start_month" name="start_month" class="form-control">
+                                <select id="start_month" name="start_month" class="form-control" onchange="checkit();">
                                     <option value="1">January</option>
                                     <option value="2">February</option>
                                     <option value="3">March</option>
@@ -176,7 +176,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="start_year">Start Year:</label>
-                                <select id="start_year" name="start_year" class="form-control">
+                                <select id="start_year" name="start_year" class="form-control" onchange="checkit();">
                                     <option value="2022">2022</option>
                                     <option value="2023">2023</option>
                                 </select>
@@ -185,7 +185,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="end_month">End Month:</label>
-                                <select id="end_month" name="end_month" class="form-control">
+                                <select id="end_month" name="end_month" class="form-control" onchange="checkit();">
                                     <option value="1">January</option>
                                     <option value="2">February</option>
                                     <option value="3">March</option>
@@ -202,7 +202,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="end_year">End Year:</label>
-                                <select id="end_year" name="end_year" class="form-control">
+                                <select id="end_year" name="end_year" class="form-control" onchange="checkit();">
                                     <option value="2022">2022</option>
                                     <option value="2023">2023</option>
                                 </select>
