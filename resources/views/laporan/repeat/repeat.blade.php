@@ -236,4 +236,29 @@
             window.location.href = url;
         });
     });
+    
+    function checkit()
+    {
+
+    var fromMonth = document.getElementById('start_month');
+    var toMonth = document.getElementById('end_month');
+    var fromYear = document.getElementById('start_Year');
+    var toYear = document.getElementById('end_Year');
+
+    if( fromMonth.options[fromMonth.selectedIndex].value > 
+            toMonth.options[toMonth.selectedIndex].value)
+        {
+            document.getElementById('end_month').value =
+          fromMonth.options[fromMonth.selectedIndex].value;
+        }
+        
+     if( fromYear.options[fromYear.selectedIndex].value > 
+            toYear.options[toYear.selectedIndex].value)
+        {
+            document.getElementById('end_Year').value =
+          fromYear.options[fromYear.selectedIndex].value;
+        }
+
+    }
+
 </script>
