@@ -256,13 +256,13 @@
     function checkitYear()
     {
 
-    var fromYear = document.getElementById('start_Year');
-    var toYear = document.getElementById('end_Year');
+    var fromYear = document.getElementById('start_year');
+    var toYear = document.getElementById('end_year');
 
      if( fromYear.options[fromYear.selectedIndex].value > 
             toYear.options[toYear.selectedIndex].value)
         {
-            document.getElementById('end_Year').value =
+            document.getElementById('end_year').value =
           fromYear.options[fromYear.selectedIndex].value;
         }
 
