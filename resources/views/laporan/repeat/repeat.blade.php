@@ -176,7 +176,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="start_year">Start Year:</label>
-                                <select id="start_year" name="start_year" class="form-control" onchange="checkit();">
+                                <select id="start_year" name="start_year" class="form-control" onchange="checkitYear();">
                                     <option value="2022">2022</option>
                                     <option value="2023">2023</option>
                                 </select>
@@ -202,7 +202,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="end_year">End Year:</label>
-                                <select id="end_year" name="end_year" class="form-control" onchange="checkit();">
+                                <select id="end_year" name="end_year" class="form-control" onchange="checkitYear();">
                                     <option value="2022">2022</option>
                                     <option value="2023">2023</option>
                                 </select>
@@ -242,8 +242,6 @@
 
     var fromMonth = document.getElementById('start_month');
     var toMonth = document.getElementById('end_month');
-    var fromYear = document.getElementById('start_Year');
-    var toYear = document.getElementById('end_Year');
 
     if( fromMonth.options[fromMonth.selectedIndex].value > 
             toMonth.options[toMonth.selectedIndex].value)
@@ -252,6 +250,15 @@
           fromMonth.options[fromMonth.selectedIndex].value;
         }
         
+
+    }
+
+    function checkitYear()
+    {
+
+    var fromYear = document.getElementById('start_Year');
+    var toYear = document.getElementById('end_Year');
+
      if( fromYear.options[fromYear.selectedIndex].value > 
             toYear.options[toYear.selectedIndex].value)
         {
