@@ -54,6 +54,7 @@ Route::get('cronjob/pencapaianasmen', 'CronjobController@PencapaianAsmen');
 Route::get('cronjob/tesQuery', 'CronjobController@Testing');
 
 Route::get('cronjob/gen-ro-test', 'CronjobController@genROTEST');
+Route::get('cronjob/gen-ro-vs-test', 'CronjobController@genROVSTEST');
 
 Route::group(['middleware' => ['checkLogin']], function () {
     // MASTER DASHBORAD

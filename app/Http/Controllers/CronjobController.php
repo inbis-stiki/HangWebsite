@@ -592,6 +592,31 @@ class CronjobController extends Controller
         );
         app(ReportRepeatOrder::class)->gen_ro_test($rOs);
     }
+    public function genROVSTEST()
+    {
+        $rOs = array(
+            'JATIM 1' => [
+                0 => [
+                    'AREA' => 'SURABAYA 1',
+                    'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                    'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                ],
+                1 => [
+                    'AREA' => 'SURABAYA 2',
+                    'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                    'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                ]
+            ],
+            'JATIM 2' => [
+                0 => [
+                    'AREA' => 'MALANG',
+                    'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+                    'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                ]
+            ]
+        );
+        app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
+    }
     public function Testing(ReportQuery $reportQuery)
     {
         return $reportQuery->TrendRpo();
