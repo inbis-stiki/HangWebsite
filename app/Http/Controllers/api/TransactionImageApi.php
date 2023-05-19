@@ -15,7 +15,7 @@ class TransactionImageApi extends Controller
     public function store(Request $req)
     {
         try {
-            
+
             $validator = Validator::make($req->all(), [
                 'id_trans'                  => 'required|exists:transaction,ID_TRANS',
                 'image_display'             => 'required|image',
@@ -64,7 +64,6 @@ class TransactionImageApi extends Controller
     public function ublp(Request $req)
     {
         try {
-            
             $validator = Validator::make($req->all(), [
                 'id_trans'                  => 'required|exists:transaction,ID_TRANS',
                 'image_booth'               => 'required|image',
@@ -87,16 +86,12 @@ class TransactionImageApi extends Controller
             }
 
             $transactionImage        = new TransactionImage();
-            $path_booth = $req->file('image_booth')->store('images', 's3');
-            $path_masak   = $req->file('image_masak')->store('images', 's3');
-            $path_icip = $req->file('image_icip')->store('images', 's3');
-            $path_selling   = $req->file('image_selling')->store('images', 's3');
 
-            $url_booth = Storage::disk('s3')->url($path_booth);
-            $url_masak   = Storage::disk('s3')->url($path_masak);
-            $url_icip = Storage::disk('s3')->url($path_icip);
-            $url_selling   = Storage::disk('s3')->url($path_selling);
-            
+            $url_booth = $this->UploadFile($req->file('image_booth'));
+            $url_masak   = $this->UploadFile($req->file('image_masak'));
+            $url_icip = $this->UploadFile($req->file('image_icip'));
+            $url_selling   = $this->UploadFile($req->file('image_selling'));
+
             $url_arr         = array();
             array_push($url_arr, $url_booth);
             array_push($url_arr, $url_masak);
@@ -133,7 +128,7 @@ class TransactionImageApi extends Controller
     public function ubImage(Request $req)
     {
         try {
-            
+
             $validator = Validator::make($req->all(), [
                 'id_trans'                  => 'required|exists:transaction,ID_TRANS',
                 'image_booth'               => 'required|image',
@@ -204,7 +199,7 @@ class TransactionImageApi extends Controller
     public function newImage(Request $req)
     {
         try {
-            
+
             $validator = Validator::make($req->all(), [
                 'id_trans'                  => 'required|exists:transaction,ID_TRANS',
                 'image'                     => 'required|image',
@@ -224,15 +219,15 @@ class TransactionImageApi extends Controller
             $path                   = $req->file('image')->store('images', 's3');
             $url                    = Storage::disk('s3')->url($path);
 
-            $cekData    = TransactionImage::select('ID_TI','ID_TRANS', 'PHOTO_TI', 'DESCRIPTION_TI')->where([
-                        ['ID_TRANS', '=', $req->input('id_trans')],
-                        ])->first();            
-            
+            $cekData    = TransactionImage::select('ID_TI', 'ID_TRANS', 'PHOTO_TI', 'DESCRIPTION_TI')->where([
+                ['ID_TRANS', '=', $req->input('id_trans')],
+            ])->first();
+
             if ($cekData != null) {
                 $id                                 = $cekData->ID_TI;
                 $transactionImage                   = TransactionImage::find($id);
-                $transactionImage->PHOTO_TI         = $transactionImage->PHOTO_TI.";".$url;
-                $transactionImage->DESCRIPTION_TI   = $transactionImage->DESCRIPTION_TI.";".$req->input('desc');
+                $transactionImage->PHOTO_TI         = $transactionImage->PHOTO_TI . ";" . $url;
+                $transactionImage->DESCRIPTION_TI   = $transactionImage->DESCRIPTION_TI . ";" . $req->input('desc');
                 $transactionImage->save();
 
                 return response([
@@ -240,7 +235,7 @@ class TransactionImageApi extends Controller
                     "status_message"    => 'Data berhasil disimpan!',
                     "data"              => ['ID_TI' => $transactionImage->ID_TI]
                 ], 200);
-            }else{
+            } else {
                 $transactionImage->ID_TRANS           = $req->input('id_trans');
                 $transactionImage->PHOTO_TI           = $url;
                 $transactionImage->DESCRIPTION_TI     = $req->input('desc');
@@ -259,5 +254,25 @@ class TransactionImageApi extends Controller
                 'status_message'    => $exp->getMessage(),
             ], $exp->getCode());
         }
+    }
+
+    public function UploadFile($fileData)
+    {
+        $extension = $fileData->getClientOriginalExtension();
+        $fileName = $fileData->getClientOriginalName();
+        $s3 = Storage::disk('s3')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.s3.bucket');
+
+        $path = hash('sha256', $fileName) . '.' . $extension;
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->path(),
+            'ACL' => 'public-read',
+            'ContentType' => $fileData->getMimeType(),
+            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+
+        return 'https://' . $bucket . '.is3.cloudhost.id/' . $path;
     }
 }
