@@ -151,7 +151,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <label for="regional">Regional:</label>
-                                <select id="regional" name="regional" class="form-control">
+                                <select id="regional" name="regional" class="form-control" required>
                                     <option selected disabled value=''>Pilih Regional</option>@foreach ($regional as $reg)<option value='{{ $reg->ID_REGIONAL }}'>{{ $reg->NAME_REGIONAL }}</option>@endforeach
                                 </select>
                             </div>
@@ -159,7 +159,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="start_month">Start Month:</label>
-                                <select id="start_month" name="start_month" class="form-control">
+                                <select id="start_month" name="start_month" class="form-control" onchange="checkit();" required>
                                     <option value="1">January</option>
                                     <option value="2">February</option>
                                     <option value="3">March</option>
@@ -176,19 +176,16 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="start_year">Start Year:</label>
-                                <select id="start_year" name="start_year" class="form-control">
+                                <select id="start_year" name="start_year" class="form-control" onchange="checkitYear();" required>
                                     <option value="2022">2022</option>
                                     <option value="2023">2023</option>
-                                    <option value="2024">2024</option>
-                                    <option value="2025">2025</option>
-                                    <option value="2026">2026</option>
                                 </select>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="end_month">End Month:</label>
-                                <select id="end_month" name="end_month" class="form-control">
+                                <select id="end_month" name="end_month" class="form-control" onchange="checkit();" required>
                                     <option value="1">January</option>
                                     <option value="2">February</option>
                                     <option value="3">March</option>
@@ -205,12 +202,9 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="end_year">End Year:</label>
-                                <select id="end_year" name="end_year" class="form-control">
+                                <select id="end_year" name="end_year" class="form-control" onchange="checkitYear();" required>
                                     <option value="2022">2022</option>
                                     <option value="2023">2023</option>
-                                    <option value="2024">2024</option>
-                                    <option value="2025">2025</option>
-                                    <option value="2026">2026</option>
                                 </select>
                             </div>
                         </div>
@@ -242,4 +236,36 @@
             window.location.href = url;
         });
     });
+    
+    function checkit()
+    {
+
+    var fromMonth = document.getElementById('start_month');
+    var toMonth = document.getElementById('end_month');
+
+    if( fromMonth.options[fromMonth.selectedIndex].value > 
+            toMonth.options[toMonth.selectedIndex].value)
+        {
+            document.getElementById('end_month').value =
+          fromMonth.options[fromMonth.selectedIndex].value;
+        }
+        
+
+    }
+
+    function checkitYear()
+    {
+
+    var fromYear = document.getElementById('start_year');
+    var toYear = document.getElementById('end_year');
+
+     if( fromYear.options[fromYear.selectedIndex].value > 
+            toYear.options[toYear.selectedIndex].value)
+        {
+            document.getElementById('end_year').value =
+          fromYear.options[fromYear.selectedIndex].value;
+        }
+
+    }
+
 </script>
