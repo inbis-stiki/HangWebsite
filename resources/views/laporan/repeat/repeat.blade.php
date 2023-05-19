@@ -214,6 +214,7 @@
                                 </select>
                             </div>
                         </div>
+                        <br></br>
                         <button id="generate_report" class="btn btn-primary">Generate Report</button>
                     </div>
                 </div>
