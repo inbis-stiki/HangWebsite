@@ -569,14 +569,14 @@ class ReportRepeatOrder
             $rowData = 5;
             foreach ($item as $detItem) {
                 $ObjSheet->mergeCells('E' . $rowData . ':E' . ($rowData + ($RangeRowData - 1)))->setCellValue('E' . $rowData, $detItem['AREA'])->getStyle('E' . $rowData . ':E' . ($rowData + ($RangeRowData - 1)))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
-                
+
                 $pathNonUST = $detItem['CATEGORY']['NONUST'];
                 $ObjSheet->setCellValue('B' . $rowData, $pathNonUST['OMST2020'])->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                 $ObjSheet->setCellValue('C' . $rowData, $pathNonUST['OMST2021'])->getStyle('C' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                 $ObjSheet->setCellValue('D' . $rowData, $pathNonUST['OMST2022'])->getStyle('D' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                 $ObjSheet->setCellValue('F' . $rowData, 'NONUST')->getStyle('F' . $rowData)->applyFromArray($this->styling_title_template('FFFFFF00', '000000'));
                 $ObjSheet->setCellValue('G' . $rowData, $pathNonUST['TGT'])->getStyle('G' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
-                
+
                 $ObjSheet->setCellValue('T' . $rowData, $pathNonUST['RT2022'])->getStyle('T' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                 $ObjSheet->setCellValue('U' . $rowData, $pathNonUST['VSTGT'])->getStyle('U' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
 
@@ -588,7 +588,7 @@ class ReportRepeatOrder
                 $ObjSheet->setCellValue('G' . ($rowData + 1), $pathUGP['TGT'])->getStyle('G' . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                 $ObjSheet->setCellValue('T' . ($rowData + 1), $pathUGP['RT2022'])->getStyle('T' . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                 $ObjSheet->setCellValue('U' . ($rowData + 1), $pathUGP['VSTGT'])->getStyle('U' . ($rowData + 1))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
-                
+
                 $pathURD = $detItem['CATEGORY']['URD'];
                 $ObjSheet->setCellValue('B' . ($rowData + 2), $pathURD['OMST2020'])->getStyle('B' . ($rowData + 2))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                 $ObjSheet->setCellValue('C' . ($rowData + 2), $pathURD['OMST2021'])->getStyle('C' . ($rowData + 2))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
@@ -621,6 +621,128 @@ class ReportRepeatOrder
         $spreadsheet->removeSheetByIndex(0);
 
         $fileName = 'Repeat Order Test';
+
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel'); // generate excel file
+        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
+    public function gen_ro_vs_test($rOs)
+    {
+        $spreadsheet = new Spreadsheet();
+        $dataRange = range('C', 'Z');
+        $groups = array();
+        for ($i = 0; $i < count($dataRange) - 1; $i += 2) {
+            $group = $dataRange[$i] . ';' . $dataRange[$i + 1];
+            $groups[] = $group;
+        }
+        $months = array(
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
+        );
+        foreach ($rOs as $keyMain => $item) {
+            $ObjSheet = $spreadsheet->createSheet();
+            $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $keyMain));
+
+            $ObjSheet->getColumnDimension('B')->setWidth('15');
+            $ObjSheet->getColumnDimension('C')->setWidth('9');
+            $ObjSheet->getColumnDimension('D')->setWidth('9');
+            $ObjSheet->getColumnDimension('E')->setWidth('9');
+            $ObjSheet->getColumnDimension('F')->setWidth('9');
+            $ObjSheet->getColumnDimension('G')->setWidth('9');
+            $ObjSheet->getColumnDimension('G')->setWidth('9');
+            $ObjSheet->getColumnDimension('H')->setWidth('9');
+            $ObjSheet->getColumnDimension('I')->setWidth('9');
+            $ObjSheet->getColumnDimension('J')->setWidth('9');
+            $ObjSheet->getColumnDimension('K')->setWidth('9');
+            $ObjSheet->getColumnDimension('L')->setWidth('9');
+            $ObjSheet->getColumnDimension('M')->setWidth('9');
+            $ObjSheet->getColumnDimension('N')->setWidth('9');
+            $ObjSheet->getColumnDimension('O')->setWidth('9');
+            $ObjSheet->getColumnDimension('P')->setWidth('9');
+            $ObjSheet->getColumnDimension('Q')->setWidth('9');
+            $ObjSheet->getColumnDimension('R')->setWidth('9');
+            $ObjSheet->getColumnDimension('S')->setWidth('9');
+            $ObjSheet->getColumnDimension('T')->setWidth('9');
+            $ObjSheet->getColumnDimension('U')->setWidth('9');
+            $ObjSheet->getColumnDimension('V')->setWidth('9');
+            $ObjSheet->getColumnDimension('W')->setWidth('9');
+            $ObjSheet->getColumnDimension('X')->setWidth('9');
+            $ObjSheet->getColumnDimension('Y')->setWidth('9');
+            $ObjSheet->getColumnDimension('Z')->setWidth('9');
+
+            $ObjSheet->getColumnDimension('AA')->setWidth('2');
+            $ObjSheet->getColumnDimension('AB')->setWidth('9');
+            $ObjSheet->getColumnDimension('AC')->setWidth('9');
+
+            // HEADER
+            $ObjSheet->mergeCells('B3:B5')->setCellValue('B3', 'AREA')->getStyle('B3:B5')->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+
+            foreach ($groups as $key => $detItem) {
+                $ObjSheet->mergeCells(explode(';', $detItem)[0] . '3:' . explode(';', $detItem)[1] . '3')->setCellValue(explode(';', $detItem)[0] . '3', $months[$key])->getStyle(explode(';', $detItem)[0] . '3:' . explode(';', $detItem)[1] . '3')->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[0] . '5')->setCellValue(explode(';', $detItem)[0] . '4', 'RT CALL')->getStyle(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[0] . '5')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[1] . '4:' . explode(';', $detItem)[1] . '5')->setCellValue(explode(';', $detItem)[1] . '4', 'RT RO')->getStyle(explode(';', $detItem)[1] . '4:' . explode(';', $detItem)[1] . '5')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+            }
+
+            $ObjSheet->mergeCells('AB3:AC3')->setCellValue('AB3', 'AVERAGE ' . date('Y'))->getStyle('AB3:AC3')->applyFromArray($this->styling_title_template('FFFF66FF', 'FF000000'));
+            $ObjSheet->mergeCells('AB4:AB5')->setCellValue('AB4', 'RT CALL')->getStyle('AB4:AB5')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+            $ObjSheet->mergeCells('AC4:AC5')->setCellValue('AC4', 'RT RO')->getStyle('AC4:AC5')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+
+            // ISI KONTEN
+            $start = 6;
+            $rowData = 6;
+
+            $TotalAllCall = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $TotalAllRO = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            foreach ($item as $detItem) {
+                $ObjSheet->setCellValue('B' . $rowData, $detItem['AREA'])->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                foreach ($groups as $key => $groupsItem) {
+                    $TotalAllCall[$key] += $detItem['RTCALL'][$key];
+                    $TotalAllRO[$key] += $detItem['RTRO'][$key];
+
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $detItem['RTCALL'][$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $detItem['RTRO'][$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                }
+
+                $totCall = array_sum($detItem['RTCALL']);
+                $countCall = count($detItem['RTCALL']);
+                $avgCall = $totCall / $countCall;
+
+                $totRo = array_sum($detItem['RTRO']);
+                $countRo = count($detItem['RTRO']);
+                $avgRo = $totRo / $countRo;
+
+                $ObjSheet->setCellValue('AB' . $rowData, $avgCall)->getStyle('AB' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue('AC' . $rowData, $avgRo)->getStyle('AC' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+
+                $rowData++;
+            }
+
+            // FOOTER
+            foreach ($groups as $key => $groupsItem) {
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $TotalAllCall[$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $TotalAllRO[$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+            }
+
+            $totAllCall = array_sum($TotalAllCall);
+            $countAllCall = count($TotalAllCall);
+            $avgAllCall = $totAllCall / $countAllCall;
+
+            $totAllRo = array_sum($TotalAllCall);
+            $countAllRo = count($TotalAllCall);
+            $avgAllRo = $totAllRo / $countAllRo;
+
+            $ObjSheet->setCellValue('AB' . $rowData, $avgAllCall)->getStyle('AB' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('AC' . $rowData, $avgAllRo)->getStyle('AC' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+
+            $ObjSheet->setCellValue('B' . $rowData, $keyMain)->getStyle('B' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+        }
+
+        $spreadsheet->removeSheetByIndex(0);
+
+        $fileName = 'Repeat Order VS Test';
 
         $writer = new Xlsx($spreadsheet);
 
