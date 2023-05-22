@@ -722,8 +722,8 @@ class ReportRepeatOrder
 
             // FOOTER
             foreach ($groups as $key => $groupsItem) {
-                $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $TotalAllCall[$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
-                $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $TotalAllRO[$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $TotalAllCall[$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $TotalAllRO[$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
             }
 
             $totAllCall = array_sum($TotalAllCall);
@@ -734,8 +734,8 @@ class ReportRepeatOrder
             $countAllRo = count($TotalAllCall);
             $avgAllRo = $totAllRo / $countAllRo;
 
-            $ObjSheet->setCellValue('AB' . $rowData, $avgAllCall)->getStyle('AB' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->setCellValue('AC' . $rowData, $avgAllRo)->getStyle('AC' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('AB' . $rowData, $avgAllCall)->getStyle('AB' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('AC' . $rowData, $avgAllRo)->getStyle('AC' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
 
             $ObjSheet->setCellValue('B' . $rowData, $keyMain)->getStyle('B' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
         }

@@ -80,8 +80,6 @@ class PresenceApi extends Controller
                     "status_message"    => $validator->errors()->first()
                 ], 400);
             }
-            
-            $path = $req->file('image')->store('images', 's3');
 
             $cek = Presence::where('ID_USER', '=', ''.$req->input('id_user').'')
                 // ->where('ID_TYPE', '=', $req->input('id_type'))
@@ -119,7 +117,7 @@ class PresenceApi extends Controller
                     $presence->ID_DISTRICT          = $district->ID_DISTRICT;
                     $presence->LONG_PRESENCE        = $req->input('longitude');
                     $presence->LAT_PRESENCE         = $req->input('latitude');
-                    $presence->PHOTO_PRESENCE       = Storage::disk('s3')->url($path);
+                    $presence->PHOTO_PRESENCE       = $this->UploadFile($req->file('image'));
                     $presence->DATE_PRESENCE        = $currDate;
                     $presence->save();
 
@@ -160,5 +158,25 @@ class PresenceApi extends Controller
                 'status_message'    => $exp->getMessage(),
             ], 200);
         }
+    }
+    
+    public function UploadFile($fileData)
+    {
+        $extension = $fileData->getClientOriginalExtension();
+        $fileName = $fileData->getClientOriginalName();
+        $s3 = Storage::disk('s3')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.s3.bucket');
+
+        $path = hash('sha256', $fileName) . '.' . $extension;
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->path(),
+            'ACL' => 'public-read',
+            'ContentType' => $fileData->getMimeType(),
+            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+
+        return 'https://' . $bucket . '.is3.cloudhost.id/' . $path;
     }
 }

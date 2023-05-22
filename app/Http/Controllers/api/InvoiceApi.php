@@ -199,12 +199,9 @@ class InvoiceApi extends Controller
                 ], 200);
             }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
-            
-            $path_faktur1 = $req->file('photo_faktur_1')->store('images', 's3');
-            $path_faktur2 = $req->file('photo_faktur_2')->store('images', 's3');
 
-            $url_faktur1   = Storage::disk('s3')->url($path_faktur1);
-            $url_faktur2   = Storage::disk('s3')->url($path_faktur2);
+            $url_faktur1   = $this->UploadFile($req->file('photo_faktur_1'));
+            $url_faktur2   = $this->UploadFile($req->file('photo_faktur_2'));
             $url_array     = array();
 
             array_push($url_array, $url_faktur1);
@@ -300,5 +297,25 @@ class InvoiceApi extends Controller
                 'status_message'    => $exp->getMessage(),
             ], 500);
         }
+    }
+    
+    public function UploadFile($fileData)
+    {
+        $extension = $fileData->getClientOriginalExtension();
+        $fileName = $fileData->getClientOriginalName();
+        $s3 = Storage::disk('s3')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.s3.bucket');
+
+        $path = hash('sha256', $fileName) . '.' . $extension;
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->path(),
+            'ACL' => 'public-read',
+            'ContentType' => $fileData->getMimeType(),
+            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+
+        return 'https://' . $bucket . '.is3.cloudhost.id/' . $path;
     }
 }
