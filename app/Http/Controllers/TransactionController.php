@@ -20,61 +20,75 @@ class TransactionController extends Controller
     {
         $id_type    = $req->input('searchTrans');
         $tgl_trans  = $req->input('tglSearchtrans');
-        $id_user    = $req->session()->get('id_user');
         $id_role    = $req->session()->get('role');
+        $regional   = $req->session()->get('regional');
 
-        $data_loc     = DB::table('user')
-            ->where('user.ID_USER', $id_user)
-            ->leftjoin('md_location', 'md_location.ID_LOCATION', '=', 'user.ID_LOCATION')
-            ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
-            ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
-            ->select('user.*', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
-            ->first();
-
-        if ($id_type == 0) {
-            $dataTrans     = DB::table('transaction')
-                ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
-                ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, COUNT(transaction.ID_TRANS) as TotalTrans")
-                ->where('transaction.DATE_TRANS', 'like', $tgl_trans . '%')
-                ->where('transaction.ISTRANS_TRANS', '=', '1')
-                ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
-                ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
-                ->leftjoin('md_type', 'md_type.ID_TYPE', '=', 'transaction.ID_TYPE')
-                ->leftjoin('md_district', 'md_district.ID_DISTRICT', '=', 'md_shop.ID_DISTRICT')
-                ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
-                ->leftjoin('md_location', 'md_location.ID_LOCATION', '=', 'user.ID_LOCATION')
-                ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
-                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
-                ->orderBy('md_area.NAME_AREA', 'ASC')
-                ->get();
-        } else {
-            $dataTrans     = DB::table('transaction')
-                ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER', 'md_type.NAME_TYPE', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_district.NAME_DISTRICT', 'md_area.NAME_AREA', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
-                ->selectRaw("DATE(transaction.DATE_TRANS) as CnvrtDate, COUNT(transaction.ID_TRANS) as TotalTrans")
-                ->where('transaction.ID_TYPE', '=', $id_type)
-                ->where('transaction.ISTRANS_TRANS', '=', '1')
-                ->where('transaction.DATE_TRANS', 'like', $tgl_trans . '%')
-                ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
-                ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
-                ->leftjoin('md_type', 'md_type.ID_TYPE', '=', 'transaction.ID_TYPE')
-                ->leftjoin('md_district', 'md_district.ID_DISTRICT', '=', 'md_shop.ID_DISTRICT')
-                ->leftjoin('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
-                ->leftjoin('md_location', 'md_location.ID_LOCATION', '=', 'user.ID_LOCATION')
-                ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
-                ->groupByRaw("DATE(transaction.DATE_TRANS), transaction.ID_USER, transaction.ID_TYPE")
-                ->orderBy('md_area.NAME_AREA', 'ASC')
-                ->get();
+        $showRegional = "";
+        $showType = "";
+        if($id_role == 3 || $id_role == 4 || $id_role == 5 || $id_role == 6){
+            $showRegional = "AND mr.ID_REGIONAL = $regional";
         }
 
-        $NewData_asmen = array();
-        $NewData_rpo = array();
+        if($id_type != 0){
+            $showType = "AND t.ID_TYPE = $id_type";
+        }
+
+        $dataTrans     = DB::select(
+            DB::raw("
+                SELECT
+                    t.ID_TRANS ,
+                    t.AREA_TRANS ,
+                    t.REGIONAL_TRANS ,
+                    t.DATE_TRANS ,
+                    t.ID_TYPE ,
+                    u.`ID_USER`,
+                    u.`NAME_USER`,
+                    u.`ID_ROLE`,
+                    mt.`NAME_TYPE`,
+                    ms.`LONG_SHOP`,
+                    ms.`LAT_SHOP`,
+                    md.`NAME_DISTRICT`,
+                    ma.`NAME_AREA`,
+                    mr.`NAME_REGIONAL`,
+                    ml.`NAME_LOCATION`,
+                    DATE(t.DATE_TRANS) AS CnvrtDate,
+                    COUNT(t.ID_TRANS) AS TotalTrans
+                FROM
+                    `transaction` t
+                LEFT JOIN `user` u ON
+                    u.`ID_USER` = t.`ID_USER`
+                LEFT JOIN `md_shop` ms ON
+                    ms.`ID_SHOP` = t.`ID_SHOP`
+                LEFT JOIN `md_type` mt ON
+                    mt.`ID_TYPE` = t.`ID_TYPE`
+                LEFT JOIN `md_district` md ON
+                    md.`ID_DISTRICT` = ms.`ID_DISTRICT`
+                LEFT JOIN `md_area` ma ON
+                    ma.`ID_AREA` = u.`ID_AREA`
+                LEFT JOIN `md_location` ml ON
+                    ml.`ID_LOCATION` = u.`ID_LOCATION`
+                LEFT JOIN `md_regional` mr ON
+                    mr.`ID_REGIONAL` = u.`ID_REGIONAL`
+                WHERE
+                    t.`ISTRANS_TRANS` = 1
+                    AND DATE(t.`DATE_TRANS`) = '" . $tgl_trans . "'
+                    $showRegional
+                    $showType
+                GROUP BY
+                    DATE(t.DATE_TRANS),
+                    t.ID_USER,
+                    t.ID_TYPE
+                ORDER BY
+                    ma.`NAME_AREA` ASC
+            ")
+        );
+
         $NewData_all = array();
-        $counter_asmen = 0;
-        $counter_rpo = 0;
         $counter_all = 0;
-        
+
         foreach ($dataTrans as $item) {
             $data = array(
+                "NO" => ++$counter_all,
                 "NAME_USER" => $item->NAME_USER,
                 "ID_TRANS" => $item->ID_TRANS,
                 "AREA_TRANS" => $item->AREA_TRANS,
@@ -93,39 +107,13 @@ class TransactionController extends Controller
                 $data['ACTION_BUTTON'] = '<a href="' . url("transaction/ublp/?id_user=$item->ID_USER&area=$item->AREA_TRANS&date=" . date_format(date_create($item->DATE_TRANS), 'Y-m-d') . "&type=$item->ID_TYPE") . '"><button class="btn light btn-success"><i class="fa fa-circle-info"></i></button></a>';
             }
 
-            if ($id_role == 3 && $item->NAME_LOCATION == $data_loc->NAME_LOCATION) {
-                $counter_asmen++;
-                $data['NO'] = $counter_asmen;
-                array_push($NewData_asmen, $data);
-            } else if ($id_role == 4 && $item->REGIONAL_TRANS == $data_loc->NAME_REGIONAL) {
-                $counter_rpo++;
-                $data['NO'] = $counter_rpo;
-                array_push($NewData_rpo, $data);
-            } else {
-                $counter_all++;
-                $data['NO'] = $counter_all;
-                array_push($NewData_all, $data);
-            }
+            array_push($NewData_all, $data);
         }
 
-        if ($id_role == 3) {
-            return response([
-                'status_code'       => 200,
-                'status_message'    => 'Data berhasil diambil!',
-                'data'              => $NewData_asmen
-            ], 200);
-        } else if ($id_role == 4) {
-            return response([
-                'status_code'       => 200,
-                'status_message'    => 'Data berhasil diambil!',
-                'data'              => $NewData_rpo
-            ], 200);
-        } else {
-            return response([
-                'status_code'       => 200,
-                'status_message'    => 'Data berhasil diambil!',
-                'data'              => $NewData_all
-            ], 200);
-        }
+        return response([
+            'status_code'       => 200,
+            'status_message'    => 'Data berhasil diambil!',
+            'data'              => $NewData_all
+        ], 200);
     }
 }
