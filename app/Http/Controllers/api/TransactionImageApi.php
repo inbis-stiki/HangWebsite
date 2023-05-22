@@ -31,13 +31,10 @@ class TransactionImageApi extends Controller
                 ], 400);
             }
 
-            $transactionImage        = new TransactionImage();
-            $path_display = $req->file('image_display')->store('images', 's3');
-            $path_lapak   = $req->file('image_lapak')->store('images', 's3');
-
-            $url_display = Storage::disk('s3')->url($path_display);
-            $url_lapak   = Storage::disk('s3')->url($path_lapak);
-            $url_arr         = array();
+            $transactionImage       = new TransactionImage();            
+            $url_display            = $this->UploadFile($req->file('image_display'));
+            $url_lapak              = $this->UploadFile($req->file('image_lapak'));
+            $url_arr                = array();
 
             array_push($url_arr, $url_display);
             array_push($url_arr, $url_lapak);
@@ -151,15 +148,10 @@ class TransactionImageApi extends Controller
             }
 
             $transactionImage        = new TransactionImage();
-            $path_booth = $req->file('image_booth')->store('images', 's3');
-            $path_masak   = $req->file('image_masak')->store('images', 's3');
-            $path_icip   = $req->file('image_icip')->store('images', 's3');
-            $path_selling   = $req->file('image_selling')->store('images', 's3');
-
-            $url_booth      = Storage::disk('s3')->url($path_booth);
-            $url_masak      = Storage::disk('s3')->url($path_masak);
-            $url_icip       = Storage::disk('s3')->url($path_icip);
-            $url_selling    = Storage::disk('s3')->url($path_selling);
+            $url_booth = $this->UploadFile($req->file('image_booth'));
+            $url_masak   = $this->UploadFile($req->file('image_masak'));
+            $url_icip = $this->UploadFile($req->file('image_icip'));
+            $url_selling   = $this->UploadFile($req->file('image_selling'));
 
             $url_arr         = array();
             array_push($url_arr, $url_booth);
@@ -216,8 +208,7 @@ class TransactionImageApi extends Controller
             }
 
             $transactionImage       = new TransactionImage();
-            $path                   = $req->file('image')->store('images', 's3');
-            $url                    = Storage::disk('s3')->url($path);
+            $url                   = $this->UploadFile($req->file('image'));
 
             $cekData    = TransactionImage::select('ID_TI', 'ID_TRANS', 'PHOTO_TI', 'DESCRIPTION_TI')->where([
                 ['ID_TRANS', '=', $req->input('id_trans')],
