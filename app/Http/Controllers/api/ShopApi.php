@@ -88,8 +88,6 @@ class ShopApi extends Controller
                 ], 400);
             }
 
-            $path = $req->file('photo_shop')->store('images', 's3');
-
             $district = District::select("ID_DISTRICT")
                 ->where([
                     ['NAME_DISTRICT', '=', $req->input('kecamatan')],
@@ -108,7 +106,8 @@ class ShopApi extends Controller
                         "status_code"       => 400,
                         "status_message"    => 'Data toko sudah terpakai'
                     ], 200);
-                } else {
+                } else {                    
+                    $path = $req->file('photo_shop')->store('images', 's3');
                     $shop = new Shop();
                     $shop->ID_DISTRICT          = $req->input('id_district');
                     $shop->NAME_SHOP            = Str::upper($req->input('name_shop'));
@@ -120,7 +119,7 @@ class ShopApi extends Controller
                     $shop->LONG_SHOP            = $req->input('long_shop');
                     $shop->LAT_SHOP             = $req->input('lat_shop');
                     $shop->ISRECOMMEND_SHOP     = "1";
-                    $shop->PHOTO_SHOP           = Storage::disk('s3')->url($path);
+                    $shop->PHOTO_SHOP           = $this->UploadFile($req->file('photo_shop'), 'images');
                     $shop->save();
 
                     return response([
@@ -437,5 +436,32 @@ class ShopApi extends Controller
                 'status_message'    => $exp->getMessage(),
             ], $exp->getCode());
         }
+    }
+    
+    public function UploadFile($fileData, $folder)
+    {
+        $extension = $fileData->getClientOriginalExtension();
+        $fileName = $fileData->getClientOriginalName();
+        $s3 = Storage::disk('s3')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.s3.bucket');
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        $path = $folder . '/' .hash('sha256', $fileName). $randomString . '.' . $extension;
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->path(),
+            'ACL' => 'public-read',
+            'ContentType' => $fileData->getMimeType(),
+            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+
+        return 'https://' . $bucket . '.is3.cloudhost.id/' . $path;
     }
 }
