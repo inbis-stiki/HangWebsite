@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\DB;
 
 class InvoiceApi extends Controller
 {
-    public function listproduct(Request $req){
+    public function listproduct(Request $req)
+    {
         try {
             $ID_USER = $req->input("id_user");
             $ID_REGIONAL = $req->input("id_regional");
@@ -26,14 +27,14 @@ class InvoiceApi extends Controller
                 'string'    => 'Parameter :attribute harus bertipe string!',
             ]);
 
-            if($validator->fails()){
+            if ($validator->fails()) {
                 return response([
                     "status_code"       => 400,
                     "status_message"    => $validator->errors()->first()
                 ], 400);
             }
 
-            $lastInvoice = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
+            $lastInvoice = TransactionDaily::where('ID_USER', '=', '' . $ID_USER . '')
                 ->where('ISFINISHED_TD', '=', '0')
                 ->latest('ID_TD')->first();
 
@@ -45,7 +46,7 @@ class InvoiceApi extends Controller
                 ->where('ID_USER', $req->input('id_user'))
                 ->get();
 
-            if(!$cekTrans){
+            if (!$cekTrans) {
                 return response([
                     'status_code'       => 500,
                     'status_message'    => 'Anda belum melakukan transaksi',
@@ -60,7 +61,7 @@ class InvoiceApi extends Controller
 
             $dataT = array();
 
-            foreach($ts as $t){
+            foreach ($ts as $t) {
                 $ts_d = DB::table("transaction_detail")
                     ->join('product_price', 'product_price.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
                     ->join('md_product', 'md_product.ID_PRODUCT', '=', 'transaction_detail.ID_PRODUCT')
@@ -71,7 +72,7 @@ class InvoiceApi extends Controller
                 $THargaDetail = 0;
                 $dataTsD = array();
 
-                foreach($ts_d as $tsdData){
+                foreach ($ts_d as $tsdData) {
                     $THargaDetail += ($tsdData->QTY_TD * $tsdData->PRICE_PP);
                     array_push(
                         $dataTsD,
@@ -91,17 +92,17 @@ class InvoiceApi extends Controller
                         "ID_TRANS" => $t->ID_TRANS,
                         "ID_TYPE" => $t->ID_TYPE,
                         "TOT_HARGA_TRANS" => $THargaDetail,
-                        "TRANSACTION_DETAIL" =>$dataTsD
+                        "TRANSACTION_DETAIL" => $dataTsD
                     )
                 );
             }
-            
+
             $TotalQty = array();
             foreach ($dataT as $item) {
                 foreach ($item['TRANSACTION_DETAIL'] as $item2) {
-                    if(array_key_exists($item2['ID_PRODUCT'], $TotalQty)){
+                    if (array_key_exists($item2['ID_PRODUCT'], $TotalQty)) {
                         $TotalQty[$item2['ID_PRODUCT']]['TOTAL'] += $item2['QTY_TD'];
-                    }else{
+                    } else {
                         $TotalQty[$item2['ID_PRODUCT']] = array(
                             "NAME_PRODUCT" => $item2['NAME_PRODUCT'],
                             "TOTAL" => $item2['QTY_TD']
@@ -111,7 +112,7 @@ class InvoiceApi extends Controller
             }
 
             $productQty = array();
-            foreach($TotalQty as $Data3){
+            foreach ($TotalQty as $Data3) {
                 array_push(
                     $productQty,
                     array(
@@ -123,15 +124,15 @@ class InvoiceApi extends Controller
 
             $THargaFaktur = 0;
             $typetr = "";
-            foreach($dataT as $Faktur){
+            foreach ($dataT as $Faktur) {
                 $THargaFaktur += $Faktur['TOT_HARGA_TRANS'];
                 if ($Faktur['ID_TYPE'] != 1) {
                     $typetr = $Faktur['ID_TYPE'];
-                }else{
+                } else {
                     $typetr = 1;
                 }
             }
-            
+
             $dataFaktur = array();
             array_push(
                 $dataFaktur,
@@ -142,30 +143,31 @@ class InvoiceApi extends Controller
                     "FAKTUR" => $dataT
                 )
             );
-            
+
             return response([
                 'status_code'       => 200,
                 'status_message'    => 'Data berhasil diambil!',
                 'data'              => $dataFaktur
             ], 200);
-         } catch (Exception $exp) {
-             return response([
-                 'status_code'       => 500,
-                 'status_message'    => $exp->getMessage(),
-             ], 500);
-         }
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
     }
 
-    public function storedata(Request $req){
-        try{
+    public function storedata(Request $req)
+    {
+        try {
             $ID_USER = $req->input('id_user');
-            
+
             $ID_LOCATION = DB::table("user")
                 ->select('md_area.NAME_AREA', 'md_regional.NAME_REGIONAL', 'md_location.NAME_LOCATION')
                 ->join('md_area', 'md_area.ID_AREA', '=', 'user.ID_AREA')
                 ->join('md_regional', 'md_regional.ID_REGIONAL', '=', 'user.ID_REGIONAL')
                 ->JOIN('md_location', 'md_location.ID_LOCATION', '=', 'user.ID_LOCATION')
-                ->where('ID_USER', '=', ''.$ID_USER.'')
+                ->where('ID_USER', '=', '' . $ID_USER . '')
                 ->first();
 
             $validator = Validator::make($req->all(), [
@@ -183,8 +185,8 @@ class InvoiceApi extends Controller
                 'numeric'   => 'Parameter :attribute harus bertipe angka!',
                 'image'     => 'Paramater :attribute harus bertipe gambar!'
             ]);
-    
-            if($validator->fails()){
+
+            if ($validator->fails()) {
                 return response([
                     "status_code"       => 400,
                     "status_message"    => $validator->errors()->first()
@@ -200,8 +202,8 @@ class InvoiceApi extends Controller
             }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
-            $url_faktur1   = $this->UploadFile($req->file('photo_faktur_1'));
-            $url_faktur2   = $this->UploadFile($req->file('photo_faktur_2'));
+            $url_faktur1   = $this->UploadFile($req->file('photo_faktur_1'), 'images');
+            $url_faktur2   = $this->UploadFile($req->file('photo_faktur_2'), 'images');
             $url_array     = array();
 
             array_push($url_array, $url_faktur1);
@@ -209,29 +211,29 @@ class InvoiceApi extends Controller
             $url = implode(";", $url_array);
 
             $cekPickup = Pickup::where([
-                            ['ID_USER', '=', $ID_USER]
-                        ])
-                        ->latest('ID_PICKUP')->first();
+                ['ID_USER', '=', $ID_USER]
+            ])
+                ->latest('ID_PICKUP')->first();
 
-            $cek = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
+            $cek = TransactionDaily::where('ID_USER', '=', '' . $ID_USER . '')
                 ->where('ISFINISHED_TD', '=', '0')
                 ->latest('ID_TD')->first();
 
-            $cektd = TransactionDaily::where('ID_USER', '=', ''.$ID_USER.'')
+            $cektd = TransactionDaily::where('ID_USER', '=', '' . $ID_USER . '')
                 ->latest('ID_TD')->first();
-            
+
             if ($cektd['ISFINISHED_TD'] == '1') {
                 return response([
                     "status_code"       => 200,
                     "status_message"    => 'Anda sudah mengirimkan faktur'
                 ], 200);
-            }else{
-                if ($cekPickup == null || $cekPickup['ISFINISHED_PICKUP'] == '1'){
+            } else {
+                if ($cekPickup == null || $cekPickup['ISFINISHED_PICKUP'] == '1') {
                     return response([
                         "status_code"       => 200,
                         "status_message"    => 'Anda belum pickup'
                     ], 200);
-                }else {
+                } else {
                     $TransactionDaily = TransactionDaily::find($cek->ID_TD);
                     $TransactionDaily->ID_TYPE         = $req->input('id_type');
                     $TransactionDaily->LOCATION_TD     = $ID_LOCATION->NAME_LOCATION;
@@ -243,17 +245,18 @@ class InvoiceApi extends Controller
                     $TransactionDaily->REGIONAL_TD     = $ID_LOCATION->NAME_REGIONAL;
                     $TransactionDaily->ISFINISHED_TD   = '1';
                     $TransactionDaily->save();
-                    
+
                     $Pickup = Pickup::find($cekPickup->ID_PICKUP);
                     $Pickup->ISFINISHED_PICKUP         = '1';
                     $Pickup->save();
-        
+
                     return response([
                         "status_code"       => 200,
                         "status_message"    => 'Data berhasil diupdate!',
                         "data"              => [
-                            'ID_TD' => $TransactionDaily->ID_TD, 
-                            'ID_PICKUP' => $Pickup->ID_PICKUP]
+                            'ID_TD' => $TransactionDaily->ID_TD,
+                            'ID_PICKUP' => $Pickup->ID_PICKUP
+                        ]
                     ], 200);
                 }
             }
@@ -264,27 +267,28 @@ class InvoiceApi extends Controller
             ], $exp->getCode());
         }
     }
-    
-    public function cekFaktur(Request $req){
+
+    public function cekFaktur(Request $req)
+    {
         try {
             $currDate = date('Y-m-d');
             $cekFactur = TransactionDaily::whereDate('DATE_TD', '=', $currDate)
-            ->where([
-                ['ID_USER', '=', $req->input('id_user')]
-            ])->first();
+                ->where([
+                    ['ID_USER', '=', $req->input('id_user')]
+                ])->first();
 
 
-            if($cekFactur == null){
+            if ($cekFactur == null) {
                 $succ   = 0;
                 $msg    = 'Anda belum melakukan pengambilan produk!';
-            }else if($cekFactur->ISFINISHED_TD == '0'){
+            } else if ($cekFactur->ISFINISHED_TD == '0') {
                 $succ   = 1;
                 $msg    = 'Anda bisa melakukan faktur!';
-            }else if($cekFactur->ISFINISHED_TD == '1'){
+            } else if ($cekFactur->ISFINISHED_TD == '1') {
                 $succ   = 0;
                 $msg    = 'Anda telah melakukan faktur pada hari ini!';
             }
-            
+
             return response([
                 'status_code'       => 200,
                 'status_message'    => $msg,
@@ -298,15 +302,22 @@ class InvoiceApi extends Controller
             ], 500);
         }
     }
-    
-    public function UploadFile($fileData)
+
+    public function UploadFile($fileData, $folder)
     {
         $extension = $fileData->getClientOriginalExtension();
         $fileName = $fileData->getClientOriginalName();
         $s3 = Storage::disk('s3')->getDriver()->getAdapter()->getClient();
         $bucket = config('filesystems.disks.s3.bucket');
 
-        $path = hash('sha256', $fileName) . '.' . $extension;
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
         $s3->putObject([
             'Bucket' => $bucket,
             'Key' => $path,
