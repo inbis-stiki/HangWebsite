@@ -580,42 +580,42 @@ class Cronjob extends Model
     public static function queryGetTransactionDaily($querySumProd, $date, $regional)
     {
         return DB::select("
-SELECT
-	u.ID_USER,
-	u.NAME_USER,
-	mt.NAME_TYPE,
-	td.AREA_TD,
-	IF(t.DISTRICT IS NOT NULL,
-	t.DISTRICT,
-	t.KECAMATAN) AS DISTRICT,
-	t.DETAIL_LOCATION,
-	mr.NAME_ROLE,
-	" . $querySumProd . ",
-	td.ISFINISHED_TD,
-	td.TOTAL_TD
-FROM
-	transaction_daily td
-JOIN md_type mt ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "' AND (mt.ID_TYPE = td.ID_TYPE OR td.ID_TYPE IS NULL)
-INNER JOIN `user` u ON
-	u.ID_USER = td.ID_USER
-INNER JOIN md_role mr ON
-	mr.ID_ROLE = u.ID_ROLE
-LEFT JOIN transaction t ON
-	t.ID_TD = td.ID_TD
-	AND t.ID_TYPE = mt.ID_TYPE
-LEFT JOIN transaction_detail td2 ON
-	t.ID_TRANS = td2.ID_TRANS
-JOIN md_type mt2 ON
-	t.ID_TYPE = mt2.ID_TYPE
-	AND mt.NAME_TYPE = mt2.NAME_TYPE
-GROUP BY
-	u.ID_USER,
-	td.ID_TD,
-	mt.NAME_TYPE
-ORDER BY
-	td.AREA_TD ASC,
-	u.NAME_USER ASC;
-	");
+            SELECT
+                u.ID_USER,
+                u.NAME_USER,
+                mt.NAME_TYPE,
+                td.AREA_TD,
+                IF(t.DISTRICT IS NOT NULL,
+                t.DISTRICT,
+                t.KECAMATAN) AS DISTRICT,
+                t.DETAIL_LOCATION,
+                mr.NAME_ROLE,
+                " . $querySumProd . ",
+                td.ISFINISHED_TD,
+                td.TOTAL_TD
+            FROM
+                transaction_daily td
+            JOIN md_type mt ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "' AND (mt.ID_TYPE = td.ID_TYPE OR td.ID_TYPE IS NULL)
+            INNER JOIN `user` u ON
+                u.ID_USER = td.ID_USER
+            INNER JOIN md_role mr ON
+                mr.ID_ROLE = u.ID_ROLE
+            LEFT JOIN transaction t ON
+                t.ID_TD = td.ID_TD
+                AND t.ID_TYPE = mt.ID_TYPE
+            LEFT JOIN transaction_detail td2 ON
+                t.ID_TRANS = td2.ID_TRANS
+            JOIN md_type mt2 ON
+                t.ID_TYPE = mt2.ID_TYPE
+                AND mt.NAME_TYPE = mt2.NAME_TYPE
+            GROUP BY
+                u.ID_USER,
+                td.ID_TD,
+                mt.NAME_TYPE
+            ORDER BY
+                td.AREA_TD ASC,
+                u.NAME_USER ASC;
+	    ");
     }
     public static function queryGetRepeatOrder($year, $month)
     {

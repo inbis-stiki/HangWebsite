@@ -114,9 +114,6 @@ class PresenceApi extends Controller
 
                     $currDate = $dateFunc->currDate($req->input('longitude'), $req->input('latitude'));
 
-                    dd($this->UploadFile($req->file('image'), 'images'));
-                    die;
-
                     $presence = new Presence();
                     $presence->ID_USER              = $req->input('id_user');
                     // $presence->ID_TYPE              = $req->input('id_type');
