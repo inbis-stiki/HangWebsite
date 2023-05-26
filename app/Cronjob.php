@@ -914,7 +914,8 @@ class Cronjob extends Model
             ms.TELP_SHOP,
             ma.NAME_AREA,
             mr.NAME_REGIONAL,
-            COUNT(t.ID_SHOP) AS TOTAL_TEST
+            COUNT(t.ID_SHOP) AS TOTAL_TEST,
+            SUM(t.QTY_TRANS) AS TOTAL_RO_PRODUCT
         FROM
             `transaction` t
         INNER JOIN (
@@ -940,7 +941,9 @@ class Cronjob extends Model
         INNER JOIN md_regional mr ON
             mr.ID_REGIONAL = ma.ID_REGIONAL
         WHERE
-            ms.ID_SHOP IS NOT NULL
+            ms.ID_SHOP IS NOT NULL AND
+            YEAR(DATE_TRANS) = " . $year . "
+            AND MONTH(DATE_TRANS) = " . $month . "
         GROUP BY
             t.ID_SHOP
         ORDER BY
