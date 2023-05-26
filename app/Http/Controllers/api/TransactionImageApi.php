@@ -31,9 +31,9 @@ class TransactionImageApi extends Controller
                 ], 400);
             }
 
-            $transactionImage       = new TransactionImage();            
-            $url_display            = $this->UploadFile($req->file('image_display'));
-            $url_lapak              = $this->UploadFile($req->file('image_lapak'));
+            $transactionImage       = new TransactionImage();
+            $url_display            = $this->UploadFile($req->file('image_display'), 'images');
+            $url_lapak              = $this->UploadFile($req->file('image_lapak'), 'images');
             $url_arr                = array();
 
             array_push($url_arr, $url_display);
@@ -84,10 +84,10 @@ class TransactionImageApi extends Controller
 
             $transactionImage        = new TransactionImage();
 
-            $url_booth = $this->UploadFile($req->file('image_booth'));
-            $url_masak   = $this->UploadFile($req->file('image_masak'));
-            $url_icip = $this->UploadFile($req->file('image_icip'));
-            $url_selling   = $this->UploadFile($req->file('image_selling'));
+            $url_booth = $this->UploadFile($req->file('image_booth'), 'images');
+            $url_masak   = $this->UploadFile($req->file('image_masak'), 'images');
+            $url_icip = $this->UploadFile($req->file('image_icip'), 'images');
+            $url_selling   = $this->UploadFile($req->file('image_selling'), 'images');
 
             $url_arr         = array();
             array_push($url_arr, $url_booth);
@@ -148,10 +148,10 @@ class TransactionImageApi extends Controller
             }
 
             $transactionImage        = new TransactionImage();
-            $url_booth = $this->UploadFile($req->file('image_booth'));
-            $url_masak   = $this->UploadFile($req->file('image_masak'));
-            $url_icip = $this->UploadFile($req->file('image_icip'));
-            $url_selling   = $this->UploadFile($req->file('image_selling'));
+            $url_booth = $this->UploadFile($req->file('image_booth'), 'images');
+            $url_masak   = $this->UploadFile($req->file('image_masak'), 'images');
+            $url_icip = $this->UploadFile($req->file('image_icip'), 'images');
+            $url_selling   = $this->UploadFile($req->file('image_selling'), 'images');
 
             $url_arr         = array();
             array_push($url_arr, $url_booth);
@@ -208,7 +208,7 @@ class TransactionImageApi extends Controller
             }
 
             $transactionImage       = new TransactionImage();
-            $url                   = $this->UploadFile($req->file('image'));
+            $url                   = $this->UploadFile($req->file('image'), 'images');
 
             $cekData    = TransactionImage::select('ID_TI', 'ID_TRANS', 'PHOTO_TI', 'DESCRIPTION_TI')->where([
                 ['ID_TRANS', '=', $req->input('id_trans')],
@@ -247,14 +247,21 @@ class TransactionImageApi extends Controller
         }
     }
 
-    public function UploadFile($fileData)
+    public function UploadFile($fileData, $folder)
     {
         $extension = $fileData->getClientOriginalExtension();
         $fileName = $fileData->getClientOriginalName();
         $s3 = Storage::disk('s3')->getDriver()->getAdapter()->getClient();
         $bucket = config('filesystems.disks.s3.bucket');
 
-        $path = hash('sha256', $fileName) . '.' . $extension;
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
         $s3->putObject([
             'Bucket' => $bucket,
             'Key' => $path,

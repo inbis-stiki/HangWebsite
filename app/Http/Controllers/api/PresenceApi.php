@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Storage;
 
 class PresenceApi extends Controller
 {
-    public function index(){
+    public function index()
+    {
         try {
             $presence = Presence::all();
             return response([
@@ -32,18 +33,19 @@ class PresenceApi extends Controller
         }
     }
 
-    public function detail(Request $req){
-        
+    public function detail(Request $req)
+    {
+
         try {
             $idUser = $req->input("id_user");
             $presence = Presence::whereDate('DATE_PRESENCE', date('Y-m-d'))->where('ID_USER',  $idUser)->get();
 
-            if($presence == null){
+            if ($presence == null) {
                 return response([
                     'status_code'       => 200,
                     'status_message'    => 'Data tidak ditemukan!',
                 ], 200);
-            }else{
+            } else {
                 return response([
                     'status_code'       => 200,
                     'status_message'    => 'Data berhasil ditemukan!',
@@ -56,9 +58,10 @@ class PresenceApi extends Controller
                 'status_message'    => $exp->getMessage(),
             ], 500);
         }
-    }   
+    }
 
-    public function store(Request $req){
+    public function store(Request $req)
+    {
         try {
             $validator = Validator::make($req->all(), [
                 'id_user'          => 'required|string|exists:user,ID_USER',
@@ -73,33 +76,33 @@ class PresenceApi extends Controller
                 'numeric'   => 'Parameter :attribute harus bertipe angka!',
                 'exists'    => 'Parameter :attribute tidak ditemukan!',
             ]);
-    
-            if($validator->fails()){
+
+            if ($validator->fails()) {
                 return response([
                     "status_code"       => 400,
                     "status_message"    => $validator->errors()->first()
                 ], 400);
             }
 
-            $cek = Presence::where('ID_USER', '=', ''.$req->input('id_user').'')
+            $cek = Presence::where('ID_USER', '=', '' . $req->input('id_user') . '')
                 // ->where('ID_TYPE', '=', $req->input('id_type'))
                 ->whereDate('DATE_PRESENCE', '=', date('Y-m-d'))
                 ->exists();
 
             $district = District::select("ID_DISTRICT")
-            ->where([
-                ['NAME_DISTRICT', '=', $req->input('kecamatan')],
-                ['ID_AREA', '=', $req->input('id_area')],
-                ['ISMARKET_DISTRICT', '=', '0']
-            ])->whereNull('deleted_at')->first();
-            
+                ->where([
+                    ['NAME_DISTRICT', '=', $req->input('kecamatan')],
+                    ['ID_AREA', '=', $req->input('id_area')],
+                    ['ISMARKET_DISTRICT', '=', '0']
+                ])->whereNull('deleted_at')->first();
+
             if (!empty($district)) {
                 if ($cek == true) {
                     return response([
                         "status_code"       => 200,
                         "status_message"    => 'Anda sudah absen'
                     ], 200);
-                }else{
+                } else {
                     $dateFunc = new Datefunc();
 
                     if (empty($dateFunc->currDate($req->input('longitude'), $req->input('latitude')))) {
@@ -117,7 +120,7 @@ class PresenceApi extends Controller
                     $presence->ID_DISTRICT          = $district->ID_DISTRICT;
                     $presence->LONG_PRESENCE        = $req->input('longitude');
                     $presence->LAT_PRESENCE         = $req->input('latitude');
-                    $presence->PHOTO_PRESENCE       = $this->UploadFile($req->file('image'));
+                    $presence->PHOTO_PRESENCE       = $this->UploadFile($req->file('image'), 'images');
                     $presence->DATE_PRESENCE        = $currDate;
                     $presence->save();
 
@@ -125,13 +128,13 @@ class PresenceApi extends Controller
                         SELECT ma.NAME_AREA , mr.NAME_REGIONAL , ml.NAME_LOCATION 
                         FROM md_district md 
                         INNER JOIN md_area ma
-                            ON md.ID_DISTRICT = ".$district->ID_DISTRICT." AND ma.ID_AREA = md.ID_AREA 
+                            ON md.ID_DISTRICT = " . $district->ID_DISTRICT . " AND ma.ID_AREA = md.ID_AREA 
                         INNER JOIN md_regional mr 
                             ON mr.ID_REGIONAL = ma.ID_REGIONAL 
                         INNER JOIN md_location ml 
                             ON ml.ID_LOCATION = mr.ID_LOCATION
                     ");
-    
+
                     $transDaily = new TransactionDaily();
                     $transDaily->ID_USER     = $req->input('id_user');
                     $transDaily->DATE_TD     = $currDate;
@@ -139,14 +142,14 @@ class PresenceApi extends Controller
                     $transDaily->REGIONAL_TD = $detLoc[0]->NAME_REGIONAL;
                     $transDaily->LOCATION_TD = $detLoc[0]->NAME_LOCATION;
                     $transDaily->save();
-    
+
                     return response([
                         "status_code"       => 200,
                         "status_message"    => 'Data berhasil disimpan!',
                         "data"              => ['ID_PRESENCE' => $presence->ID_PRESENCE]
                     ], 200);
                 }
-            }else{
+            } else {
                 return response([
                     'status_code'       => 403,
                     'status_message'    => "Kecamatan tidak terdaftar, Cek lokasi anda!",
@@ -159,15 +162,22 @@ class PresenceApi extends Controller
             ], 200);
         }
     }
-    
-    public function UploadFile($fileData)
+
+    public function UploadFile($fileData, $folder)
     {
         $extension = $fileData->getClientOriginalExtension();
         $fileName = $fileData->getClientOriginalName();
         $s3 = Storage::disk('s3')->getDriver()->getAdapter()->getClient();
         $bucket = config('filesystems.disks.s3.bucket');
 
-        $path = hash('sha256', $fileName) . '.' . $extension;
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
         $s3->putObject([
             'Bucket' => $bucket,
             'Key' => $path,
