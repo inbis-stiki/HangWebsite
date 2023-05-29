@@ -89,29 +89,133 @@
 <script>
     var tgl_trans = "<?= date("Y-m-d"); ?>";
     var type = "";
-    filterData();
+    $(document).ready(function() {
+        filterData();
+    });
+
+    $.fn.dataTable.pipeline = function(opts) {
+
+        var conf = $.extend(opts);
+
+
+        var cacheLower = -1;
+        var cacheUpper = null;
+        var cacheLastRequest = null;
+        var cacheLastJson = null;
+
+        return function(request, drawCallback, settings) {
+            var ajax = false;
+            var requestStart = request.start;
+            var drawStart = request.start;
+            var requestLength = request.length;
+            var requestEnd = requestStart + requestLength;
+
+            if (settings.clearCache) {
+
+                ajax = true;
+                settings.clearCache = false;
+            } else if (cacheLower < 0 || requestStart < cacheLower || requestEnd > cacheUpper) {
+
+                ajax = true;
+            } else if (
+                JSON.stringify(request.order) !== JSON.stringify(cacheLastRequest.order) ||
+                JSON.stringify(request.columns) !== JSON.stringify(cacheLastRequest.columns) ||
+                JSON.stringify(request.search) !== JSON.stringify(cacheLastRequest.search)
+            ) {
+
+                ajax = true;
+            }
+
+
+            cacheLastRequest = $.extend(true, {}, request);
+
+            if (ajax) {
+
+                if (requestStart < cacheLower) {
+                    requestStart = requestStart - requestLength * (conf.pages - 1);
+
+                    if (requestStart < 0) {
+                        requestStart = 0;
+                    }
+                }
+
+                cacheLower = requestStart;
+                cacheUpper = requestStart + requestLength * conf.pages;
+
+                request.start = requestStart;
+                request.length = requestLength * conf.pages;
+
+
+                if (typeof conf.data === 'function') {
+
+
+
+                    var d = conf.data(request);
+                    if (d) {
+                        $.extend(request, d);
+                    }
+                } else if ($.isPlainObject(conf.data)) {
+
+                    $.extend(request, conf.data);
+                }
+
+                return $.ajax({
+                    type: conf.method,
+                    url: conf.url,
+                    data: request,
+                    dataType: 'json',
+                    cache: false,
+                    success: function(json) {
+                        cacheLastJson = $.extend(true, {}, json);
+
+                        if (cacheLower != drawStart) {
+                            json.data.splice(0, drawStart - cacheLower);
+                        }
+                        if (requestLength >= -1) {
+                            json.data.splice(requestLength, json.data.length);
+                        }
+
+                        drawCallback(json);
+                    },
+                });
+            } else {
+                json = $.extend(true, {}, cacheLastJson);
+                json.draw = request.draw;
+                json.data.splice(0, requestStart - cacheLower);
+                json.data.splice(requestLength, json.data.length);
+
+                drawCallback(json);
+            }
+        };
+    };
+
+    $.fn.dataTable.Api.register('clearPipeline()', function() {
+        return this.iterator('table', function(settings) {
+            settings.clearCache = true;
+        });
+    });
 
     function filterData() {
         $('#datatables').DataTable({
             "processing": true,
+            "serverSide": true,
             "language": {
                 "processing": "<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>",
                 "loadingRecords": "Loading...",
                 "emptyTable": "  ",
                 "infoEmpty": "No Data to Show",
             },
-            "serverMethod": 'POST',
-            "ajax": {
-                'url': "{{ url('master/transaction/Alltransaction') }}",
-                'crossDomain': true,
-                'beforeSend': function(request) {
-                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+            "ajax": $.fn.dataTable.pipeline({
+                pages: 5,
+                url: "{{ url('master/transaction/Alltransaction') }}",
+                crossDomain: true,
+                data: {
+                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                    'searchTrans': $('#SelectTrans').val(),
+                    'tglSearchtrans': tgl_trans
                 },
-                'data': function(data) {
-                    data.searchTrans = $('#SelectTrans').val();
-                    data.tglSearchtrans = tgl_trans;
-                }
-            },
+                method: 'POST',
+            }),
             "columns": [{
                     data: 'NO'
                 },
