@@ -25,13 +25,16 @@ class TransactionController extends Controller
 
         $showRegional = "";
         $showType = "";
-        if($id_role == 3 || $id_role == 4 || $id_role == 5 || $id_role == 6){
+        if ($id_role == 3 || $id_role == 4 || $id_role == 5 || $id_role == 6) {
             $showRegional = "AND mr.ID_REGIONAL = $regional";
         }
 
-        if($id_type != 0){
+        if ($id_type != 0) {
             $showType = "AND t.ID_TYPE = $id_type";
         }
+
+        $perPage = $req->input('length');
+        $start = $req->input('start');
 
         $dataTrans     = DB::select(
             DB::raw("
@@ -41,34 +44,26 @@ class TransactionController extends Controller
                     t.REGIONAL_TRANS ,
                     t.DATE_TRANS ,
                     t.ID_TYPE ,
+                    t.LOCATION_TRANS AS NAME_LOCATION,
+                    t.REGIONAL_TRANS AS NAME_REGIONAL,
+                    t.AREA_TRANS AS NAME_AREA,
+                    t.KECAMATAN AS NAME_DISTRICT,   
                     u.`ID_USER`,
                     u.`NAME_USER`,
                     u.`ID_ROLE`,
                     mt.`NAME_TYPE`,
                     ms.`LONG_SHOP`,
                     ms.`LAT_SHOP`,
-                    md.`NAME_DISTRICT`,
-                    ma.`NAME_AREA`,
-                    mr.`NAME_REGIONAL`,
-                    ml.`NAME_LOCATION`,
                     DATE(t.DATE_TRANS) AS CnvrtDate,
                     COUNT(t.ID_TRANS) AS TotalTrans
                 FROM
                     `transaction` t
                 LEFT JOIN `user` u ON
-                    u.`ID_USER` = t.`ID_USER`
+                    u.ID_USER = t.ID_USER
                 LEFT JOIN `md_shop` ms ON
-                    ms.`ID_SHOP` = t.`ID_SHOP`
+                    ms.ID_SHOP = t.ID_SHOP
                 LEFT JOIN `md_type` mt ON
-                    mt.`ID_TYPE` = t.`ID_TYPE`
-                LEFT JOIN `md_district` md ON
-                    md.`ID_DISTRICT` = ms.`ID_DISTRICT`
-                LEFT JOIN `md_area` ma ON
-                    ma.`ID_AREA` = u.`ID_AREA`
-                LEFT JOIN `md_location` ml ON
-                    ml.`ID_LOCATION` = u.`ID_LOCATION`
-                LEFT JOIN `md_regional` mr ON
-                    mr.`ID_REGIONAL` = u.`ID_REGIONAL`
+                    mt.ID_TYPE = t.ID_TYPE
                 WHERE
                     t.`ISTRANS_TRANS` = 1
                     AND DATE(t.`DATE_TRANS`) = '" . $tgl_trans . "'
@@ -79,12 +74,13 @@ class TransactionController extends Controller
                     t.ID_USER,
                     t.ID_TYPE
                 ORDER BY
-                    ma.`NAME_AREA` ASC
+                    NAME_AREA ASC
+                LIMIT $start, $perPage
             ")
         );
 
         $NewData_all = array();
-        $counter_all = 0;
+        $counter_all = $start;
 
         foreach ($dataTrans as $item) {
             $data = array(
