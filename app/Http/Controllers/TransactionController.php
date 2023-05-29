@@ -25,12 +25,17 @@ class TransactionController extends Controller
 
         $showRegional = "";
         $showType = "";
+        $tglFilter = "";
         if ($id_role == 3 || $id_role == 4 || $id_role == 5 || $id_role == 6) {
             $showRegional = "AND mr.ID_REGIONAL = $regional";
         }
 
         if ($id_type != 0) {
             $showType = "AND t.ID_TYPE = $id_type";
+        }
+
+        if (!empty($tgl_trans)) {
+            $tglFilter = "AND DATE(t.`DATE_TRANS`) = '" . $tgl_trans . "'";
         }
 
         $perPage = $req->input('length');
@@ -66,7 +71,7 @@ class TransactionController extends Controller
                     mt.ID_TYPE = t.ID_TYPE
                 WHERE
                     t.`ISTRANS_TRANS` = 1
-                    AND DATE(t.`DATE_TRANS`) = '" . $tgl_trans . "'
+                    $tglFilter
                     $showRegional
                     $showType
                 GROUP BY
