@@ -439,6 +439,7 @@ class CronjobController extends Controller
                 $ReportDet->TYPE_SHOP             = $item->TYPE_SHOP;
                 $ReportDet->OWNER_SHOP            = $item->OWNER_SHOP;
                 $ReportDet->TOTAL_RO              = $item->TOTAL_TEST;
+                $ReportDet->TOTAL_RO_PRODUCT      = $item->TOTAL_RO_PRODUCT;
 
                 $ReportDet->save();
             }
