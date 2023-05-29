@@ -94,9 +94,7 @@
     });
 
     $.fn.dataTable.pipeline = function(opts) {
-
         var conf = $.extend(opts);
-
 
         var cacheLower = -1;
         var cacheUpper = null;
@@ -111,29 +109,23 @@
             var requestEnd = requestStart + requestLength;
 
             if (settings.clearCache) {
-
                 ajax = true;
                 settings.clearCache = false;
             } else if (cacheLower < 0 || requestStart < cacheLower || requestEnd > cacheUpper) {
-
                 ajax = true;
             } else if (
                 JSON.stringify(request.order) !== JSON.stringify(cacheLastRequest.order) ||
                 JSON.stringify(request.columns) !== JSON.stringify(cacheLastRequest.columns) ||
                 JSON.stringify(request.search) !== JSON.stringify(cacheLastRequest.search)
             ) {
-
                 ajax = true;
             }
-
 
             cacheLastRequest = $.extend(true, {}, request);
 
             if (ajax) {
-
                 if (requestStart < cacheLower) {
                     requestStart = requestStart - requestLength * (conf.pages - 1);
-
                     if (requestStart < 0) {
                         requestStart = 0;
                     }
@@ -147,9 +139,6 @@
 
 
                 if (typeof conf.data === 'function') {
-
-
-
                     var d = conf.data(request);
                     if (d) {
                         $.extend(request, d);
@@ -189,12 +178,6 @@
         };
     };
 
-    $.fn.dataTable.Api.register('clearPipeline()', function() {
-        return this.iterator('table', function(settings) {
-            settings.clearCache = true;
-        });
-    });
-
     function filterData() {
         $('#datatables').DataTable({
             "processing": true,
@@ -202,8 +185,7 @@
             "language": {
                 "processing": "<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>",
                 "loadingRecords": "Loading...",
-                "emptyTable": "  ",
-                "infoEmpty": "No Data to Show",
+                "emptyTable": "  "
             },
             "ajax": $.fn.dataTable.pipeline({
                 pages: 5,
@@ -216,6 +198,13 @@
                 },
                 method: 'POST',
             }),
+            "infoCallback": function(settings, start, end, max, total, pre) {
+                return (!isNaN(total) && total > 0) ?
+                    "Showing " + start + " to " + end + " of " + total + " entries" +
+                    ((total !== max) ? " (filtered from " + max + " total entries)" : "") :
+                    "No Data to Show";
+            },
+            deferLoading: 57,
             "columns": [{
                     data: 'NO'
                 },
@@ -247,17 +236,40 @@
     $(".datepicker-default").pickadate({
         format: 'd\ mmmm yyyy',
         clear: 'All Time',
-        onSet: function() {
-            tgl_trans = this.get('select', 'yyyy-mm-dd');
-            $('#datatables').DataTable().destroy();
-            filterData();
+        onOpen: function() {
+            if ($input.hasClass('picker__input--target')) {
+                $input
+                    .pickadate()
+                    .pickadate('picker')
+                    .close(true);
+            }
         }
     });
+
+    $('.picker__input').on('change', function() {
+        tgl_trans = formatDate($(this).val())
+        $('#datatables').DataTable().destroy();
+        filterData();
+    })
 
     $('#SelectTrans').change(function() {
         $('#datatables').DataTable().destroy();
         filterData();
     });
+
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return (year == NaN || month == NaN || day == NaN) ? [year, month, day].join('-') : '';
+    }
 
     // const showLocation = (long, lat) => {
     //     $('#mdlLocation_src').attr('src', `https://maps.google.com/maps?q=${lat},${long}&hl=es&z=14&amp;output=embed`);
