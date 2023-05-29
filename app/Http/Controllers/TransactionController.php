@@ -42,7 +42,40 @@ class TransactionController extends Controller
         $start = $req->input('start');
         $perPage = $req->input('length');
 
-        $query     = DB::select(
+        $Tot = DB::select(
+            DB::raw("
+                SELECT 
+                    COUNT(temp.Total) AS DataTrans
+                FROM 
+                    (
+                        SELECT
+                            COUNT(t.ID_TRANS) AS Total,
+                            DATE(t.DATE_TRANS) AS CnvrtDate,
+                            t.AREA_TRANS AS NAME_AREA
+                        FROM
+                            `transaction` t
+                        LEFT JOIN `user` u ON
+                            u.ID_USER = t.ID_USER
+                        LEFT JOIN `md_shop` ms ON
+                            ms.ID_SHOP = t.ID_SHOP
+                        LEFT JOIN `md_type` mt ON
+                            mt.ID_TYPE = t.ID_TYPE
+                        WHERE
+                            t.`ISTRANS_TRANS` = 1
+                            $tglFilter
+                            $showRegional
+                            $showType
+                        GROUP BY
+                            CnvrtDate,
+                            t.ID_USER,
+                            t.AREA_TRANS
+                        ORDER BY
+                            NAME_AREA ASC
+                    ) temp
+            ")
+        )[0];
+
+        $dataTrans    = DB::select(
             DB::raw("
                 SELECT
                     t.ID_TRANS ,
@@ -81,12 +114,9 @@ class TransactionController extends Controller
                     t.ID_TYPE
                 ORDER BY
                     NAME_AREA ASC
+                LIMIT $start, $perPage
             ")
         );
-
-        $dataTrans = collect($query)->slice($start, $perPage);
-
-        $totTrans = Transaction::count();
 
         $NewData_all = array();
         $counter_all = $start;
@@ -121,8 +151,8 @@ class TransactionController extends Controller
             'status_code'       => 200,
             'status_message'    => 'Data berhasil diambil!',
             'draw'              => intval($draw),
-            'recordsFiltered'   => ($counter_all != 0) ? count($query) : 0,
-            'recordsTotal'      => ($counter_all != 0) ? count($query) : 0,
+            'recordsFiltered'   => ($counter_all != 0) ? $Tot->DataTrans : 0,
+            'recordsTotal'      => ($counter_all != 0) ? $Tot->DataTrans : 0,
             'data'              => $NewData_all
         ], 200);
     }
