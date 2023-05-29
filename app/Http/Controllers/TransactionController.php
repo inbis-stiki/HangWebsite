@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -38,10 +39,10 @@ class TransactionController extends Controller
             $tglFilter = "AND DATE(t.`DATE_TRANS`) = '" . $tgl_trans . "'";
         }
 
-        $perPage = $req->input('length');
         $start = $req->input('start');
+        $perPage = $req->input('length');
 
-        $dataTrans     = DB::select(
+        $query     = DB::select(
             DB::raw("
                 SELECT
                     t.ID_TRANS ,
@@ -80,9 +81,12 @@ class TransactionController extends Controller
                     t.ID_TYPE
                 ORDER BY
                     NAME_AREA ASC
-                LIMIT $start, $perPage
             ")
         );
+
+        $dataTrans = collect($query)->slice($start, $perPage);
+
+        $totTrans = Transaction::count();
 
         $NewData_all = array();
         $counter_all = $start;
@@ -111,9 +115,14 @@ class TransactionController extends Controller
             array_push($NewData_all, $data);
         }
 
+        $draw   = $req->input('draw');
+
         return response([
             'status_code'       => 200,
             'status_message'    => 'Data berhasil diambil!',
+            'draw'              => intval($draw),
+            'recordsFiltered'   => ($counter_all != 0) ? count($query) : 0,
+            'recordsTotal'      => ($counter_all != 0) ? count($query) : 0,
             'data'              => $NewData_all
         ], 200);
     }
