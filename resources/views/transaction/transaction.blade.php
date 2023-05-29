@@ -235,15 +235,7 @@
 
     $(".datepicker-default").pickadate({
         format: 'd\ mmmm yyyy',
-        clear: 'All Time',
-        onOpen: function() {
-            if ($input.hasClass('picker__input--target')) {
-                $input
-                    .pickadate()
-                    .pickadate('picker')
-                    .close(true);
-            }
-        }
+        clear: 'All Time'
     });
 
     $('.picker__input').on('change', function() {
@@ -268,7 +260,7 @@
         if (day.length < 2)
             day = '0' + day;
 
-        return (year == NaN || month == NaN || day == NaN) ? [year, month, day].join('-') : '';
+        return (year != NaN && month != NaN && day != NaN) ? [year, month, day].join('-') : '';
     }
 
     // const showLocation = (long, lat) => {
