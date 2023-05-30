@@ -400,6 +400,8 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::queryGetShopByRange($startM, $startY, $endM, $endY, $idRegional);
 
+        // dd($rOs);die;
+
         app(ReportRepeatOrder::class)->gen_ro_shop_range($rOs, $totalMonth);
     }
     public function genRORPOS($yearMonth)
