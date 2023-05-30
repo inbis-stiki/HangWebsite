@@ -984,6 +984,23 @@ class Cronjob extends Model
             }
         }
 
+        $dataValue2 = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataValue2,
+                    "SUM(CASE WHEN rh.BULAN = " . $m . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO_PRODUCT ELSE 0 END) AS 'VALUE2" . $no . "'"
+                );
+                $no++;
+            }
+        }
 
         $dataKey = [];
         $no = 0;
@@ -1003,6 +1020,24 @@ class Cronjob extends Model
             }
         }
 
+        $dataKey2 = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataKey2,
+                    "('" . $m . ";" . $y . "') AS 'KEY" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
         $rOs = [];
 
         foreach ($areas as $area) {
@@ -1012,7 +1047,10 @@ class Cronjob extends Model
                     s.NAME_SHOP,
                     s.OWNER_SHOP,
                     s.DETLOC_SHOP,
-                    s.TYPE_SHOP,
+                    md.NAME_DISTRICT,
+                    s.TYPE_SHOP" . (!empty($dataKey2) ? ',' : '') . "
+                    " . implode(',',  $dataKey2) . "" . (!empty($dataValue2) ? ',' : '') . "
+                    " . implode(',',  $dataValue2) . ",
                     s.TELP_SHOP" . (!empty($dataKey) ? ',' : '') . "
                     " . implode(',',  $dataKey) . "" . (!empty($dataValue) ? ',' : '') . "
                     " . implode(',',  $dataValue) . "
