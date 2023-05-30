@@ -89,29 +89,122 @@
 <script>
     var tgl_trans = "<?= date("Y-m-d"); ?>";
     var type = "";
-    filterData();
+    $(document).ready(function() {
+        filterData();
+    });
+
+    $.fn.dataTable.pipeline = function(opts) {
+        var conf = $.extend(opts);
+
+        var cacheLower = -1;
+        var cacheUpper = null;
+        var cacheLastRequest = null;
+        var cacheLastJson = null;
+
+        return function(request, drawCallback, settings) {
+            var ajax = false;
+            var requestStart = request.start;
+            var drawStart = request.start;
+            var requestLength = request.length;
+            var requestEnd = requestStart + requestLength;
+
+            if (settings.clearCache) {
+                ajax = true;
+                settings.clearCache = false;
+            } else if (cacheLower < 0 || requestStart < cacheLower || requestEnd > cacheUpper) {
+                ajax = true;
+            } else if (
+                JSON.stringify(request.order) !== JSON.stringify(cacheLastRequest.order) ||
+                JSON.stringify(request.columns) !== JSON.stringify(cacheLastRequest.columns) ||
+                JSON.stringify(request.search) !== JSON.stringify(cacheLastRequest.search)
+            ) {
+                ajax = true;
+            }
+
+            cacheLastRequest = $.extend(true, {}, request);
+
+            if (ajax) {
+                if (requestStart < cacheLower) {
+                    requestStart = requestStart - requestLength * (conf.pages - 1);
+                    if (requestStart < 0) {
+                        requestStart = 0;
+                    }
+                }
+
+                cacheLower = requestStart;
+                cacheUpper = requestStart + requestLength * conf.pages;
+
+                request.start = requestStart;
+                request.length = requestLength * conf.pages;
+
+
+                if (typeof conf.data === 'function') {
+                    var d = conf.data(request);
+                    if (d) {
+                        $.extend(request, d);
+                    }
+                } else if ($.isPlainObject(conf.data)) {
+
+                    $.extend(request, conf.data);
+                }
+
+                return $.ajax({
+                    type: conf.method,
+                    url: conf.url,
+                    data: request,
+                    dataType: 'json',
+                    cache: false,
+                    success: function(json) {
+                        cacheLastJson = $.extend(true, {}, json);
+
+                        if (cacheLower != drawStart) {
+                            json.data.splice(0, drawStart - cacheLower);
+                        }
+                        if (requestLength >= -1) {
+                            json.data.splice(requestLength, json.data.length);
+                        }
+
+                        drawCallback(json);
+                    },
+                });
+            } else {
+                json = $.extend(true, {}, cacheLastJson);
+                json.draw = request.draw;
+                json.data.splice(0, requestStart - cacheLower);
+                json.data.splice(requestLength, json.data.length);
+
+                drawCallback(json);
+            }
+        };
+    };
 
     function filterData() {
         $('#datatables').DataTable({
             "processing": true,
+            "serverSide": true,
             "language": {
                 "processing": "<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>",
                 "loadingRecords": "Loading...",
-                "emptyTable": "  ",
-                "infoEmpty": "No Data to Show",
+                "emptyTable": "  "
             },
-            "serverMethod": 'POST',
-            "ajax": {
-                'url': "{{ url('master/transaction/Alltransaction') }}",
-                'crossDomain': true,
-                'beforeSend': function(request) {
-                    request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+            "ajax": $.fn.dataTable.pipeline({
+                pages: 5,
+                url: "{{ url('master/transaction/Alltransaction') }}",
+                crossDomain: true,
+                data: {
+                    '_token': $('meta[name="csrf-token"]').attr('content'),
+                    'searchTrans': $('#SelectTrans').val(),
+                    'tglSearchtrans': tgl_trans
                 },
-                'data': function(data) {
-                    data.searchTrans = $('#SelectTrans').val();
-                    data.tglSearchtrans = tgl_trans;
-                }
+                method: 'POST',
+            }),
+            "infoCallback": function(settings, start, end, max, total, pre) {
+                return (!isNaN(total) && total > 0) ?
+                    "Showing " + start + " to " + end + " of " + total + " entries" +
+                    ((total !== max) ? " (filtered from " + max + " total entries)" : "") :
+                    "No Data to Show";
             },
+            deferLoading: 57,
             "columns": [{
                     data: 'NO'
                 },
@@ -142,18 +235,33 @@
 
     $(".datepicker-default").pickadate({
         format: 'd\ mmmm yyyy',
-        clear: 'All Time',
-        onSet: function() {
-            tgl_trans = this.get('select', 'yyyy-mm-dd');
-            $('#datatables').DataTable().destroy();
-            filterData();
-        }
+        clear: 'All Time'
     });
+
+    $('.picker__input').on('change', function() {
+        tgl_trans = formatDate($(this).val())
+        $('#datatables').DataTable().destroy();
+        filterData();
+    })
 
     $('#SelectTrans').change(function() {
         $('#datatables').DataTable().destroy();
         filterData();
     });
+
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return (year != NaN && month != NaN && day != NaN) ? [year, month, day].join('-') : '';
+    }
 
     // const showLocation = (long, lat) => {
     //     $('#mdlLocation_src').attr('src', `https://maps.google.com/maps?q=${lat},${long}&hl=es&z=14&amp;output=embed`);
