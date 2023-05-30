@@ -453,7 +453,7 @@ class ReportRepeatOrder
 
         $regional = '';
         $lastRange = '';
-        $dataRange = range('I', 'Z');
+        $dataRange = range('H', 'Z');
         $months = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec");
         foreach ($rOs as $regional => $detRegional) {
             foreach ($detRegional as $key => $item) {
@@ -466,7 +466,6 @@ class ReportRepeatOrder
                 $ObjSheet->getColumnDimension('E')->setWidth('20');
                 $ObjSheet->getColumnDimension('F')->setWidth('20');
                 $ObjSheet->getColumnDimension('G')->setWidth('15');
-                $ObjSheet->getColumnDimension('H')->setWidth('30');
                 // HEADER
                 $ObjSheet->mergeCells('B2:B3')->setCellValue('B2', 'NAMA TOKO')->getStyle('B2:B3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                 $ObjSheet->mergeCells('C2:C3')->setCellValue('C2', 'ALAMAT')->getStyle('C2:C3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
@@ -474,7 +473,6 @@ class ReportRepeatOrder
                 $ObjSheet->mergeCells('E2:E3')->setCellValue('E2', 'PEMILIK')->getStyle('E2:E3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                 $ObjSheet->mergeCells('F2:F3')->setCellValue('F2', 'NOMOR TELEPON')->getStyle('F2:F3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                 $ObjSheet->mergeCells('G2:G3')->setCellValue('G2', 'TIPE TOKO')->getStyle('G2:G3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-                $ObjSheet->mergeCells('H2:H3')->setCellValue('H2', 'Total RO Product')->getStyle('G2:G3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                 
                 $rowData = 4;
                 foreach ($item as $detItem) {
@@ -485,7 +483,6 @@ class ReportRepeatOrder
                     $ObjSheet->setCellValue('E' . $rowData, $detItem->OWNER_SHOP)->getStyle('E' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('F' . $rowData, $detItem->TELP_SHOP)->getStyle('F' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('G' . $rowData, $detItem->TYPE_SHOP)->getStyle('G' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
-                    $ObjSheet->setCellValue('H' . $rowData, $detItem->TYPE_SHOP)->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     
                     // HEADER
                     $tmpArray = json_decode(json_encode($detItem), true);
