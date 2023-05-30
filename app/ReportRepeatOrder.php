@@ -453,6 +453,8 @@ class ReportRepeatOrder
 
         $regional = '';
         $lastRange = '';
+        $Totalcolumn = 0;
+        $lastRange2 = '';
         $dataRange = range('H', 'Z');
         $months = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec");
         foreach ($rOs as $regional => $detRegional) {
@@ -464,8 +466,9 @@ class ReportRepeatOrder
                 $ObjSheet->getColumnDimension('C')->setWidth('45');
                 $ObjSheet->getColumnDimension('D')->setWidth('30');
                 $ObjSheet->getColumnDimension('E')->setWidth('20');
-                $ObjSheet->getColumnDimension('F')->setWidth('20');
+                $ObjSheet->getColumnDimension('F')->setWidth('26');
                 $ObjSheet->getColumnDimension('G')->setWidth('15');
+
                 // HEADER
                 $ObjSheet->mergeCells('B2:B3')->setCellValue('B2', 'NAMA TOKO')->getStyle('B2:B3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                 $ObjSheet->mergeCells('C2:C3')->setCellValue('C2', 'ALAMAT')->getStyle('C2:C3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
@@ -473,7 +476,7 @@ class ReportRepeatOrder
                 $ObjSheet->mergeCells('E2:E3')->setCellValue('E2', 'PEMILIK')->getStyle('E2:E3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                 $ObjSheet->mergeCells('F2:F3')->setCellValue('F2', 'NOMOR TELEPON')->getStyle('F2:F3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                 $ObjSheet->mergeCells('G2:G3')->setCellValue('G2', 'TIPE TOKO')->getStyle('G2:G3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-                
+
                 $rowData = 4;
                 foreach ($item as $detItem) {
                     // ISI KONTEN
@@ -481,23 +484,41 @@ class ReportRepeatOrder
                     $ObjSheet->setCellValue('C' . $rowData, $detItem->DETLOC_SHOP)->getStyle('C' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('D' . $rowData, $detItem->NAME_DISTRICT)->getStyle('D' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('E' . $rowData, $detItem->OWNER_SHOP)->getStyle('E' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
-                    $ObjSheet->setCellValue('F' . $rowData, $detItem->TELP_SHOP)->getStyle('F' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('F' . $rowData, (!empty($detItem->TELP_SHOP) ? $detItem->TELP_SHOP : 'Tidak Ada Nomor Telepon'))->getStyle('F' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('G' . $rowData, $detItem->TYPE_SHOP)->getStyle('G' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
-                    
-                    // HEADER
+
+                    // TOTAL AKTIVITAS
                     $tmpArray = json_decode(json_encode($detItem), true);
                     for ($i = 0; $i < $totMonth; $i++) {
                         $ObjSheet->getColumnDimension($dataRange[$i])->setWidth('20');
                         $keyData = $tmpArray["KEY" . $i];
                         $ObjSheet->setCellValue($dataRange[$i] . '3', $months[(explode(';', $keyData)[0] - 1)] . '' . explode(';', $keyData)[1])->getStyle($dataRange[$i] . '3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                         $lastRange = $dataRange[$i];
+                        $Totalcolumn = $i + 1;
 
                         // ISI KONTEN
                         $ObjSheet->setCellValue($dataRange[$i] . '' . $rowData, $tmpArray["VALUE" . $i])->getStyle($dataRange[$i] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     }
+
+                    // TOTAL INNER
+                    $tmpArray2 = json_decode(json_encode($detItem), true);
+                    $dataRange2 = array_slice($this->CustomRange('AF'), ($Totalcolumn + 7));
+                    for ($i = 0; $i < $totMonth; $i++) {
+                        $ObjSheet->getColumnDimension($dataRange2[$i])->setWidth('20');
+                        $keyData = $tmpArray2["KEY" . $i];
+                        $ObjSheet->setCellValue($dataRange2[$i] . '3', $months[(explode(';', $keyData)[0] - 1)] . '' . explode(';', $keyData)[1])->getStyle($dataRange2[$i] . '3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                        $lastRange2 = $dataRange2[$i];
+
+                        // ISI KONTEN
+                        $ObjSheet->setCellValue($dataRange2[$i] . '' . $rowData, $tmpArray2["VALUE2" . $i])->getStyle($dataRange2[$i] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    }
+
                     $rowData++;
                 }
-                $ObjSheet->mergeCells($dataRange[0] . '2:' . $lastRange . '2')->setCellValue($dataRange[0] . '2', 'Total RO')->getStyle($dataRange[0] . '2:' . $lastRange . '2')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells($dataRange[0] . '2:' . $lastRange . '2')->setCellValue($dataRange[0] . '2', 'TOTAL RO AKTIVITAS')->getStyle($dataRange[0] . '2:' . $lastRange . '2')->applyFromArray($this->styling_title_template('FFC4D79B', '000000'));
+                $ObjSheet->mergeCells($dataRange2[0] . '2:' . $lastRange2 . '2')->setCellValue($dataRange2[0] . '2', 'TOTAL RO INNER')->getStyle($dataRange2[0] . '2:' . $lastRange2 . '2')->applyFromArray($this->styling_title_template('FFDA9694', '000000'));
+
+                $ObjSheet->setAutoFilter('B2:G' . $rowData);
             }
         }
 
@@ -801,5 +822,38 @@ class ReportRepeatOrder
         $styleContent['alignment']['vertical']                = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
 
         return $styleContent;
+    }
+
+    public function CustomRange($end_column, $first_letters = '')
+    {
+        $columns = array();
+        $length = strlen($end_column);
+        $letters = range('A', 'Z');
+
+        // Iterate over 26 letters.
+        foreach ($letters as $letter) {
+            // Paste the $first_letters before the next.
+            $column = $first_letters . $letter;
+
+            // Add the column to the final array.
+            $columns[] = $column;
+
+            // If it was the end column that was added, return the columns.
+            if ($column == $end_column)
+                return $columns;
+        }
+
+        // Add the column children.
+        foreach ($columns as $column) {
+            // Don't itterate if the $end_column was already set in a previous itteration.
+            // Stop iterating if you've reached the maximum character length.
+            if (!in_array($end_column, $columns) && strlen($column) < $length) {
+                $new_columns = $this->CustomRange($end_column, $column);
+                // Merge the new columns which were created with the final columns array.
+                $columns = array_merge($columns, $new_columns);
+            }
+        }
+
+        return $columns;
     }
 }
