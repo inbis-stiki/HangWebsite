@@ -19,10 +19,27 @@
         <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
         @endif
         @if (session('succ_msg'))
-        <div class="alert alert-success">{{ session('succ_msg') }}</div>
+        <div class="alert alert-success alert-dismissible fade show">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+            <strong>Successfully Generate!</strong> {{session('succ_msg')}}.
+            <button type="button" class="close h-100" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
+            </button>
+        </div>
         @endif
         @if (session('err_msg'))
-        <div class="alert alert-danger">{{ session('err_msg') }}</div>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            <strong>Failed Generate!</strong> {{session('err_msg')}}.
+            <button type="button" class="close h-100" data-dismiss="alert" aria-label="Close"><span><i class="mdi mdi-close"></i></span>
+            </button>
+        </div>
         @endif
 
         <!-- Add Order -->
@@ -156,56 +173,14 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="start_month">Start Month:</label>
-                                <select id="start_month" name="start_month" class="form-control" onchange="checkit();" required>
-                                    <option value="1">January</option>
-                                    <option value="2">February</option>
-                                    <option value="3">March</option>
-                                    <option value="4">April</option>
-                                    <option value="5">May</option>
-                                    <option value="6">June</option>
-                                    <option value="7">July</option>
-                                    <option value="8">August</option>
-                                    <option value="9">September</option>
-                                    <option value="10">October</option>
-                                    <option value="11">November</option>
-                                    <option value="12">December</option>
-                                </select>
+                        <div class="row mt-4">
+                            <div class="col-md-6" id="date-start">
+                                <label for="start_month">Date Start:</label>
+                                <input type="month" class="form-control date-picker-start" name="dateStart" required>
                             </div>
-                            <div class="col-md-6">
-                                <label for="start_year">Start Year:</label>
-                                <select id="start_year" name="start_year" class="form-control" onchange="checkitYear();" required>
-                                    <option value="2022">2022</option>
-                                    <option value="2023">2023</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="end_month">End Month:</label>
-                                <select id="end_month" name="end_month" class="form-control" onchange="checkit();" required>
-                                    <option value="1">January</option>
-                                    <option value="2">February</option>
-                                    <option value="3">March</option>
-                                    <option value="4">April</option>
-                                    <option value="5">May</option>
-                                    <option value="6">June</option>
-                                    <option value="7">July</option>
-                                    <option value="8">August</option>
-                                    <option value="9">September</option>
-                                    <option value="10">October</option>
-                                    <option value="11">November</option>
-                                    <option value="12">December</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="end_year">End Year:</label>
-                                <select id="end_year" name="end_year" class="form-control" onchange="checkitYear();" required>
-                                    <option value="2022">2022</option>
-                                    <option value="2023">2023</option>
-                                </select>
+                            <div class="col-md-6" id="date-end">
+                                <label for="start_month">Date End:</label>
+                                <input type="month" class="form-control date-picker-end" name="dateEnd" required>
                             </div>
                         </div>
                         <br></br>
@@ -223,49 +198,101 @@
 <script>
     $(document).ready(function() {
         $('.datatable').DataTable();
-        
-        $('#generate_report').on('click', function() {
-            var start_month = $('#start_month').val();
-            var start_year = $('#start_year').val();
-            var end_month = $('#end_month').val();
-            var end_year = $('#end_year').val();
-            var regional = $('#regional').val();
 
-            var url = '{{ url("cronjob/gen-ro-shop-range") }}?start_month=' + start_month + '&start_year=' + start_year + '&end_month=' + end_month + '&end_year=' + end_year + '&regional=' + regional;
+        $('#generate_report').on('click', function() {
+            var dateStart = $("input[name='dateStart']").val();
+            var dateEnd = $("input[name='dateEnd']").val();
+            var regional = $("#regional").find('option:selected').val();
+
+            var url = '{{ url("cronjob/gen-ro-shop-range") }}?dateStart=' + dateStart + '&dateEnd=' + dateEnd + '&regional=' + regional;
 
             window.location.href = url;
         });
     });
-    
-    function checkit()
-    {
 
-    var fromMonth = document.getElementById('start_month');
-    var toMonth = document.getElementById('end_month');
+    $('.date-picker-start').pickadate({
+        format: 'yyyy-mm',
+        onClose: function() {
+            var month = (parseInt($('#date-start').find('.picker__select--month').val()) + 1).toString()
+            var cnvrtMonth = (month.length < 2) ? ('0' + month) : month
+            var year = $('#date-start').find('.picker__select--year').val()
+            var date = [year, cnvrtMonth].join("-")
+            $('.date-picker-start').val(date)
+        },
+        selectMonths: true,
+        selectYears: true,
+        buttonClear: false
+    })
 
-    if( fromMonth.options[fromMonth.selectedIndex].value > 
-            toMonth.options[toMonth.selectedIndex].value)
-        {
+    $('.date-picker-end').pickadate({
+        format: 'yyyy-mm',
+        onClose: function() {
+            var month = (parseInt($('#date-end').find('.picker__select--month').val()) + 1).toString()
+            var cnvrtMonth = (month.length < 2) ? ('0' + month) : month
+            var year = $('#date-end').find('.picker__select--year').val()
+            var date = [year, cnvrtMonth].join("-")
+            $('.date-picker-end').val(date)
+        },
+        selectMonths: true,
+        selectYears: true,
+        buttonClear: false
+    })
+
+    function checkit() {
+
+        var fromMonth = document.getElementById('start_month');
+        var toMonth = document.getElementById('end_month');
+
+        if (fromMonth.options[fromMonth.selectedIndex].value >
+            toMonth.options[toMonth.selectedIndex].value) {
             document.getElementById('end_month').value =
-          fromMonth.options[fromMonth.selectedIndex].value;
+                fromMonth.options[fromMonth.selectedIndex].value;
         }
-        
+
 
     }
 
-    function checkitYear()
-    {
+    function checkitYear() {
 
-    var fromYear = document.getElementById('start_year');
-    var toYear = document.getElementById('end_year');
+        var fromYear = document.getElementById('start_year');
+        var toYear = document.getElementById('end_year');
 
-     if( fromYear.options[fromYear.selectedIndex].value > 
-            toYear.options[toYear.selectedIndex].value)
-        {
+        if (fromYear.options[fromYear.selectedIndex].value >
+            toYear.options[toYear.selectedIndex].value) {
             document.getElementById('end_year').value =
-          fromYear.options[fromYear.selectedIndex].value;
+                fromYear.options[fromYear.selectedIndex].value;
         }
 
     }
-
 </script>
+<style>
+    .picker__select--month {
+        font-size: 20px;
+        height: 50px;
+    }
+
+    .picker__select--year {
+        font-size: 20px;
+        height: 50px;
+    }
+
+    .picker__table {
+        display: none;
+    }
+
+    .picker__button--clear {
+        display: none;
+    }
+
+    .picker__button--today {
+        display: none;
+    }
+
+    .picker__button--close {
+        display: none;
+    }
+
+    .picker__frame {
+        margin-bottom: 26%;
+    }
+</style>

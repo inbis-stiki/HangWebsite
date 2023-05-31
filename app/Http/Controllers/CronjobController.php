@@ -28,6 +28,7 @@ use App\TargetUser;
 use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
 
 class CronjobController extends Controller
 {
@@ -377,30 +378,43 @@ class CronjobController extends Controller
 
         app(ReportRepeatOrder::class)->gen_ro_shop($rOs, $updated_at);
     }
-    public function genROSHOPbyRange()
+    public function genROSHOPbyRange(Request $req)
     {
-        $startM = $_GET['start_month'];
-        $startY = $_GET['start_year'];
-        $endM = $_GET['end_month'];
-        $endY = $_GET['end_year'];
-        $idRegional = $_GET['regional'];
+        if (empty($_GET['dateStart']) || empty($_GET['dateEnd'])) {
+            return redirect('laporan/lpr-repeat')->with('err_msg', 'Inputan tanggal awal atau tanggal akhir tidak boleh kosong');
+        } else {
+            $dateStart = explode('-', $_GET['dateStart']);
+            $startY = ltrim($dateStart[0], '0');
+            $startM = ltrim($dateStart[1], '0');
 
-        $totalMonth = 0;
-        for ($y = $startY; $y <= $endY; $y++) {
-            for ($m = 1; $m <= 12; $m++) {
-                if ($y == $startY && $m < $startM) {
-                    continue;
+            $dateEnd = explode('-', $_GET['dateEnd']);
+            $endY = ltrim($dateEnd[0], '0');
+            $endM = ltrim($dateEnd[1], '0');
+
+            $idRegional =  $req->input('regional');
+
+            $totalMonth = 0;
+            for ($y = $startY; $y <= $endY; $y++) {
+                for ($m = 1; $m <= 12; $m++) {
+                    if ($y == $startY && $m < $startM) {
+                        continue;
+                    }
+                    if ($y == $endY && $m > $endM) {
+                        continue;
+                    }
+                    $totalMonth++;
                 }
-                if ($y == $endY && $m > $endM) {
-                    continue;
-                }
-                $totalMonth++;
+            }
+
+            if ($idRegional === "null" || empty($idRegional)) {
+                return redirect('laporan/lpr-repeat')->with('err_msg', 'Regional tidak boleh kosong');
+            } elseif ($totalMonth > 12) {
+                return redirect('laporan/lpr-repeat')->with('err_msg', 'Range bulanan tidak boleh lebih dari 12 bulan');
+            } else {
+                $rOs = Cronjob::queryGetShopByRange($startM, $startY, $endM, $endY, $idRegional);
+                app(ReportRepeatOrder::class)->gen_ro_shop_range($rOs, $totalMonth);
             }
         }
-
-        $rOs = Cronjob::queryGetShopByRange($startM, $startY, $endM, $endY, $idRegional);
-
-        app(ReportRepeatOrder::class)->gen_ro_shop_range($rOs, $totalMonth);
     }
     public function genRORPOS($yearMonth)
     {
@@ -439,6 +453,7 @@ class CronjobController extends Controller
                 $ReportDet->TYPE_SHOP             = $item->TYPE_SHOP;
                 $ReportDet->OWNER_SHOP            = $item->OWNER_SHOP;
                 $ReportDet->TOTAL_RO              = $item->TOTAL_TEST;
+                $ReportDet->TOTAL_RO_PRODUCT      = $item->TOTAL_RO_PRODUCT;
 
                 $ReportDet->save();
             }

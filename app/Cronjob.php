@@ -914,7 +914,8 @@ class Cronjob extends Model
             ms.TELP_SHOP,
             ma.NAME_AREA,
             mr.NAME_REGIONAL,
-            COUNT(t.ID_SHOP) AS TOTAL_TEST
+            COUNT(t.ID_SHOP) AS TOTAL_TEST,
+            SUM(t.QTY_TRANS) AS TOTAL_RO_PRODUCT
         FROM
             `transaction` t
         INNER JOIN (
@@ -940,7 +941,9 @@ class Cronjob extends Model
         INNER JOIN md_regional mr ON
             mr.ID_REGIONAL = ma.ID_REGIONAL
         WHERE
-            ms.ID_SHOP IS NOT NULL
+            ms.ID_SHOP IS NOT NULL AND
+            YEAR(DATE_TRANS) = " . $year . "
+            AND MONTH(DATE_TRANS) = " . $month . "
         GROUP BY
             t.ID_SHOP
         ORDER BY
@@ -981,6 +984,23 @@ class Cronjob extends Model
             }
         }
 
+        $dataValue2 = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataValue2,
+                    "IFNULL(SUM(CASE WHEN rh.BULAN = " . $m . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO_PRODUCT ELSE 0 END), 0) AS 'VALUE2" . $no . "'"
+                );
+                $no++;
+            }
+        }
 
         $dataKey = [];
         $no = 0;
@@ -1000,6 +1020,24 @@ class Cronjob extends Model
             }
         }
 
+        $dataKey2 = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataKey2,
+                    "('" . $m . ";" . $y . "') AS 'KEY" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
         $rOs = [];
 
         foreach ($areas as $area) {
@@ -1009,7 +1047,10 @@ class Cronjob extends Model
                     s.NAME_SHOP,
                     s.OWNER_SHOP,
                     s.DETLOC_SHOP,
-                    s.TYPE_SHOP,
+                    md.NAME_DISTRICT,
+                    s.TYPE_SHOP" . (!empty($dataKey2) ? ',' : '') . "
+                    " . implode(',',  $dataKey2) . "" . (!empty($dataValue2) ? ',' : '') . "
+                    " . implode(',',  $dataValue2) . ",
                     s.TELP_SHOP" . (!empty($dataKey) ? ',' : '') . "
                     " . implode(',',  $dataKey) . "" . (!empty($dataValue) ? ',' : '') . "
                     " . implode(',',  $dataValue) . "
