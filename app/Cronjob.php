@@ -996,7 +996,7 @@ class Cronjob extends Model
                 }
                 array_push(
                     $dataValue2,
-                    "SUM(CASE WHEN rh.BULAN = " . $m . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO_PRODUCT ELSE 0 END) AS 'VALUE2" . $no . "'"
+                    "IFNULL(SUM(CASE WHEN rh.BULAN = " . $m . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO_PRODUCT ELSE 0 END), 0) AS 'VALUE2" . $no . "'"
                 );
                 $no++;
             }

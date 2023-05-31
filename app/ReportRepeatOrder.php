@@ -455,7 +455,12 @@ class ReportRepeatOrder
         $lastRange = '';
         $Totalcolumn = 0;
         $lastRange2 = '';
-        $dataRange = range('H', 'Z');
+        $dataRange = array_slice($this->CustomRange('AF'), count(range('A', 'G')));
+        $groupsDataRange = array();
+        for ($i = 0; $i < count($dataRange) - 1; $i += 2) {
+            $group = $dataRange[$i] . ';' . $dataRange[$i + 1];
+            $groupsDataRange[] = $group;
+        }
         $months = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec");
         foreach ($rOs as $regional => $detRegional) {
             foreach ($detRegional as $key => $item) {
@@ -487,37 +492,24 @@ class ReportRepeatOrder
                     $ObjSheet->setCellValue('F' . $rowData, (!empty($detItem->TELP_SHOP) ? $detItem->TELP_SHOP : 'Tidak Ada Nomor Telepon'))->getStyle('F' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('G' . $rowData, $detItem->TYPE_SHOP)->getStyle('G' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
 
-                    // TOTAL AKTIVITAS
                     $tmpArray = json_decode(json_encode($detItem), true);
                     for ($i = 0; $i < $totMonth; $i++) {
-                        $ObjSheet->getColumnDimension($dataRange[$i])->setWidth('20');
+                        $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[0])->setWidth('20');
+                        $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[1])->setWidth('20');
                         $keyData = $tmpArray["KEY" . $i];
-                        $ObjSheet->setCellValue($dataRange[$i] . '3', $months[(explode(';', $keyData)[0] - 1)] . '' . explode(';', $keyData)[1])->getStyle($dataRange[$i] . '3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-                        $lastRange = $dataRange[$i];
-                        $Totalcolumn = $i + 1;
+                        
+                        $ObjSheet->mergeCells(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->setCellValue(explode(';', $groupsDataRange[$i])[0] . '2', $months[$i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '3', 'TOTAL AKTIVITAS')->getStyle(explode(';', $groupsDataRange[$i])[0] . '3')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '3', 'TOTAL INNER')->getStyle(explode(';', $groupsDataRange[$i])[1] . '3')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
 
+                        
                         // ISI KONTEN
-                        $ObjSheet->setCellValue($dataRange[$i] . '' . $rowData, $tmpArray["VALUE" . $i])->getStyle($dataRange[$i] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
-                    }
-
-                    // TOTAL INNER
-                    $tmpArray2 = json_decode(json_encode($detItem), true);
-                    $dataRange2 = array_slice($this->CustomRange('AF'), ($Totalcolumn + 7));
-                    for ($i = 0; $i < $totMonth; $i++) {
-                        $ObjSheet->getColumnDimension($dataRange2[$i])->setWidth('20');
-                        $keyData = $tmpArray2["KEY" . $i];
-                        $ObjSheet->setCellValue($dataRange2[$i] . '3', $months[(explode(';', $keyData)[0] - 1)] . '' . explode(';', $keyData)[1])->getStyle($dataRange2[$i] . '3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-                        $lastRange2 = $dataRange2[$i];
-
-                        // ISI KONTEN
-                        $ObjSheet->setCellValue($dataRange2[$i] . '' . $rowData, $tmpArray2["VALUE2" . $i])->getStyle($dataRange2[$i] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '' . $rowData, $tmpArray["VALUE" . $i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '' . $rowData, $tmpArray["VALUE2" . $i])->getStyle(explode(';', $groupsDataRange[$i])[1] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     }
 
                     $rowData++;
                 }
-                $ObjSheet->mergeCells($dataRange[0] . '2:' . $lastRange . '2')->setCellValue($dataRange[0] . '2', 'TOTAL RO AKTIVITAS')->getStyle($dataRange[0] . '2:' . $lastRange . '2')->applyFromArray($this->styling_title_template('FFC4D79B', '000000'));
-                $ObjSheet->mergeCells($dataRange2[0] . '2:' . $lastRange2 . '2')->setCellValue($dataRange2[0] . '2', 'TOTAL RO INNER')->getStyle($dataRange2[0] . '2:' . $lastRange2 . '2')->applyFromArray($this->styling_title_template('FFDA9694', '000000'));
-
                 $ObjSheet->setAutoFilter('B2:G' . $rowData);
             }
         }
