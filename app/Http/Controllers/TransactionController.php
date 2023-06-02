@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,8 +25,7 @@ class TransactionController extends Controller
         $location   = $req->session()->get('location');
         $search     = $req->input('search')['value'];
 
-        $RoleJoin = "";
-        $showRole = "";
+        $showRegional = "";
         $showType = "";
         $tglFilter = "";
         $searchFilter = "";
@@ -102,31 +100,38 @@ class TransactionController extends Controller
                     t.REGIONAL_TRANS ,
                     t.DATE_TRANS ,
                     t.ID_TYPE ,
-                    t.LOCATION_TRANS AS NAME_LOCATION,
-                    t.REGIONAL_TRANS AS NAME_REGIONAL,
-                    t.AREA_TRANS AS NAME_AREA,
-                    t.KECAMATAN AS NAME_DISTRICT,   
                     u.`ID_USER`,
                     u.`NAME_USER`,
                     u.`ID_ROLE`,
                     mt.`NAME_TYPE`,
                     ms.`LONG_SHOP`,
                     ms.`LAT_SHOP`,
+                    md.`NAME_DISTRICT`,
+                    ma.`NAME_AREA`,
+                    mr.`NAME_REGIONAL`,
+                    ml.`NAME_LOCATION`,
                     DATE(t.DATE_TRANS) AS CnvrtDate,
                     COUNT(t.ID_TRANS) AS TotalTrans
                 FROM
                     `transaction` t
                 LEFT JOIN `user` u ON
-                    u.ID_USER = t.ID_USER
+                    u.`ID_USER` = t.`ID_USER`
                 LEFT JOIN `md_shop` ms ON
-                    ms.ID_SHOP = t.ID_SHOP
+                    ms.`ID_SHOP` = t.`ID_SHOP`
                 LEFT JOIN `md_type` mt ON
-                    mt.ID_TYPE = t.ID_TYPE
-                $RoleJoin
+                    mt.`ID_TYPE` = t.`ID_TYPE`
+                LEFT JOIN `md_district` md ON
+                    md.`ID_DISTRICT` = ms.`ID_DISTRICT`
+                LEFT JOIN `md_area` ma ON
+                    ma.`ID_AREA` = u.`ID_AREA`
+                LEFT JOIN `md_location` ml ON
+                    ml.`ID_LOCATION` = u.`ID_LOCATION`
+                LEFT JOIN `md_regional` mr ON
+                    mr.`ID_REGIONAL` = u.`ID_REGIONAL`
                 WHERE
                     t.`ISTRANS_TRANS` = 1
-                    $tglFilter
-                    $showRole
+                    AND DATE(t.`DATE_TRANS`) = '" . $tgl_trans . "'
+                    $showRegional
                     $showType
                     $searchFilter
                 GROUP BY
@@ -134,13 +139,12 @@ class TransactionController extends Controller
                     t.ID_USER,
                     t.ID_TYPE
                 ORDER BY
-                    NAME_AREA ASC
-                LIMIT $start, $perPage
+                    ma.`NAME_AREA` ASC
             ")
         );
 
         $NewData_all = array();
-        $counter_all = $start;
+        $counter_all = 0;
 
         foreach ($dataTrans as $item) {
             $data = array(
@@ -166,14 +170,9 @@ class TransactionController extends Controller
             array_push($NewData_all, $data);
         }
 
-        $draw   = $req->input('draw');
-
         return response([
             'status_code'       => 200,
             'status_message'    => 'Data berhasil diambil!',
-            'draw'              => intval($draw),
-            'recordsFiltered'   => ($counter_all != 0) ? $Tot->DataTrans : 0,
-            'recordsTotal'      => ($counter_all != 0) ? $Tot->DataTrans : 0,
             'data'              => $NewData_all
         ], 200);
     }
