@@ -30,7 +30,7 @@ class TransactionController extends Controller
         $showType = "";
         $tglFilter = "";
         if ($id_role == 3) {
-            $RoleJoin = "LEFT JOIN md_location ml ON ml.NAME_LOCATION = ml.NAME_LOCATION";
+            $RoleJoin = "LEFT JOIN md_location ml ON ml.NAME_LOCATION = t.LOCATION_TRANS";
             $showRole = "AND ml.ID_LOCATION = $location";
         }
         if ($id_role == 4 || $id_role == 5 || $id_role == 6) {
