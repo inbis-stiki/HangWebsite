@@ -260,7 +260,7 @@
         if (day.length < 2)
             day = '0' + day;
 
-        return (year != NaN && month != NaN && day != NaN) ? [year, month, day].join('-') : '';
+        return (date.split('-')[0].length > 0) ? [year, month, day].join('-') : '';
     }
 
     // const showLocation = (long, lat) => {
