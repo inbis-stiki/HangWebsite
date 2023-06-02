@@ -433,12 +433,12 @@ class CronjobController extends Controller
         if (!empty($rOs)) {
             foreach ($area as $reg) {
                 $ReportHead        = new ReportShopHead();
-                // $unik = md5($reg->REGIONAL_TRANS . $year . $month);
-                if ($reg->REGIONAL_TRANS == 'SUM 1') {
-                    $unik = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
-                }else{
-                    $unik = md5($reg->REGIONAL_TRANS . $year . $month);
-                }
+                $unik = md5($reg->REGIONAL_TRANS . $year . $month);
+                // if ($reg->REGIONAL_TRANS == 'SUM 1') {
+                //     $unik = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
+                // }else{
+                //     $unik = md5($reg->REGIONAL_TRANS . $year . $month);
+                // }
                 $ReportHead->ID_HEAD          = "REP_" . $unik;
                 $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
                 $ReportHead->BULAN            = $month;
