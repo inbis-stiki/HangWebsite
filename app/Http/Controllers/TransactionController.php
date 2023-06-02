@@ -24,11 +24,13 @@ class TransactionController extends Controller
         $id_role    = $req->session()->get('role');
         $regional   = $req->session()->get('regional');
         $location   = $req->session()->get('location');
+        $search     = $req->input('search')['value'];
 
         $RoleJoin = "";
         $showRole = "";
         $showType = "";
         $tglFilter = "";
+        $searchFilter = "";
         if ($id_role == 3) {
             $RoleJoin = "LEFT JOIN md_location ml ON ml.NAME_LOCATION = t.LOCATION_TRANS";
             $showRole = "AND ml.ID_LOCATION = $location";
@@ -37,13 +39,21 @@ class TransactionController extends Controller
             $RoleJoin = "LEFT JOIN md_regional mr ON mr.NAME_REGIONAL = t.REGIONAL_TRANS";
             $showRole = "AND mr.ID_REGIONAL = $regional";
         }
-
         if ($id_type != 0) {
             $showType = "AND t.ID_TYPE = $id_type";
         }
-
         if (!empty($tgl_trans)) {
             $tglFilter = "AND DATE(t.`DATE_TRANS`) = '" . $tgl_trans . "'";
+        }
+        if (!empty($search)) {
+            $searchFilter = "
+                AND
+                t.AREA_TRANS LIKE '%$search%'
+                OR
+                t.AREA_TRANS LIKE '%$search%'
+                OR
+                u.`NAME_USER` LIKE '%$search%'
+            ";
         }
 
         $start = $req->input('start');
@@ -73,6 +83,7 @@ class TransactionController extends Controller
                             $tglFilter
                             $showRole
                             $showType
+                            $searchFilter
                         GROUP BY
                             CnvrtDate,
                             t.ID_USER,
@@ -117,6 +128,7 @@ class TransactionController extends Controller
                     $tglFilter
                     $showRole
                     $showType
+                    $searchFilter
                 GROUP BY
                     DATE(t.DATE_TRANS),
                     t.ID_USER,
