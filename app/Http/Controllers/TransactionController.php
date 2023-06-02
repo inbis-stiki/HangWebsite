@@ -23,12 +23,19 @@ class TransactionController extends Controller
         $tgl_trans  = $req->input('tglSearchtrans');
         $id_role    = $req->session()->get('role');
         $regional   = $req->session()->get('regional');
+        $location   = $req->session()->get('location');
 
-        $showRegional = "";
+        $RoleJoin = "";
+        $showRole = "";
         $showType = "";
         $tglFilter = "";
-        if ($id_role == 3 || $id_role == 4 || $id_role == 5 || $id_role == 6) {
-            $showRegional = "AND mr.ID_REGIONAL = $regional";
+        if ($id_role == 3) {
+            $RoleJoin = "LEFT JOIN md_location ml ON ml.NAME_LOCATION = ml.NAME_LOCATION";
+            $showRole = "AND ml.ID_LOCATION = $location";
+        }
+        if ($id_role == 4 || $id_role == 5 || $id_role == 6) {
+            $RoleJoin = "LEFT JOIN md_regional mr ON mr.NAME_REGIONAL = t.REGIONAL_TRANS";
+            $showRole = "AND mr.ID_REGIONAL = $regional";
         }
 
         if ($id_type != 0) {
@@ -60,10 +67,11 @@ class TransactionController extends Controller
                             ms.ID_SHOP = t.ID_SHOP
                         LEFT JOIN `md_type` mt ON
                             mt.ID_TYPE = t.ID_TYPE
+                        $RoleJoin
                         WHERE
                             t.`ISTRANS_TRANS` = 1
                             $tglFilter
-                            $showRegional
+                            $showRole
                             $showType
                         GROUP BY
                             CnvrtDate,
@@ -103,10 +111,11 @@ class TransactionController extends Controller
                     ms.ID_SHOP = t.ID_SHOP
                 LEFT JOIN `md_type` mt ON
                     mt.ID_TYPE = t.ID_TYPE
+                $RoleJoin
                 WHERE
                     t.`ISTRANS_TRANS` = 1
                     $tglFilter
-                    $showRegional
+                    $showRole
                     $showType
                 GROUP BY
                     DATE(t.DATE_TRANS),
