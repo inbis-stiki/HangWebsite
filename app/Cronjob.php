@@ -685,6 +685,96 @@ class Cronjob extends Model
                             FROM `transaction` t
                             INNER JOIN md_shop ms
                                 ON
+                                    YEAR(t.DATE_TRANS) = " . ($year - 1) . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSBPS',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSAPS',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . ($year - 1) . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSBR',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSAR',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . ($year - 1) . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSBL',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSAL',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
                                     YEAR(t.DATE_TRANS) = " . $year . "
                                     AND MONTH(t.DATE_TRANS) = " . $month . "
                                     AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'

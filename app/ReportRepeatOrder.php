@@ -59,6 +59,7 @@ class ReportRepeatOrder
 
                 $TotalAPO = $detRO['TOTALAPO'];
                 $TotalData = ($detRO['PS_2-3'] + $detRO['PS_4-5'] + $detRO['PS_6-10'] + $detRO['PS_>11']);
+                $ROVS = ($detRO['ROVSBPS'] / $detRO['ROVSAPS']);
                 $totalROPS[0] += $detRO['PS_2-3'];
                 $totalROPS[1] += $detRO['PS_4-5'];
                 $totalROPS[2] += $detRO['PS_6-10'];
@@ -77,7 +78,7 @@ class ReportRepeatOrder
                 $ObjSheet->setCellValue('C' . $rowIsi, $detRO['TOTALPS'])->getStyle('C' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
                 $ObjSheet->setCellValue('D' . $rowIsi, $TotalData)->getStyle('D' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
                 $ObjSheet->setCellValue('E' . $rowIsi, number_format($percentROPS[4], 2, '.', '') . '%')->getStyle('E' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('F' . $rowIsi, '100%')->getStyle('F' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('F' . $rowIsi, number_format($ROVS, 2, '.', '') . '%')->getStyle('F' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
                 $ObjSheet->setCellValue('H' . $rowIsi, $TotalData)->getStyle('H' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
                 $ObjSheet->setCellValue('I' . $rowIsi, $detRO['PS_2-3'])->getStyle('I' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
