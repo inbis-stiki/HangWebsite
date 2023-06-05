@@ -48,11 +48,13 @@ class TransactionController extends Controller
         if (!empty($search)) {
             $searchFilter = "
                 AND
-                t.AREA_TRANS LIKE '%$search%'
-                OR
-                t.AREA_TRANS LIKE '%$search%'
-                OR
-                u.`NAME_USER` LIKE '%$search%'
+                (
+                    t.AREA_TRANS LIKE '%$search%'
+                    OR
+                    t.AREA_TRANS LIKE '%$search%'
+                    OR
+                    u.`NAME_USER` LIKE '%$search%'
+                )
             ";
         }
 
