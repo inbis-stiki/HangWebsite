@@ -7,7 +7,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReportRepeatOrder
 {
-    public function gen_ro_rpo($rOs, $updated_at)
+    public function gen_ro_rpo($rOs, $updated_at, $year)
     {
         // Create new Spreadsheet object
         $spreadsheet = new Spreadsheet();
@@ -29,14 +29,14 @@ class ReportRepeatOrder
             // HEADER
             $rowHeader += 2;
             $ObjSheet->mergeCells('B2:P2')->setCellValue('B2', $regional)->getStyle('B2:P2')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('B3:E3')->setCellValue('B3', 'PEDAGANG SAYUR 2022')->getStyle('B3:E3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->mergeCells('B3:E3')->setCellValue('B3', 'PEDAGANG SAYUR ' . $year)->getStyle('B3:E3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->mergeCells('B4:B5')->setCellValue('B4', 'AREA')->getStyle('B4:B5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
             $ObjSheet->mergeCells('C4:C5')->setCellValue('C4', 'TOTAL PS')->getStyle('C4:C5')->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('D4:D5')->setCellValue('D4', 'TOTAL RO PS 2022')->getStyle('D4:D5')->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->mergeCells('D4:D5')->setCellValue('D4', 'TOTAL RO PS ' . $year)->getStyle('D4:D5')->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('E4:E5')->setCellValue('E4', '% RO VS TOTAL PS')->getStyle('E4:E5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('F3:F5')->setCellValue('F3', '% RO 2022 VS RO 2021')->getStyle('F3:F5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
 
-            $ObjSheet->mergeCells('H3:P3')->setCellValue('H3', 'DETAIL RO PS 2022')->getStyle('H3:P3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->mergeCells('H3:P3')->setCellValue('H3', 'DETAIL RO PS ' . $year)->getStyle('H3:P3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->mergeCells('H4:H5')->setCellValue('H4', 'TOTAL RO')->getStyle('H4:H5')->applyFromArray($this->styling_title_template('FFFF00', '000000'));
             $ObjSheet->mergeCells('I4:L4')->setCellValue('I4', 'RUTINITAS RO PEDAGANG SAYUR')->getStyle('I4:L4')->applyFromArray($this->styling_title_template('FFC000', '000000'));
             $ObjSheet->setCellValue('I5', '2-3x')->getStyle('I5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
@@ -131,14 +131,14 @@ class ReportRepeatOrder
             // HEADER
             $rowHeader2 = $subrow + 2;
             $ObjSheet->mergeCells('B' . $rowHeader2 . ':P' . $rowHeader2)->setCellValue('B' . $rowHeader2, $regional)->getStyle('B' . $rowHeader2 . ':P' . $rowHeader2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('B' . ($rowHeader2 + 1) . ':E' . ($rowHeader2 + 1))->setCellValue('B' . ($rowHeader2 + 1), 'RETAIL 2022')->getStyle('B' . ($rowHeader2 + 1) . ':E' . ($rowHeader2 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->mergeCells('B' . ($rowHeader2 + 1) . ':E' . ($rowHeader2 + 1))->setCellValue('B' . ($rowHeader2 + 1), 'RETAIL ' . $year)->getStyle('B' . ($rowHeader2 + 1) . ':E' . ($rowHeader2 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->mergeCells('B' . ($rowHeader2 + 2) . ':B' . ($rowHeader2 + 3))->setCellValue('B' . ($rowHeader2 + 2), 'AREA')->getStyle('B' . ($rowHeader2 + 2) . ':B' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
             $ObjSheet->mergeCells('C' . ($rowHeader2 + 2) . ':C' . ($rowHeader2 + 3))->setCellValue('C' . ($rowHeader2 + 2) . '', 'TOTAL RETAIL')->getStyle('C' . ($rowHeader2 + 2) . ':C' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('D' . ($rowHeader2 + 2) . ':D' . ($rowHeader2 + 3))->setCellValue('D' . ($rowHeader2 + 2) . '', 'TOTAL RO RETAIL 2022')->getStyle('D' . ($rowHeader2 + 2) . ':D' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->mergeCells('D' . ($rowHeader2 + 2) . ':D' . ($rowHeader2 + 3))->setCellValue('D' . ($rowHeader2 + 2) . '', 'TOTAL RO RETAIL ' . $year)->getStyle('D' . ($rowHeader2 + 2) . ':D' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('E' . ($rowHeader2 + 2) . ':E' . ($rowHeader2 + 3))->setCellValue('E' . ($rowHeader2 + 2) . '', '% RO VS TOTAL RETAIL')->getStyle('E' . ($rowHeader2 + 2) . ':E' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('F' . ($rowHeader2 + 1) . ':F' . ($rowHeader2 + 3))->setCellValue('F' . ($rowHeader2 + 1) . '', '% RO 2022 VS RO 2021')->getStyle('F' . ($rowHeader2 + 1) . ':F' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
 
-            $ObjSheet->mergeCells('H' . ($rowHeader2 + 1) . ':P' . ($rowHeader2 + 1))->setCellValue('H' . ($rowHeader2 + 1), 'DETAIL RO RETAIL 2022')->getStyle('H' . ($rowHeader2 + 1) . ':P' . ($rowHeader2 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->mergeCells('H' . ($rowHeader2 + 1) . ':P' . ($rowHeader2 + 1))->setCellValue('H' . ($rowHeader2 + 1), 'DETAIL RO RETAIL ' . $year)->getStyle('H' . ($rowHeader2 + 1) . ':P' . ($rowHeader2 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->mergeCells('H' . ($rowHeader2 + 2) . ':H' . ($rowHeader2 + 3))->setCellValue('H' . ($rowHeader2 + 2), 'TOTAL RO')->getStyle('H' . ($rowHeader2 + 2) . ':H' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'));
             $ObjSheet->mergeCells('I' . ($rowHeader2 + 2) . ':L' . ($rowHeader2 + 2))->setCellValue('I' . ($rowHeader2 + 2), 'RUTINITAS RO RETAIL')->getStyle('I' . ($rowHeader2 + 2) . ':L' . ($rowHeader2 + 2))->applyFromArray($this->styling_title_template('FFC000', '000000'));
             $ObjSheet->setCellValue('I' . ($rowHeader2 + 3), '2-3x')->getStyle('I' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
@@ -223,14 +223,14 @@ class ReportRepeatOrder
             // HEADER
             $rowHeader3 = $subrow2 + 2;
             $ObjSheet->mergeCells('B' . $rowHeader3 . ':P' . $rowHeader3)->setCellValue('B' . $rowHeader3, $regional)->getStyle('B' . $rowHeader3 . ':P' . $rowHeader3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('B' . ($rowHeader3 + 1) . ':E' . ($rowHeader3 + 1))->setCellValue('B' . ($rowHeader3 + 1), 'LOSS 2022')->getStyle('B' . ($rowHeader3 + 1) . ':E' . ($rowHeader3 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->mergeCells('B' . ($rowHeader3 + 1) . ':E' . ($rowHeader3 + 1))->setCellValue('B' . ($rowHeader3 + 1), 'LOSS ' . $year)->getStyle('B' . ($rowHeader3 + 1) . ':E' . ($rowHeader3 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->mergeCells('B' . ($rowHeader3 + 2) . ':B' . ($rowHeader3 + 3))->setCellValue('B' . ($rowHeader3 + 2), 'AREA')->getStyle('B' . ($rowHeader3 + 2) . ':B' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
             $ObjSheet->mergeCells('C' . ($rowHeader3 + 2) . ':C' . ($rowHeader3 + 3))->setCellValue('C' . ($rowHeader3 + 2) . '', 'TOTAL LOSS')->getStyle('C' . ($rowHeader3 + 2) . ':C' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('D' . ($rowHeader3 + 2) . ':D' . ($rowHeader3 + 3))->setCellValue('D' . ($rowHeader3 + 2) . '', 'TOTAL RO LOSS 2022')->getStyle('D' . ($rowHeader3 + 2) . ':D' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->mergeCells('D' . ($rowHeader3 + 2) . ':D' . ($rowHeader3 + 3))->setCellValue('D' . ($rowHeader3 + 2) . '', 'TOTAL RO LOSS ' . $year)->getStyle('D' . ($rowHeader3 + 2) . ':D' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('E' . ($rowHeader3 + 2) . ':E' . ($rowHeader3 + 3))->setCellValue('E' . ($rowHeader3 + 2) . '', '% RO VS TOTAL LOSS')->getStyle('E' . ($rowHeader3 + 2) . ':E' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('F' . ($rowHeader3 + 1) . ':F' . ($rowHeader3 + 3))->setCellValue('F' . ($rowHeader3 + 1) . '', '% RO 2022 VS RO 2021')->getStyle('F' . ($rowHeader3 + 1) . ':F' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
 
-            $ObjSheet->mergeCells('H' . ($rowHeader3 + 1) . ':P' . ($rowHeader3 + 1))->setCellValue('H' . ($rowHeader3 + 1), 'DETAIL RO LOSS 2022')->getStyle('H' . ($rowHeader3 + 1) . ':P' . ($rowHeader3 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+            $ObjSheet->mergeCells('H' . ($rowHeader3 + 1) . ':P' . ($rowHeader3 + 1))->setCellValue('H' . ($rowHeader3 + 1), 'DETAIL RO LOSS ' . $year)->getStyle('H' . ($rowHeader3 + 1) . ':P' . ($rowHeader3 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
             $ObjSheet->mergeCells('H' . ($rowHeader3 + 2) . ':H' . ($rowHeader3 + 3))->setCellValue('H' . ($rowHeader3 + 2), 'TOTAL RO')->getStyle('H' . ($rowHeader3 + 2) . ':H' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'));
             $ObjSheet->mergeCells('I' . ($rowHeader3 + 2) . ':L' . ($rowHeader3 + 2))->setCellValue('I' . ($rowHeader3 + 2), 'RUTINITAS RO LOSS')->getStyle('I' . ($rowHeader3 + 2) . ':L' . ($rowHeader3 + 2))->applyFromArray($this->styling_title_template('FFC000', '000000'));
             $ObjSheet->setCellValue('I' . ($rowHeader3 + 3), '2-3x')->getStyle('I' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
@@ -498,12 +498,12 @@ class ReportRepeatOrder
                         $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[0])->setWidth('20');
                         $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[1])->setWidth('20');
                         $keyData = $tmpArray["KEY" . $i];
-                        
+
                         $ObjSheet->mergeCells(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->setCellValue(explode(';', $groupsDataRange[$i])[0] . '2', $months[$i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '3', 'TOTAL AKTIVITAS')->getStyle(explode(';', $groupsDataRange[$i])[0] . '3')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '3', 'TOTAL INNER')->getStyle(explode(';', $groupsDataRange[$i])[1] . '3')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
 
-                        
+
                         // ISI KONTEN
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '' . $rowData, $tmpArray["VALUE" . $i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '' . $rowData, $tmpArray["VALUE2" . $i])->getStyle(explode(';', $groupsDataRange[$i])[1] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
@@ -577,7 +577,7 @@ class ReportRepeatOrder
             foreach ($months as $key => $detItem) {
                 $ObjSheet->setCellValue($dataRange[$key] . '4', $detItem)->getStyle($dataRange[$key] . '4')->applyFromArray($this->styling_title_template('FFFFFF00', '000000'));
             }
-            $ObjSheet->setCellValue('T4', 'RT 2022')->getStyle('T4')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFF'));
+            $ObjSheet->setCellValue('T4', 'RT ' . $year)->getStyle('T4')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFF'));
             $ObjSheet->setCellValue('U4', '% RT2 VS TGT')->getStyle('U4')->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
 
             // ISI KONTEN

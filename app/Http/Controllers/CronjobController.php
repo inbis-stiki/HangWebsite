@@ -365,7 +365,7 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::queryGetRepeatOrder($year, $month);
         // dd($rOs);die;
-        app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
+        app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at, $year);
     }
     public function genROSHOP($yearMonth)
     {

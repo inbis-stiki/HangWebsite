@@ -182,6 +182,9 @@
         $('#datatables').DataTable({
             "processing": true,
             "serverSide": true,
+            "search": {
+                return: true,
+            },
             "language": {
                 "processing": "<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>",
                 "loadingRecords": "Loading...",
@@ -204,7 +207,6 @@
                     ((total !== max) ? " (filtered from " + max + " total entries)" : "") :
                     "No Data to Show";
             },
-            deferLoading: 57,
             "columns": [{
                     data: 'NO'
                 },
@@ -230,7 +232,7 @@
                     data: 'ACTION_BUTTON'
                 }
             ],
-        }).draw()
+        })
     }
 
     $(".datepicker-default").pickadate({
