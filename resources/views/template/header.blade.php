@@ -16,7 +16,7 @@
 
     <!-- Datatable -->
     <link href="{{ asset('vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('vendor/datatables/css/jquery.dataTables.min.css ') }}" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
     {{-- <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet"> --}}
 
     {{-- font-awesome --}}
@@ -45,6 +45,12 @@
 
     <link href="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.css') }}" rel="stylesheet">
 </head>
+
+<style>
+    div.dataTables_processing div {
+        display: none;
+    }
+</style>
 
 <body>
 

@@ -52,7 +52,7 @@
 
  <!-- Dashboard 1 -->
  {{-- <script src="{{ asset('js/dashboard/dashboard-1.js') }}"></script> --}}
- <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
+ <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
  <script src="{{ asset('vendor/select2/js/select2.full.min.js') }}"></script>
  <!-- pickdate -->
  <script src="{{ asset('vendor/pickadate/picker.js') }}"></script>
