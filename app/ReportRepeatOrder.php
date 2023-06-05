@@ -768,6 +768,134 @@ class ReportRepeatOrder
         $writer->save('php://output');
     }
 
+    public function gen_akt_trx_apo($rOs)
+    {
+        $spreadsheet = new Spreadsheet();
+        $dataRange = array_slice($this->CustomRange('AA'), count(range('A', 'C')));
+        $groups = array();
+        for ($i = 0; $i < count($dataRange) - 1; $i += 2) {
+            $group = $dataRange[$i] . ';' . $dataRange[$i + 1];
+            $groups[] = $group;
+        }
+        $months = array(
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
+        );
+        foreach ($rOs as $keyMain => $item) {
+            $ObjSheet = $spreadsheet->createSheet();
+            $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $keyMain));
+
+            $ObjSheet->getColumnDimension('B')->setWidth('15');
+            $ObjSheet->getColumnDimension('C')->setWidth('9');
+            $ObjSheet->getColumnDimension('D')->setWidth('9');
+            $ObjSheet->getColumnDimension('E')->setWidth('9');
+            $ObjSheet->getColumnDimension('F')->setWidth('9');
+            $ObjSheet->getColumnDimension('G')->setWidth('9');
+            $ObjSheet->getColumnDimension('G')->setWidth('9');
+            $ObjSheet->getColumnDimension('H')->setWidth('9');
+            $ObjSheet->getColumnDimension('I')->setWidth('9');
+            $ObjSheet->getColumnDimension('J')->setWidth('9');
+            $ObjSheet->getColumnDimension('K')->setWidth('9');
+            $ObjSheet->getColumnDimension('L')->setWidth('9');
+            $ObjSheet->getColumnDimension('M')->setWidth('9');
+            $ObjSheet->getColumnDimension('N')->setWidth('9');
+            $ObjSheet->getColumnDimension('O')->setWidth('9');
+            $ObjSheet->getColumnDimension('P')->setWidth('9');
+            $ObjSheet->getColumnDimension('Q')->setWidth('9');
+            $ObjSheet->getColumnDimension('R')->setWidth('9');
+            $ObjSheet->getColumnDimension('S')->setWidth('9');
+            $ObjSheet->getColumnDimension('T')->setWidth('9');
+            $ObjSheet->getColumnDimension('U')->setWidth('9');
+            $ObjSheet->getColumnDimension('V')->setWidth('9');
+            $ObjSheet->getColumnDimension('W')->setWidth('9');
+            $ObjSheet->getColumnDimension('X')->setWidth('9');
+            $ObjSheet->getColumnDimension('Y')->setWidth('9');
+            $ObjSheet->getColumnDimension('Z')->setWidth('9');
+            $ObjSheet->getColumnDimension('AA')->setWidth('9');
+            
+            $ObjSheet->getColumnDimension('AB')->setWidth('2');
+            $ObjSheet->getColumnDimension('AC')->setWidth('9');
+            $ObjSheet->getColumnDimension('AD')->setWidth('9');
+
+            // HEADER
+            $ObjSheet->mergeCells('B3:B6')->setCellValue('B3', 'AREA')->getStyle('B3:B5')->applyFromArray($this->styling_title_template('66ffff', 'FF000000'));
+            $ObjSheet->mergeCells('C3:C6')->setCellValue('C3', 'TGT TRX / BLN')->getStyle('C3:C5')->applyFromArray($this->styling_title_template('ff0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+
+            foreach ($groups as $key => $detItem) {
+                $ObjSheet->mergeCells('D3:AA3')->setCellValue('D3', 'AKTIVITAS TRX APPS 2023')->getStyle('D3:AA3')->applyFromArray($this->styling_title_template('ffff00', 'FF000000'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[1] . '4')->setCellValue(explode(';', $detItem)[0] . '4', $months[$key])->getStyle(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[1] . '4')->applyFromArray($this->styling_title_template('66ffff', 'FF000000'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[0] . '5:' . explode(';', $detItem)[0] . '6')->setCellValue(explode(';', $detItem)[0] . '5', 'TRX')->getStyle(explode(';', $detItem)[0] . '5:' . explode(';', $detItem)[0] . '6')->applyFromArray($this->styling_title_template('0c13ff', 'FFFFFFFF'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[1] . '5:' . explode(';', $detItem)[1] . '6')->setCellValue(explode(';', $detItem)[1] . '5', '% TRX VS TGT')->getStyle(explode(';', $detItem)[1] . '5:' . explode(';', $detItem)[1] . '6')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+            }
+
+            $ObjSheet->mergeCells('AC3:AD4')->setCellValue('AC3', 'Rata - Rata ' . date('Y'))->getStyle('AC3:AD4')->applyFromArray($this->styling_title_template('66ffff', 'FF000000'));
+            $ObjSheet->mergeCells('AC5:AC6')->setCellValue('AC5', 'TRX')->getStyle('AC5:AC6')->applyFromArray($this->styling_title_template('0c13ff', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+            $ObjSheet->mergeCells('AD5:AD6')->setCellValue('AD5', '% TRX VS TGT')->getStyle('AD5:AD6')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+
+            // ISI KONTEN
+            $start = 6;
+            $rowData = 7;
+
+            $TotalAllCall = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $TotalAllRO = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            foreach ($item as $detItem) {
+                $ObjSheet->setCellValue('B' . $rowData, $detItem['AREA'])->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue('C' . $rowData, $detItem['TGT_TRX_BLN'])->getStyle('C' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                foreach ($groups as $key => $groupsItem) {
+                    $TotalAllCall[$key] += $detItem['RTCALL'][$key];
+                    $TotalAllRO[$key] += $detItem['RTRO'][$key];
+
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $detItem['RTCALL'][$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $detItem['RTRO'][$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                }
+
+                $totCall = array_sum($detItem['RTCALL']);
+                $countCall = count($detItem['RTCALL']);
+                $avgCall = $totCall / $countCall;
+
+                $totRo = array_sum($detItem['RTRO']);
+                $countRo = count($detItem['RTRO']);
+                $avgRo = $totRo / $countRo;
+
+                $ObjSheet->setCellValue('AC' . $rowData, $avgCall)->getStyle('AC' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue('AD' . $rowData, $avgRo)->getStyle('AD' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+
+                $rowData++;
+            }
+
+            // FOOTER
+            foreach ($groups as $key => $groupsItem) {
+                dd($groupsItem);die;
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $TotalAllCall[$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $TotalAllRO[$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+            }
+
+            $totAllCall = array_sum($TotalAllCall);
+            $countAllCall = count($TotalAllCall);
+            $avgAllCall = $totAllCall / $countAllCall;
+
+            $totAllRo = array_sum($TotalAllCall);
+            $countAllRo = count($TotalAllCall);
+            $avgAllRo = $totAllRo / $countAllRo;
+
+            $ObjSheet->setCellValue('AC' . $rowData, $avgAllCall)->getStyle('AC' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('AD' . $rowData, $avgAllRo)->getStyle('AD' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+
+            $ObjSheet->setCellValue('B' . $rowData, $keyMain)->getStyle('B' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $ObjSheet->setCellValue('C' . $rowData, $keyMain)->getStyle('C' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+        }
+
+        $spreadsheet->removeSheetByIndex(0);
+
+        $fileName = 'Aktivitas TRX APPS APO';
+
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel'); // generate excel file
+        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
     public function styling_default_template($FontSize, $ColorText)
     {
         $styleTitle['font']['bold']                           = true;
