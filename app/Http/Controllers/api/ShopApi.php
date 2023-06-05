@@ -405,7 +405,7 @@ class ShopApi extends Controller
     {
         try {
             $validator = Validator::make($req->all(), [
-                'id_shop'               => 'required|numeric|exists:md_district,ID_DISTRICT',
+                'id_shop'               => 'required|numeric|exists:md_shop,ID_SHOP',
                 'kelurahan'             => 'required'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',

@@ -943,6 +943,8 @@ class Cronjob extends Model
             mr.ID_REGIONAL = ma.ID_REGIONAL
         WHERE
             ms.ID_SHOP IS NOT NULL
+            AND YEAR(t.DATE_TRANS) = " . $year . "
+            AND MONTH(t.DATE_TRANS) = " . $month . "
         GROUP BY
             t.ID_SHOP
         ORDER BY
