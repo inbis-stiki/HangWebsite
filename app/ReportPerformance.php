@@ -193,7 +193,7 @@ class ReportPerformance extends Model
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
-    
+
     public function gen_performance_rendang($rOs, $year)
     {
         $spreadsheet = new Spreadsheet();
@@ -280,7 +280,7 @@ class ReportPerformance extends Model
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
-    
+
     public function gen_performance_ust($rOs, $year)
     {
         $spreadsheet = new Spreadsheet();
@@ -295,7 +295,7 @@ class ReportPerformance extends Model
             $ObjSheet->getColumnDimension('A')->setWidth('5');
             $ObjSheet->getColumnDimension('B')->setWidth('8');
             $ObjSheet->getColumnDimension('C')->setWidth('8');
-            
+
             $ObjSheet->getColumnDimension('D')->setWidth('25');
             $ObjSheet->getColumnDimension('E')->setWidth('13');
 
@@ -369,6 +369,234 @@ class ReportPerformance extends Model
 
         $spreadsheet->removeSheetByIndex(0);
         $fileName = 'Performance UST APO ' . $year;
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.ms-excel'); // generate excel file
+        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
+    public function gen_performance_rekap($rOs, $year)
+    {
+        $spreadsheet = new Spreadsheet();
+        $dataRange = range('H', 'S');
+        $dataRangeReal = range('B', 'D');
+        $months = array(
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
+        );
+        foreach ($rOs as $keyMain => $item) {
+            $ObjSheet = $spreadsheet->createSheet();
+            $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $keyMain));
+
+            $ObjSheet->getColumnDimension('A')->setWidth('5');
+            $ObjSheet->getColumnDimension('B')->setWidth('8');
+            $ObjSheet->getColumnDimension('C')->setWidth('8');
+            $ObjSheet->getColumnDimension('D')->setWidth('8');
+
+            $ObjSheet->getColumnDimension('E')->setWidth('25');
+            $ObjSheet->getColumnDimension('F')->setWidth('13');
+            $ObjSheet->getColumnDimension('G')->setWidth('10');
+
+            $ObjSheet->getColumnDimension('H')->setWidth('9');
+            $ObjSheet->getColumnDimension('I')->setWidth('9');
+            $ObjSheet->getColumnDimension('J')->setWidth('9');
+            $ObjSheet->getColumnDimension('K')->setWidth('9');
+            $ObjSheet->getColumnDimension('L')->setWidth('9');
+            $ObjSheet->getColumnDimension('M')->setWidth('9');
+            $ObjSheet->getColumnDimension('N')->setWidth('9');
+            $ObjSheet->getColumnDimension('O')->setWidth('9');
+            $ObjSheet->getColumnDimension('P')->setWidth('9');
+            $ObjSheet->getColumnDimension('Q')->setWidth('9');
+            $ObjSheet->getColumnDimension('R')->setWidth('9');
+            $ObjSheet->getColumnDimension('S')->setWidth('9');
+
+            $ObjSheet->getColumnDimension('T')->setWidth('13');
+            $ObjSheet->getColumnDimension('U')->setWidth('13');
+
+            $ObjSheet->getRowDimension('4')->setRowHeight('32');
+
+            // HEADER
+            $ObjSheet->mergeCells('B3:D3')->setCellValue('B3', 'REAL OMSET')->getStyle('B3:D3')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+            $ObjSheet->setCellValue('B4', '2021')->getStyle('B4')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+            $ObjSheet->setCellValue('C4', '2022')->getStyle('C4')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+            $ObjSheet->setCellValue('D4', '2023')->getStyle('D4')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+            $ObjSheet->mergeCells('E3:E4')->setCellValue('E3', 'AREA')->getStyle('E3:E4')->applyFromArray($this->styling_title_template('FF66FFFF', 'FF000000'));
+            $ObjSheet->mergeCells('F3:F4')->setCellValue('F3', 'KATEGORI')->getStyle('F3:F4')->applyFromArray($this->styling_title_template('FF00FF00', 'FF000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->mergeCells('G3:G4')->setCellValue('G3', 'TARGET STANDAR')->getStyle('G3:G4')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+
+            $ObjSheet->mergeCells('H3:U3')->setCellValue('H3', 'REAL OMSET ' . $year)->getStyle('G3:T3')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+
+            foreach ($dataRange as $key => $detItem) {
+                $ObjSheet->setCellValue($detItem . '4', $months[$key])->getStyle($detItem . '4')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+            }
+
+            $ObjSheet->setCellValue('T4', 'RT ' . $year)->getStyle('T4')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+            $ObjSheet->setCellValue('U4', '% RT2 VS TGT')->getStyle('U4')->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+
+            // ISI KONTEN
+            $rowIsi1 = 5;
+            $gap = 4;
+            foreach ($item as $itemArea) {
+                $ObjSheet->mergeCells('E' . $rowIsi1 . ':E' . ($rowIsi1 + ($gap - 1)))->setCellValue('E' . $rowIsi1, $itemArea['AREA'])->getStyle('E' . $rowIsi1 . ':E' . ($rowIsi1 + ($gap - 1)))->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+
+                foreach ($itemArea['NON_UST'] as $key => $detData) {
+                    $ObjSheet->setCellValue('F' . $rowIsi1, 'NON UST')->getStyle('F' . $rowIsi1)->applyFromArray($this->styling_title_template('00FFFF00', 'FF000000'))->getAlignment()->setHorizontal('center');
+                    $ObjSheet->setCellValue('G' . $rowIsi1, 300)->getStyle('G' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                    if ($key == 'TOT_REAL') {
+                        foreach ($detData as $key => $detReal) {
+                            $ObjSheet->setCellValue($dataRangeReal[$key] . $rowIsi1, $detReal)->getStyle($dataRangeReal[$key] . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                        }
+                    } else {
+                        foreach ($dataRange as $key => $detItem) {
+                            $ObjSheet->setCellValue($detItem . $rowIsi1, $detData[$key])->getStyle($detItem . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                        }
+                    }
+                    $rt_total = $ObjSheet->setCellValue('T' . $rowIsi1, '=IFERROR(AVERAGE(H' . $rowIsi1 . ':S' . $rowIsi1 . '),0)')->getStyle('T' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_total->getAlignment()->setHorizontal('center');
+                    $rt_total->getNumberFormat()->setFormatCode('#.##');
+
+                    $rt_totalvs = $ObjSheet->setCellValue('U' . $rowIsi1, '=IFERROR(T' . $rowIsi1 . '/G' . $rowIsi1 . ',0)')->getStyle('U' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_totalvs->getAlignment()->setHorizontal('center');
+                    $rt_totalvs->getNumberFormat()->setFormatCode('#.##%');
+                }
+
+                foreach ($itemArea['UGP'] as $key => $detData) {
+                    $ObjSheet->setCellValue('F' . ($rowIsi1 + 1), 'UGP')->getStyle('F' . ($rowIsi1 + 1))->applyFromArray($this->styling_title_template('00833C0C', 'FFFFFFFF'))->getAlignment()->setHorizontal('center');
+                    $ObjSheet->setCellValue('G' . ($rowIsi1 + 1), 750)->getStyle('G' . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                    if ($key == 'TOT_REAL') {
+                        foreach ($detData as $key => $detReal) {
+                            $ObjSheet->setCellValue($dataRangeReal[$key] . ($rowIsi1 + 1), $detReal)->getStyle($dataRangeReal[$key] . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                        }
+                    } else {
+                        foreach ($dataRange as $key => $detItem) {
+                            $ObjSheet->setCellValue($detItem . ($rowIsi1 + 1), $detData[$key])->getStyle($detItem . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                        }
+                    }
+                    $rt_total = $ObjSheet->setCellValue('T' . ($rowIsi1 + 1), '=IFERROR(AVERAGE(H' . ($rowIsi1 + 1) . ':S' . ($rowIsi1 + 1) . '),0)')->getStyle('T' . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_total->getAlignment()->setHorizontal('center');
+                    $rt_total->getNumberFormat()->setFormatCode('0.00');
+
+                    $rt_totalvs = $ObjSheet->setCellValue('U' . ($rowIsi1 + 1), '=IFERROR(T' . ($rowIsi1 + 1) . '/G' . ($rowIsi1 + 1) . ',0)')->getStyle('U' . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_totalvs->getAlignment()->setHorizontal('center');
+                    $rt_totalvs->getNumberFormat()->setFormatCode('#.##%');
+                }
+
+                foreach ($itemArea['URD'] as $key => $detData) {
+                    $ObjSheet->setCellValue('F' . ($rowIsi1 + 2), 'URD')->getStyle('F' . ($rowIsi1 + 2))->applyFromArray($this->styling_title_template('00FF00FF', 'FFFFFFFF'))->getAlignment()->setHorizontal('center');
+                    $ObjSheet->setCellValue('G' . ($rowIsi1 + 2), 750)->getStyle('G' . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                    if ($key == 'TOT_REAL') {
+                        foreach ($detData as $key => $detReal) {
+                            $ObjSheet->setCellValue($dataRangeReal[$key] . ($rowIsi1 + 2), $detReal)->getStyle($dataRangeReal[$key] . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                        }
+                    } else {
+                        foreach ($dataRange as $key => $detItem) {
+                            $ObjSheet->setCellValue($detItem . ($rowIsi1 + 2), $detData[$key])->getStyle($detItem . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                        }
+                    }
+                    $rt_total = $ObjSheet->setCellValue('T' . ($rowIsi1 + 2), '=IFERROR(AVERAGE(H' . ($rowIsi1 + 2) . ':S' . ($rowIsi1 + 2) . '),0)')->getStyle('T' . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_total->getAlignment()->setHorizontal('center');
+                    $rt_total->getNumberFormat()->setFormatCode('0.00');
+
+                    $rt_totalvs = $ObjSheet->setCellValue('U' . ($rowIsi1 + 2), '=IFERROR(T' . ($rowIsi1 + 2) . '/G' . ($rowIsi1 + 2) . ',0)')->getStyle('U' . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_totalvs->getAlignment()->setHorizontal('center');
+                    $rt_totalvs->getNumberFormat()->setFormatCode('#.##%');
+                }
+
+                foreach ($itemArea['UST'] as $key => $detData) {
+                    $ObjSheet->setCellValue('F' . ($rowIsi1 + 3), 'UST')->getStyle('F' . ($rowIsi1 + 3))->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'))->getAlignment()->setHorizontal('center');
+                    $ObjSheet->setCellValue('G' . ($rowIsi1 + 3), 240)->getStyle('G' . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                    if ($key == 'TOT_REAL') {
+                        foreach ($detData as $key => $detReal) {
+                            $ObjSheet->setCellValue($dataRangeReal[$key] . ($rowIsi1 + 3), $detReal)->getStyle($dataRangeReal[$key] . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                        }
+                    } else {
+                        foreach ($dataRange as $key => $detItem) {
+                            $ObjSheet->setCellValue($detItem . ($rowIsi1 + 3), $detData[$key])->getStyle($detItem . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                        }
+                    }
+                    $rt_total = $ObjSheet->setCellValue('T' . ($rowIsi1 + 3), '=IFERROR(AVERAGE(H' . ($rowIsi1 + 3) . ':S' . ($rowIsi1 + 3) . '),0)')->getStyle('T' . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_total->getAlignment()->setHorizontal('center');
+                    $rt_total->getNumberFormat()->setFormatCode('0.00');
+
+                    $rt_totalvs = $ObjSheet->setCellValue('U' . ($rowIsi1 + 3), '=IFERROR(T' . ($rowIsi1 + 3) . '/G' . ($rowIsi1 + 3) . ',0)')->getStyle('U' . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_totalvs->getAlignment()->setHorizontal('center');
+                    $rt_totalvs->getNumberFormat()->setFormatCode('#.##%');
+                }
+
+                $rowIsi1 += $gap;
+            }
+
+            // FOOTER
+            $rowIsi2 = $rowIsi1;
+            $gap = 4;
+            $nonust = [];
+            $ugp = [];
+            $urd = [];
+            $ust = [];
+            foreach ($item as $key => $itemArea) {
+                $nonust[$key] = $rowIsi2 - $gap;
+                $ugp[$key] = $rowIsi2 - ($gap - 1);
+                $urd[$key] = $rowIsi2 - ($gap - 2);
+                $ust[$key] = $rowIsi2 - ($gap - 3);
+                $gap += 4;
+            }
+            
+            foreach($dataRangeReal as $columnID){
+                $ObjSheet->setCellValue($columnID . $rowIsi1, '=SUM(' . implode(',', array_map(function ($item) use ($columnID) {return $columnID . $item;}, $nonust)) . ')')->getStyle($columnID . $rowIsi1)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue($columnID . ($rowIsi1 + 1), '=SUM(' . implode(',', array_map(function ($item) use ($columnID) {return $columnID . $item;}, $ugp)) . ')')->getStyle($columnID . ($rowIsi1 + 1))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue($columnID . ($rowIsi1 + 2), '=SUM(' . implode(',', array_map(function ($item) use ($columnID) {return $columnID . $item;}, $urd)) . ')')->getStyle($columnID . ($rowIsi1 + 2))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue($columnID . ($rowIsi1 + 3), '=SUM(' . implode(',', array_map(function ($item) use ($columnID) {return $columnID . $item;}, $ust)) . ')')->getStyle($columnID . ($rowIsi1 + 3))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+            }
+
+            $ObjSheet->mergeCells('E' . $rowIsi1 . ':E' . ($rowIsi1 + 3))->setCellValue('E' . $rowIsi1, $keyMain)->getStyle('E' . $rowIsi1 . ':E' . ($rowIsi1 + 3))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('left')->setWrapText(true);
+
+            $ObjSheet->setCellValue('F' . $rowIsi1, 'NON UST')->getStyle('F' . $rowIsi1)->applyFromArray($this->styling_title_template('00FFFF00', 'FF000000'))->getAlignment()->setHorizontal('center');
+            $ObjSheet->setCellValue('F' . ($rowIsi1 + 1), 'UGP')->getStyle('F' . ($rowIsi1 + 1))->applyFromArray($this->styling_title_template('00833C0C', 'FFFFFFFF'))->getAlignment()->setHorizontal('center');
+            $ObjSheet->setCellValue('F' . ($rowIsi1 + 2), 'URD')->getStyle('F' . ($rowIsi1 + 2))->applyFromArray($this->styling_title_template('00FF00FF', 'FFFFFFFF'))->getAlignment()->setHorizontal('center');
+            $ObjSheet->setCellValue('F' . ($rowIsi1 + 3), 'UST')->getStyle('F' . ($rowIsi1 + 3))->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'))->getAlignment()->setHorizontal('center');
+
+            $ObjSheet->setCellValue('G' . $rowIsi1, '=SUM(' . implode(',', array_map(function ($item) {return 'G' . $item;}, $nonust)) . ')')->getStyle('G' . $rowIsi1)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+            $ObjSheet->setCellValue('G' . ($rowIsi1 + 1), '=SUM(' . implode(',', array_map(function ($item) {return 'G' . $item;}, $ugp)) . ')')->getStyle('G' . ($rowIsi1 + 1))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+            $ObjSheet->setCellValue('G' . ($rowIsi1 + 2), '=SUM(' . implode(',', array_map(function ($item) {return 'G' . $item;}, $urd)) . ')')->getStyle('G' . ($rowIsi1 + 2))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+            $ObjSheet->setCellValue('G' . ($rowIsi1 + 3), '=SUM(' . implode(',', array_map(function ($item) {return 'G' . $item;}, $ust)) . ')')->getStyle('G' . ($rowIsi1 + 3))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+            
+            foreach($dataRange as $columnID){
+                $ObjSheet->setCellValue($columnID . $rowIsi1, '=SUM(' . implode(',', array_map(function ($item) use ($columnID) {return $columnID . $item;}, $nonust)) . ')')->getStyle($columnID . $rowIsi1)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue($columnID . ($rowIsi1 + 1), '=SUM(' . implode(',', array_map(function ($item) use ($columnID) {return $columnID . $item;}, $ugp)) . ')')->getStyle($columnID . ($rowIsi1 + 1))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue($columnID . ($rowIsi1 + 2), '=SUM(' . implode(',', array_map(function ($item) use ($columnID) {return $columnID . $item;}, $urd)) . ')')->getStyle($columnID . ($rowIsi1 + 2))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue($columnID . ($rowIsi1 + 3), '=SUM(' . implode(',', array_map(function ($item) use ($columnID) {return $columnID . $item;}, $ust)) . ')')->getStyle($columnID . ($rowIsi1 + 3))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setHorizontal('center');
+            }
+            
+            $rt_total_nonust = $ObjSheet->setCellValue('T' . $rowIsi1, '=SUM(' . implode(',', array_map(function ($item) {return 'T' . $item;}, $nonust)) . ')')->getStyle('T' . $rowIsi1)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $rt_total_nonust->getAlignment()->setHorizontal('center');
+            $rt_total_nonust->getNumberFormat()->setFormatCode('0.00');
+            $rt_total_ugp = $ObjSheet->setCellValue('T' . ($rowIsi1 + 1), '=SUM(' . implode(',', array_map(function ($item) {return 'T' . $item;}, $ugp)) . ')')->getStyle('T' . ($rowIsi1 + 1))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $rt_total_ugp->getAlignment()->setHorizontal('center');
+            $rt_total_ugp->getNumberFormat()->setFormatCode('0.00');
+            $rt_total_urd = $ObjSheet->setCellValue('T' . ($rowIsi1 + 2), '=SUM(' . implode(',', array_map(function ($item) {return 'T' . $item;}, $urd)) . ')')->getStyle('T' . ($rowIsi1 + 2))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $rt_total_urd->getAlignment()->setHorizontal('center');
+            $rt_total_urd->getNumberFormat()->setFormatCode('0.00');
+            $rt_total_ust = $ObjSheet->setCellValue('T' . ($rowIsi1 + 3), '=SUM(' . implode(',', array_map(function ($item) {return 'T' . $item;}, $ust)) . ')')->getStyle('T' . ($rowIsi1 + 3))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $rt_total_ust->getAlignment()->setHorizontal('center');
+            $rt_total_ust->getNumberFormat()->setFormatCode('0.00');
+
+            $rt_total_nonust = $ObjSheet->setCellValue('U' . $rowIsi1, '=SUM(' . implode(',', array_map(function ($item) {return 'U' . $item;}, $nonust)) . ')')->getStyle('U' . $rowIsi1)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $rt_total_nonust->getAlignment()->setHorizontal('center');
+            $rt_total_nonust->getNumberFormat()->setFormatCode('#.##%');            
+            $rt_total_ugp = $ObjSheet->setCellValue('U' . ($rowIsi1 + 1), '=SUM(' . implode(',', array_map(function ($item) {return 'U' . $item;}, $ugp)) . ')')->getStyle('U' . ($rowIsi1 + 1))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $rt_total_ugp->getAlignment()->setHorizontal('center');
+            $rt_total_ugp->getNumberFormat()->setFormatCode('#.##%');
+            $rt_total_urd = $ObjSheet->setCellValue('U' . ($rowIsi1 + 2), '=SUM(' . implode(',', array_map(function ($item) {return 'U' . $item;}, $urd)) . ')')->getStyle('U' . ($rowIsi1 + 2))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $rt_total_urd->getAlignment()->setHorizontal('center');
+            $rt_total_urd->getNumberFormat()->setFormatCode('#.##%');
+            $rt_total_ust = $ObjSheet->setCellValue('U' . ($rowIsi1 + 3), '=SUM(' . implode(',', array_map(function ($item) {return 'U' . $item;}, $ust)) . ')')->getStyle('U' . ($rowIsi1 + 3))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $rt_total_ust->getAlignment()->setHorizontal('center');
+            $rt_total_ust->getNumberFormat()->setFormatCode('#.##%');
+        }
+
+        $spreadsheet->removeSheetByIndex(0);
+        $fileName = 'Performance REKAP APO ' . $year;
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.ms-excel'); // generate excel file

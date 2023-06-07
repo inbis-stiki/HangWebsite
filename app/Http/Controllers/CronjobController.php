@@ -454,7 +454,7 @@ class CronjobController extends Controller
                 // $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
                 if ($item->REGIONAL_TRANS == 'SUM 1') {
                     $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $item->REGIONAL_TRANS) . $year . $month);
-                }else{
+                } else {
                     $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
                 }
                 $ReportDet->ID_HEAD               = "REP_" . $unik2;
@@ -773,6 +773,115 @@ class CronjobController extends Controller
         );
 
         app(ReportPerformance::class)->gen_performance_ust($rOs, $year);
+    }
+    public function genPerformanceREKAP($yearReq)
+    {
+        $year = date_format(date_create($yearReq), 'Y');
+        $rOs = array(
+            'JATIM 1' => [
+                0 => [
+                    'AREA' => 'SURABAYA 1',
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
+                ],
+                1 => [
+                    'AREA' => 'SURABAYA 2',
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
+                ],
+                2 => [
+                    'AREA' => 'SURABAYA 3',
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
+                ],
+            ],
+            'JATIM 2' => [
+                0 => [
+                    'AREA' => 'MALANG 1',
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
+                ],
+                1 => [
+                    'AREA' => 'MALANG 2',
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
+                ]
+            ],
+        );
+
+        // dd($rOs);
+
+        app(ReportPerformance::class)->gen_performance_rekap($rOs, $year);
     }
     public function genROVSTEST()
     {

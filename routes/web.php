@@ -52,6 +52,7 @@ Route::get('cronjob/gen-performance-nonust/{year}', 'CronjobController@genPerfor
 Route::get('cronjob/gen-performance-geprek/{year}', 'CronjobController@genPerformanceGEPREK');
 Route::get('cronjob/gen-performance-rendang/{year}', 'CronjobController@genPerformanceRENDANG');
 Route::get('cronjob/gen-performance-ust/{year}', 'CronjobController@genPerformanceUST');
+Route::get('cronjob/gen-performance-rekap/{year}', 'CronjobController@genPerformanceREKAP');
 
 Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');

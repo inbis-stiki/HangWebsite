@@ -556,6 +556,7 @@ class ReportRepeatOrder
         $months = array(
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
         );
+        $year = date('Y');
         foreach ($rOs as $key => $item) {
             $ObjSheet = $spreadsheet->createSheet();
             $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $key));
