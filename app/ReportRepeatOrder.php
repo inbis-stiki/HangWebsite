@@ -3,6 +3,7 @@
 namespace App;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReportRepeatOrder
@@ -838,8 +839,8 @@ class ReportRepeatOrder
             $ObjSheet->getColumnDimension('AD')->setWidth('9');
 
             // HEADER
-            $ObjSheet->mergeCells('B3:B6')->setCellValue('B3', 'AREA')->getStyle('B3:B5')->applyFromArray($this->styling_title_template('66ffff', 'FF000000'));
-            $ObjSheet->mergeCells('C3:C6')->setCellValue('C3', 'TGT TRX / BLN')->getStyle('C3:C5')->applyFromArray($this->styling_title_template('ff0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+            $ObjSheet->mergeCells('B3:B6')->setCellValue('B3', 'AREA')->getStyle('B3:B6')->applyFromArray($this->styling_title_template('66ffff', 'FF000000'));
+            $ObjSheet->mergeCells('C3:C6')->setCellValue('C3', 'TGT TRX / BLN')->getStyle('C3:C6')->applyFromArray($this->styling_title_template('ff0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
 
             foreach ($groups as $key => $detItem) {
                 $ObjSheet->mergeCells('D3:AA3')->setCellValue('D3', 'AKTIVITAS TRX APPS 2023')->getStyle('D3:AA3')->applyFromArray($this->styling_title_template('ffff00', 'FF000000'));
@@ -858,23 +859,25 @@ class ReportRepeatOrder
 
             $TotalAllCall = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $TotalAllRO = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $sumTgtTrxBln = 0;
             foreach ($item as $detItem) {
                 $ObjSheet->setCellValue('B' . $rowData, $detItem['AREA'])->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
                 $ObjSheet->setCellValue('C' . $rowData, $detItem['TGT_TRX_BLN'])->getStyle('C' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
                 foreach ($groups as $key => $groupsItem) {
-                    $TotalAllCall[$key] += $detItem['RTCALL'][$key];
-                    $TotalAllRO[$key] += $detItem['RTRO'][$key];
-
-                    $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $detItem['RTCALL'][$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
-                    $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $detItem['RTRO'][$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                    $TotalAllCall[$key] += $detItem['TRX'][$key];
+                    $TotalAllRO[$key] += $detItem['TGTVS'][$key];
+                    
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $detItem['TRX'][$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $detItem['TGTVS'][$key]. '%')->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
                 }
 
-                $totCall = array_sum($detItem['RTCALL']);
-                $countCall = count($detItem['RTCALL']);
+                $totCall = array_sum($detItem['TRX']);
+                $countCall = count($detItem['TRX']);
                 $avgCall = $totCall / $countCall;
+                $sumTgtTrxBln += intval($detItem['TGT_TRX_BLN']);
 
-                $totRo = array_sum($detItem['RTRO']);
-                $countRo = count($detItem['RTRO']);
+                $totRo = array_sum($detItem['TGTVS']);
+                $countRo = count($detItem['TGTVS']);
                 $avgRo = $totRo / $countRo;
 
                 $ObjSheet->setCellValue('AC' . $rowData, $avgCall)->getStyle('AC' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
@@ -885,7 +888,7 @@ class ReportRepeatOrder
 
             // FOOTER
             foreach ($groups as $key => $groupsItem) {
-                dd($groupsItem);die;
+                // dd($groupsItem);die;
                 $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $TotalAllCall[$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
                 $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $TotalAllRO[$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
             }
@@ -902,7 +905,7 @@ class ReportRepeatOrder
             $ObjSheet->setCellValue('AD' . $rowData, $avgAllRo)->getStyle('AD' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
 
             $ObjSheet->setCellValue('B' . $rowData, $keyMain)->getStyle('B' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
-            $ObjSheet->setCellValue('C' . $rowData, $keyMain)->getStyle('C' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $ObjSheet->setCellValue('C' . $rowData, $sumTgtTrxBln)->getStyle('C' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
         }
 
         $spreadsheet->removeSheetByIndex(0);
