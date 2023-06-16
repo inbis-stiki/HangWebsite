@@ -16,6 +16,7 @@ use App\ReportRanking;
 use App\ReportTransaction;
 use App\ReportTrend;
 use App\RangeRepeat;
+use App\ReportAktivitasTRX;
 use App\ReportPerformance;
 use App\ReportRepeatOrder;
 use App\Shop;
@@ -910,37 +911,13 @@ class CronjobController extends Controller
     }
     public function genAktTRXAPO($yearReq)
     {
-        // $rOs = array(
-        //     'JATIM 1' => [
-        //         0 => [
-        //             'AREA' => 'SURABAYA 1',
-        //             'TGT_TRX_BLN' => '1500',
-        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-        //         ],
-        //         1 => [
-        //             'AREA' => 'SURABAYA 2',
-        //             'TGT_TRX_BLN' => '1500',
-        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-        //         ]
-        //     ],
-        //     'JATIM 2' => [
-        //         0 => [
-        //             'AREA' => 'MALANG',
-        //             'TGT_TRX_BLN' => '1500',
-        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-        //         ]
-        //     ]
-        // );
         set_time_limit(360);
 
         $rOs = Cronjob::queryGetAktTrxAPO($yearReq);
 
         // dd($rOs);die;
 
-        app(ReportRepeatOrder::class)->gen_akt_trx_apo($rOs);
+        app(ReportAktivitasTRX::class)->gen_akt_trx_apo($rOs);
     }
     public function Testing(ReportQuery $reportQuery)
     {
