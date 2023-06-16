@@ -976,7 +976,6 @@ class Cronjob extends Model
         }
         return $rOs;
     }
-
     public static function getreg($year, $month)
     {
         $areas = DB::select("
@@ -1155,6 +1154,164 @@ class Cronjob extends Model
                 GROUP BY s.NAME_SHOP
             ");
         }
+        return $rOs;
+    }
+
+    public static function queryGetAktTrxAPO($year)
+    {
+        $areas = DB::select("
+            SELECT
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            FROM
+                `md_regional` mr
+            JOIN
+                `md_area` ma ON ma.ID_REGIONAL = mr.ID_REGIONAL
+            GROUP BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            ORDER BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA ASC
+        ");
+
+        $rOs = [];
+        $months = range(1, 12);
+        $selectedYear = $year;
+
+        foreach ($areas as $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) {
+                $rOs[$area->NAME_REGIONAL] = [];
+            }
+
+            $trxCounts = DB::select("
+                SELECT
+                    YEAR(t.DATE_TRANS) AS Year,
+                    MONTH(t.DATE_TRANS) AS Month,
+                    COUNT(t.ID_TRANS) AS TransactionCount
+                FROM
+                    `transaction` t
+                WHERE
+                    t.AREA_TRANS = :areaName
+                    AND YEAR(t.DATE_TRANS) = :selectedYear
+                GROUP BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+                ORDER BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+            ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear]);
+
+            $trx = [];
+            $tgtTrxBln = 1500;
+            $tgtvsArr = [];
+
+            foreach ($months as $month) {
+                $found = false;
+
+                foreach ($trxCounts as $count) {
+                    if ($count->Month == $month) {
+                        $trx[] = $count->TransactionCount;
+                        $tgtvs = round(($count->TransactionCount / $tgtTrxBln) * 100, 2);
+                        $tgtvsArr[] = $tgtvs;
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $trx[] = 0;
+                    $tgtvsArr[] = 0;
+                }
+            }
+
+            $rOs[$area->NAME_REGIONAL][] = [
+                'AREA' => $area->NAME_AREA,
+                'TGT_TRX_BLN' => '1500',
+                'TRX' => $trx,
+                'TGTVS' => $tgtvsArr,
+            ];
+        }
+
+        return $rOs;
+    }
+
+    public static function queryROVSTEST($year)
+    {
+        $areas = DB::select("
+            SELECT
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            FROM
+                `md_regional` mr
+            JOIN
+                `md_area` ma ON ma.ID_REGIONAL = mr.ID_REGIONAL
+            GROUP BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            ORDER BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA ASC
+        ");
+
+        $rOs = [];
+        $months = range(1, 12);
+        $selectedYear = $year;
+
+        foreach ($areas as $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) {
+                $rOs[$area->NAME_REGIONAL] = [];
+            }
+
+            $trxCounts = DB::select("
+                SELECT
+                    YEAR(t.DATE_TRANS) AS Year,
+                    MONTH(t.DATE_TRANS) AS Month,
+                    COUNT(t.ID_TRANS) AS TransactionCount
+                FROM
+                    `transaction` t
+                WHERE
+                    t.AREA_TRANS = :areaName
+                    AND YEAR(t.DATE_TRANS) = :selectedYear
+                GROUP BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+                ORDER BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+            ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear]);
+
+            $trx = [];
+            $tgtTrxBln = 1500;
+            $tgtvsArr = [];
+
+            foreach ($months as $month) {
+                $found = false;
+
+                foreach ($trxCounts as $count) {
+                    if ($count->Month == $month) {
+                        $trx[] = $count->TransactionCount;
+                        $tgtvs = round(($count->TransactionCount / $tgtTrxBln) * 100, 2);
+                        $tgtvsArr[] = $tgtvs;
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $trx[] = 0;
+                    $tgtvsArr[] = 0;
+                }
+            }
+
+            $rOs[$area->NAME_REGIONAL][] = [
+                'AREA' => $area->NAME_AREA,
+                'TGT_TRX_BLN' => '1500',
+                'TRX' => $trx,
+                'TGTVS' => $tgtvsArr,
+            ];
+        }
+
         return $rOs;
     }
 
