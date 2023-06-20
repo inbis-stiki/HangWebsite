@@ -623,49 +623,68 @@ class CronjobController extends Controller
         );
         app(ReportRepeatOrder::class)->gen_ro_test($rOs);
     }
-    public function genPerformanceNONUST($yearReq)
+    public function genPerformanceNONUST(Request $req)
     {
-        $year = date_format(date_create($yearReq), 'Y');
-        $rOs = array(
-            'JATIM 1' => [
-                0 => [
-                    'AREA' => 'SURABAYA 1',
-                    'TOT_NONUST1' => 80,
-                    'TOT_NONUST2' => 120,
-                    'TOT_NONUST3' => 120,
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 20
-                ],
-                1 => [
-                    'AREA' => 'SURABAYA 2',
-                    'TOT_NONUST1' => 80,
-                    'TOT_NONUST2' => 120,
-                    'TOT_NONUST3' => 120,
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 20
-                ]
-            ],
-            'JATIM 2' => [
-                0 => [
-                    'AREA' => 'MALANG 1',
-                    'TOT_NONUST1' => 45,
-                    'TOT_NONUST2' => 76,
-                    'TOT_NONUST3' => 120,
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 11
-                ],
-                1 => [
-                    'AREA' => 'MALANG 2',
-                    'TOT_NONUST1' => 34,
-                    'TOT_NONUST2' => 700,
-                    'TOT_NONUST3' => 120,
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 40
-                ]
-            ],
-        );
+        set_time_limit(360);
+        // $year = date_format(date_create($yearReq), 'Y');
+        // $rOs = array(
+        //     'JATIM 1' => [
+        //         0 => [
+        //             'AREA' => 'SURABAYA 1',
+        //             'TOT_NONUST1' => 80,
+        //             'TOT_NONUST2' => 120,
+        //             'TOT_NONUST3' => 120,
+        //             'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'TOTAL_RT' => 20
+        //         ],
+        //         1 => [
+        //             'AREA' => 'SURABAYA 2',
+        //             'TOT_NONUST1' => 80,
+        //             'TOT_NONUST2' => 120,
+        //             'TOT_NONUST3' => 120,
+        //             'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'TOTAL_RT' => 20
+        //         ]
+        //     ],
+        //     'JATIM 2' => [
+        //         0 => [
+        //             'AREA' => 'MALANG 1',
+        //             'TOT_NONUST1' => 45,
+        //             'TOT_NONUST2' => 76,
+        //             'TOT_NONUST3' => 120,
+        //             'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'TOTAL_RT' => 11
+        //         ],
+        //         1 => [
+        //             'AREA' => 'MALANG 2',
+        //             'TOT_NONUST1' => 34,
+        //             'TOT_NONUST2' => 700,
+        //             'TOT_NONUST3' => 120,
+        //             'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'TOTAL_RT' => 40
+        //         ]
+        //     ],
+        // );
 
-        app(ReportPerformance::class)->gen_performance_nonust($rOs, $year);
+        $dateStart = explode('-', $_GET['dateStart']);
+        $year = ltrim($dateStart[0], '0');
+
+        $id_pc =  $req->input('category');
+
+        $rOs = Cronjob::queryPerformance($year, $id_pc);
+
+        dd($rOs);die;
+
+        if ($id_pc == '2') {
+            app(ReportPerformance::class)->gen_performance_nonust($rOs, $year);
+        }elseif ($id_pc == '17') {
+            app(ReportPerformance::class)->gen_performance_geprek($rOs, $year);
+        }elseif ($id_pc == '16') {
+            app(ReportPerformance::class)->gen_performance_rendang($rOs, $year);
+        }elseif ($id_pc == '12') {
+            app(ReportPerformance::class)->gen_performance_ust($rOs, $year);
+        }
+
     }
     public function genPerformanceGEPREK($yearReq)
     {
