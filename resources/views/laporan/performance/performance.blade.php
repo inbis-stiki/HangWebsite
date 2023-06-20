@@ -47,7 +47,7 @@
             <div class="col-12" style="margin-bottom: 5px;">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Cetak Report Toko</h4>
+                        <h4 class="card-title">Cetak Laporan Performance</h4>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -60,7 +60,7 @@
                         </div>
                         <div class="row mt-4">
                             <div class="col-md-6" id="date-start">
-                                <label for="start_month">Date Start:</label>
+                                <label for="start_month">Tahun:</label>
                                 <input type="year" class="form-control date-picker-start" name="dateStart" required>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
             var dateStart = $("input[name='dateStart']").val();
             var category = $("#category").find('option:selected').val();
 
-            var url = '{{ url("cronjob/gen-performance-nonust") }}?dateStart=' + dateStart + '&category=' + category;
+            var url = '{{ url("cronjob/gen-performance") }}?dateStart=' + dateStart + '&category=' + category;
 
             window.location.href = url;
         });
@@ -100,12 +100,16 @@
         selectYears: true,
         buttonClear: false
     })
-
 </script>
 <style>
     .picker__select--month {
         font-size: 20px;
         height: 50px;
+        display: none;
+    }
+
+    .picker__month {
+        display: none;
     }
 
     .picker__select--year {
