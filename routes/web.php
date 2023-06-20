@@ -48,10 +48,10 @@ Route::get('cronjob/gen-ro-shop/{yearMonth}', 'CronjobController@genROSHOP');
 Route::get('cronjob/gen-ro-shop-range', 'CronjobController@genROSHOPbyRange');
 Route::get('cronjob/gen-ro-rpo-s/{yearMonth}', 'CronjobController@genRORPOS');
 
-Route::get('cronjob/gen-performance-nonust/{year}', 'CronjobController@genPerformanceNONUST');
-Route::get('cronjob/gen-performance-geprek/{year}', 'CronjobController@genPerformanceGEPREK');
-Route::get('cronjob/gen-performance-rendang/{year}', 'CronjobController@genPerformanceRENDANG');
-Route::get('cronjob/gen-performance-ust/{year}', 'CronjobController@genPerformanceUST');
+Route::get('cronjob/gen-performance-nonust', 'CronjobController@genPerformanceNONUST');
+Route::get('cronjob/gen-performance-geprek', 'CronjobController@genPerformanceGEPREK');
+Route::get('cronjob/gen-performance-rendang', 'CronjobController@genPerformanceRENDANG');
+Route::get('cronjob/gen-performance-ust', 'CronjobController@genPerformanceUST');
 Route::get('cronjob/gen-performance-rekap/{year}', 'CronjobController@genPerformanceREKAP');
 
 Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
@@ -194,4 +194,5 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('laporan/lpr-trend', 'ReportTrendController@index');
     Route::get('laporan/lpr-repeat', 'ReportRepeatController@index');
     Route::get('laporan/lpr-transaction', 'ReportTransactionController@index');
+    Route::get('laporan/lpr-performance', 'ReportPerformanceController@index');
 });
