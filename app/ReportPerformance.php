@@ -66,9 +66,9 @@ class ReportPerformance extends Model
             $tot_vs_tgt = 0;
             foreach ($item as $itemArea) {
                 // dd($itemArea);
-                $ObjSheet->setCellValue('B' . $rowIsi1, $itemArea['TOT_NONUST1'])->getStyle('B' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
-                $ObjSheet->setCellValue('C' . $rowIsi1, $itemArea['TOT_NONUST2'])->getStyle('C' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
-                $ObjSheet->setCellValue('D' . $rowIsi1, $itemArea['TOT_NONUST3'])->getStyle('D' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue('B' . $rowIsi1, $itemArea['TOT_1'])->getStyle('B' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue('C' . $rowIsi1, $itemArea['TOT_2'])->getStyle('C' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue('D' . $rowIsi1, $itemArea['TOT_3'])->getStyle('D' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
                 $ObjSheet->setCellValue('E' . $rowIsi1, $itemArea['AREA'])->getStyle('E' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setWrapText(true);
                 $ObjSheet->setCellValue('F' . $rowIsi1, 300)->getStyle('F' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
 
@@ -338,8 +338,8 @@ class ReportPerformance extends Model
             $tot_vs_tgt = 0;
             foreach ($item as $itemArea) {
                 // dd($itemArea);
-                $ObjSheet->setCellValue('B' . $rowIsi1, $itemArea['TOT_NONUST1'])->getStyle('B' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
-                $ObjSheet->setCellValue('C' . $rowIsi1, $itemArea['TOT_NONUST2'])->getStyle('C' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue('B' . $rowIsi1, $itemArea['TOT_1'])->getStyle('B' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
+                $ObjSheet->setCellValue('C' . $rowIsi1, $itemArea['TOT_2'])->getStyle('C' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
                 $ObjSheet->setCellValue('D' . $rowIsi1, $itemArea['AREA'])->getStyle('D' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setWrapText(true);
                 $ObjSheet->setCellValue('E' . $rowIsi1, 24)->getStyle('E' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
 

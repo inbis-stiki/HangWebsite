@@ -48,7 +48,7 @@ Route::get('cronjob/gen-ro-shop/{yearMonth}', 'CronjobController@genROSHOP');
 Route::get('cronjob/gen-ro-shop-range', 'CronjobController@genROSHOPbyRange');
 Route::get('cronjob/gen-ro-rpo-s/{yearMonth}', 'CronjobController@genRORPOS');
 
-Route::get('cronjob/gen-performance-nonust', 'CronjobController@genPerformanceNONUST');
+Route::get('cronjob/gen-performance', 'CronjobController@genPerformance');
 Route::get('cronjob/gen-performance-geprek', 'CronjobController@genPerformanceGEPREK');
 Route::get('cronjob/gen-performance-rendang', 'CronjobController@genPerformanceRENDANG');
 Route::get('cronjob/gen-performance-ust', 'CronjobController@genPerformanceUST');
