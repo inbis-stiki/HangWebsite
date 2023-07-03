@@ -1377,7 +1377,7 @@ class Cronjob extends Model
                 $rOs[$area->NAME_REGIONAL] = [];
             }
 
-            $trxCounts = DB::select("
+            $CallCount = DB::select("
                 SELECT
                     YEAR(t.DATE_TRANS) AS Year,
                     MONTH(t.DATE_TRANS) AS Month,
@@ -1387,6 +1387,7 @@ class Cronjob extends Model
                 WHERE
                     t.AREA_TRANS = :areaName
                     AND YEAR(t.DATE_TRANS) = :selectedYear
+                    AND t.ISTRANS_TRANS = 1
                 GROUP BY
                     YEAR(t.DATE_TRANS),
                     MONTH(t.DATE_TRANS)
@@ -1395,34 +1396,82 @@ class Cronjob extends Model
                     MONTH(t.DATE_TRANS)
             ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear]);
 
-            $trx = [];
-            $tgtTrxBln = 1500;
-            $tgtvsArr = [];
+            $RepeatCount = DB::select("
+                SELECT
+                    YEAR(t.DATE_TRANS) AS Year,
+                    MONTH(t.DATE_TRANS) AS Month,
+                    COUNT(t.ID_SHOP) AS TOTAL_TEST
+                FROM
+                    `transaction` t
+                INNER JOIN (
+                    SELECT
+                        ID_SHOP
+                    FROM
+                        `transaction`
+                    WHERE
+                        YEAR(DATE_TRANS) = '$selectedYear'
+                    GROUP BY
+                        ID_SHOP
+                    HAVING
+                        COUNT(*) BETWEEN 2 AND 100
+                        ) t2 ON
+                    t2.ID_SHOP = t.ID_SHOP
+                LEFT JOIN md_shop ms ON
+                    ms.ID_SHOP = t.ID_SHOP
+                INNER JOIN md_district md ON
+                    md.ID_DISTRICT = ms.ID_DISTRICT
+                INNER JOIN md_area ma ON
+                    ma.ID_AREA = md.ID_AREA
+                INNER JOIN md_regional mr ON
+                    mr.ID_REGIONAL = ma.ID_REGIONAL
+                WHERE
+                    ms.ID_SHOP IS NOT NULL
+                    AND t.AREA_TRANS = '$area->NAME_AREA'
+                    AND YEAR(t.DATE_TRANS) = '$selectedYear'
+                GROUP BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+                ORDER BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+            ");
+
+            $rtcall = [];
+            $rtro = [];
 
             foreach ($months as $month) {
-                $found = false;
+                $foundCallCount = false;
+                $foundRepeatCount = false; 
 
-                foreach ($trxCounts as $count) {
+                foreach ($CallCount as $count) {
                     if ($count->Month == $month) {
-                        $trx[] = $count->TransactionCount;
-                        $tgtvs = round(($count->TransactionCount / $tgtTrxBln) * 100, 2);
-                        $tgtvsArr[] = $tgtvs;
-                        $found = true;
+                        $rtcall[] = $count->TransactionCount;
+                        $foundCallCount = true;
                         break;
                     }
                 }
 
-                if (!$found) {
-                    $trx[] = 0;
-                    $tgtvsArr[] = 0;
+                foreach ($RepeatCount as $rcount) {
+                    if ($rcount->Month == $month) {
+                        $rtro[] = $rcount->TOTAL_TEST;
+                        $foundRepeatCount = true;
+                        break;
+                    }
+                }
+
+                if (!$foundCallCount) {
+                    $rtcall[] = 0;
+                }
+            
+                if (!$foundRepeatCount) {
+                    $rtro[] = 0;
                 }
             }
 
             $rOs[$area->NAME_REGIONAL][] = [
                 'AREA' => $area->NAME_AREA,
-                'TGT_TRX_BLN' => '1500',
-                'TRX' => $trx,
-                'TGTVS' => $tgtvsArr,
+                'RTCALL' => $rtcall,
+                'RTRO' => $rtro,
             ];
         }
 
