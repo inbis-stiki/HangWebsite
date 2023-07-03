@@ -189,6 +189,25 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-12" style="margin-bottom: 5px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Cetak Repeat vs Call</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-4">
+                            <div class="col-md-6" id="date-start2">
+                                <label for="start_month">Tahun:</label>
+                                <input type="year" class="form-control date-picker-start2" name="yearStart" required>
+                            </div>
+                        </div>
+                        <br></br>
+                        <button id="generate_report2" class="btn btn-primary">Generate Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!--**********************************
@@ -208,7 +227,25 @@
 
             window.location.href = url;
         });
+
+        $('#generate_report2').on('click', function() {
+            var yearStart = $("input[name='yearStart']").val();
+            var url = '{{ url("cronjob/gen-ro-vs-test") }}?yearStart=' + yearStart;
+
+            window.location.href = url;
+        });
     });
+
+    $('.date-picker-start2').pickadate({
+        format: 'yyyy',
+        onClose: function() {
+            var year = $('#date-start2').find('.picker__select--year').val()
+            var date = [year].join("-")
+            $('.date-picker-start2').val(date)
+        },
+        selectYears: true,
+        buttonClear: false
+    })
 
     $('.date-picker-start').pickadate({
         format: 'yyyy-mm',

@@ -862,29 +862,38 @@ class CronjobController extends Controller
 
         app(ReportPerformance::class)->gen_performance_rekap($rOs, $year);
     }
-    public function genROVSTEST()
+    public function genROVSTEST(Request $req)
     {
-        $rOs = array(
-            'JATIM 1' => [
-                0 => [
-                    'AREA' => 'SURABAYA 1',
-                    'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-                ],
-                1 => [
-                    'AREA' => 'SURABAYA 2',
-                    'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-                ]
-            ],
-            'JATIM 2' => [
-                0 => [
-                    'AREA' => 'MALANG',
-                    'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-                ]
-            ]
-        );
+        // $rOs = array(
+        //     'JATIM 1' => [
+        //         0 => [
+        //             'AREA' => 'SURABAYA 1',
+        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+        //         ],
+        //         1 => [
+        //             'AREA' => 'SURABAYA 2',
+        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+        //         ]
+        //     ],
+        //     'JATIM 2' => [
+        //         0 => [
+        //             'AREA' => 'MALANG',
+        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+        //         ]
+        //     ]
+        // );
+
+        set_time_limit(600);
+
+        $dateStart = explode('-', $_GET['yearStart']);
+        $year = ltrim($dateStart[0], '0');
+
+        $rOs = Cronjob::queryROVSTEST($year);
+        // dd($rOs);
+
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
     }
     public function genAktTRXAPO($yearReq)
