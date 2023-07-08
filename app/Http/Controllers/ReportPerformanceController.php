@@ -9,7 +9,7 @@ class ReportPerformanceController extends Controller
 {
     public function index()
     {
-        $data['title']          = "";
+        $data['title']          = "Laporan";
         $data['sidebar']        = "performance";
         $data['sidebar2']       = "";
 

@@ -452,13 +452,13 @@ class ReportPerformance extends Model
                             $ObjSheet->setCellValue($detItem . $rowIsi1, $detData[$key])->getStyle($detItem . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
                         }
                     }
-                    $rt_total = $ObjSheet->setCellValue('T' . $rowIsi1, '=IFERROR(AVERAGE(H' . $rowIsi1 . ':S' . $rowIsi1 . '),0)')->getStyle('T' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_total = $ObjSheet->setCellValue('T' . $rowIsi1, '=AVERAGE(H' . $rowIsi1 . ':S' . $rowIsi1 . ')')->getStyle('T' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
                     $rt_total->getAlignment()->setHorizontal('center');
-                    $rt_total->getNumberFormat()->setFormatCode('#.##');
+                    $rt_total->getNumberFormat()->setFormatCode('0.00');
 
-                    $rt_totalvs = $ObjSheet->setCellValue('U' . $rowIsi1, '=IFERROR(T' . $rowIsi1 . '/G' . $rowIsi1 . ',0)')->getStyle('U' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_totalvs = $ObjSheet->setCellValue('U' . $rowIsi1, '=T' . $rowIsi1 . '/G' . $rowIsi1)->getStyle('U' . $rowIsi1)->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
                     $rt_totalvs->getAlignment()->setHorizontal('center');
-                    $rt_totalvs->getNumberFormat()->setFormatCode('#.##%');
+                    $rt_totalvs->getNumberFormat()->setFormatCode('0.00%');
                 }
 
                 foreach ($itemArea['UGP'] as $key => $detData) {
@@ -473,13 +473,13 @@ class ReportPerformance extends Model
                             $ObjSheet->setCellValue($detItem . ($rowIsi1 + 1), $detData[$key])->getStyle($detItem . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
                         }
                     }
-                    $rt_total = $ObjSheet->setCellValue('T' . ($rowIsi1 + 1), '=IFERROR(AVERAGE(H' . ($rowIsi1 + 1) . ':S' . ($rowIsi1 + 1) . '),0)')->getStyle('T' . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_total = $ObjSheet->setCellValue('T' . ($rowIsi1 + 1), '=AVERAGE(H' . ($rowIsi1 + 1) . ':S' . ($rowIsi1 + 1) . ')')->getStyle('T' . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
                     $rt_total->getAlignment()->setHorizontal('center');
                     $rt_total->getNumberFormat()->setFormatCode('0.00');
 
-                    $rt_totalvs = $ObjSheet->setCellValue('U' . ($rowIsi1 + 1), '=IFERROR(T' . ($rowIsi1 + 1) . '/G' . ($rowIsi1 + 1) . ',0)')->getStyle('U' . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_totalvs = $ObjSheet->setCellValue('U' . ($rowIsi1 + 1), '=T' . ($rowIsi1 + 1) . '/G' . ($rowIsi1 + 1))->getStyle('U' . ($rowIsi1 + 1))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
                     $rt_totalvs->getAlignment()->setHorizontal('center');
-                    $rt_totalvs->getNumberFormat()->setFormatCode('#.##%');
+                    $rt_totalvs->getNumberFormat()->setFormatCode('0.00%');
                 }
 
                 foreach ($itemArea['URD'] as $key => $detData) {
@@ -494,13 +494,13 @@ class ReportPerformance extends Model
                             $ObjSheet->setCellValue($detItem . ($rowIsi1 + 2), $detData[$key])->getStyle($detItem . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
                         }
                     }
-                    $rt_total = $ObjSheet->setCellValue('T' . ($rowIsi1 + 2), '=IFERROR(AVERAGE(H' . ($rowIsi1 + 2) . ':S' . ($rowIsi1 + 2) . '),0)')->getStyle('T' . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_total = $ObjSheet->setCellValue('T' . ($rowIsi1 + 2), '=AVERAGE(H' . ($rowIsi1 + 2) . ':S' . ($rowIsi1 + 2) . ')')->getStyle('T' . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
                     $rt_total->getAlignment()->setHorizontal('center');
                     $rt_total->getNumberFormat()->setFormatCode('0.00');
 
-                    $rt_totalvs = $ObjSheet->setCellValue('U' . ($rowIsi1 + 2), '=IFERROR(T' . ($rowIsi1 + 2) . '/G' . ($rowIsi1 + 2) . ',0)')->getStyle('U' . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_totalvs = $ObjSheet->setCellValue('U' . ($rowIsi1 + 2), '=T' . ($rowIsi1 + 2) . '/G' . ($rowIsi1 + 2))->getStyle('U' . ($rowIsi1 + 2))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
                     $rt_totalvs->getAlignment()->setHorizontal('center');
-                    $rt_totalvs->getNumberFormat()->setFormatCode('#.##%');
+                    $rt_totalvs->getNumberFormat()->setFormatCode('0.00%');
                 }
 
                 foreach ($itemArea['UST'] as $key => $detData) {
@@ -515,13 +515,13 @@ class ReportPerformance extends Model
                             $ObjSheet->setCellValue($detItem . ($rowIsi1 + 3), $detData[$key])->getStyle($detItem . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'))->getAlignment()->setHorizontal('center');
                         }
                     }
-                    $rt_total = $ObjSheet->setCellValue('T' . ($rowIsi1 + 3), '=IFERROR(AVERAGE(H' . ($rowIsi1 + 3) . ':S' . ($rowIsi1 + 3) . '),0)')->getStyle('T' . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_total = $ObjSheet->setCellValue('T' . ($rowIsi1 + 3), '=AVERAGE(H' . ($rowIsi1 + 3) . ':S' . ($rowIsi1 + 3) . ')')->getStyle('T' . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
                     $rt_total->getAlignment()->setHorizontal('center');
                     $rt_total->getNumberFormat()->setFormatCode('0.00');
 
-                    $rt_totalvs = $ObjSheet->setCellValue('U' . ($rowIsi1 + 3), '=IFERROR(T' . ($rowIsi1 + 3) . '/G' . ($rowIsi1 + 3) . ',0)')->getStyle('U' . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
+                    $rt_totalvs = $ObjSheet->setCellValue('U' . ($rowIsi1 + 3), '=T' . ($rowIsi1 + 3) . '/G' . ($rowIsi1 + 3))->getStyle('U' . ($rowIsi1 + 3))->applyFromArray($this->styling_default_template('00000000', 'FF000000'));
                     $rt_totalvs->getAlignment()->setHorizontal('center');
-                    $rt_totalvs->getNumberFormat()->setFormatCode('#.##%');
+                    $rt_totalvs->getNumberFormat()->setFormatCode('0.00%');
                 }
 
                 $rowIsi1 += $gap;
@@ -583,16 +583,16 @@ class ReportPerformance extends Model
 
             $rt_total_nonust = $ObjSheet->setCellValue('U' . $rowIsi1, '=SUM(' . implode(',', array_map(function ($item) {return 'U' . $item;}, $nonust)) . ')')->getStyle('U' . $rowIsi1)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
             $rt_total_nonust->getAlignment()->setHorizontal('center');
-            $rt_total_nonust->getNumberFormat()->setFormatCode('#.##%');            
+            $rt_total_nonust->getNumberFormat()->setFormatCode('0.00%');            
             $rt_total_ugp = $ObjSheet->setCellValue('U' . ($rowIsi1 + 1), '=SUM(' . implode(',', array_map(function ($item) {return 'U' . $item;}, $ugp)) . ')')->getStyle('U' . ($rowIsi1 + 1))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
             $rt_total_ugp->getAlignment()->setHorizontal('center');
-            $rt_total_ugp->getNumberFormat()->setFormatCode('#.##%');
+            $rt_total_ugp->getNumberFormat()->setFormatCode('0.00%');
             $rt_total_urd = $ObjSheet->setCellValue('U' . ($rowIsi1 + 2), '=SUM(' . implode(',', array_map(function ($item) {return 'U' . $item;}, $urd)) . ')')->getStyle('U' . ($rowIsi1 + 2))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
             $rt_total_urd->getAlignment()->setHorizontal('center');
-            $rt_total_urd->getNumberFormat()->setFormatCode('#.##%');
+            $rt_total_urd->getNumberFormat()->setFormatCode('0.00%');
             $rt_total_ust = $ObjSheet->setCellValue('U' . ($rowIsi1 + 3), '=SUM(' . implode(',', array_map(function ($item) {return 'U' . $item;}, $ust)) . ')')->getStyle('U' . ($rowIsi1 + 3))->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
             $rt_total_ust->getAlignment()->setHorizontal('center');
-            $rt_total_ust->getNumberFormat()->setFormatCode('#.##%');
+            $rt_total_ust->getNumberFormat()->setFormatCode('0.00%');
         }
 
         $spreadsheet->removeSheetByIndex(0);
