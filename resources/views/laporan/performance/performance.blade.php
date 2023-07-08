@@ -42,7 +42,7 @@
         </div>
         @endif
 
-        <!-- Add Order -->
+        <!-- Add Reporting Performance by Category -->
         <div class="row">
             <div class="col-12" style="margin-bottom: 5px;">
                 <div class="card">
@@ -59,13 +59,34 @@
                             </div>
                         </div>
                         <div class="row mt-4">
-                            <div class="col-md-6" id="date-start">
+                            <div class="col-md-12" id="date-start">
                                 <label for="start_month">Tahun:</label>
                                 <input type="year" class="form-control date-picker-start" name="dateStart" required>
                             </div>
                         </div>
                         <br></br>
                         <button id="generate_report" class="btn btn-primary">Generate Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Reporting Recap Performance -->
+        <div class="row">
+            <div class="col-12" style="margin-bottom: 5px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Cetak Laporan Rekap Performance</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mt-4">
+                            <div class="col-md-12" id="date-start">
+                                <label for="start_month">Tahun:</label>
+                                <input type="year" class="form-control date-picker-start" name="dateStart" required>
+                            </div>
+                        </div>
+                        <br></br>
+                        <button id="generate_report_rekap" class="btn btn-primary">Generate Report</button>
                     </div>
                 </div>
             </div>
@@ -85,6 +106,14 @@
             var category = $("#category").find('option:selected').val();
 
             var url = '{{ url("cronjob/gen-performance") }}?dateStart=' + dateStart + '&category=' + category;
+
+            window.location.href = url;
+        });
+
+        $('#generate_report_rekap').on('click', function() {
+            var year = $("input[name='dateStart']").val();
+
+            var url = '{{ url("cronjob/gen-performance-rekap") }}/' + year;
 
             window.location.href = url;
         });

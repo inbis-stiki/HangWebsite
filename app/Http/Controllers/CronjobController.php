@@ -645,116 +645,10 @@ class CronjobController extends Controller
         }
 
     }
-    public function genPerformanceGEPREK($yearReq)
-    {
-        $year = date_format(date_create($yearReq), 'Y');
-        $rOs = array(
-            'JATIM 1' => [
-                0 => [
-                    'AREA' => 'SURABAYA 1',
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 20
-                ],
-                1 => [
-                    'AREA' => 'SURABAYA 2',
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 20
-                ]
-            ],
-            'JATIM 2' => [
-                0 => [
-                    'AREA' => 'MALANG 1',
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 11
-                ],
-                1 => [
-                    'AREA' => 'MALANG 2',
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 40
-                ]
-            ],
-        );
-
-        app(ReportPerformance::class)->gen_performance_geprek($rOs, $year);
-    }
-    public function genPerformanceRENDANG($yearReq)
-    {
-        $year = date_format(date_create($yearReq), 'Y');
-        $rOs = array(
-            'JATIM 1' => [
-                0 => [
-                    'AREA' => 'SURABAYA 1',
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 20
-                ],
-                1 => [
-                    'AREA' => 'SURABAYA 2',
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 20
-                ]
-            ],
-            'JATIM 2' => [
-                0 => [
-                    'AREA' => 'MALANG 1',
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 11
-                ],
-                1 => [
-                    'AREA' => 'MALANG 2',
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 40
-                ]
-            ],
-        );
-
-        app(ReportPerformance::class)->gen_performance_rendang($rOs, $year);
-    }
-    public function genPerformanceUST($yearReq)
-    {
-        $year = date_format(date_create($yearReq), 'Y');
-        $rOs = array(
-            'JATIM 1' => [
-                0 => [
-                    'AREA' => 'SURABAYA 1',
-                    'TOT_NONUST1' => 80,
-                    'TOT_NONUST2' => 120,
-                    'TOT_NONUST3' => 120,
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 20
-                ],
-                1 => [
-                    'AREA' => 'SURABAYA 2',
-                    'TOT_NONUST1' => 80,
-                    'TOT_NONUST2' => 120,
-                    'TOT_NONUST3' => 120,
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 20
-                ]
-            ],
-            'JATIM 2' => [
-                0 => [
-                    'AREA' => 'MALANG 1',
-                    'TOT_NONUST1' => 45,
-                    'TOT_NONUST2' => 76,
-                    'TOT_NONUST3' => 120,
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 11
-                ],
-                1 => [
-                    'AREA' => 'MALANG 2',
-                    'TOT_NONUST1' => 34,
-                    'TOT_NONUST2' => 700,
-                    'TOT_NONUST3' => 120,
-                    'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'TOTAL_RT' => 40
-                ]
-            ],
-        );
-
-        app(ReportPerformance::class)->gen_performance_ust($rOs, $year);
-    }
     public function genPerformanceREKAP($yearReq)
     {
+        set_time_limit(360);
+
         $year = date_format(date_create($yearReq), 'Y');
         $rOs = array(
             'JATIM 1' => [
@@ -858,7 +752,7 @@ class CronjobController extends Controller
             ],
         );
 
-        // dd($rOs);
+        $rOs = Cronjob::queryPerformanceAll($year);
 
         app(ReportPerformance::class)->gen_performance_rekap($rOs, $year);
     }

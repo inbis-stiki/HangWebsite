@@ -56,6 +56,7 @@ class Cronjob extends Model
                 AND u.deleted_at IS NULL
         ");
     }
+
     public static function queryGetSmyTransLocation($year, $month)
     {
         return DB::select("
@@ -149,6 +150,7 @@ class Cronjob extends Model
             GROUP BY t.AREA_TRANS 
         ");
     }
+
     public static function queryGetRankLocation($year, $month, $area)
     {
         // SET WEIGHT
@@ -375,6 +377,7 @@ class Cronjob extends Model
 
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
+
     public static function queryGetRankUser($idRegional, $idRole, $year, $month)
     {
         // SET WEIGHT
@@ -505,6 +508,7 @@ class Cronjob extends Model
 
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
+
     public static function queryGetTrend($year, $area)
     {
         if ($area == "Regional") {
@@ -577,6 +581,7 @@ class Cronjob extends Model
 
         return $reports;
     }
+
     public static function queryGetTransactionDaily($querySumProd, $date, $regional)
     {
         return DB::select("
@@ -617,6 +622,7 @@ class Cronjob extends Model
                 u.NAME_USER ASC;
 	    ");
     }
+
     public static function queryGetRepeatOrder($year, $month)
     {
         $areas = DB::select("
@@ -976,6 +982,7 @@ class Cronjob extends Model
         }
         return $rOs;
     }
+
     public static function getreg($year, $month)
     {
         $areas = DB::select("
@@ -1286,7 +1293,7 @@ class Cronjob extends Model
             ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear, 'selectedCat' => $id_pc]);
 
             $newCountTrx = [];
-            for ($i=0; $i <= 2; $i++) { 
+            for ($i = 0; $i <= 2; $i++) {
                 $cnvrtYear = $selectedYear - $i;
                 $trxCountsTot2 = DB::selectOne("
                     SELECT
@@ -1344,6 +1351,147 @@ class Cronjob extends Model
                 'TGT_TRX_BLN' => '1500',
                 'MONTH' => $trx,
                 'TOTAL_RT' => array_sum($trx)
+            ];
+        }
+
+        return $rOs;
+    }
+
+    public static function queryPerformanceAll($year)
+    {
+        $areas = DB::select("
+            SELECT
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            FROM
+                `md_regional` mr
+            JOIN
+                `md_area` ma ON
+                ma.ID_REGIONAL = mr.ID_REGIONAL
+            WHERE 
+                mr.NAME_REGIONAL IS NOT NULL 
+                AND
+                ma.NAME_AREA IS NOT NULL
+            GROUP BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            ORDER BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA ASC
+        ");
+
+        $rOs = [];
+
+        // Fetch the real counts for each year and area
+        $realCounts = DB::select("
+            SELECT
+                YEAR(t.DATE_TRANS) AS YEAR,
+                t.AREA_TRANS,
+                SUM(td.QTY_TD) AS RealCount
+            FROM
+                `transaction` t
+            JOIN `transaction_detail` td ON
+                td.ID_TRANS = t.ID_TRANS
+            JOIN `md_product` mp ON
+                mp.ID_PRODUCT = td.ID_PRODUCT
+            JOIN `md_product_category` mpc ON
+                mpc.ID_PC = mp.ID_PC
+            GROUP BY
+                YEAR(t.DATE_TRANS),
+                t.AREA_TRANS
+        ");
+
+        // Create an array to store real counts by year and area
+        $realCountsByYearArea = [];
+        foreach ($realCounts as $realCount) {
+            $realCountsByYearArea[$realCount->YEAR][$realCount->AREA_TRANS] = $realCount->RealCount;
+        }
+
+        foreach ($areas as $key => $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) {
+                $rOs[$area->NAME_REGIONAL] = [];
+            }
+
+            $trans = DB::select("
+                SELECT
+                    t.AREA_TRANS,
+                    mpc.ID_PC,
+                    YEAR(t.DATE_TRANS) AS YEAR,
+                    MONTH(t.DATE_TRANS) AS MONTH,
+                    SUM(td.QTY_TD) AS TransactionCount
+                FROM
+                    `transaction` t
+                JOIN `transaction_detail` td ON
+                    td.ID_TRANS = t.ID_TRANS
+                JOIN `md_product` mp ON
+                    mp.ID_PRODUCT = td.ID_PRODUCT
+                JOIN `md_product_category` mpc ON
+                    mpc.ID_PC = mp.ID_PC
+                WHERE
+                    YEAR(t.DATE_TRANS) = :selectedYear
+                    AND
+                    t.AREA_TRANS = :areaName
+                GROUP BY
+                    t.AREA_TRANS,
+                    mpc.ID_PC,
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+                ORDER BY
+                    mpc.ID_PC ASC,
+                    MONTH ASC
+            ", ['selectedYear' => $year, 'areaName' => $area->NAME_AREA]);
+
+            $trxPerMonthNonUst = array_fill(0, 12, 0);
+            $trxPerMonthGeprek = array_fill(0, 12, 0);
+            $trxPerMonthRendang = array_fill(0, 12, 0);
+            $trxPerMonthUst = array_fill(0, 12, 0);
+
+            foreach ($trans as $keyTrans => $itemTrans) {
+                switch ($itemTrans->ID_PC) {
+                    case 2:
+                        $trxPerMonthNonUst[$itemTrans->MONTH - 1] = $itemTrans->TransactionCount;
+                        break;
+                    case 12:
+                        $trxPerMonthNonUst[$itemTrans->MONTH - 1] = $itemTrans->TransactionCount;
+                        break;
+                    case 16:
+                        $trxPerMonthRendang[$itemTrans->MONTH - 1] = $itemTrans->TransactionCount;
+                        break;
+                    case 17:
+                        $trxPerMonthGeprek[$itemTrans->MONTH - 1] = $itemTrans->TransactionCount;
+                        break;
+                }
+            }
+
+            $RealProduct = [
+                $realCountsByYearArea[$year - 2][$area->NAME_AREA] ?? 0,
+                $realCountsByYearArea[$year - 1][$area->NAME_AREA] ?? 0,
+                $realCountsByYearArea[$year][$area->NAME_AREA] ?? 0,
+            ];
+
+            $NonUstData = [
+                'TOT_REAL' => $RealProduct,
+                'MONTH' => $trxPerMonthNonUst
+            ];
+            $GeprekData = [
+                'TOT_REAL' => $RealProduct,
+                'MONTH' => $trxPerMonthGeprek
+            ];
+            $RendangData = [
+                'TOT_REAL' => $RealProduct,
+                'MONTH' => $trxPerMonthRendang
+            ];
+            $UstData = [
+                'TOT_REAL' => $RealProduct,
+                'MONTH' => $trxPerMonthUst
+            ];
+
+            $rOs[$area->NAME_REGIONAL][] = [
+                'AREA' => $area->NAME_AREA,
+                'NON_UST' => $NonUstData,
+                'UGP' => $GeprekData,
+                'URD' => $RendangData,
+                'UST' => $UstData
             ];
         }
 
@@ -1441,7 +1589,7 @@ class Cronjob extends Model
 
             foreach ($months as $month) {
                 $foundCallCount = false;
-                $foundRepeatCount = false; 
+                $foundRepeatCount = false;
 
                 foreach ($CallCount as $count) {
                     if ($count->Month == $month) {
@@ -1462,7 +1610,7 @@ class Cronjob extends Model
                 if (!$foundCallCount) {
                     $rtcall[] = 0;
                 }
-            
+
                 if (!$foundRepeatCount) {
                     $rtro[] = 0;
                 }
