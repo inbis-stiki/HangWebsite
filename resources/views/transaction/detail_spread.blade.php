@@ -163,6 +163,15 @@
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false" <?= $bg ?>>
                                         <span class="accordion__header--text"><?= $data_spread['NAME_SHOP']; ?></span>
+                                        @if($data_spread['TYPE_SHOP'] == 'Pedagang Sayur')
+                                        <span class="badge badge-success">Pedagang Sayur</span>
+                                        @elseif($data_spread['TYPE_SHOP'] == 'Retail')
+                                        <span class="badge badge-secondary">Retail</span>
+                                        @elseif($data_spread['TYPE_SHOP'] == 'Loss')
+                                        <span class="badge badge-light">Loss</span>
+                                        @elseif($data_spread['TYPE_SHOP'] == 'Permanen')
+                                        <span class="badge badge-danger">Permanen</span>
+                                        @endif
                                         <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_spread['DATE_TRANS']), 'j F Y - H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>

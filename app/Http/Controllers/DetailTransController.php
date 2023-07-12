@@ -24,7 +24,7 @@ class DetailTransController extends Controller
         $data['transDetails']   = array();
 
         $transaction = DB::table('transaction')
-            ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'user.ID_AREA', 'md_shop.ID_SHOP', 'md_shop.DETLOC_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP')
+            ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'user.ID_AREA', 'md_shop.ID_SHOP', 'md_shop.DETLOC_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_shop.TYPE_SHOP')
             ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
             ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
@@ -83,6 +83,7 @@ class DetailTransController extends Controller
                     "LONG_TRANS" => $Item_ts->LONG_SHOP,
                     "DATE_TRANS" => $Item_ts->DATE_TRANS,
                     "NAME_USER" => $Item_ts->NAME_USER,
+                    "TYPE_SHOP" => $Item_ts->TYPE_SHOP,
                     "IMAGE" => $data_image_trans,
                     "TOTAL" => $TOT_PRODUCT,
                     "DETAIL" => $data_ts_detail
