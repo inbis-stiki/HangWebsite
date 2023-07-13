@@ -23,14 +23,64 @@ class DetailTransController extends Controller
         $data['prodCats']       = CategoryProduct::where('deleted_at', null)->get();
         $data['transDetails']   = array();
 
+        // $transaction = DB::table('transaction')
+        //     ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'user.ID_AREA', 'md_shop.ID_SHOP', 'md_shop.DETLOC_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_shop.TYPE_SHOP')
+        //     ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
+        //     ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
+        //     ->where('transaction.DATE_TRANS', 'like', $date . '%')
+        //     ->where('transaction.ID_USER', '=', $id_user)
+        //     ->where('transaction.ID_TYPE', '=', $type)
+        //     // ->where('transaction.ISTRANS_TRANS', 1)
+        //     ->orderBy('transaction.DATE_TRANS', 'DESC')
+        //     ->get();
+
         $transaction = DB::table('transaction')
-            ->select('transaction.ID_TRANS', 'transaction.DATE_TRANS', 'user.ID_USER', 'user.NAME_USER', 'user.ID_AREA', 'md_shop.ID_SHOP', 'md_shop.DETLOC_SHOP', 'md_shop.NAME_SHOP', 'md_shop.LONG_SHOP', 'md_shop.LAT_SHOP', 'md_shop.TYPE_SHOP')
-            ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
-            ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
+            ->select(
+                DB::raw('
+                (
+                    SELECT COUNT(transaction.ID_TRANS) 
+                    FROM transaction 
+                    LEFT JOIN md_shop ms ON ms.ID_SHOP = transaction.ID_SHOP 
+                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Pedagang Sayur" AND transaction.DATE_TRANS LIKE "'.$date.'%"
+                ) AS TOT_PS'),
+                DB::raw('
+                (
+                    SELECT COUNT(transaction.ID_TRANS) 
+                    FROM transaction 
+                    LEFT JOIN md_shop ms ON ms.ID_SHOP = transaction.ID_SHOP 
+                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Retail" AND transaction.DATE_TRANS LIKE "'.$date.'%"
+                ) AS TOT_RETAIL'),
+                DB::raw('
+                (
+                    SELECT COUNT(transaction.ID_TRANS) 
+                    FROM transaction 
+                    LEFT JOIN md_shop ms ON ms.ID_SHOP = transaction.ID_SHOP 
+                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Loss" AND transaction.DATE_TRANS LIKE "'.$date.'%"
+                ) AS TOT_LOSS'),
+                DB::raw('
+                (
+                    SELECT COUNT(transaction.ID_TRANS) 
+                    FROM transaction 
+                    LEFT JOIN md_shop ms ON ms.ID_SHOP = transaction.ID_SHOP 
+                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Permanen" AND transaction.DATE_TRANS LIKE "'.$date.'%"
+                ) AS TOT_PERMA'),
+                'transaction.ID_TRANS',
+                'transaction.DATE_TRANS',
+                'user.ID_USER',
+                'user.NAME_USER',
+                'user.ID_AREA',
+                'md_shop.ID_SHOP',
+                'md_shop.DETLOC_SHOP',
+                'md_shop.NAME_SHOP',
+                'md_shop.LONG_SHOP',
+                'md_shop.LAT_SHOP',
+                'md_shop.TYPE_SHOP'
+            )
+            ->leftJoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
+            ->leftJoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
             ->where('transaction.DATE_TRANS', 'like', $date . '%')
             ->where('transaction.ID_USER', '=', $id_user)
             ->where('transaction.ID_TYPE', '=', $type)
-            // ->where('transaction.ISTRANS_TRANS', 1)
             ->orderBy('transaction.DATE_TRANS', 'DESC')
             ->get();
 
@@ -84,6 +134,10 @@ class DetailTransController extends Controller
                     "DATE_TRANS" => $Item_ts->DATE_TRANS,
                     "NAME_USER" => $Item_ts->NAME_USER,
                     "TYPE_SHOP" => $Item_ts->TYPE_SHOP,
+                    "TOT_PS" => $Item_ts->TOT_PS,
+                    "TOT_RETAIL" => $Item_ts->TOT_RETAIL,
+                    "TOT_LOSS" => $Item_ts->TOT_LOSS,
+                    "TOT_PERMA" => $Item_ts->TOT_PERMA,
                     "IMAGE" => $data_image_trans,
                     "TOTAL" => $TOT_PRODUCT,
                     "DETAIL" => $data_ts_detail
