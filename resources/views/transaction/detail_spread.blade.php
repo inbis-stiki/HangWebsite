@@ -47,6 +47,21 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header d-block">
+                                <h4 class="card-title">Total Transaksi per type</h4>
+                            </div>
+                            <div class="card-body text-center">
+                            <h4 class="card-title">Pedagang Sayur <span class="mx-3 badge badge-sm light badge-success">{{ $transaction[0]['TOT_PS'] }}</span></h4>
+                            <h4 class="card-title">Retail <span class="mx-3 badge badge-sm light badge-success">{{ $transaction[0]['TOT_RETAIL'] }}</span></h4>
+                            <h4 class="card-title">Loss <span class="mx-3 badge badge-sm light badge-success">{{ $transaction[0]['TOT_LOSS'] }}</span></h4>
+                            <h4 class="card-title">Permanen <span class="mx-3 badge badge-sm light badge-success">{{ $transaction[0]['TOT_PERMA'] }}</span></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-block">
                                 <h4 class="card-title">Total Penjualan <span class="mx-3 badge badge-sm light badge-success">{{ $all_sell }}</span></h4>
                             </div>
                             <div class="card-body">
