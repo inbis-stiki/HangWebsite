@@ -56,6 +56,7 @@ class Cronjob extends Model
                 AND u.deleted_at IS NULL
         ");
     }
+
     public static function queryGetSmyTransLocation($year, $month)
     {
         return DB::select("
@@ -149,6 +150,7 @@ class Cronjob extends Model
             GROUP BY t.AREA_TRANS 
         ");
     }
+
     public static function queryGetRankLocation($year, $month, $area)
     {
         // SET WEIGHT
@@ -375,6 +377,7 @@ class Cronjob extends Model
 
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
+
     public static function queryGetRankUser($idRegional, $idRole, $year, $month)
     {
         // SET WEIGHT
@@ -505,6 +508,7 @@ class Cronjob extends Model
 
         return ['reportProds' => $reportProds, 'reportActs' => $reportActs];
     }
+
     public static function queryGetTrend($year, $area)
     {
         if ($area == "Regional") {
@@ -577,6 +581,7 @@ class Cronjob extends Model
 
         return $reports;
     }
+
     public static function queryGetTransactionDaily($querySumProd, $date, $regional)
     {
         return DB::select("
@@ -617,6 +622,7 @@ class Cronjob extends Model
                 u.NAME_USER ASC;
 	    ");
     }
+
     public static function queryGetRepeatOrder($year, $month)
     {
         $areas = DB::select("
@@ -678,6 +684,96 @@ class Cronjob extends Model
                         INNER JOIN md_shop ms 
                         ON ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Retail' 
                     ) as 'TOTALRETAIL',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . ($year - 1) . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSBPS',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Pedagang Sayur'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSAPS',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . ($year - 1) . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSBR',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Retail'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSAR',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . ($year - 1) . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSBL',
+                    (
+                        SELECT COUNT(x.TOTAL)
+                        FROM (
+                            SELECT COUNT(t.ID_SHOP) as TOTAL 
+                            FROM `transaction` t
+                            INNER JOIN md_shop ms
+                                ON
+                                    YEAR(t.DATE_TRANS) = " . $year . "
+                                    AND t.AREA_TRANS = '" . $area->AREA_TRANS . "'
+                                    AND t.REGIONAL_TRANS = '" . $area->REGIONAL_TRANS . "'
+                                    AND ms.ID_SHOP = t.ID_SHOP
+                                    AND ms.TYPE_SHOP = 'Loss'
+                            GROUP BY t.ID_SHOP
+                        ) as x	
+                    ) as 'ROVSAL',
                     (
                         SELECT COUNT(x.TOTAL)
                         FROM (
@@ -1065,6 +1161,468 @@ class Cronjob extends Model
                 GROUP BY s.NAME_SHOP
             ");
         }
+        return $rOs;
+    }
+
+    public static function queryGetAktTrxAPO($year)
+    {
+        $areas = DB::select("
+            SELECT
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            FROM
+                `md_regional` mr
+            JOIN
+                `md_area` ma ON ma.ID_REGIONAL = mr.ID_REGIONAL
+            GROUP BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            ORDER BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA ASC
+        ");
+
+        $rOs = [];
+        $months = range(1, 12);
+        $selectedYear = $year;
+
+        foreach ($areas as $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) {
+                $rOs[$area->NAME_REGIONAL] = [];
+            }
+
+            $trxCounts = DB::select("
+                SELECT
+                    YEAR(t.DATE_TRANS) AS Year,
+                    MONTH(t.DATE_TRANS) AS Month,
+                    COUNT(t.ID_TRANS) AS TransactionCount
+                FROM
+                    `transaction` t
+                WHERE
+                    t.AREA_TRANS = :areaName
+                    AND YEAR(t.DATE_TRANS) = :selectedYear
+                GROUP BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+                ORDER BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+            ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear]);
+
+            $trx = [];
+            $tgtTrxBln = 1500;
+            $tgtvsArr = [];
+
+            foreach ($months as $month) {
+                $found = false;
+
+                foreach ($trxCounts as $count) {
+                    if ($count->Month == $month) {
+                        $trx[] = $count->TransactionCount;
+                        $tgtvs = round(($count->TransactionCount / $tgtTrxBln) * 100, 2);
+                        $tgtvsArr[] = $tgtvs;
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $trx[] = 0;
+                    $tgtvsArr[] = 0;
+                }
+            }
+
+            $rOs[$area->NAME_REGIONAL][] = [
+                'AREA' => $area->NAME_AREA,
+                'TGT_TRX_BLN' => '1500',
+                'TRX' => $trx,
+                'TGTVS' => $tgtvsArr,
+            ];
+        }
+
+        return $rOs;
+    }
+
+    public static function queryPerformance($year, $id_pc)
+    {
+        $areas = DB::select("
+            SELECT
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            FROM
+                `md_regional` mr
+            JOIN
+                `md_area` ma ON ma.ID_REGIONAL = mr.ID_REGIONAL
+            GROUP BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            ORDER BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA ASC
+        ");
+
+        $rOs = [];
+        $months = range(1, 12);
+        $selectedYear = $year;
+
+        foreach ($areas as $key => $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) {
+                $rOs[$area->NAME_REGIONAL] = [];
+            }
+
+            $trxCounts = DB::select("
+                SELECT
+                    YEAR(t.DATE_TRANS) AS Year,
+                    MONTH(t.DATE_TRANS) AS Month,
+                    SUM(td.QTY_TD) AS TransactionCount
+                FROM
+                    `transaction` t
+                JOIN `transaction_detail` td ON td.ID_TRANS = t.ID_TRANS
+                JOIN `md_product` mp ON mp.ID_PRODUCT = td.ID_PRODUCT
+                JOIN `md_product_category` mpc ON mpc.ID_PC = mp.ID_PC
+                WHERE
+                    t.AREA_TRANS = :areaName
+                    AND YEAR(t.DATE_TRANS) = :selectedYear
+                    AND mpc.ID_PC = :selectedCat
+                GROUP BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+                ORDER BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+            ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear, 'selectedCat' => $id_pc]);
+
+            $newCountTrx = [];
+            for ($i = 0; $i <= 2; $i++) {
+                $cnvrtYear = $selectedYear - $i;
+                $trxCountsTot2 = DB::selectOne("
+                    SELECT
+                        YEAR(t.DATE_TRANS) AS Year,
+                        SUM(td.QTY_TD) AS TOTAL
+                    FROM
+                        transaction t
+                    JOIN transaction_detail td ON
+                        td.ID_TRANS = t.ID_TRANS
+                    JOIN md_product mp ON
+                        mp.ID_PRODUCT = td.ID_PRODUCT
+                    JOIN md_product_category mpc ON
+                        mpc.ID_PC = mp.ID_PC
+                    WHERE
+                        t.AREA_TRANS = :areaName
+                        AND mpc.ID_PC = :selectedCat
+                        AND YEAR(t.DATE_TRANS) = :selectedYear
+                    GROUP BY
+                        YEAR(t.DATE_TRANS)
+                    ORDER BY
+                        YEAR(t.DATE_TRANS)
+                ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $cnvrtYear, 'selectedCat' => $id_pc]);
+
+                $newCountTrx[$i] = (!empty($trxCountsTot2->TOTAL) ? $trxCountsTot2->TOTAL : 0);
+            }
+
+            $trx = [];
+            $tgtTrxBln = 1500;
+            $tgtvsArr = [];
+
+            foreach ($months as $month) {
+                $found = false;
+
+                foreach ($trxCounts as $count) {
+                    if ($count->Month == $month) {
+                        $trx[] = $count->TransactionCount;
+                        $tgtvs = round(($count->TransactionCount / $tgtTrxBln) * 100, 2);
+                        $tgtvsArr[] = $tgtvs;
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $trx[] = 0;
+                    $tgtvsArr[] = 0;
+                }
+            }
+
+            $rOs[$area->NAME_REGIONAL][] = [
+                'AREA' => $area->NAME_AREA,
+                'TOT_1' => $newCountTrx[2],
+                'TOT_2' => $newCountTrx[1],
+                'TOT_3' => $newCountTrx[0],
+                'TGT_TRX_BLN' => '1500',
+                'MONTH' => $trx,
+                'TOTAL_RT' => array_sum($trx)
+            ];
+        }
+
+        return $rOs;
+    }
+
+    public static function queryPerformanceAll($year)
+    {
+        $areas = DB::select("
+            SELECT
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            FROM
+                `md_regional` mr
+            JOIN
+                `md_area` ma ON
+                ma.ID_REGIONAL = mr.ID_REGIONAL
+            WHERE 
+                mr.NAME_REGIONAL IS NOT NULL 
+                AND
+                ma.NAME_AREA IS NOT NULL
+            GROUP BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            ORDER BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA ASC
+        ");
+
+        $rOs = [];
+
+        // Fetch the real counts for each year and area
+        $realCounts = DB::select("
+            SELECT
+                YEAR(t.DATE_TRANS) AS YEAR,
+                t.AREA_TRANS,
+                SUM(td.QTY_TD) AS RealCount
+            FROM
+                `transaction` t
+            JOIN `transaction_detail` td ON
+                td.ID_TRANS = t.ID_TRANS
+            JOIN `md_product` mp ON
+                mp.ID_PRODUCT = td.ID_PRODUCT
+            JOIN `md_product_category` mpc ON
+                mpc.ID_PC = mp.ID_PC
+            GROUP BY
+                YEAR(t.DATE_TRANS),
+                t.AREA_TRANS
+        ");
+
+        // Create an array to store real counts by year and area
+        $realCountsByYearArea = [];
+        foreach ($realCounts as $realCount) {
+            $realCountsByYearArea[$realCount->YEAR][$realCount->AREA_TRANS] = $realCount->RealCount;
+        }
+
+        foreach ($areas as $key => $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) {
+                $rOs[$area->NAME_REGIONAL] = [];
+            }
+
+            $trans = DB::select("
+                SELECT
+                    t.AREA_TRANS,
+                    mpc.ID_PC,
+                    YEAR(t.DATE_TRANS) AS YEAR,
+                    MONTH(t.DATE_TRANS) AS MONTH,
+                    SUM(td.QTY_TD) AS TransactionCount
+                FROM
+                    `transaction` t
+                JOIN `transaction_detail` td ON
+                    td.ID_TRANS = t.ID_TRANS
+                JOIN `md_product` mp ON
+                    mp.ID_PRODUCT = td.ID_PRODUCT
+                JOIN `md_product_category` mpc ON
+                    mpc.ID_PC = mp.ID_PC
+                WHERE
+                    YEAR(t.DATE_TRANS) = :selectedYear
+                    AND
+                    t.AREA_TRANS = :areaName
+                GROUP BY
+                    t.AREA_TRANS,
+                    mpc.ID_PC,
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+                ORDER BY
+                    mpc.ID_PC ASC,
+                    MONTH ASC
+            ", ['selectedYear' => $year, 'areaName' => $area->NAME_AREA]);
+
+            $trxPerMonthNonUst = array_fill(0, 12, 0);
+            $trxPerMonthGeprek = array_fill(0, 12, 0);
+            $trxPerMonthRendang = array_fill(0, 12, 0);
+            $trxPerMonthUst = array_fill(0, 12, 0);
+
+            foreach ($trans as $keyTrans => $itemTrans) {
+                switch ($itemTrans->ID_PC) {
+                    case 2:
+                        $trxPerMonthNonUst[$itemTrans->MONTH - 1] = $itemTrans->TransactionCount;
+                        break;
+                    case 12:
+                        $trxPerMonthNonUst[$itemTrans->MONTH - 1] = $itemTrans->TransactionCount;
+                        break;
+                    case 16:
+                        $trxPerMonthRendang[$itemTrans->MONTH - 1] = $itemTrans->TransactionCount;
+                        break;
+                    case 17:
+                        $trxPerMonthGeprek[$itemTrans->MONTH - 1] = $itemTrans->TransactionCount;
+                        break;
+                }
+            }
+
+            $RealProduct = [
+                $realCountsByYearArea[$year - 2][$area->NAME_AREA] ?? 0,
+                $realCountsByYearArea[$year - 1][$area->NAME_AREA] ?? 0,
+                $realCountsByYearArea[$year][$area->NAME_AREA] ?? 0,
+            ];
+
+            $NonUstData = [
+                'TOT_REAL' => $RealProduct,
+                'MONTH' => $trxPerMonthNonUst
+            ];
+            $GeprekData = [
+                'TOT_REAL' => $RealProduct,
+                'MONTH' => $trxPerMonthGeprek
+            ];
+            $RendangData = [
+                'TOT_REAL' => $RealProduct,
+                'MONTH' => $trxPerMonthRendang
+            ];
+            $UstData = [
+                'TOT_REAL' => $RealProduct,
+                'MONTH' => $trxPerMonthUst
+            ];
+
+            $rOs[$area->NAME_REGIONAL][] = [
+                'AREA' => $area->NAME_AREA,
+                'NON_UST' => $NonUstData,
+                'UGP' => $GeprekData,
+                'URD' => $RendangData,
+                'UST' => $UstData
+            ];
+        }
+
+        return $rOs;
+    }
+
+    public static function queryROVSTEST($year)
+    {
+        $areas = DB::select("
+            SELECT
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            FROM
+                `md_regional` mr
+            JOIN
+                `md_area` ma ON ma.ID_REGIONAL = mr.ID_REGIONAL
+            GROUP BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA
+            ORDER BY
+                mr.NAME_REGIONAL,
+                ma.NAME_AREA ASC
+        ");
+
+        $rOs = [];
+        $months = range(1, 12);
+        $selectedYear = $year;
+
+        foreach ($areas as $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) {
+                $rOs[$area->NAME_REGIONAL] = [];
+            }
+
+            $CallCount = DB::select("
+                SELECT
+                    YEAR(t.DATE_TRANS) AS Year,
+                    MONTH(t.DATE_TRANS) AS Month,
+                    COUNT(t.ID_TRANS) AS TransactionCount
+                FROM
+                    `transaction` t
+                WHERE
+                    t.AREA_TRANS = :areaName
+                    AND YEAR(t.DATE_TRANS) = :selectedYear
+                    AND t.ISTRANS_TRANS = 1
+                GROUP BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+                ORDER BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+            ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear]);
+
+            $RepeatCount = DB::select("
+                SELECT
+                    YEAR(t.DATE_TRANS) AS Year,
+                    MONTH(t.DATE_TRANS) AS Month,
+                    COUNT(t.ID_SHOP) AS TOTAL_TEST
+                FROM
+                    `transaction` t
+                INNER JOIN (
+                    SELECT
+                        ID_SHOP
+                    FROM
+                        `transaction`
+                    WHERE
+                        YEAR(DATE_TRANS) = '$selectedYear'
+                    GROUP BY
+                        ID_SHOP
+                    HAVING
+                        COUNT(*) BETWEEN 2 AND 100
+                        ) t2 ON
+                    t2.ID_SHOP = t.ID_SHOP
+                LEFT JOIN md_shop ms ON
+                    ms.ID_SHOP = t.ID_SHOP
+                INNER JOIN md_district md ON
+                    md.ID_DISTRICT = ms.ID_DISTRICT
+                INNER JOIN md_area ma ON
+                    ma.ID_AREA = md.ID_AREA
+                INNER JOIN md_regional mr ON
+                    mr.ID_REGIONAL = ma.ID_REGIONAL
+                WHERE
+                    ms.ID_SHOP IS NOT NULL
+                    AND t.AREA_TRANS = '$area->NAME_AREA'
+                    AND YEAR(t.DATE_TRANS) = '$selectedYear'
+                GROUP BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+                ORDER BY
+                    YEAR(t.DATE_TRANS),
+                    MONTH(t.DATE_TRANS)
+            ");
+
+            $rtcall = [];
+            $rtro = [];
+
+            foreach ($months as $month) {
+                $foundCallCount = false;
+                $foundRepeatCount = false;
+
+                foreach ($CallCount as $count) {
+                    if ($count->Month == $month) {
+                        $rtcall[] = $count->TransactionCount;
+                        $foundCallCount = true;
+                        break;
+                    }
+                }
+
+                foreach ($RepeatCount as $rcount) {
+                    if ($rcount->Month == $month) {
+                        $rtro[] = $rcount->TOTAL_TEST;
+                        $foundRepeatCount = true;
+                        break;
+                    }
+                }
+
+                if (!$foundCallCount) {
+                    $rtcall[] = 0;
+                }
+
+                if (!$foundRepeatCount) {
+                    $rtro[] = 0;
+                }
+            }
+
+            $rOs[$area->NAME_REGIONAL][] = [
+                'AREA' => $area->NAME_AREA,
+                'RTCALL' => $rtcall,
+                'RTRO' => $rtro,
+            ];
+        }
+
         return $rOs;
     }
 

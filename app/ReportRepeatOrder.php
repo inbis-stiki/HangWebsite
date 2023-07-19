@@ -3,11 +3,12 @@
 namespace App;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReportRepeatOrder
 {
-    public function gen_ro_rpo($rOs, $updated_at)
+    public function gen_ro_rpo($rOs, $updated_at, $year)
     {
         // Create new Spreadsheet object
         $spreadsheet = new Spreadsheet();
@@ -26,289 +27,310 @@ class ReportRepeatOrder
             $ObjSheet->getColumnDimension('T')->setWidth('30');
 
             // PEDAGANG SAYUR {{TAHUN}}
-            // HEADER
-            $rowHeader += 2;
-            $ObjSheet->mergeCells('B2:P2')->setCellValue('B2', $regional)->getStyle('B2:P2')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('B3:E3')->setCellValue('B3', 'PEDAGANG SAYUR 2022')->getStyle('B3:E3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->mergeCells('B4:B5')->setCellValue('B4', 'AREA')->getStyle('B4:B5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('C4:C5')->setCellValue('C4', 'TOTAL PS')->getStyle('C4:C5')->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('D4:D5')->setCellValue('D4', 'TOTAL RO PS 2022')->getStyle('D4:D5')->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('E4:E5')->setCellValue('E4', '% RO VS TOTAL PS')->getStyle('E4:E5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('F3:F5')->setCellValue('F3', '% RO 2022 VS RO 2021')->getStyle('F3:F5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
+                // HEADER
+                $rowHeader += 2;
+                $ObjSheet->mergeCells('B2:P2')->setCellValue('B2', $regional)->getStyle('B2:P2')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('B3:E3')->setCellValue('B3', 'PEDAGANG SAYUR ' . $year)->getStyle('B3:E3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->mergeCells('B4:B5')->setCellValue('B4', 'AREA')->getStyle('B4:B5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('C4:C5')->setCellValue('C4', 'TOTAL PS')->getStyle('C4:C5')->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('D4:D5')->setCellValue('D4', 'TOTAL RO PS ' . $year)->getStyle('D4:D5')->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('E4:E5')->setCellValue('E4', '% RO VS TOTAL PS')->getStyle('E4:E5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('F3:F5')->setCellValue('F3', '% RO 2022 VS RO 2021')->getStyle('F3:F5')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
 
-            $ObjSheet->mergeCells('H3:P3')->setCellValue('H3', 'DETAIL RO PS 2022')->getStyle('H3:P3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->mergeCells('H4:H5')->setCellValue('H4', 'TOTAL RO')->getStyle('H4:H5')->applyFromArray($this->styling_title_template('FFFF00', '000000'));
-            $ObjSheet->mergeCells('I4:L4')->setCellValue('I4', 'RUTINITAS RO PEDAGANG SAYUR')->getStyle('I4:L4')->applyFromArray($this->styling_title_template('FFC000', '000000'));
-            $ObjSheet->setCellValue('I5', '2-3x')->getStyle('I5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('J5', '4-5x')->getStyle('J5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('K5', '6-10x')->getStyle('K5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('L5', '11x UP')->getStyle('L5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('M4:P4')->setCellValue('M4', '% RUTINITAS RO PEDAGANG SAYUR')->getStyle('M4:P4')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
-            $ObjSheet->setCellValue('M5', '2-3x')->getStyle('M5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('N5', '4-5x')->getStyle('N5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('O5', '6-10x')->getStyle('O5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('P5', '11x UP')->getStyle('P5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('H3:P3')->setCellValue('H3', 'DETAIL RO PS ' . $year)->getStyle('H3:P3')->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->mergeCells('H4:H5')->setCellValue('H4', 'TOTAL RO')->getStyle('H4:H5')->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+                $ObjSheet->mergeCells('I4:L4')->setCellValue('I4', 'RUTINITAS RO PEDAGANG SAYUR')->getStyle('I4:L4')->applyFromArray($this->styling_title_template('FFC000', '000000'));
+                $ObjSheet->setCellValue('I5', '2-3x')->getStyle('I5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('J5', '4-5x')->getStyle('J5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('K5', '6-10x')->getStyle('K5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('L5', '11x UP')->getStyle('L5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('M4:P4')->setCellValue('M4', '% RUTINITAS RO PEDAGANG SAYUR')->getStyle('M4:P4')->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
+                $ObjSheet->setCellValue('M5', '2-3x')->getStyle('M5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('N5', '4-5x')->getStyle('N5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('O5', '6-10x')->getStyle('O5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('P5', '11x UP')->getStyle('P5')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
 
-            // ISI KONTEN
-            $rowIsi += 6;
-            $subrow = 0;
-            $totalROPS = [0, 0, 0, 0, 0, 0];
-            $percentROPS = [0, 0, 0, 0, 0];
-            foreach ($rOs[$regional] as $area => $detRO) {
-                $detRO = (array)$detRO;
+                // ISI KONTEN
+                $rowIsi += 6;
+                $subrow = 0;
+                $totalROPS = [0, 0, 0, 0, 0, 0];
+                $percentROPS = [0, 0, 0, 0, 0, 0];
+                $totalPercentROPS = [0, 0, 0, 0, 0, 0];
+                foreach ($rOs[$regional] as $area => $detRO) {
+                    $detRO = (array)$detRO;
 
-                $TotalAPO = $detRO['TOTALAPO'];
-                $TotalData = ($detRO['PS_2-3'] + $detRO['PS_4-5'] + $detRO['PS_6-10'] + $detRO['PS_>11']);
-                $totalROPS[0] += $detRO['PS_2-3'];
-                $totalROPS[1] += $detRO['PS_4-5'];
-                $totalROPS[2] += $detRO['PS_6-10'];
-                $totalROPS[3] += $detRO['PS_>11'];
-                $totalROPS[4] += $TotalData;
-                $totalROPS[5] += $detRO['TOTALPS'];
+                    $TotalAPO = $detRO['TOTALAPO'];
+                    $TotalData = ($detRO['PS_2-3'] + $detRO['PS_4-5'] + $detRO['PS_6-10'] + $detRO['PS_>11']);
+                    $totalROPS[0] += $detRO['PS_2-3'];
+                    $totalROPS[1] += $detRO['PS_4-5'];
+                    $totalROPS[2] += $detRO['PS_6-10'];
+                    $totalROPS[3] += $detRO['PS_>11'];
+                    $totalROPS[4] += $TotalData;
+                    $totalROPS[5] += $detRO['TOTALPS'];
 
-                $percentROPS[0] = (!empty($TotalData) ? (($detRO['PS_2-3'] / $TotalData) * 100) : 0);
-                $percentROPS[1] = (!empty($TotalData) ? (($detRO['PS_4-5'] / $TotalData) * 100) : 0);
-                $percentROPS[2] = (!empty($TotalData) ? (($detRO['PS_6-10'] / $TotalData) * 100) : 0);
-                $percentROPS[3] = (!empty($TotalData) ? (($detRO['PS_>11'] / $TotalData) * 100) : 0);
-                $percentROPS[4] = (!empty($detRO['TOTALPS']) ? (($TotalData / $detRO['TOTALPS']) * 100) : 0);
+                    $percentROPS[0] = (!empty($TotalData) ? (($detRO['PS_2-3'] / $TotalData) * 100) : 0);
+                    $percentROPS[1] = (!empty($TotalData) ? (($detRO['PS_4-5'] / $TotalData) * 100) : 0);
+                    $percentROPS[2] = (!empty($TotalData) ? (($detRO['PS_6-10'] / $TotalData) * 100) : 0);
+                    $percentROPS[3] = (!empty($TotalData) ? (($detRO['PS_>11'] / $TotalData) * 100) : 0);
+                    $percentROPS[4] = (!empty($detRO['TOTALPS']) ? (($TotalData / $detRO['TOTALPS']) * 100) : 0);
+                    $percentROPS[5] = (!empty($detRO['ROVSAPS']) ? ($detRO['ROVSBPS'] / $detRO['ROVSAPS']) : 0);
+                    
+                    $totalPercentROPS[0] += (!empty($detRO['TOTALPS']) ? (($TotalData / $detRO['TOTALPS']) * 100) : 0);
+                    $totalPercentROPS[1] += (!empty($detRO['ROVSAPS']) ? ($detRO['ROVSBPS'] / $detRO['ROVSAPS']) : 0);
 
+                    $ObjSheet->setCellValue('B' . $rowIsi, $area)->getStyle('B' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('C' . $rowIsi, $detRO['TOTALPS'])->getStyle('C' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('D' . $rowIsi, $TotalData)->getStyle('D' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('E' . $rowIsi, number_format($percentROPS[4], 2, '.', '') . '%')->getStyle('E' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('F' . $rowIsi, number_format($percentROPS[5], 2, '.', '') . '%')->getStyle('F' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-                $ObjSheet->setCellValue('B' . $rowIsi, $area)->getStyle('B' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('C' . $rowIsi, $detRO['TOTALPS'])->getStyle('C' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('D' . $rowIsi, $TotalData)->getStyle('D' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('E' . $rowIsi, number_format($percentROPS[4], 2, '.', '') . '%')->getStyle('E' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('F' . $rowIsi, '100%')->getStyle('F' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('H' . $rowIsi, $TotalData)->getStyle('H' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('I' . $rowIsi, $detRO['PS_2-3'])->getStyle('I' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('J' . $rowIsi, $detRO['PS_4-5'])->getStyle('J' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('K' . $rowIsi, $detRO['PS_6-10'])->getStyle('K' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('L' . $rowIsi, $detRO['PS_>11'])->getStyle('L' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('M' . $rowIsi, number_format($percentROPS[0], 2, '.', '') . '%')->getStyle('M' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('N' . $rowIsi, number_format($percentROPS[1], 2, '.', '') . '%')->getStyle('N' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('O' . $rowIsi, number_format($percentROPS[2], 2, '.', '') . '%')->getStyle('O' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('P' . $rowIsi, number_format($percentROPS[3], 2, '.', '') . '%')->getStyle('P' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-                $ObjSheet->setCellValue('H' . $rowIsi, $TotalData)->getStyle('H' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('I' . $rowIsi, $detRO['PS_2-3'])->getStyle('I' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('J' . $rowIsi, $detRO['PS_4-5'])->getStyle('J' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('K' . $rowIsi, $detRO['PS_6-10'])->getStyle('K' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('L' . $rowIsi, $detRO['PS_>11'])->getStyle('L' . $rowIsi)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('M' . $rowIsi, number_format($percentROPS[0], 2, '.', '') . '%')->getStyle('M' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('N' . $rowIsi, number_format($percentROPS[1], 2, '.', '') . '%')->getStyle('N' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('O' . $rowIsi, number_format($percentROPS[2], 2, '.', '') . '%')->getStyle('O' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('P' . $rowIsi, number_format($percentROPS[3], 2, '.', '') . '%')->getStyle('P' . $rowIsi)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $rowIsi++;
+                    $subrow = $rowIsi;
+                }
+                
+                $totalPercentROPS[2] += (!empty($totalROPS[4]) ? (($totalROPS[0] / $totalROPS[4]) * 100) : 0);
+                $totalPercentROPS[3] += (!empty($totalROPS[4]) ? (($totalROPS[1] / $totalROPS[4]) * 100) : 0);
+                $totalPercentROPS[4] += (!empty($totalROPS[4]) ? (($totalROPS[2] / $totalROPS[4]) * 100) : 0);
+                $totalPercentROPS[5] += (!empty($totalROPS[4]) ? (($totalROPS[3] / $totalROPS[4]) * 100) : 0);
 
-                $rowIsi++;
-                $subrow = $rowIsi;
-            }
+                $ObjSheet->setCellValue('B' . $subrow, $regional)->getStyle('B' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('C' . $subrow, $totalROPS[5])->getStyle('C' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('D' . $subrow, $totalROPS[4])->getStyle('D' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('E' . $subrow, number_format($totalPercentROPS[0], 2, '.', '') . '%')->getStyle('E' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('F' . $subrow, number_format($totalPercentROPS[1], 2, '.', '') . '%')->getStyle('F' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-            $percentROPS = [0, 0, 0, 0, 0];
-            $percentROPS[0] = (!empty($totalROPS[4]) ? (($totalROPS[0] / $totalROPS[4]) * 100) : 0);
-            $percentROPS[1] = (!empty($totalROPS[4]) ? (($totalROPS[1] / $totalROPS[4]) * 100) : 0);
-            $percentROPS[2] = (!empty($totalROPS[4]) ? (($totalROPS[2] / $totalROPS[4]) * 100) : 0);
-            $percentROPS[3] = (!empty($totalROPS[4]) ? (($totalROPS[3] / $totalROPS[4]) * 100) : 0);
+                $ObjSheet->setCellValue('H' . $subrow, $totalROPS[4])->getStyle('H' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('I' . $subrow, $totalROPS[0])->getStyle('I' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('J' . $subrow, $totalROPS[1])->getStyle('J' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('K' . $subrow, $totalROPS[2])->getStyle('K' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('L' . $subrow, $totalROPS[3])->getStyle('L' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('M' . $subrow, number_format($totalPercentROPS[2], 2, '.', '') . '%')->getStyle('M' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('N' . $subrow, number_format($totalPercentROPS[3], 2, '.', '') . '%')->getStyle('N' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('O' . $subrow, number_format($totalPercentROPS[4], 2, '.', '') . '%')->getStyle('O' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('P' . $subrow, number_format($totalPercentROPS[5], 2, '.', '') . '%')->getStyle('P' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-            $percentROPS[4] = (!empty($totalROPS[5]) ? (($totalROPS[4] / $totalROPS[5]) * 100) : 0);
+                $ObjSheet->mergeCells('R3:R5')->setCellValue('R3', 'JUMLAH PEDAGANG SAYUR RO PEDAGANG SAYUR/APO')->getStyle('R3:R5')->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('S3:S5')->setCellValue('S3', 'JUMLAH APO')->getStyle('S3:S5')->applyFromArray($this->styling_title_template('0000FF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('T3:T5')->setCellValue('T3', 'RT2 PEDAGANG SAYUR RO/APO')->getStyle('T3:T5')->applyFromArray($this->styling_title_template('00FF00', '000000'))->getAlignment()->setWrapText(true);
 
-            $ObjSheet->setCellValue('B' . $subrow, $regional)->getStyle('B' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('C' . $subrow, $totalROPS[5])->getStyle('C' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('D' . $subrow, $totalROPS[4])->getStyle('D' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('E' . $subrow, number_format($percentROPS[4], 2, '.', '') . '%')->getStyle('E' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('F' . $subrow, '100%')->getStyle('F' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-
-            $ObjSheet->setCellValue('H' . $subrow, $totalROPS[4])->getStyle('H' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('I' . $subrow, $totalROPS[0])->getStyle('I' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('J' . $subrow, $totalROPS[1])->getStyle('J' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('K' . $subrow, $totalROPS[2])->getStyle('K' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('L' . $subrow, $totalROPS[3])->getStyle('L' . $subrow)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('M' . $subrow, number_format($percentROPS[0], 2, '.', '') . '%')->getStyle('M' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('N' . $subrow, number_format($percentROPS[1], 2, '.', '') . '%')->getStyle('N' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('O' . $subrow, number_format($percentROPS[2], 2, '.', '') . '%')->getStyle('O' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('P' . $subrow, number_format($percentROPS[3], 2, '.', '') . '%')->getStyle('P' . $subrow)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-
-            $ObjSheet->mergeCells('R3:R5')->setCellValue('R3', 'JUMLAH PEDAGANG SAYUR RO PEDAGANG SAYUR/APO')->getStyle('R3:R5')->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('S3:S5')->setCellValue('S3', 'JUMLAH APO')->getStyle('S3:S5')->applyFromArray($this->styling_title_template('0000FF', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('T3:T5')->setCellValue('T3', 'RT2 PEDAGANG SAYUR RO/APO')->getStyle('T3:T5')->applyFromArray($this->styling_title_template('00FF00', '000000'))->getAlignment()->setWrapText(true);
-
-            //ISI
-            $ObjSheet->setCellValue('R6', $totalROPS[4])->getStyle('R6')->applyFromArray($this->styling_default_template('11', '000000'));
-            $ObjSheet->setCellValue('S6', $TotalAPO)->getStyle('S6')->applyFromArray($this->styling_default_template('11', '000000'));
-            $ObjSheet->setCellValue('T6', (!empty($TotalAPO) ? round($totalROPS[4] / $TotalAPO) : 0))->getStyle('T6')->applyFromArray($this->styling_default_template('11', '000000'));
+                //ISI
+                $ObjSheet->setCellValue('R6', $totalROPS[4])->getStyle('R6')->applyFromArray($this->styling_default_template('11', '000000'));
+                $ObjSheet->setCellValue('S6', $TotalAPO)->getStyle('S6')->applyFromArray($this->styling_default_template('11', '000000'));
+                $ObjSheet->setCellValue('T6', (!empty($TotalAPO) ? round($totalROPS[4] / $TotalAPO) : 0))->getStyle('T6')->applyFromArray($this->styling_default_template('11', '000000'));
+            // END PEDAGANG SAYUR {{TAHUN}}
 
             // RETAIL {{TAHUN}}
-            // HEADER
-            $rowHeader2 = $subrow + 2;
-            $ObjSheet->mergeCells('B' . $rowHeader2 . ':P' . $rowHeader2)->setCellValue('B' . $rowHeader2, $regional)->getStyle('B' . $rowHeader2 . ':P' . $rowHeader2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('B' . ($rowHeader2 + 1) . ':E' . ($rowHeader2 + 1))->setCellValue('B' . ($rowHeader2 + 1), 'RETAIL 2022')->getStyle('B' . ($rowHeader2 + 1) . ':E' . ($rowHeader2 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->mergeCells('B' . ($rowHeader2 + 2) . ':B' . ($rowHeader2 + 3))->setCellValue('B' . ($rowHeader2 + 2), 'AREA')->getStyle('B' . ($rowHeader2 + 2) . ':B' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('C' . ($rowHeader2 + 2) . ':C' . ($rowHeader2 + 3))->setCellValue('C' . ($rowHeader2 + 2) . '', 'TOTAL RETAIL')->getStyle('C' . ($rowHeader2 + 2) . ':C' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('D' . ($rowHeader2 + 2) . ':D' . ($rowHeader2 + 3))->setCellValue('D' . ($rowHeader2 + 2) . '', 'TOTAL RO RETAIL 2022')->getStyle('D' . ($rowHeader2 + 2) . ':D' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('E' . ($rowHeader2 + 2) . ':E' . ($rowHeader2 + 3))->setCellValue('E' . ($rowHeader2 + 2) . '', '% RO VS TOTAL RETAIL')->getStyle('E' . ($rowHeader2 + 2) . ':E' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('F' . ($rowHeader2 + 1) . ':F' . ($rowHeader2 + 3))->setCellValue('F' . ($rowHeader2 + 1) . '', '% RO 2022 VS RO 2021')->getStyle('F' . ($rowHeader2 + 1) . ':F' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
+                // HEADER
+                $rowHeader2 = $subrow + 2;
+                $ObjSheet->mergeCells('B' . $rowHeader2 . ':P' . $rowHeader2)->setCellValue('B' . $rowHeader2, $regional)->getStyle('B' . $rowHeader2 . ':P' . $rowHeader2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('B' . ($rowHeader2 + 1) . ':E' . ($rowHeader2 + 1))->setCellValue('B' . ($rowHeader2 + 1), 'RETAIL ' . $year)->getStyle('B' . ($rowHeader2 + 1) . ':E' . ($rowHeader2 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->mergeCells('B' . ($rowHeader2 + 2) . ':B' . ($rowHeader2 + 3))->setCellValue('B' . ($rowHeader2 + 2), 'AREA')->getStyle('B' . ($rowHeader2 + 2) . ':B' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('C' . ($rowHeader2 + 2) . ':C' . ($rowHeader2 + 3))->setCellValue('C' . ($rowHeader2 + 2) . '', 'TOTAL RETAIL')->getStyle('C' . ($rowHeader2 + 2) . ':C' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('D' . ($rowHeader2 + 2) . ':D' . ($rowHeader2 + 3))->setCellValue('D' . ($rowHeader2 + 2) . '', 'TOTAL RO RETAIL ' . $year)->getStyle('D' . ($rowHeader2 + 2) . ':D' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('E' . ($rowHeader2 + 2) . ':E' . ($rowHeader2 + 3))->setCellValue('E' . ($rowHeader2 + 2) . '', '% RO VS TOTAL RETAIL')->getStyle('E' . ($rowHeader2 + 2) . ':E' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('F' . ($rowHeader2 + 1) . ':F' . ($rowHeader2 + 3))->setCellValue('F' . ($rowHeader2 + 1) . '', '% RO 2022 VS RO 2021')->getStyle('F' . ($rowHeader2 + 1) . ':F' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
 
-            $ObjSheet->mergeCells('H' . ($rowHeader2 + 1) . ':P' . ($rowHeader2 + 1))->setCellValue('H' . ($rowHeader2 + 1), 'DETAIL RO RETAIL 2022')->getStyle('H' . ($rowHeader2 + 1) . ':P' . ($rowHeader2 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->mergeCells('H' . ($rowHeader2 + 2) . ':H' . ($rowHeader2 + 3))->setCellValue('H' . ($rowHeader2 + 2), 'TOTAL RO')->getStyle('H' . ($rowHeader2 + 2) . ':H' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'));
-            $ObjSheet->mergeCells('I' . ($rowHeader2 + 2) . ':L' . ($rowHeader2 + 2))->setCellValue('I' . ($rowHeader2 + 2), 'RUTINITAS RO RETAIL')->getStyle('I' . ($rowHeader2 + 2) . ':L' . ($rowHeader2 + 2))->applyFromArray($this->styling_title_template('FFC000', '000000'));
-            $ObjSheet->setCellValue('I' . ($rowHeader2 + 3), '2-3x')->getStyle('I' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('J' . ($rowHeader2 + 3), '4-5x')->getStyle('J' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('K' . ($rowHeader2 + 3), '6-10x')->getStyle('K' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('L' . ($rowHeader2 + 3), '11x UP')->getStyle('L' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('M' . ($rowHeader2 + 2) . ':P' . ($rowHeader2 + 2))->setCellValue('M' . ($rowHeader2 + 2), '% RUTINITAS RO RETAIL')->getStyle('M' . ($rowHeader2 + 2) . ':P' . ($rowHeader2 + 2))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
-            $ObjSheet->setCellValue('M' . ($rowHeader2 + 3), '2-3x')->getStyle('M' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('N' . ($rowHeader2 + 3), '4-5x')->getStyle('N' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('O' . ($rowHeader2 + 3), '6-10x')->getStyle('O' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('P' . ($rowHeader2 + 3), '11x UP')->getStyle('P' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('H' . ($rowHeader2 + 1) . ':P' . ($rowHeader2 + 1))->setCellValue('H' . ($rowHeader2 + 1), 'DETAIL RO RETAIL ' . $year)->getStyle('H' . ($rowHeader2 + 1) . ':P' . ($rowHeader2 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->mergeCells('H' . ($rowHeader2 + 2) . ':H' . ($rowHeader2 + 3))->setCellValue('H' . ($rowHeader2 + 2), 'TOTAL RO')->getStyle('H' . ($rowHeader2 + 2) . ':H' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+                $ObjSheet->mergeCells('I' . ($rowHeader2 + 2) . ':L' . ($rowHeader2 + 2))->setCellValue('I' . ($rowHeader2 + 2), 'RUTINITAS RO RETAIL')->getStyle('I' . ($rowHeader2 + 2) . ':L' . ($rowHeader2 + 2))->applyFromArray($this->styling_title_template('FFC000', '000000'));
+                $ObjSheet->setCellValue('I' . ($rowHeader2 + 3), '2-3x')->getStyle('I' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('J' . ($rowHeader2 + 3), '4-5x')->getStyle('J' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('K' . ($rowHeader2 + 3), '6-10x')->getStyle('K' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('L' . ($rowHeader2 + 3), '11x UP')->getStyle('L' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('M' . ($rowHeader2 + 2) . ':P' . ($rowHeader2 + 2))->setCellValue('M' . ($rowHeader2 + 2), '% RUTINITAS RO RETAIL')->getStyle('M' . ($rowHeader2 + 2) . ':P' . ($rowHeader2 + 2))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
+                $ObjSheet->setCellValue('M' . ($rowHeader2 + 3), '2-3x')->getStyle('M' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('N' . ($rowHeader2 + 3), '4-5x')->getStyle('N' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('O' . ($rowHeader2 + 3), '6-10x')->getStyle('O' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('P' . ($rowHeader2 + 3), '11x UP')->getStyle('P' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
 
-            $rowIsi2 = ($rowHeader2 + 4);
-            $subrow2 = ($rowHeader2 + 4) + 0;
-            $totalRORetail = [0, 0, 0, 0, 0, 0];
-            $percentRORetail = [0, 0, 0, 0, 0];
-            foreach ($rOs[$regional] as $area => $detRO) {
-                $detRO = (array)$detRO;
+                $rowIsi2 = ($rowHeader2 + 4);
+                $subrow2 = ($rowHeader2 + 4) + 0;
+                $totalRORetail = [0, 0, 0, 0, 0, 0];
+                $percentRORetail = [0, 0, 0, 0, 0, 0];
+                $totalPercentROR = [0, 0, 0, 0, 0, 0];
+                foreach ($rOs[$regional] as $area => $detRO) {
+                    $detRO = (array)$detRO;
 
-                $TotalData = ($detRO['Retail_2-3'] + $detRO['Retail_4-5'] + $detRO['Retail_6-10'] + $detRO['Retail_>11']);
-                $totalRORetail[0] += $detRO['Retail_2-3'];
-                $totalRORetail[1] += $detRO['Retail_4-5'];
-                $totalRORetail[2] += $detRO['Retail_6-10'];
-                $totalRORetail[3] += $detRO['Retail_>11'];
-                $totalRORetail[4] += $TotalData;
-                $totalRORetail[5] += $detRO['TOTALRETAIL'];
+                    $TotalData = ($detRO['Retail_2-3'] + $detRO['Retail_4-5'] + $detRO['Retail_6-10'] + $detRO['Retail_>11']);
+                    $totalRORetail[0] += $detRO['Retail_2-3'];
+                    $totalRORetail[1] += $detRO['Retail_4-5'];
+                    $totalRORetail[2] += $detRO['Retail_6-10'];
+                    $totalRORetail[3] += $detRO['Retail_>11'];
+                    $totalRORetail[4] += $TotalData;
+                    $totalRORetail[5] += $detRO['TOTALRETAIL'];
+                    
+                    $percentRORetail[0] = (!empty($TotalData) ? (($detRO['Retail_2-3'] / $TotalData) * 100) : 0);
+                    $percentRORetail[1] = (!empty($TotalData) ? (($detRO['Retail_4-5'] / $TotalData) * 100) : 0);
+                    $percentRORetail[2] = (!empty($TotalData) ? (($detRO['Retail_6-10'] / $TotalData) * 100) : 0);
+                    $percentRORetail[3] = (!empty($TotalData) ? (($detRO['Retail_>11'] / $TotalData) * 100) : 0);
+                    $percentRORetail[4] = (!empty($detRO['TOTALRETAIL']) ? (($TotalData / $detRO['TOTALRETAIL']) * 100) : 0);
+                    $percentRORetail[5] = (!empty($detRO['ROVSAR']) ? ($detRO['ROVSBR'] / $detRO['ROVSAR']) : 0);
+                    
+                    $totalPercentROR[0] += (!empty($detRO['ROVSAR']) ? (($TotalData / $detRO['ROVSAR']) * 100) : 0);
+                    $totalPercentROR[1] += (!empty($detRO['ROVSAR']) ? ($detRO['ROVSBR'] / $detRO['ROVSAR']) : 0);
 
-                $percentRORetail[0] = (!empty($TotalData) ? (($detRO['Retail_2-3'] / $TotalData) * 100) : 0);
-                $percentRORetail[1] = (!empty($TotalData) ? (($detRO['Retail_4-5'] / $TotalData) * 100) : 0);
-                $percentRORetail[2] = (!empty($TotalData) ? (($detRO['Retail_6-10'] / $TotalData) * 100) : 0);
-                $percentRORetail[3] = (!empty($TotalData) ? (($detRO['Retail_>11'] / $TotalData) * 100) : 0);
-                $percentRORetail[4] = (!empty($detRO['TOTALRETAIL']) ? (($TotalData / $detRO['TOTALRETAIL']) * 100) : 0);
+                    $ObjSheet->setCellValue('B' . $rowIsi2, $area)->getStyle('B' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('C' . $rowIsi2, $detRO['TOTALRETAIL'])->getStyle('C' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('D' . $rowIsi2, $TotalData)->getStyle('D' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('E' . $rowIsi2, number_format($percentRORetail[4], 2, '.', '') . '%')->getStyle('E' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('F' . $rowIsi2, number_format($percentRORetail[5], 2, '.', '') . '%')->getStyle('F' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-                $ObjSheet->setCellValue('B' . $rowIsi2, $area)->getStyle('B' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('C' . $rowIsi2, $detRO['TOTALRETAIL'])->getStyle('C' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('D' . $rowIsi2, $TotalData)->getStyle('D' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('E' . $rowIsi2, number_format($percentRORetail[4], 2, '.', '') . '%')->getStyle('E' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('F' . $rowIsi2, '100%')->getStyle('F' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('H' . $rowIsi2, $TotalData)->getStyle('H' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('I' . $rowIsi2, $detRO['Retail_2-3'])->getStyle('I' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('J' . $rowIsi2, $detRO['Retail_4-5'])->getStyle('J' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('K' . $rowIsi2, $detRO['Retail_6-10'])->getStyle('K' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('L' . $rowIsi2, $detRO['Retail_>11'])->getStyle('L' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('M' . $rowIsi2, number_format($percentRORetail[0], 2, '.', '') . '%')->getStyle('M' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('N' . $rowIsi2, number_format($percentRORetail[1], 2, '.', '') . '%')->getStyle('N' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('O' . $rowIsi2, number_format($percentRORetail[2], 2, '.', '') . '%')->getStyle('O' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('P' . $rowIsi2, number_format($percentRORetail[3], 2, '.', '') . '%')->getStyle('P' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-                $ObjSheet->setCellValue('H' . $rowIsi2, $TotalData)->getStyle('H' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('I' . $rowIsi2, $detRO['Retail_2-3'])->getStyle('I' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('J' . $rowIsi2, $detRO['Retail_4-5'])->getStyle('J' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('K' . $rowIsi2, $detRO['Retail_6-10'])->getStyle('K' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('L' . $rowIsi2, $detRO['Retail_>11'])->getStyle('L' . $rowIsi2)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('M' . $rowIsi2, number_format($percentRORetail[0], 2, '.', '') . '%')->getStyle('M' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('N' . $rowIsi2, number_format($percentRORetail[1], 2, '.', '') . '%')->getStyle('N' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('O' . $rowIsi2, number_format($percentRORetail[2], 2, '.', '') . '%')->getStyle('O' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('P' . $rowIsi2, number_format($percentRORetail[3], 2, '.', '') . '%')->getStyle('P' . $rowIsi2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $rowIsi2++;
+                    $subrow2 = $rowIsi2;
+                }
 
-                $rowIsi2++;
-                $subrow2 = $rowIsi2;
-            }
+                $totalPercentROR[2] += (!empty($totalRORetail[4]) ? (($totalRORetail[0] / $totalRORetail[4]) * 100) : 0);
+                $totalPercentROR[3] += (!empty($totalRORetail[4]) ? (($totalRORetail[1] / $totalRORetail[4]) * 100) : 0);
+                $totalPercentROR[4] += (!empty($totalRORetail[4]) ? (($totalRORetail[2] / $totalRORetail[4]) * 100) : 0);
+                $totalPercentROR[5] += (!empty($totalRORetail[4]) ? (($totalRORetail[3] / $totalRORetail[4]) * 100) : 0);
 
-            $percentRORetail[4] = (!empty($totalRORetail[5]) ? (($totalRORetail[4] / $totalRORetail[5]) * 100) : 0);
+                $ObjSheet->setCellValue('B' . $subrow2, $regional)->getStyle('B' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('C' . $subrow2, $totalRORetail[5])->getStyle('C' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('D' . $subrow2, $totalRORetail[4])->getStyle('D' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('E' . $subrow2, number_format($totalPercentROR[0], 2, '.', '') . '%')->getStyle('E' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('F' . $subrow2, number_format($totalPercentROR[1], 2, '.', '') . '%')->getStyle('F' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-            $ObjSheet->setCellValue('B' . $subrow2, $regional)->getStyle('B' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('C' . $subrow2, $totalRORetail[5])->getStyle('C' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('D' . $subrow2, $totalRORetail[4])->getStyle('D' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('E' . $subrow2, number_format($percentRORetail[4], 2, '.', '') . '%')->getStyle('E' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('F' . $subrow2, '100%')->getStyle('F' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('H' . $subrow2, $totalRORetail[4])->getStyle('H' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('I' . $subrow2, $totalRORetail[0])->getStyle('I' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('J' . $subrow2, $totalRORetail[1])->getStyle('J' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('K' . $subrow2, $totalRORetail[2])->getStyle('K' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('L' . $subrow2, $totalRORetail[3])->getStyle('L' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('M' . $subrow2, number_format($totalPercentROR[2], 2, '.', '') . '%')->getStyle('M' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('N' . $subrow2, number_format($totalPercentROR[3], 2, '.', '') . '%')->getStyle('N' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('O' . $subrow2, number_format($totalPercentROR[4], 2, '.', '') . '%')->getStyle('O' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('P' . $subrow2, number_format($totalPercentROR[5], 2, '.', '') . '%')->getStyle('P' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-            $ObjSheet->setCellValue('H' . $subrow2, $totalRORetail[4])->getStyle('H' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('I' . $subrow2, $totalRORetail[0])->getStyle('I' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('J' . $subrow2, $totalRORetail[1])->getStyle('J' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('K' . $subrow2, $totalRORetail[2])->getStyle('K' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('L' . $subrow2, $totalRORetail[3])->getStyle('L' . $subrow2)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('M' . $subrow2, number_format($percentRORetail[0], 2, '.', '') . '%')->getStyle('M' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('N' . $subrow2, number_format($percentRORetail[1], 2, '.', '') . '%')->getStyle('N' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('O' . $subrow2, number_format($percentRORetail[2], 2, '.', '') . '%')->getStyle('O' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('P' . $subrow2, number_format($percentRORetail[3], 2, '.', '') . '%')->getStyle('P' . $subrow2)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                //ISI
+                $ObjSheet->mergeCells('R' . ($rowHeader2 + 1) . ':R' . ($rowHeader2 + 3))->setCellValue('R' . ($rowHeader2 + 1), 'JUMLAH RETAIL RO RETAIL/APO')->getStyle('R' . ($rowHeader2 + 1) . ':R' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('S' . ($rowHeader2 + 1) . ':S' . ($rowHeader2 + 3))->setCellValue('S' . ($rowHeader2 + 1), 'JUMLAH APO')->getStyle('S' . ($rowHeader2 + 1) . ':S' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('0000FF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('T' . ($rowHeader2 + 1) . ':T' . ($rowHeader2 + 3))->setCellValue('T' . ($rowHeader2 + 1), 'RT2 RETAIL RO/APO')->getStyle('T' . ($rowHeader2 + 1) . ':T' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FF00', '000000'))->getAlignment()->setWrapText(true);
 
-            //ISI
-            $ObjSheet->mergeCells('R' . ($rowHeader2 + 1) . ':R' . ($rowHeader2 + 3))->setCellValue('R' . ($rowHeader2 + 1), 'JUMLAH RETAIL RO RETAIL/APO')->getStyle('R' . ($rowHeader2 + 1) . ':R' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('S' . ($rowHeader2 + 1) . ':S' . ($rowHeader2 + 3))->setCellValue('S' . ($rowHeader2 + 1), 'JUMLAH APO')->getStyle('S' . ($rowHeader2 + 1) . ':S' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('0000FF', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('T' . ($rowHeader2 + 1) . ':T' . ($rowHeader2 + 3))->setCellValue('T' . ($rowHeader2 + 1), 'RT2 RETAIL RO/APO')->getStyle('T' . ($rowHeader2 + 1) . ':T' . ($rowHeader2 + 3))->applyFromArray($this->styling_title_template('00FF00', '000000'))->getAlignment()->setWrapText(true);
-
-            $ObjSheet->setCellValue('R' . ($rowHeader2 + 4), $totalRORetail[4])->getStyle('R' . ($rowHeader2 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
-            $ObjSheet->setCellValue('S' . ($rowHeader2 + 4), $TotalAPO)->getStyle('S' . ($rowHeader2 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
-            $ObjSheet->setCellValue('T' . ($rowHeader2 + 4), (!empty($TotalAPO) ? round($totalRORetail[4] / $TotalAPO) : 0))->getStyle('T' . ($rowHeader2 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
+                $ObjSheet->setCellValue('R' . ($rowHeader2 + 4), $totalRORetail[4])->getStyle('R' . ($rowHeader2 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
+                $ObjSheet->setCellValue('S' . ($rowHeader2 + 4), $TotalAPO)->getStyle('S' . ($rowHeader2 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
+                $ObjSheet->setCellValue('T' . ($rowHeader2 + 4), (!empty($TotalAPO) ? round($totalRORetail[4] / $TotalAPO) : 0))->getStyle('T' . ($rowHeader2 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
+            // END RETAIL {{TAHUN}}
 
             // LOSS {{TAHUN}}
-            // HEADER
-            $rowHeader3 = $subrow2 + 2;
-            $ObjSheet->mergeCells('B' . $rowHeader3 . ':P' . $rowHeader3)->setCellValue('B' . $rowHeader3, $regional)->getStyle('B' . $rowHeader3 . ':P' . $rowHeader3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('B' . ($rowHeader3 + 1) . ':E' . ($rowHeader3 + 1))->setCellValue('B' . ($rowHeader3 + 1), 'LOSS 2022')->getStyle('B' . ($rowHeader3 + 1) . ':E' . ($rowHeader3 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->mergeCells('B' . ($rowHeader3 + 2) . ':B' . ($rowHeader3 + 3))->setCellValue('B' . ($rowHeader3 + 2), 'AREA')->getStyle('B' . ($rowHeader3 + 2) . ':B' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('C' . ($rowHeader3 + 2) . ':C' . ($rowHeader3 + 3))->setCellValue('C' . ($rowHeader3 + 2) . '', 'TOTAL LOSS')->getStyle('C' . ($rowHeader3 + 2) . ':C' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('D' . ($rowHeader3 + 2) . ':D' . ($rowHeader3 + 3))->setCellValue('D' . ($rowHeader3 + 2) . '', 'TOTAL RO LOSS 2022')->getStyle('D' . ($rowHeader3 + 2) . ':D' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('E' . ($rowHeader3 + 2) . ':E' . ($rowHeader3 + 3))->setCellValue('E' . ($rowHeader3 + 2) . '', '% RO VS TOTAL LOSS')->getStyle('E' . ($rowHeader3 + 2) . ':E' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('F' . ($rowHeader3 + 1) . ':F' . ($rowHeader3 + 3))->setCellValue('F' . ($rowHeader3 + 1) . '', '% RO 2022 VS RO 2021')->getStyle('F' . ($rowHeader3 + 1) . ':F' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
+                // HEADER
+                $rowHeader3 = $subrow2 + 2;
+                $ObjSheet->mergeCells('B' . $rowHeader3 . ':P' . $rowHeader3)->setCellValue('B' . $rowHeader3, $regional)->getStyle('B' . $rowHeader3 . ':P' . $rowHeader3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('B' . ($rowHeader3 + 1) . ':E' . ($rowHeader3 + 1))->setCellValue('B' . ($rowHeader3 + 1), 'LOSS ' . $year)->getStyle('B' . ($rowHeader3 + 1) . ':E' . ($rowHeader3 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->mergeCells('B' . ($rowHeader3 + 2) . ':B' . ($rowHeader3 + 3))->setCellValue('B' . ($rowHeader3 + 2), 'AREA')->getStyle('B' . ($rowHeader3 + 2) . ':B' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('C' . ($rowHeader3 + 2) . ':C' . ($rowHeader3 + 3))->setCellValue('C' . ($rowHeader3 + 2) . '', 'TOTAL LOSS')->getStyle('C' . ($rowHeader3 + 2) . ':C' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('D' . ($rowHeader3 + 2) . ':D' . ($rowHeader3 + 3))->setCellValue('D' . ($rowHeader3 + 2) . '', 'TOTAL RO LOSS ' . $year)->getStyle('D' . ($rowHeader3 + 2) . ':D' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('E' . ($rowHeader3 + 2) . ':E' . ($rowHeader3 + 3))->setCellValue('E' . ($rowHeader3 + 2) . '', '% RO VS TOTAL LOSS')->getStyle('E' . ($rowHeader3 + 2) . ':E' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('F' . ($rowHeader3 + 1) . ':F' . ($rowHeader3 + 3))->setCellValue('F' . ($rowHeader3 + 1) . '', '% RO 2022 VS RO 2021')->getStyle('F' . ($rowHeader3 + 1) . ':F' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'))->getAlignment()->setWrapText(true);
 
-            $ObjSheet->mergeCells('H' . ($rowHeader3 + 1) . ':P' . ($rowHeader3 + 1))->setCellValue('H' . ($rowHeader3 + 1), 'DETAIL RO LOSS 2022')->getStyle('H' . ($rowHeader3 + 1) . ':P' . ($rowHeader3 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->mergeCells('H' . ($rowHeader3 + 2) . ':H' . ($rowHeader3 + 3))->setCellValue('H' . ($rowHeader3 + 2), 'TOTAL RO')->getStyle('H' . ($rowHeader3 + 2) . ':H' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'));
-            $ObjSheet->mergeCells('I' . ($rowHeader3 + 2) . ':L' . ($rowHeader3 + 2))->setCellValue('I' . ($rowHeader3 + 2), 'RUTINITAS RO LOSS')->getStyle('I' . ($rowHeader3 + 2) . ':L' . ($rowHeader3 + 2))->applyFromArray($this->styling_title_template('FFC000', '000000'));
-            $ObjSheet->setCellValue('I' . ($rowHeader3 + 3), '2-3x')->getStyle('I' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('J' . ($rowHeader3 + 3), '4-5x')->getStyle('J' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('K' . ($rowHeader3 + 3), '6-10x')->getStyle('K' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('L' . ($rowHeader3 + 3), '11x UP')->getStyle('L' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->mergeCells('M' . ($rowHeader3 + 2) . ':P' . ($rowHeader3 + 2))->setCellValue('M' . ($rowHeader3 + 2), '% RUTINITAS RO LOSS')->getStyle('M' . ($rowHeader3 + 2) . ':P' . ($rowHeader3 + 2))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
-            $ObjSheet->setCellValue('M' . ($rowHeader3 + 3), '2-3x')->getStyle('M' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('N' . ($rowHeader3 + 3), '4-5x')->getStyle('N' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('O' . ($rowHeader3 + 3), '6-10x')->getStyle('O' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('P' . ($rowHeader3 + 3), '11x UP')->getStyle('P' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('H' . ($rowHeader3 + 1) . ':P' . ($rowHeader3 + 1))->setCellValue('H' . ($rowHeader3 + 1), 'DETAIL RO LOSS ' . $year)->getStyle('H' . ($rowHeader3 + 1) . ':P' . ($rowHeader3 + 1))->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->mergeCells('H' . ($rowHeader3 + 2) . ':H' . ($rowHeader3 + 3))->setCellValue('H' . ($rowHeader3 + 2), 'TOTAL RO')->getStyle('H' . ($rowHeader3 + 2) . ':H' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'));
+                $ObjSheet->mergeCells('I' . ($rowHeader3 + 2) . ':L' . ($rowHeader3 + 2))->setCellValue('I' . ($rowHeader3 + 2), 'RUTINITAS RO LOSS')->getStyle('I' . ($rowHeader3 + 2) . ':L' . ($rowHeader3 + 2))->applyFromArray($this->styling_title_template('FFC000', '000000'));
+                $ObjSheet->setCellValue('I' . ($rowHeader3 + 3), '2-3x')->getStyle('I' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('J' . ($rowHeader3 + 3), '4-5x')->getStyle('J' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('K' . ($rowHeader3 + 3), '6-10x')->getStyle('K' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('L' . ($rowHeader3 + 3), '11x UP')->getStyle('L' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('M' . ($rowHeader3 + 2) . ':P' . ($rowHeader3 + 2))->setCellValue('M' . ($rowHeader3 + 2), '% RUTINITAS RO LOSS')->getStyle('M' . ($rowHeader3 + 2) . ':P' . ($rowHeader3 + 2))->applyFromArray($this->styling_title_template('FF0000', 'FFFFFF'));
+                $ObjSheet->setCellValue('M' . ($rowHeader3 + 3), '2-3x')->getStyle('M' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('N' . ($rowHeader3 + 3), '4-5x')->getStyle('N' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('O' . ($rowHeader3 + 3), '6-10x')->getStyle('O' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('P' . ($rowHeader3 + 3), '11x UP')->getStyle('P' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FFFF', '000000'));
 
-            $rowIsi3 = ($rowHeader3 + 4);
-            $subrow3 = ($rowHeader3 + 4) + 0;
-            $totalROLoss = [0, 0, 0, 0, 0, 0];
-            $percentROLoss = [0, 0, 0, 0, 0];
-            foreach ($rOs[$regional] as $area => $detRO) {
-                $detRO = (array)$detRO;
+                $rowIsi3 = ($rowHeader3 + 4);
+                $subrow3 = ($rowHeader3 + 4) + 0;
+                $totalROLoss = [0, 0, 0, 0, 0, 0];
+                $percentROLoss = [0, 0, 0, 0, 0, 0];
+                $totalPercentROL = [0, 0, 0, 0, 0, 0];
+                foreach ($rOs[$regional] as $area => $detRO) {
+                    $detRO = (array)$detRO;
 
-                $TotalData = ($detRO['Loss_2-3'] + $detRO['Loss_4-5'] + $detRO['Loss_6-10'] + $detRO['Loss_>11']);
-                $totalROLoss[0] += $detRO['Loss_2-3'];
-                $totalROLoss[1] += $detRO['Loss_4-5'];
-                $totalROLoss[2] += $detRO['Loss_6-10'];
-                $totalROLoss[3] += $detRO['Loss_>11'];
-                $totalROLoss[4] += $TotalData;
-                $totalROLoss[5] += $detRO['TOTALLOSS'];
+                    $TotalData = ($detRO['Loss_2-3'] + $detRO['Loss_4-5'] + $detRO['Loss_6-10'] + $detRO['Loss_>11']);
+                    $totalROLoss[0] += $detRO['Loss_2-3'];
+                    $totalROLoss[1] += $detRO['Loss_4-5'];
+                    $totalROLoss[2] += $detRO['Loss_6-10'];
+                    $totalROLoss[3] += $detRO['Loss_>11'];
+                    $totalROLoss[4] += $TotalData;
+                    $totalROLoss[5] += $detRO['TOTALLOSS'];
 
-                $percentROLoss[0] = (!empty($TotalData) ? (($detRO['Loss_2-3'] / $TotalData) * 100) : 0);
-                $percentROLoss[1] = (!empty($TotalData) ? (($detRO['Loss_4-5'] / $TotalData) * 100) : 0);
-                $percentROLoss[2] = (!empty($TotalData) ? (($detRO['Loss_6-10'] / $TotalData) * 100) : 0);
-                $percentROLoss[3] = (!empty($TotalData) ? (($detRO['Loss_>11'] / $TotalData) * 100) : 0);
-                $percentROLoss[4] = (!empty($detRO['TOTALLOSS']) ? (($TotalData / $detRO['TOTALLOSS']) * 100) : 0);
+                    $percentROLoss[0] = (!empty($TotalData) ? (($detRO['Loss_2-3'] / $TotalData) * 100) : 0);
+                    $percentROLoss[1] = (!empty($TotalData) ? (($detRO['Loss_4-5'] / $TotalData) * 100) : 0);
+                    $percentROLoss[2] = (!empty($TotalData) ? (($detRO['Loss_6-10'] / $TotalData) * 100) : 0);
+                    $percentROLoss[3] = (!empty($TotalData) ? (($detRO['Loss_>11'] / $TotalData) * 100) : 0);
+                    $percentROLoss[4] = (!empty($detRO['TOTALLOSS']) ? (($TotalData / $detRO['TOTALLOSS']) * 100) : 0);
+                    $percentROLoss[5] = (!empty($detRO['ROVSAL']) ? ($detRO['ROVSBL'] / $detRO['ROVSAL']) : 0);
+                    
+                    $totalPercentROL[0] += (!empty($detRO['ROVSAL']) ? (($TotalData / $detRO['ROVSAL']) * 100) : 0);
+                    $totalPercentROL[1] += (!empty($detRO['ROVSAL']) ? ($detRO['ROVSBL'] / $detRO['ROVSAL']) : 0);
 
-                $ObjSheet->setCellValue('B' . $rowIsi3, $area)->getStyle('B' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('C' . $rowIsi3, $detRO['TOTALLOSS'])->getStyle('C' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('D' . $rowIsi3, $TotalData)->getStyle('D' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('E' . $rowIsi3, number_format($percentROPS[4], 2, '.', '') . '%')->getStyle('E' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('F' . $rowIsi3, '100%')->getStyle('F' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('B' . $rowIsi3, $area)->getStyle('B' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('C' . $rowIsi3, $detRO['TOTALLOSS'])->getStyle('C' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('D' . $rowIsi3, $TotalData)->getStyle('D' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('E' . $rowIsi3, number_format($percentROPS[4], 2, '.', '') . '%')->getStyle('E' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('F' . $rowIsi3, number_format($percentROPS[5], 2, '.', '') . '%')->getStyle('F' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-                $ObjSheet->setCellValue('H' . $rowIsi3, $TotalData)->getStyle('H' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('I' . $rowIsi3, $detRO['Loss_2-3'])->getStyle('I' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('J' . $rowIsi3, $detRO['Loss_4-5'])->getStyle('J' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('K' . $rowIsi3, $detRO['Loss_6-10'])->getStyle('K' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('L' . $rowIsi3, $detRO['Loss_>11'])->getStyle('L' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
-                $ObjSheet->setCellValue('M' . $rowIsi3, number_format($percentROLoss[0], 2, '.', '') . '%')->getStyle('M' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('N' . $rowIsi3, number_format($percentROLoss[1], 2, '.', '') . '%')->getStyle('N' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('O' . $rowIsi3, number_format($percentROLoss[2], 2, '.', '') . '%')->getStyle('O' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-                $ObjSheet->setCellValue('P' . $rowIsi3, number_format($percentROLoss[3], 2, '.', '') . '%')->getStyle('P' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('H' . $rowIsi3, $TotalData)->getStyle('H' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('I' . $rowIsi3, $detRO['Loss_2-3'])->getStyle('I' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('J' . $rowIsi3, $detRO['Loss_4-5'])->getStyle('J' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('K' . $rowIsi3, $detRO['Loss_6-10'])->getStyle('K' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('L' . $rowIsi3, $detRO['Loss_>11'])->getStyle('L' . $rowIsi3)->applyFromArray($this->styling_default_template('11', '000000'));
+                    $ObjSheet->setCellValue('M' . $rowIsi3, number_format($percentROLoss[0], 2, '.', '') . '%')->getStyle('M' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('N' . $rowIsi3, number_format($percentROLoss[1], 2, '.', '') . '%')->getStyle('N' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('O' . $rowIsi3, number_format($percentROLoss[2], 2, '.', '') . '%')->getStyle('O' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                    $ObjSheet->setCellValue('P' . $rowIsi3, number_format($percentROLoss[3], 2, '.', '') . '%')->getStyle('P' . $rowIsi3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-                $rowIsi3++;
-                $subrow3 = $rowIsi3;
-            }
+                    $rowIsi3++;
+                    $subrow3 = $rowIsi3;
+                }
+                
+                $totalPercentROL[2] += (!empty($totalROLoss[4]) ? (($totalROLoss[0] / $totalROLoss[4]) * 100) : 0);
+                $totalPercentROL[3] += (!empty($totalROLoss[4]) ? (($totalROLoss[1] / $totalROLoss[4]) * 100) : 0);
+                $totalPercentROL[4] += (!empty($totalROLoss[4]) ? (($totalROLoss[2] / $totalROLoss[4]) * 100) : 0);
+                $totalPercentROL[5] += (!empty($totalROLoss[4]) ? (($totalROLoss[3] / $totalROLoss[4]) * 100) : 0);
 
-            $percentROLoss[4] = (!empty($totalROLoss[5]) ? (($totalROLoss[4] / $totalROLoss[5]) * 100) : 0);
+                $ObjSheet->setCellValue('B' . $subrow3, $regional)->getStyle('B' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('C' . $subrow3, $totalROLoss[5])->getStyle('C' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('D' . $subrow3, $totalROLoss[4])->getStyle('D' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('E' . $subrow3, number_format($totalPercentROL[0], 2, '.', '') . '%')->getStyle('E' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('F' . $subrow3, number_format($totalPercentROL[1], 2, '.', '') . '%')->getStyle('F' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-            $ObjSheet->setCellValue('B' . $subrow3, $regional)->getStyle('B' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('C' . $subrow3, $totalROLoss[5])->getStyle('C' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('D' . $subrow3, $totalROLoss[4])->getStyle('D' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('E' . $subrow3, number_format($percentROLoss[4], 2, '.', '') . '%')->getStyle('E' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('F' . $subrow3, '100%')->getStyle('F' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('H' . $subrow3, $totalROLoss[4])->getStyle('H' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('I' . $subrow3, $totalROLoss[0])->getStyle('I' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('J' . $subrow3, $totalROLoss[1])->getStyle('J' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('K' . $subrow3, $totalROLoss[2])->getStyle('K' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('L' . $subrow3, $totalROLoss[3])->getStyle('L' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->setCellValue('M' . $subrow3, number_format($totalPercentROL[2], 2, '.', '') . '%')->getStyle('M' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('N' . $subrow3, number_format($totalPercentROL[3], 2, '.', '') . '%')->getStyle('N' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('O' . $subrow3, number_format($totalPercentROL[4], 2, '.', '') . '%')->getStyle('O' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
+                $ObjSheet->setCellValue('P' . $subrow3, number_format($totalPercentROL[5], 2, '.', '') . '%')->getStyle('P' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
 
-            $ObjSheet->setCellValue('H' . $subrow3, $totalROLoss[4])->getStyle('H' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('I' . $subrow3, $totalROLoss[0])->getStyle('I' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('J' . $subrow3, $totalROLoss[1])->getStyle('J' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('K' . $subrow3, $totalROLoss[2])->getStyle('K' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('L' . $subrow3, $totalROLoss[3])->getStyle('L' . $subrow3)->applyFromArray($this->styling_title_template('00FFFF', '000000'));
-            $ObjSheet->setCellValue('M' . $subrow3, number_format($percentROLoss[0], 2, '.', '') . '%')->getStyle('M' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('N' . $subrow3, number_format($percentROLoss[1], 2, '.', '') . '%')->getStyle('N' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('O' . $subrow3, number_format($percentROLoss[2], 2, '.', '') . '%')->getStyle('O' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-            $ObjSheet->setCellValue('P' . $subrow3, number_format($percentROLoss[3], 2, '.', '') . '%')->getStyle('P' . $subrow3)->applyFromArray($this->styling_title_template('00FF00', '000000'));
-
-            //ISI
-            $ObjSheet->mergeCells('R' . ($rowHeader3 + 1) . ':R' . ($rowHeader3 + 3))->setCellValue('R' . ($rowHeader3 + 1), 'JUMLAH LOSS RO LOSS/APO')->getStyle('R' . ($rowHeader3 + 1) . ':R' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('S' . ($rowHeader3 + 1) . ':S' . ($rowHeader3 + 3))->setCellValue('S' . ($rowHeader3 + 1), 'JUMLAH APO')->getStyle('S' . ($rowHeader3 + 1) . ':S' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('0000FF', '000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('T' . ($rowHeader3 + 1) . ':T' . ($rowHeader3 + 3))->setCellValue('T' . ($rowHeader3 + 1), 'RT2 LOSS RO/APO')->getStyle('T' . ($rowHeader3 + 1) . ':T' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FF00', '000000'))->getAlignment()->setWrapText(true);
-
-            $ObjSheet->setCellValue('R' . ($rowHeader3 + 4), $totalROLoss[4])->getStyle('R' . ($rowHeader3 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
-            $ObjSheet->setCellValue('S' . ($rowHeader3 + 4), $TotalAPO)->getStyle('S' . ($rowHeader3 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
-            $ObjSheet->setCellValue('T' . ($rowHeader3 + 4), (!empty($TotalAPO) ? round($totalROLoss[4] / $TotalAPO) : 0))->getStyle('T' . ($rowHeader3 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
+                //ISI
+                $ObjSheet->mergeCells('R' . ($rowHeader3 + 1) . ':R' . ($rowHeader3 + 3))->setCellValue('R' . ($rowHeader3 + 1), 'JUMLAH LOSS RO LOSS/APO')->getStyle('R' . ($rowHeader3 + 1) . ':R' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('FFFF00', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('S' . ($rowHeader3 + 1) . ':S' . ($rowHeader3 + 3))->setCellValue('S' . ($rowHeader3 + 1), 'JUMLAH APO')->getStyle('S' . ($rowHeader3 + 1) . ':S' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('0000FF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->mergeCells('T' . ($rowHeader3 + 1) . ':T' . ($rowHeader3 + 3))->setCellValue('T' . ($rowHeader3 + 1), 'RT2 LOSS RO/APO')->getStyle('T' . ($rowHeader3 + 1) . ':T' . ($rowHeader3 + 3))->applyFromArray($this->styling_title_template('00FF00', '000000'))->getAlignment()->setWrapText(true);
+                
+                $ObjSheet->setCellValue('R' . ($rowHeader3 + 4), $totalROLoss[4])->getStyle('R' . ($rowHeader3 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
+                $ObjSheet->setCellValue('S' . ($rowHeader3 + 4), $TotalAPO)->getStyle('S' . ($rowHeader3 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
+                $ObjSheet->setCellValue('T' . ($rowHeader3 + 4), (!empty($TotalAPO) ? round($totalROLoss[4] / $TotalAPO) : 0))->getStyle('T' . ($rowHeader3 + 4))->applyFromArray($this->styling_default_template('11', '000000'));
+            // END LOSS {{TAHUN}}
+            
         }
 
         $spreadsheet->removeSheetByIndex(0);
@@ -497,12 +519,12 @@ class ReportRepeatOrder
                         $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[0])->setWidth('20');
                         $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[1])->setWidth('20');
                         $keyData = $tmpArray["KEY" . $i];
-                        
+
                         $ObjSheet->mergeCells(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->setCellValue(explode(';', $groupsDataRange[$i])[0] . '2', $months[$i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '3', 'TOTAL AKTIVITAS')->getStyle(explode(';', $groupsDataRange[$i])[0] . '3')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '3', 'TOTAL INNER')->getStyle(explode(';', $groupsDataRange[$i])[1] . '3')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
 
-                        
+
                         // ISI KONTEN
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '' . $rowData, $tmpArray["VALUE" . $i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '' . $rowData, $tmpArray["VALUE2" . $i])->getStyle(explode(';', $groupsDataRange[$i])[1] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
@@ -535,6 +557,7 @@ class ReportRepeatOrder
         $months = array(
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
         );
+        $year = date('Y');
         foreach ($rOs as $key => $item) {
             $ObjSheet = $spreadsheet->createSheet();
             $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $key));
@@ -576,7 +599,7 @@ class ReportRepeatOrder
             foreach ($months as $key => $detItem) {
                 $ObjSheet->setCellValue($dataRange[$key] . '4', $detItem)->getStyle($dataRange[$key] . '4')->applyFromArray($this->styling_title_template('FFFFFF00', '000000'));
             }
-            $ObjSheet->setCellValue('T4', 'RT 2022')->getStyle('T4')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFF'));
+            $ObjSheet->setCellValue('T4', 'RT ' . $year)->getStyle('T4')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFF'));
             $ObjSheet->setCellValue('U4', '% RT2 VS TGT')->getStyle('U4')->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFF'))->getAlignment()->setWrapText(true);
 
             // ISI KONTEN
@@ -758,6 +781,136 @@ class ReportRepeatOrder
         $spreadsheet->removeSheetByIndex(0);
 
         $fileName = 'Repeat Order VS Test';
+
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel'); // generate excel file
+        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
+    public function gen_akt_trx_apo($rOs)
+    {
+        $spreadsheet = new Spreadsheet();
+        $dataRange = array_slice($this->CustomRange('AA'), count(range('A', 'C')));
+        $groups = array();
+        for ($i = 0; $i < count($dataRange) - 1; $i += 2) {
+            $group = $dataRange[$i] . ';' . $dataRange[$i + 1];
+            $groups[] = $group;
+        }
+        $months = array(
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
+        );
+        foreach ($rOs as $keyMain => $item) {
+            $ObjSheet = $spreadsheet->createSheet();
+            $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $keyMain));
+
+            $ObjSheet->getColumnDimension('B')->setWidth('15');
+            $ObjSheet->getColumnDimension('C')->setWidth('9');
+            $ObjSheet->getColumnDimension('D')->setWidth('9');
+            $ObjSheet->getColumnDimension('E')->setWidth('9');
+            $ObjSheet->getColumnDimension('F')->setWidth('9');
+            $ObjSheet->getColumnDimension('G')->setWidth('9');
+            $ObjSheet->getColumnDimension('G')->setWidth('9');
+            $ObjSheet->getColumnDimension('H')->setWidth('9');
+            $ObjSheet->getColumnDimension('I')->setWidth('9');
+            $ObjSheet->getColumnDimension('J')->setWidth('9');
+            $ObjSheet->getColumnDimension('K')->setWidth('9');
+            $ObjSheet->getColumnDimension('L')->setWidth('9');
+            $ObjSheet->getColumnDimension('M')->setWidth('9');
+            $ObjSheet->getColumnDimension('N')->setWidth('9');
+            $ObjSheet->getColumnDimension('O')->setWidth('9');
+            $ObjSheet->getColumnDimension('P')->setWidth('9');
+            $ObjSheet->getColumnDimension('Q')->setWidth('9');
+            $ObjSheet->getColumnDimension('R')->setWidth('9');
+            $ObjSheet->getColumnDimension('S')->setWidth('9');
+            $ObjSheet->getColumnDimension('T')->setWidth('9');
+            $ObjSheet->getColumnDimension('U')->setWidth('9');
+            $ObjSheet->getColumnDimension('V')->setWidth('9');
+            $ObjSheet->getColumnDimension('W')->setWidth('9');
+            $ObjSheet->getColumnDimension('X')->setWidth('9');
+            $ObjSheet->getColumnDimension('Y')->setWidth('9');
+            $ObjSheet->getColumnDimension('Z')->setWidth('9');
+            $ObjSheet->getColumnDimension('AA')->setWidth('9');
+            
+            $ObjSheet->getColumnDimension('AB')->setWidth('2');
+            $ObjSheet->getColumnDimension('AC')->setWidth('9');
+            $ObjSheet->getColumnDimension('AD')->setWidth('9');
+
+            // HEADER
+            $ObjSheet->mergeCells('B3:B6')->setCellValue('B3', 'AREA')->getStyle('B3:B6')->applyFromArray($this->styling_title_template('66ffff', 'FF000000'));
+            $ObjSheet->mergeCells('C3:C6')->setCellValue('C3', 'TGT TRX / BLN')->getStyle('C3:C6')->applyFromArray($this->styling_title_template('ff0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+
+            foreach ($groups as $key => $detItem) {
+                $ObjSheet->mergeCells('D3:AA3')->setCellValue('D3', 'AKTIVITAS TRX APPS 2023')->getStyle('D3:AA3')->applyFromArray($this->styling_title_template('ffff00', 'FF000000'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[1] . '4')->setCellValue(explode(';', $detItem)[0] . '4', $months[$key])->getStyle(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[1] . '4')->applyFromArray($this->styling_title_template('66ffff', 'FF000000'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[0] . '5:' . explode(';', $detItem)[0] . '6')->setCellValue(explode(';', $detItem)[0] . '5', 'TRX')->getStyle(explode(';', $detItem)[0] . '5:' . explode(';', $detItem)[0] . '6')->applyFromArray($this->styling_title_template('0c13ff', 'FFFFFFFF'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[1] . '5:' . explode(';', $detItem)[1] . '6')->setCellValue(explode(';', $detItem)[1] . '5', '% TRX VS TGT')->getStyle(explode(';', $detItem)[1] . '5:' . explode(';', $detItem)[1] . '6')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+            }
+
+            $ObjSheet->mergeCells('AC3:AD4')->setCellValue('AC3', 'Rata - Rata ' . date('Y'))->getStyle('AC3:AD4')->applyFromArray($this->styling_title_template('66ffff', 'FF000000'));
+            $ObjSheet->mergeCells('AC5:AC6')->setCellValue('AC5', 'TRX')->getStyle('AC5:AC6')->applyFromArray($this->styling_title_template('0c13ff', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+            $ObjSheet->mergeCells('AD5:AD6')->setCellValue('AD5', '% TRX VS TGT')->getStyle('AD5:AD6')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+
+            // ISI KONTEN
+            $start = 6;
+            $rowData = 7;
+
+            $TotalAllCall = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $TotalAllRO = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $sumTgtTrxBln = 0;
+            foreach ($item as $detItem) {
+                $ObjSheet->setCellValue('B' . $rowData, $detItem['AREA'])->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue('C' . $rowData, $detItem['TGT_TRX_BLN'])->getStyle('C' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                foreach ($groups as $key => $groupsItem) {
+                    $TotalAllCall[$key] += $detItem['TRX'][$key];
+                    $TotalAllRO[$key] += $detItem['TGTVS'][$key];
+                    
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $detItem['TRX'][$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $detItem['TGTVS'][$key]. '%')->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                }
+
+                $totCall = array_sum($detItem['TRX']);
+                $countCall = count($detItem['TRX']);
+                $avgCall = $totCall / $countCall;
+                $sumTgtTrxBln += intval($detItem['TGT_TRX_BLN']);
+
+                $totRo = array_sum($detItem['TGTVS']);
+                $countRo = count($detItem['TGTVS']);
+                $avgRo = $totRo / $countRo;
+
+                $ObjSheet->setCellValue('AC' . $rowData, $avgCall)->getStyle('AC' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue('AD' . $rowData, $avgRo)->getStyle('AD' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+
+                $rowData++;
+            }
+
+            // FOOTER
+            foreach ($groups as $key => $groupsItem) {
+                // dd($groupsItem);die;
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $TotalAllCall[$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $TotalAllRO[$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+            }
+
+            $totAllCall = array_sum($TotalAllCall);
+            $countAllCall = count($TotalAllCall);
+            $avgAllCall = $totAllCall / $countAllCall;
+
+            $totAllRo = array_sum($TotalAllCall);
+            $countAllRo = count($TotalAllCall);
+            $avgAllRo = $totAllRo / $countAllRo;
+
+            $ObjSheet->setCellValue('AC' . $rowData, $avgAllCall)->getStyle('AC' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->setCellValue('AD' . $rowData, $avgAllRo)->getStyle('AD' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+
+            $ObjSheet->setCellValue('B' . $rowData, $keyMain)->getStyle('B' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+            $ObjSheet->setCellValue('C' . $rowData, $sumTgtTrxBln)->getStyle('C' . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+        }
+
+        $spreadsheet->removeSheetByIndex(0);
+
+        $fileName = 'Aktivitas TRX APPS APO';
 
         $writer = new Xlsx($spreadsheet);
 

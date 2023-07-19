@@ -47,6 +47,21 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header d-block">
+                                <h4 class="card-title">Total Transaksi per type</h4>
+                            </div>
+                            <div class="card-body text-center">
+                            <h4 class="card-title">Pedagang Sayur <span class="mx-3 badge badge-sm light badge-success">{{ $transaction[0]['TOT_PS'] }}</span></h4>
+                            <h4 class="card-title">Retail <span class="mx-3 badge badge-sm light badge-success">{{ $transaction[0]['TOT_RETAIL'] }}</span></h4>
+                            <h4 class="card-title">Loss <span class="mx-3 badge badge-sm light badge-success">{{ $transaction[0]['TOT_LOSS'] }}</span></h4>
+                            <h4 class="card-title">Permanen <span class="mx-3 badge badge-sm light badge-success">{{ $transaction[0]['TOT_PERMA'] }}</span></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-block">
                                 <h4 class="card-title">Total Penjualan <span class="mx-3 badge badge-sm light badge-success">{{ $all_sell }}</span></h4>
                             </div>
                             <div class="card-body">
@@ -163,6 +178,15 @@
                                 <div class="accordion__item">
                                     <div class="accordion__header collapsed" data-toggle="collapse" data-target="#bordered_collapse<?= $no; ?>" aria-expanded="false" <?= $bg ?>>
                                         <span class="accordion__header--text"><?= $data_spread['NAME_SHOP']; ?></span>
+                                        @if($data_spread['TYPE_SHOP'] == 'Pedagang Sayur')
+                                        <span class="badge badge-success">Pedagang Sayur</span>
+                                        @elseif($data_spread['TYPE_SHOP'] == 'Retail')
+                                        <span class="badge badge-secondary">Retail</span>
+                                        @elseif($data_spread['TYPE_SHOP'] == 'Loss')
+                                        <span class="badge badge-light">Loss</span>
+                                        @elseif($data_spread['TYPE_SHOP'] == 'Permanen')
+                                        <span class="badge badge-danger">Permanen</span>
+                                        @endif
                                         <span class="accordion__header--text float-right mr-4"><?= date_format(date_create($data_spread['DATE_TRANS']), 'j F Y - H:i'); ?></span>
                                         <span class="accordion__header--indicator"></span>
                                     </div>

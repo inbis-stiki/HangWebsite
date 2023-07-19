@@ -16,6 +16,8 @@ use App\ReportRanking;
 use App\ReportTransaction;
 use App\ReportTrend;
 use App\RangeRepeat;
+use App\ReportAktivitasTRX;
+use App\ReportPerformance;
 use App\ReportRepeatOrder;
 use App\Shop;
 use App\ReportShopHead;
@@ -359,12 +361,14 @@ class CronjobController extends Controller
     }
     public function genRORPO($yearMonth)
     {
+        set_time_limit(360);
         $year = date_format(date_create($yearMonth), 'Y');
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
         $rOs = Cronjob::queryGetRepeatOrder($year, $month);
-        app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at);
+        // dd($rOs);
+        app(ReportRepeatOrder::class)->gen_ro_rpo($rOs, $updated_at, $year);
     }
     public function genROSHOP($yearMonth)
     {
@@ -451,7 +455,7 @@ class CronjobController extends Controller
                 // $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
                 if ($item->REGIONAL_TRANS == 'SUM 1') {
                     $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $item->REGIONAL_TRANS) . $year . $month);
-                }else{
+                } else {
                     $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
                 }
                 $ReportDet->ID_HEAD               = "REP_" . $unik2;
@@ -619,30 +623,182 @@ class CronjobController extends Controller
         );
         app(ReportRepeatOrder::class)->gen_ro_test($rOs);
     }
-    public function genROVSTEST()
+    public function genPerformance(Request $req)
     {
+        set_time_limit(360);
+
+        $dateStart = explode('-', $_GET['dateStart']);
+        $year = ltrim($dateStart[0], '0');
+
+        $id_pc =  $req->input('category');
+
+        $rOs = Cronjob::queryPerformance($year, $id_pc);
+
+        if ($id_pc == '2') {
+            app(ReportPerformance::class)->gen_performance_nonust($rOs, $year);
+        }elseif ($id_pc == '17') {
+            app(ReportPerformance::class)->gen_performance_geprek($rOs, $year);
+        }elseif ($id_pc == '16') {
+            app(ReportPerformance::class)->gen_performance_rendang($rOs, $year);
+        }elseif ($id_pc == '12') {
+            app(ReportPerformance::class)->gen_performance_ust($rOs, $year);
+        }
+
+    }
+    public function genPerformanceREKAP($yearReq)
+    {
+        set_time_limit(360);
+
+        $year = date_format(date_create($yearReq), 'Y');
         $rOs = array(
             'JATIM 1' => [
                 0 => [
                     'AREA' => 'SURABAYA 1',
-                    'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
                 ],
                 1 => [
                     'AREA' => 'SURABAYA 2',
-                    'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-                ]
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
+                ],
+                2 => [
+                    'AREA' => 'SURABAYA 3',
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
+                ],
             ],
             'JATIM 2' => [
                 0 => [
-                    'AREA' => 'MALANG',
-                    'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-                    'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    'AREA' => 'MALANG 1',
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
+                ],
+                1 => [
+                    'AREA' => 'MALANG 2',
+                    'NON_UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UGP' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'URD' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ],
+                    'UST' => [
+                        'TOT_REAL' => [80, 12, 10],
+                        'MONTH' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+                    ]
                 ]
-            ]
+            ],
         );
+
+        $rOs = Cronjob::queryPerformanceAll($year);
+
+        app(ReportPerformance::class)->gen_performance_rekap($rOs, $year);
+    }
+    public function genROVSTEST(Request $req)
+    {
+        // $rOs = array(
+        //     'JATIM 1' => [
+        //         0 => [
+        //             'AREA' => 'SURABAYA 1',
+        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+        //         ],
+        //         1 => [
+        //             'AREA' => 'SURABAYA 2',
+        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+        //         ]
+        //     ],
+        //     'JATIM 2' => [
+        //         0 => [
+        //             'AREA' => 'MALANG',
+        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
+        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
+        //         ]
+        //     ]
+        // );
+
+        set_time_limit(600);
+
+        $dateStart = explode('-', $_GET['yearStart']);
+        $year = ltrim($dateStart[0], '0');
+
+        $rOs = Cronjob::queryROVSTEST($year);
+        // dd($rOs);
+
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
+    }
+    public function genAktTRXAPO($yearReq)
+    {
+        set_time_limit(360);
+
+        $rOs = Cronjob::queryGetAktTrxAPO($yearReq);
+
+        // dd($rOs);die;
+
+        app(ReportAktivitasTRX::class)->gen_akt_trx_apo($rOs);
     }
     public function Testing(ReportQuery $reportQuery)
     {
