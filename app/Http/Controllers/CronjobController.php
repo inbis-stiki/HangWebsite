@@ -422,6 +422,7 @@ class CronjobController extends Controller
     }
     public function genRORPOS($yearMonth)
     {
+        set_time_limit(3600);
         $year = date_format(date_create($yearMonth), 'Y');
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
@@ -758,29 +759,7 @@ class CronjobController extends Controller
     }
     public function genROVSTEST(Request $req)
     {
-        // $rOs = array(
-        //     'JATIM 1' => [
-        //         0 => [
-        //             'AREA' => 'SURABAYA 1',
-        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-        //         ],
-        //         1 => [
-        //             'AREA' => 'SURABAYA 2',
-        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-        //         ]
-        //     ],
-        //     'JATIM 2' => [
-        //         0 => [
-        //             'AREA' => 'MALANG',
-        //             'RTCALL' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20],
-        //             'RTRO' => [0, 1, 4, 7, 9, 10, 22, 9, 10, 11, 19, 20]
-        //         ]
-        //     ]
-        // );
-
-        set_time_limit(600);
+        set_time_limit(3600);
 
         $dateStart = explode('-', $_GET['yearStart']);
         $year = ltrim($dateStart[0], '0');
