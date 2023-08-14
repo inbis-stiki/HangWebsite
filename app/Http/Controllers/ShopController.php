@@ -159,7 +159,7 @@ class ShopController extends Controller
                 SELECT 
                     ms.NAME_SHOP ,
                     md.NAME_DISTRICT ,
-                    ma.NAME_AREA
+                    COUNT(ms.ID_SHOP) AS TOT_SHOP
                 FROM 
                     md_shop ms
                 LEFT JOIN md_district md ON
@@ -169,9 +169,12 @@ class ShopController extends Controller
                 LEFT JOIN md_regional mr ON 
                     mr.ID_REGIONAL = ma.ID_REGIONAL 
                 GROUP BY
-                    ms.ID_DISTRICT,
-                    md.ID_AREA 
+                    ms.NAME_SHOP,
+                    ms.ID_DISTRICT
+                HAVING
+                    TOT_SHOP > 1
                 ORDER BY 
+                    TOT_SHOP DESC,
                     ms.NAME_SHOP ASC
             ")
         );
