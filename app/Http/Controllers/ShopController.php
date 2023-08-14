@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Shop;
 use App\logmd;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Session;
@@ -148,5 +149,37 @@ class ShopController extends Controller
         }     
 
         return redirect('master/shop')->with('succ_msg', 'Berhasil mengubah data Toko!');
+    }
+
+    public function ShopListByDistrict()
+    {
+        DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+        $query = DB::select(
+            DB::raw("
+                SELECT 
+                    ms.NAME_SHOP ,
+                    md.NAME_DISTRICT ,
+                    ma.NAME_AREA
+                FROM 
+                    md_shop ms
+                LEFT JOIN md_district md ON
+                    md.ID_DISTRICT = ms.ID_DISTRICT 
+                LEFT JOIN md_area ma ON 
+                    ma.ID_AREA = md.ID_DISTRICT 
+                LEFT JOIN md_regional mr ON 
+                    mr.ID_REGIONAL = ma.ID_REGIONAL 
+                GROUP BY
+                    ms.ID_DISTRICT,
+                    md.ID_AREA 
+                ORDER BY 
+                    ms.NAME_SHOP ASC
+            ")
+        );
+
+        return response([
+            'status_code'       => 200,
+            'status_message'    => 'Data berhasil diambil!',
+            'data'              => $query
+        ], 200);
     }
 }
