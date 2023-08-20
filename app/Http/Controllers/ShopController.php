@@ -170,7 +170,7 @@ class ShopController extends Controller
             ms.NAME_SHOP, 
             ms.ID_DISTRICT 
           HAVING
-            TOT_SHOP > 10
+            TOT_SHOP > 6    
           ORDER BY 
             TOT_SHOP DESC, 
             ms.NAME_SHOP ASC
@@ -181,20 +181,17 @@ class ShopController extends Controller
         foreach ($query as $key) {
             $limit = $key->TOT_SHOP -1;
             $counter=$counter+$limit;
-            echo $key->NAME_AREA." - ";
+            echo $key->NAME_SHOP." - ";
             echo $key->NAME_AREA." - ";
             echo $key->NAME_DISTRICT." - ";
             echo $key->TOT_SHOP." - ";
             echo $limit."</br>";
-            // DB::statement("
-            // update md_shop ms 
-            // join md_district md on ms.ID_DISTRICT=md.ID_DISTRICT 
-            // join md_area ma on ma.ID_AREA=md.ID_AREA 
-            // set ms.deleted_at=NOW() 
-            // where md.NAME_DISTRICT='".$key->NAME_DISTRICT."' and ma.NAME_AREA = '".$key->NAME_AREA."' and ms.NAME_SHOP = '".$key->NAME_SHOP."' LIMIT ". $limit.";");
-            // $i++;
-
-            echo "</br></br>";
+            DB::statement("
+            update md_shop ms 
+            join md_district md on ms.ID_DISTRICT=md.ID_DISTRICT 
+            join md_area ma on ma.ID_AREA=md.ID_AREA 
+            set ms.deleted_at=NOW() 
+            where md.NAME_DISTRICT='".$key->NAME_DISTRICT."' and ma.NAME_AREA = '".$key->NAME_AREA."' and ms.NAME_SHOP = '".$key->NAME_SHOP."' LIMIT ". $limit.";");
         }
 
         echo $counter;
