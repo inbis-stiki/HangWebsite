@@ -15,6 +15,8 @@ use App\UserRankingActivity;
 use App\ReportRanking;
 use App\ReportTransaction;
 use App\ReportTrend;
+use App\Rovscall;
+use App\Rovscalldet;
 use App\RangeRepeat;
 use App\ReportAktivitasTRX;
 use App\ReportPerformance;
@@ -764,10 +766,68 @@ class CronjobController extends Controller
         $dateStart = explode('-', $_GET['yearStart']);
         $year = ltrim($dateStart[0], '0');
 
-        $rOs = Cronjob::queryROVSTEST($year);
-        // dd($rOs);
+        $rOs = Cronjob::queryROVSTESTq($year);
 
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
+    }
+
+    public function genROVSCALLIN($yearReq)
+    {
+        set_time_limit(3600);
+        $year = date_format(date_create($yearReq), 'Y');
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $rOs = Cronjob::queryROVSTEST($yearReq);
+
+        // dd($rOs);
+
+        $monthArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        foreach ($rOs as $regionName => $entries) {
+            $regionUnik = md5($regionName . $year);
+            
+            // Insert or update Region
+            Rovscall::firstOrCreate(
+                ['ID_HEAD' => $regionUnik],
+                ['ID_REGIONAL' => $regionName]
+            );
+            
+            foreach ($entries as $entry) {
+                $areaName = $entry['AREA'];
+                $areaUnik = md5($areaName . $year);
+
+                $regionUnik2 = md5($regionName . $year);
+                
+                $rtcallArray = $entry['RTCALL'];
+                $rtroArray = $entry['RTRO'];
+
+                for ($i = 0; $i < count($monthArray); $i++) {
+                    $month = $monthArray[$i];
+                    $rtcallValue = $rtcallArray[$i];
+                    $rtroValue = $rtroArray[$i];
+            
+                    // Insert RTCALL data
+                    Rovscalldet::create([
+                        'ID_HEAD' => $regionUnik2,
+                        'ID_REGION' => $regionName,
+                        'NAME_AREA' => $areaName,
+                        'MONTH' => $month,
+                        'VALUE' => $rtcallValue,
+                        'TYPE' => 'RTCALL',
+                    ]);
+        
+                    // Insert RTRO data
+                    Rovscalldet::create([
+                        'ID_HEAD' => $regionUnik2,
+                        'ID_REGION' => $regionName,
+                        'NAME_AREA' => $areaName,
+                        'MONTH' => $month,
+                        'VALUE' => $rtroValue,
+                        'TYPE' => 'RTRO',
+                    ]);
+                }
+            }
+        }
     }
     public function genAktTRXAPO($yearReq)
     {

@@ -996,9 +996,21 @@ class Cronjob extends Model
         return $areas;
     }
 
+    public static function getregy($year)
+    {
+        $areas = DB::select("
+            SELECT t.REGIONAL_TRANS 
+            FROM `transaction` t 
+            WHERE YEAR(t.DATE_TRANS) = " . $year . "
+            GROUP BY t.REGIONAL_TRANS 
+            ORDER BY t.REGIONAL_TRANS ASC
+        ");
+
+        return $areas;
+    }
+
     public static function queryGetRepeatOrderShop($year, $month)
     {
-
         $rOs = DB::select("
         SELECT
             ms.ID_SHOP,
@@ -1624,6 +1636,56 @@ class Cronjob extends Model
         }
 
         return $rOs;
+    }
+
+    public static function queryROVSTESTq($year)
+    {
+        $results = DB::select("
+            SELECT
+                r.ID_REGIONAL AS region_name,
+                rd.NAME_AREA AS area_name,
+                rd.TYPE,
+                rd.VALUE
+            FROM
+                report_rovscall_head r
+            JOIN
+                report_rovscall_det rd ON r.ID_HEAD = rd.ID_HEAD
+            ORDER BY
+                r.ID_REGIONAL,
+                rd.NAME_AREA ASC
+        ");
+
+        $rOs = [];
+
+        foreach ($results as $result) {
+            $regionName = $result->region_name;
+            $areaName = $result->area_name;
+            $type = $result->TYPE;
+            $value = $result->VALUE;
+
+            if (!isset($rOs[$regionName])) {
+                $rOs[$regionName] = [];
+            }
+
+            // Initialize the area array if it doesn't exist
+            if (!isset($rOs[$regionName][$areaName])) {
+                $rOs[$regionName][$areaName] = [
+                    "AREA" => $areaName,
+                    "RTCALL" => [],
+                    "RTRO" => [],
+                ];
+            }
+
+            // Append the value to the appropriate type array
+            $rOs[$regionName][$areaName][$type][] = $value;
+        }
+
+// Reset the area indices to numeric values
+foreach ($rOs as &$region) {
+    $region = array_values($region);
+}
+
+return $rOs;
     }
 
     public static function getallcat()
