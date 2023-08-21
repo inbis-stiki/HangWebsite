@@ -1650,6 +1650,8 @@ class Cronjob extends Model
                 report_rovscall_head r
             JOIN
                 report_rovscall_det rd ON r.ID_HEAD = rd.ID_HEAD
+            WHERE
+                r.TAHUN = '$year'
             ORDER BY
                 r.ID_REGIONAL,
                 rd.NAME_AREA ASC
