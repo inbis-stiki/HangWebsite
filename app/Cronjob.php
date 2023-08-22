@@ -1640,20 +1640,7 @@ class Cronjob extends Model
 
     public static function queryROVSTESTq($year)
     {
-        $results = DB::select("
-            SELECT
-                r.ID_REGIONAL AS region_name,
-                rd.NAME_AREA AS area_name,
-                rd.TYPE,
-                rd.VALUE
-            FROM
-                report_rovscall_head r
-            JOIN
-                report_rovscall_det rd ON r.ID_HEAD = rd.ID_HEAD
-            ORDER BY
-                r.ID_REGIONAL,
-                rd.NAME_AREA ASC
-        ");
+        $results = DB::select("select *,ID_REGIONAL as region_name, NAME_AREA as area_name from report_rovscall_head rrh join report_rovscall_detail rrd on rrh.ID_HEAD COLLATE utf8mb4_unicode_ci = rrd.ID_HEAD ");
 
         $rOs = [];
 
