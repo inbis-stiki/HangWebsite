@@ -790,7 +790,7 @@ class CronjobController extends Controller
             Rovscall::firstOrCreate(
                 ['ID_HEAD' => $regionUnik],
                 ['ID_REGIONAL' => $regionName],
-                ['TAHUN' =>$year]
+                ['TAHUN' => $year]
             );
             
             foreach ($entries as $entry) {
