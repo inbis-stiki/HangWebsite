@@ -156,33 +156,44 @@ class ShopController extends Controller
         DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         $query = DB::select(
             DB::raw("
-                SELECT 
-                    ms.NAME_SHOP ,
-                    md.NAME_DISTRICT ,
-                    COUNT(ms.ID_SHOP) AS TOT_SHOP
-                FROM 
-                    md_shop ms
-                LEFT JOIN md_district md ON
-                    md.ID_DISTRICT = ms.ID_DISTRICT 
-                LEFT JOIN md_area ma ON 
-                    ma.ID_AREA = md.ID_DISTRICT 
-                LEFT JOIN md_regional mr ON 
-                    mr.ID_REGIONAL = ma.ID_REGIONAL 
-                GROUP BY
-                    ms.NAME_SHOP,
-                    ms.ID_DISTRICT
-                HAVING
-                    TOT_SHOP > 1
-                ORDER BY 
-                    TOT_SHOP DESC,
-                    ms.NAME_SHOP ASC
+            SELECT 
+            ms.NAME_SHOP, 
+            md.NAME_DISTRICT, 
+            ma.NAME_AREA,
+            COUNT(ms.ID_SHOP) AS TOT_SHOP
+          FROM 
+            md_shop ms 
+            LEFT JOIN md_district md ON md.ID_DISTRICT = ms.ID_DISTRICT 
+            LEFT JOIN md_area ma ON ma.ID_AREA = md.ID_AREA
+            LEFT JOIN md_regional mr ON mr.ID_REGIONAL = ma.ID_REGIONAL 
+          GROUP BY 
+            ms.NAME_SHOP, 
+            ms.ID_DISTRICT 
+          HAVING
+            TOT_SHOP > 6    
+          ORDER BY 
+            TOT_SHOP DESC, 
+            ms.NAME_SHOP ASC
             ")
         );
+        $i=0;
+        $counter=0;
+        foreach ($query as $key) {
+            $limit = $key->TOT_SHOP -1;
+            $counter=$counter+$limit;
+            echo $key->NAME_SHOP." - ";
+            echo $key->NAME_AREA." - ";
+            echo $key->NAME_DISTRICT." - ";
+            echo $key->TOT_SHOP." - ";
+            echo $limit."</br>";
+            DB::statement("
+            update md_shop ms 
+            join md_district md on ms.ID_DISTRICT=md.ID_DISTRICT 
+            join md_area ma on ma.ID_AREA=md.ID_AREA 
+            set ms.deleted_at=NOW() 
+            where md.NAME_DISTRICT='".$key->NAME_DISTRICT."' and ma.NAME_AREA = '".$key->NAME_AREA."' and ms.NAME_SHOP = '".$key->NAME_SHOP."' LIMIT ". $limit.";");
+        }
 
-        return response([
-            'status_code'       => 200,
-            'status_message'    => 'Data berhasil diambil!',
-            'data'              => $query
-        ], 200);
+        echo $counter;
     }
 }
