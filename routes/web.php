@@ -62,7 +62,10 @@ Route::get('cronjob/tesQuery', 'CronjobController@Testing');
 
 Route::get('cronjob/gen-ro-test', 'CronjobController@genROTEST');
 Route::get('cronjob/gen-ro-vs-test', 'CronjobController@genROVSTEST');
+Route::get('cronjob/gen-ro-vs-test/{year}', 'CronjobController@genROVSCALLIN');
 Route::get('cronjob/gen-akt-trx-apo/{year}', 'CronjobController@genAktTRXAPO');
+
+Route::get('shop/bydistrict', 'ShopController@ShopListByDistrict');
 
 Route::group(['middleware' => ['checkLogin']], function () {
     // MASTER DASHBORAD
