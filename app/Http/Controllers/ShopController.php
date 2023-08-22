@@ -195,11 +195,5 @@ class ShopController extends Controller
         }
 
         echo $counter;
-        // dd($query[0]->NAME_SHOP);
-        // return response([
-        //     'status_code'       => 200,
-        //     'status_message'    => 'Data berhasil diambil!',
-        //     'data'              => $query
-        // ], 200);
     }
 }

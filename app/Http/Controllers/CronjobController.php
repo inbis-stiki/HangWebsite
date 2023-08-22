@@ -789,7 +789,8 @@ class CronjobController extends Controller
             // Insert or update Region
             Rovscall::firstOrCreate(
                 ['ID_HEAD' => $regionUnik],
-                ['ID_REGIONAL' => $regionName]
+                ['ID_REGIONAL' => $regionName],
+                ['TAHUN' => $year]
             );
             
             foreach ($entries as $entry) {
