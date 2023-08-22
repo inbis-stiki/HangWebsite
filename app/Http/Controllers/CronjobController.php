@@ -768,6 +768,8 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::queryROVSTESTq($year);
 
+        // dd($rOs);
+
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
     }
 
