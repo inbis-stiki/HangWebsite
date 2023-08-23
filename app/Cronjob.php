@@ -1529,7 +1529,8 @@ class Cronjob extends Model
         ");
 
         $rOs = [];
-        $months = range(1, 12);
+        $months = [1, 12];
+        $bulan = 7;
         $selectedYear = $year;
 
         foreach ($areas as $area) {
@@ -1538,70 +1539,30 @@ class Cronjob extends Model
             }
 
             $CallCount = DB::select("
-                SELECT
-                    YEAR(t.DATE_TRANS) AS Year,
-                    MONTH(t.DATE_TRANS) AS Month,
-                    COUNT(t.ID_TRANS) AS TransactionCount
-                FROM
-                    `transaction` t
-                WHERE
-                    t.AREA_TRANS = :areaName
-                    AND YEAR(t.DATE_TRANS) = :selectedYear
-                    AND t.ISTRANS_TRANS = 1
-                GROUP BY
-                    YEAR(t.DATE_TRANS),
-                    MONTH(t.DATE_TRANS)
-                ORDER BY
-                    YEAR(t.DATE_TRANS),
-                    MONTH(t.DATE_TRANS)
-            ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear]);
-
-            $RepeatCount = DB::select("
-                SELECT
-                    YEAR(t.DATE_TRANS) AS Year,
-                    MONTH(t.DATE_TRANS) AS Month,
-                    COUNT(t.ID_SHOP) AS TOTAL_TEST
-                FROM
-                    `transaction` t
-                INNER JOIN (
                     SELECT
-                        ID_SHOP
+                        YEAR(t.DATE_TRANS) AS Year,
+                        MONTH(t.DATE_TRANS) AS Month,
+                        COUNT(t.ID_TRANS) AS TransactionCount
                     FROM
-                        `transaction`
+                        `transaction` t
                     WHERE
-                        YEAR(DATE_TRANS) = '$selectedYear'
+                        t.AREA_TRANS = :areaName
+                        AND YEAR(t.DATE_TRANS) = :selectedYear
+                        AND t.ISTRANS_TRANS = 1
                     GROUP BY
-                        ID_SHOP
-                    HAVING
-                        COUNT(*) BETWEEN 2 AND 100
-                        ) t2 ON
-                    t2.ID_SHOP = t.ID_SHOP
-                LEFT JOIN md_shop ms ON
-                    ms.ID_SHOP = t.ID_SHOP
-                INNER JOIN md_district md ON
-                    md.ID_DISTRICT = ms.ID_DISTRICT
-                INNER JOIN md_area ma ON
-                    ma.ID_AREA = md.ID_AREA
-                INNER JOIN md_regional mr ON
-                    mr.ID_REGIONAL = ma.ID_REGIONAL
-                WHERE
-                    ms.ID_SHOP IS NOT NULL
-                    AND t.AREA_TRANS = '$area->NAME_AREA'
-                    AND YEAR(t.DATE_TRANS) = '$selectedYear'
-                GROUP BY
-                    YEAR(t.DATE_TRANS),
-                    MONTH(t.DATE_TRANS)
-                ORDER BY
-                    YEAR(t.DATE_TRANS),
-                    MONTH(t.DATE_TRANS)
-            ");
+                        YEAR(t.DATE_TRANS),
+                        MONTH(t.DATE_TRANS)
+                    ORDER BY
+                        YEAR(t.DATE_TRANS),
+                        MONTH(t.DATE_TRANS)
+                ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear]);
 
             $rtcall = [];
             $rtro = [];
 
             foreach ($months as $month) {
+
                 $foundCallCount = false;
-                $foundRepeatCount = false;
 
                 foreach ($CallCount as $count) {
                     if ($count->Month == $month) {
@@ -1611,21 +1572,57 @@ class Cronjob extends Model
                     }
                 }
 
-                foreach ($RepeatCount as $rcount) {
-                    if ($rcount->Month == $month) {
-                        $rtro[] = $rcount->TOTAL_TEST;
-                        $foundRepeatCount = true;
-                        break;
-                    }
-                }
-
                 if (!$foundCallCount) {
                     $rtcall[] = 0;
                 }
 
-                if (!$foundRepeatCount) {
-                    $rtro[] = 0;
-                }
+                $RepeatCount = DB::select("
+                SELECT
+                (
+                    SELECT COUNT(*) FROM(
+                        SELECT
+                            COUNT(t.ID_SHOP) AS TOTAL_TEST
+                        FROM
+                            `transaction` t
+                        INNER JOIN (
+                            SELECT
+                                ID_SHOP
+                            FROM
+                                `transaction`
+                            WHERE
+                                YEAR(DATE_TRANS) = '" . $selectedYear . "'
+                                AND MONTH(DATE_TRANS) = '" . $month . "'
+                            GROUP BY
+                                ID_SHOP
+                            HAVING
+                                COUNT(*) BETWEEN 2 AND 100
+                                                ) t2 ON
+                            t2.ID_SHOP = t.ID_SHOP
+                        LEFT JOIN md_shop ms ON
+                            ms.ID_SHOP = t.ID_SHOP
+                        INNER JOIN md_district md ON
+                            md.ID_DISTRICT = ms.ID_DISTRICT
+                        INNER JOIN md_area ma ON
+                            ma.ID_AREA = md.ID_AREA
+                        INNER JOIN md_regional mr ON
+                            mr.ID_REGIONAL = ma.ID_REGIONAL
+                        WHERE
+                            ms.ID_SHOP IS NOT NULL
+                            AND mr.deleted_at IS NULL
+                            AND ma.deleted_at IS NULL
+                            AND ms.deleted_at IS NULL
+                            AND t.AREA_TRANS = '".$area->NAME_AREA."'
+                            AND t.REGIONAL_TRANS = '".$area->NAME_REGIONAL."'
+                            AND YEAR(t.DATE_TRANS) = '" . $selectedYear . "'
+                        GROUP BY
+                            t.ID_SHOP) as total1 
+                        ) AS total
+                FROM
+                    `transaction` t
+                GROUP BY total");
+
+                $rtro = $RepeatCount[0]->total ?? 0;
+                
             }
 
             $rOs[$area->NAME_REGIONAL][] = [
@@ -1667,12 +1664,12 @@ class Cronjob extends Model
             $rOs[$regionName][$areaName][$type][] = $value;
         }
 
-// Reset the area indices to numeric values
-foreach ($rOs as &$region) {
-    $region = array_values($region);
-}
+        // Reset the area indices to numeric values
+        foreach ($rOs as &$region) {
+            $region = array_values($region);
+        }
 
-return $rOs;
+        return $rOs;
     }
 
     public static function getallcat()

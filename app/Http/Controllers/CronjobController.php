@@ -768,12 +768,13 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::queryROVSTESTq($year);
 
+        // dd($rOs);
+
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
     }
 
     public function genROVSCALLIN($yearReq)
     {
-        set_time_limit(3600);
         $year = date_format(date_create($yearReq), 'Y');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
