@@ -1529,7 +1529,8 @@ class Cronjob extends Model
         ");
 
         $rOs = [];
-        $months = range(1, 12);
+        $months = [1, 12];
+        $bulan = 7;
         $selectedYear = $year;
 
         foreach ($areas as $area) {
@@ -1538,28 +1539,42 @@ class Cronjob extends Model
             }
 
             $CallCount = DB::select("
-                SELECT
-                    YEAR(t.DATE_TRANS) AS Year,
-                    MONTH(t.DATE_TRANS) AS Month,
-                    COUNT(t.ID_TRANS) AS TransactionCount
-                FROM
-                    `transaction` t
-                WHERE
-                    t.AREA_TRANS = :areaName
-                    AND YEAR(t.DATE_TRANS) = :selectedYear
-                    AND t.ISTRANS_TRANS = 1
-                GROUP BY
-                    YEAR(t.DATE_TRANS),
-                    MONTH(t.DATE_TRANS)
-                ORDER BY
-                    YEAR(t.DATE_TRANS),
-                    MONTH(t.DATE_TRANS)
-            ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear]);
+                    SELECT
+                        YEAR(t.DATE_TRANS) AS Year,
+                        MONTH(t.DATE_TRANS) AS Month,
+                        COUNT(t.ID_TRANS) AS TransactionCount
+                    FROM
+                        `transaction` t
+                    WHERE
+                        t.AREA_TRANS = :areaName
+                        AND YEAR(t.DATE_TRANS) = :selectedYear
+                        AND t.ISTRANS_TRANS = 1
+                    GROUP BY
+                        YEAR(t.DATE_TRANS),
+                        MONTH(t.DATE_TRANS)
+                    ORDER BY
+                        YEAR(t.DATE_TRANS),
+                        MONTH(t.DATE_TRANS)
+                ", ['areaName' => $area->NAME_AREA, 'selectedYear' => $selectedYear]);
 
             $rtcall = [];
             $rtro = [];
 
             foreach ($months as $month) {
+
+                $foundCallCount = false;
+
+                foreach ($CallCount as $count) {
+                    if ($count->Month == $month) {
+                        $rtcall[] = $count->TransactionCount;
+                        $foundCallCount = true;
+                        break;
+                    }
+                }
+
+                if (!$foundCallCount) {
+                    $rtcall[] = 0;
+                }
 
                 $RepeatCount = DB::select("
                 SELECT
@@ -1576,7 +1591,7 @@ class Cronjob extends Model
                                 `transaction`
                             WHERE
                                 YEAR(DATE_TRANS) = '" . $selectedYear . "'
-                                AND MONTH(DATE_TRANS) = '" . ($month) . "'
+                                AND MONTH(DATE_TRANS) = '" . $month . "'
                             GROUP BY
                                 ID_SHOP
                             HAVING
@@ -1596,31 +1611,18 @@ class Cronjob extends Model
                             AND mr.deleted_at IS NULL
                             AND ma.deleted_at IS NULL
                             AND ms.deleted_at IS NULL
-                            AND t.AREA_TRANS = 'SIDOARJO 1'
-                            AND t.REGIONAL_TRANS = 'JATIM 2'
+                            AND t.AREA_TRANS = '".$area->NAME_AREA."'
+                            AND t.REGIONAL_TRANS = '".$area->NAME_REGIONAL."'
                             AND YEAR(t.DATE_TRANS) = '" . $selectedYear . "'
                         GROUP BY
                             t.ID_SHOP) as total1 
                         ) AS total
                 FROM
-                `transaction` t
+                    `transaction` t
                 GROUP BY total");
 
-                $foundCallCount = false;
-
-                foreach ($CallCount as $count) {
-                    if ($count->Month == $month) {
-                        $rtcall[] = $count->TransactionCount;
-                        $foundCallCount = true;
-                        break;
-                    }
-                }
-
-                if (!$foundCallCount) {
-                    $rtcall[] = 0;
-                }
-
                 $rtro = $RepeatCount[0]->total ?? 0;
+                
             }
 
             $rOs[$area->NAME_REGIONAL][] = [
