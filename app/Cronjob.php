@@ -1591,8 +1591,8 @@ class Cronjob extends Model
                             FROM
                                 `transaction`
                             WHERE
-                                YEAR(DATE_TRANS) = '" . $selectedYear . "'
-                                AND MONTH(DATE_TRANS) = '" . $month . "'
+                                YEAR(DATE_TRANS) = '2023'
+                                AND MONTH(DATE_TRANS) = '7'
                             GROUP BY
                                 ID_SHOP
                             HAVING
@@ -1614,7 +1614,7 @@ class Cronjob extends Model
                             AND ms.deleted_at IS NULL
                             AND t.AREA_TRANS = 'BALI NUSA'
                             AND t.REGIONAL_TRANS = 'DENPASAR 1'
-                            AND YEAR(t.DATE_TRANS) = '" . $selectedYear . "'
+                            AND YEAR(t.DATE_TRANS) = '2023'
                         GROUP BY
                             t.ID_SHOP) as total1 
                         ) AS total
