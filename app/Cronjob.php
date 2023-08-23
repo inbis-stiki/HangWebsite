@@ -1612,8 +1612,8 @@ class Cronjob extends Model
                             AND mr.deleted_at IS NULL
                             AND ma.deleted_at IS NULL
                             AND ms.deleted_at IS NULL
-                            AND t.AREA_TRANS = 'BALI NUSA'
-                            AND t.REGIONAL_TRANS = 'DENPASAR 1'
+                            AND t.AREA_TRANS = 'SIDOARJO 2'
+                            AND t.REGIONAL_TRANS = 'JATIM 2'
                             AND YEAR(t.DATE_TRANS) = '2023'
                         GROUP BY
                             t.ID_SHOP) as total1 
