@@ -1526,6 +1526,7 @@ class Cronjob extends Model
             ORDER BY
                 mr.NAME_REGIONAL,
                 ma.NAME_AREA ASC
+            LIMIT 1
         ");
 
         $rOs = [];
@@ -1611,8 +1612,8 @@ class Cronjob extends Model
                             AND mr.deleted_at IS NULL
                             AND ma.deleted_at IS NULL
                             AND ms.deleted_at IS NULL
-                            AND t.AREA_TRANS = '".$area->NAME_AREA."'
-                            AND t.REGIONAL_TRANS = '".$area->NAME_REGIONAL."'
+                            AND t.AREA_TRANS = 'BALI NUSA'
+                            AND t.REGIONAL_TRANS = 'DENPASAR 1'
                             AND YEAR(t.DATE_TRANS) = '" . $selectedYear . "'
                         GROUP BY
                             t.ID_SHOP) as total1 

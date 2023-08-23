@@ -780,7 +780,7 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::queryROVSTEST($yearReq);
 
-        // dd($rOs);
+        dd($rOs);
 
         $monthArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
