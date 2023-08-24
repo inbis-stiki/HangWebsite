@@ -310,6 +310,83 @@ class ShopApi extends Controller
         }
     }
 
+
+    public function route(Request $req)
+    {
+        try {
+
+            $validator = Validator::make($req->all(), [
+                'week_rute'           => 'required|numeric'
+            ], [
+                'required'  => 'Parameter :attribute tidak boleh kosong!',
+                'numeric'    => 'Parameter :attribute harus bertipe angka!',
+            ]);
+
+            if ($validator->fails()) {
+                return response([
+                    "status_code"       => 400,
+                    "status_message"    => $validator->errors()->first()
+                ], 400);
+            }
+
+            $week = $req->get('week_rute'); // "-7.965769846888459"
+
+            $CheckPresence = DB::table("presence")
+                ->select("presence.*")
+                ->whereDate('presence.DATE_PRESENCE', '=', date('Y-m-d'))
+                ->where('presence.ID_USER', '=', $req->input("id_user"))
+                ->first();
+
+            if ($CheckPresence == NULL) {
+                return response([
+                    "status_code"       => 403,
+                    "status_message"    => "Silahkan Melakukan Presensi Terlebih Dahulu!"
+                ], 404);
+            }
+
+            $rute= DB::table('md_route as mr')
+            ->join('user as u', 'mr.ID_USER', '=', 'u.ID_USER')
+            ->join('md_shop as ms', 'mr.ID_SHOP', '=', 'ms.ID_SHOP')
+            ->select(
+                'mr.ID_RUTE',
+                'u.USERNAME_USER',
+                'mr.ID_SHOP',
+                'ms.DETLOC_SHOP',
+                'ms.OWNER_SHOP',
+                'ms.PHOTO_SHOP',
+                'ms.NAME_SHOP',
+                'ms.LONG_SHOP',
+                'ms.LAT_SHOP'
+            )
+            ->where('mr.WEEK', $week)
+            ->paginate(10);
+
+
+            $dataPagination = array();
+            array_push(
+                $dataPagination,
+                array(
+                    "TOTAL_DATA" => $rute->total(),
+                    "PAGE" => $rute->currentPage(),
+                    "TOTAL_PAGE" => $rute->lastPage()
+                )
+            );
+
+            return response([
+                'status_code'       => 200,
+                'status_message'    => 'Data berhasil diambil!',
+                'data'              => $rute->items(),
+                'status_pagination' => $dataPagination
+            ], 200);
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
+    }
+
+
     public function paginate($items, $perPage = 10, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
