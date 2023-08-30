@@ -145,7 +145,7 @@ class CronjobController extends Controller
     public function updateSmyTransLocation()
     {
         try {
-            $month          = date('n', strtotime('-1 days'));
+            $month          = date('n', strtotime('June'));
             $year           = date('Y', strtotime('-1 days'));
             $updated_at     = date('Y-m-d', strtotime('-1 days')) . " 23:59:59";
 
@@ -192,7 +192,7 @@ class CronjobController extends Controller
             $prodCategorys  = CategoryProduct::where('deleted_at', NULL)->get();
             $actCategorys   = ActivityCategory::where('deleted_at', NULL)->get();
 
-            $month          = date('n', strtotime('-1 days'));
+            $month          = date('n', strtotime('June'));
             $year           = date('Y', strtotime('-1 days'));
             $updated_at     = date('Y-m-d', strtotime('-1 days')) . " 23:59:59";
 
