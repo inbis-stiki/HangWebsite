@@ -1675,7 +1675,7 @@ class Cronjob extends Model
         return $rOs;
     }
 
-    public static function getallcat()
+    public static function getallcat($year, $month)
     {
         $results = json_decode(json_encode(DB::select('SELECT rsd.* FROM report_shop_head rsh JOIN report_shop_detail rsd ON rsd.ID_HEAD = rsh.ID_HEAD')), true);
 
