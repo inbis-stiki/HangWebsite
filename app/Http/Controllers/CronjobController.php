@@ -378,7 +378,7 @@ class CronjobController extends Controller
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $rOs = Cronjob::getallcat();
+        $rOs = Cronjob::getallcat($year,$month);
 
         // dd($rOs);die;
 
