@@ -775,6 +775,7 @@ class CronjobController extends Controller
 
     public function genROVSCALLIN($yearReq)
     {
+
         $year = date_format(date_create($yearReq), 'Y');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
@@ -801,11 +802,13 @@ class CronjobController extends Controller
                 $regionUnik2 = md5($regionName . $year);
                 
                 $rtcallArray = $entry['RTCALL'];
+                $rteffcallArray = $entry['RTEFFCALL'];
                 $rtroArray = $entry['RTRO'];
 
                 for ($i = 0; $i < count($monthArray); $i++) {
                     $month = $monthArray[$i];
                     $rtcallValue = $rtcallArray[$i];
+                    $rteffcallValue = $rteffcallArray[$i];
                     $rtroValue = $rtroArray[$i];
             
                     // Insert RTCALL data
@@ -816,6 +819,16 @@ class CronjobController extends Controller
                         'MONTH' => $month,
                         'VALUE' => $rtcallValue,
                         'TYPE' => 'RTCALL',
+                    ]);
+
+                    // Insert RTEFFCALL data
+                    Rovscalldet::create([
+                        'ID_HEAD' => $regionUnik2,
+                        'ID_REGION' => $regionName,
+                        'NAME_AREA' => $areaName,
+                        'MONTH' => $month,
+                        'VALUE' => $rteffcallValue,
+                        'TYPE' => 'RTEFFCALL',
                     ]);
         
                     // Insert RTRO data
