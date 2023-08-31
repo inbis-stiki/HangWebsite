@@ -2060,19 +2060,32 @@ class Cronjob extends Model
 
     public static function getallcat($year, $month)
     {
-        $results = DB::table('report_shop_head as rsh')
-                        ->select(['rsd.*'])
-                        ->join('report_shop_detail as rsd', 'rsd.ID_HEAD', '=', 'rsh.ID_HEAD')
-                        ->where('rsh.BULAN', $month)
-                        ->where('rsh.TAHUN', $year)
-                        ->get()
-                        ->toArray();
-    
+        $resultsq = DB::table('report_shop_head as rsh')
+            ->join('report_shop_detail as rsd', 'rsd.ID_HEAD', '=', 'rsh.ID_HEAD')
+            ->select(DB::raw('SUM(rsd.TOTAL_RO) as TOTAL_RO, 
+             rsd.ID_SHOP,
+             rsd.NAME_SHOP,
+             rsd.NAME_DISTRICT,
+             rsd.OWNER_SHOP,
+             rsd.DETLOC_SHOP,
+             rsd.TYPE_SHOP,
+             rsd.TELP_SHOP,
+             rsd.NAME_AREA,
+             rsd.NAME_REGIONAL,
+             rsd.CATEGORY_RO'))
+            ->groupBy('rsd.ID_SHOP')
+            ->get();
+
+        $results = json_decode(json_encode($resultsq), true);
+
+        // Initialize an empty array to store the sorted data
         $sortedData = [];
-    
+
+        // Loop through the query results and group them by NAME_AREA
         foreach ($results as $row) {
-            $nameArea = $row->NAME_AREA;
-    
+            $nameArea = $row['NAME_AREA'];
+
+            // If this is the first row for this NAME_AREA, create an empty array for it
             if (!isset($sortedData[$nameArea])) {
                 $sortedData[$nameArea] = [
                     "2-3" => [],
@@ -2081,24 +2094,19 @@ class Cronjob extends Model
                     ">11" => []
                 ];
             }
-    
-            $rowArray = (array) $row;  // Convert the object to an array
-    
-            switch ($row->CATEGORY_RO) {
-                case 1:
-                    $sortedData[$nameArea]["2-3"][] = $rowArray;
-                    break;
-                case 2:
-                    $sortedData[$nameArea]["4-5"][] = $rowArray;
-                    break;
-                case 3:
-                    $sortedData[$nameArea]["6-10"][] = $rowArray;
-                    break;
-                default:
-                    $sortedData[$nameArea][">11"][] = $rowArray;
+
+            // Add the row to the array for this NAME_AREA and CATEGORY_RO combination
+            if ((int)$row['CATEGORY_RO'] == 1) {
+                array_push($sortedData[$nameArea]["2-3"], $row);
+            } else if ((int)$row['CATEGORY_RO'] == 2) {
+                array_push($sortedData[$nameArea]["4-5"], $row);
+            } else if ((int)$row['CATEGORY_RO'] == 3) {
+                array_push($sortedData[$nameArea]["6-10"], $row);
+            } else {
+                array_push($sortedData[$nameArea][">11"], $row);
             }
         }
-    
+
         return $sortedData;
     }
     
