@@ -1940,7 +1940,7 @@ class Cronjob extends Model
                             SELECT
                                 ID_SHOP
                             FROM
-                                `transaction`
+                                `transaction` t
                             WHERE
                                 YEAR(DATE_TRANS) = " . $selectedYear . "
                                 AND MONTH(DATE_TRANS) = ". $month ."
@@ -2060,16 +2060,19 @@ class Cronjob extends Model
 
     public static function getallcat($year, $month)
     {
-        $results = json_decode(json_encode(DB::select('SELECT rsd.* FROM report_shop_head rsh JOIN report_shop_detail rsd ON rsd.ID_HEAD = rsh.ID_HEAD where rsh.BULAN = '.$month .' and rsh.TAHUN ='. $year)), true);
-
-        // Initialize an empty array to store the sorted data
+        $results = DB::table('report_shop_head as rsh')
+                        ->select(['rsd.*'])
+                        ->join('report_shop_detail as rsd', 'rsd.ID_HEAD', '=', 'rsh.ID_HEAD')
+                        ->where('rsh.BULAN', $month)
+                        ->where('rsh.TAHUN', $year)
+                        ->get()
+                        ->toArray();
+    
         $sortedData = [];
-
-        // Loop through the query results and group them by NAME_AREA
+    
         foreach ($results as $row) {
-            $nameArea = $row['NAME_AREA'];
-
-            // If this is the first row for this NAME_AREA, create an empty array for it
+            $nameArea = $row->NAME_AREA;
+    
             if (!isset($sortedData[$nameArea])) {
                 $sortedData[$nameArea] = [
                     "2-3" => [],
@@ -2078,21 +2081,27 @@ class Cronjob extends Model
                     ">11" => []
                 ];
             }
-
-            // Add the row to the array for this NAME_AREA and CATEGORY_RO combination
-            if ((int)$row['CATEGORY_RO'] == 1) {
-                array_push($sortedData[$nameArea]["2-3"], $row);
-            } else if ((int)$row['CATEGORY_RO'] == 2) {
-                array_push($sortedData[$nameArea]["4-5"], $row);
-            } else if ((int)$row['CATEGORY_RO'] == 3) {
-                array_push($sortedData[$nameArea]["6-10"], $row);
-            } else {
-                array_push($sortedData[$nameArea][">11"], $row);
+    
+            $rowArray = (array) $row;  // Convert the object to an array
+    
+            switch ($row->CATEGORY_RO) {
+                case 1:
+                    $sortedData[$nameArea]["2-3"][] = $rowArray;
+                    break;
+                case 2:
+                    $sortedData[$nameArea]["4-5"][] = $rowArray;
+                    break;
+                case 3:
+                    $sortedData[$nameArea]["6-10"][] = $rowArray;
+                    break;
+                default:
+                    $sortedData[$nameArea][">11"][] = $rowArray;
             }
         }
-
+    
         return $sortedData;
     }
+    
 
     public static function getallcatRange($yearS, $monthS, $yearE, $monthE)
     {
