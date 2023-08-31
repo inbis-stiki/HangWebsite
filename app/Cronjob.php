@@ -2075,13 +2075,19 @@ class Cronjob extends Model
             ->where('rsh.TAHUN', $year)
             ->get();
     
-        // Initialize the structured results array
-        $sortedData = [];
+        // Flattened structure
+        $tempData = [];
     
         foreach ($results as $row) {
-            $nameArea = $row->NAME_AREA;
+            $key = $row->NAME_AREA . '|' . $row->category_label;
+            $tempData[$key][] = $row;
+        }
     
-            // Ensure structure for this $nameArea is initialized
+        // Convert flattened structure to final nested structure
+        $sortedData = [];
+        foreach ($tempData as $key => $rows) {
+            list($nameArea, $category) = explode('|', $key);
+            
             if (!isset($sortedData[$nameArea])) {
                 $sortedData[$nameArea] = [
                     "2-3" => [],
@@ -2090,16 +2096,15 @@ class Cronjob extends Model
                     ">11" => []
                 ];
             }
-    
-            // Directly use the category_label to append the row to the respective category
-            $sortedData[$nameArea][$row->category_label][] = $row;
+            $sortedData[$nameArea][$category] = $rows;
         }
     
-        // Convert final structure to array format (only one conversion at the end)
+        // Convert final structure to array format
         $sortedDataArray = json_decode(json_encode($sortedData), true);
-        
+    
         return $sortedDataArray;
     }
+    
     
     
     
