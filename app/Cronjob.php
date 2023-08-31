@@ -2060,6 +2060,7 @@ class Cronjob extends Model
 
     public static function getallcat($year, $month)
     {
+        // Eloquent Query with Case statement to get category label
         $results = DB::table('report_shop_head as rsh')
             ->join('report_shop_detail as rsd', 'rsd.ID_HEAD', '=', 'rsh.ID_HEAD')
             ->select('rsd.*', DB::raw("
@@ -2072,18 +2073,15 @@ class Cronjob extends Model
             "))
             ->where('rsh.BULAN', $month)
             ->where('rsh.TAHUN', $year)
-            ->get()
-            ->toArray();
+            ->get();
     
         // Initialize the structured results array
         $sortedData = [];
     
         foreach ($results as $row) {
             $nameArea = $row->NAME_AREA;
-            $rowArray = (array) $row;
-            unset($rowArray['category_label']);  // if you don't want to keep this key in final array
     
-            // Ensure we have the structure initialized for this $nameArea
+            // Ensure structure for this $nameArea is initialized
             if (!isset($sortedData[$nameArea])) {
                 $sortedData[$nameArea] = [
                     "2-3" => [],
@@ -2093,12 +2091,16 @@ class Cronjob extends Model
                 ];
             }
     
-            // Directly use the category_label to append the rowArray to the respective category
-            $sortedData[$nameArea][$row->category_label][] = $rowArray;
+            // Directly use the category_label to append the row to the respective category
+            $sortedData[$nameArea][$row->category_label][] = $row;
         }
     
-        return $sortedData;
+        // Convert final structure to array format (only one conversion at the end)
+        $sortedDataArray = json_decode(json_encode($sortedData), true);
+        
+        return $sortedDataArray;
     }
+    
     
     
 
