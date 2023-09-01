@@ -63,7 +63,7 @@
 
 <!-- Modal  -->
 <div class="modal fade" id="mdlEdit">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Ubah Toko</h5>
@@ -72,42 +72,54 @@
             </div>
             <div class="modal-body">
                 <form action="{{ url('master/shop/update') }}" method="POST">
-                <img id="mdlEdit_shopphoto" src="https://ru.w3docs.com/uploads/media/default/0001/05/2c669e35c4c5867094de4bed65034d0cac696df5.png"/>
-                    @csrf
-                    <div class="form-group">
-                        <label for="">Shop</label>
-                        <input type="text" name="shop" id="mdlEdit_name" class="form-control" placeholder="Input nama Toko" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="">Pemilik Toko</label>
-                        <input type="text" name="owner" id="mdlEdit_owner" class="form-control" placeholder="Input nama Pemilik" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="">Detail Lokasi</label>
-                        <input type="text" name="detlok" id="mdlEdit_detlok" class="form-control" placeholder="Input detail lokasi" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="">Tipe toko</label>
-                    <select name="shoptype" class="select2" id="mdlEdit_shoptype" required>
-                        <option value="Pedagang Sayur">Pedagang Sayur</option>           
-                            <option value="Loss">Loss</option>           
-                            <option value="Retail">Retail</option>           
-                            <option value="Permanen">Permanen</option>             
-                    </select>
-                    </div> 
-                    <div class="form-group">
-                        <label for="">Status</label>
-                        <div class="form-group mb-0">
-                            <label class="radio-inline mr-3"><input type="radio" id="status_enable" name="status" value="1" required> Enable</label>
-                            <label class="radio-inline mr-3"><input type="radio" id="status_disable" name="status" value="0" required> Disable</label>
+                <div class="row">
+
+                    <!-- Image column -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <img id="mdlEdit_shopphoto" src="https://ru.w3docs.com/uploads/media/default/0001/05/2c669e35c4c5867094de4bed65034d0cac696df5.png" class="img-fluid"/>
                         </div>
                     </div>
-            </div>
-            <div class="modal-footer">
-                <input type="hidden" name="id" id="mdlEdit_id">
-                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
-            </div>
+
+                    <!-- Form fields column -->
+                    <div class="col-md-6">
+                        @csrf
+                        <div class="form-group">
+                            <label for="">Shop</label>
+                            <input type="text" name="shop" id="mdlEdit_name" class="form-control" placeholder="Input nama Toko" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Pemilik Toko</label>
+                            <input type="text" name="owner" id="mdlEdit_owner" class="form-control" placeholder="Input nama Pemilik" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Detail Lokasi</label>
+                            <input type="text" name="detlok" id="mdlEdit_detlok" class="form-control" placeholder="Input detail lokasi" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Tipe toko</label>
+                            <select name="shoptype" class="select2 form-control" id="mdlEdit_shoptype" required>
+                                <option value="Pedagang Sayur">Pedagang Sayur</option>
+                                <option value="Loss">Loss</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Permanen">Permanen</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Status</label>
+                            <div class="form-group mb-0">
+                                <label class="radio-inline mr-3"><input type="radio" id="status_enable" name="status" value="1" required> Enable</label>
+                                <label class="radio-inline mr-3"><input type="radio" id="status_disable" name="status" value="0" required> Disable</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <input type="hidden" name="id" id="mdlEdit_id">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
             </form>
         </div>
     </div>
