@@ -2041,8 +2041,8 @@ class Cronjob extends Model
                 $rOs[$regionName][$areaName] = [
                     "AREA" => $areaName,
                     "RTCALL" => [],
-                    "RTEFFCALL" => [],
                     "RTRO" => [],
+                    "RTEFFCALL" => [],
                 ];
             }
 
