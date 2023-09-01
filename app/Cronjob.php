@@ -1940,7 +1940,7 @@ class Cronjob extends Model
                             SELECT
                                 ID_SHOP
                             FROM
-                                `transaction`
+                                `transaction` t
                             WHERE
                                 YEAR(DATE_TRANS) = " . $selectedYear . "
                                 AND MONTH(DATE_TRANS) = ". $month ."
@@ -2060,16 +2060,34 @@ class Cronjob extends Model
 
     public static function getallcat($year, $month)
     {
-        $results = json_decode(json_encode(DB::select('SELECT rsd.* FROM report_shop_head rsh JOIN report_shop_detail rsd ON rsd.ID_HEAD = rsh.ID_HEAD where rsh.BULAN = '.$month .' and rsh.TAHUN ='. $year)), true);
-
-        // Initialize an empty array to store the sorted data
-        $sortedData = [];
-
-        // Loop through the query results and group them by NAME_AREA
+        // Eloquent Query with Case statement to get category label
+        $results = DB::table('report_shop_head as rsh')
+            ->join('report_shop_detail as rsd', 'rsd.ID_HEAD', '=', 'rsh.ID_HEAD')
+            ->select('rsd.*', DB::raw("
+                CASE 
+                    WHEN rsd.CATEGORY_RO = 1 THEN '2-3'
+                    WHEN rsd.CATEGORY_RO = 2 THEN '4-5'
+                    WHEN rsd.CATEGORY_RO = 3 THEN '6-10'
+                    ELSE '>11'
+                END AS category_label
+            "))
+            ->where('rsh.BULAN', $month)
+            ->where('rsh.TAHUN', $year)
+            ->get();
+    
+        // Flattened structure
+        $tempData = [];
+    
         foreach ($results as $row) {
-            $nameArea = $row['NAME_AREA'];
-
-            // If this is the first row for this NAME_AREA, create an empty array for it
+            $key = $row->NAME_AREA . '|' . $row->category_label;
+            $tempData[$key][] = $row;
+        }
+    
+        // Convert flattened structure to final nested structure
+        $sortedData = [];
+        foreach ($tempData as $key => $rows) {
+            list($nameArea, $category) = explode('|', $key);
+            
             if (!isset($sortedData[$nameArea])) {
                 $sortedData[$nameArea] = [
                     "2-3" => [],
@@ -2078,21 +2096,18 @@ class Cronjob extends Model
                     ">11" => []
                 ];
             }
-
-            // Add the row to the array for this NAME_AREA and CATEGORY_RO combination
-            if ((int)$row['CATEGORY_RO'] == 1) {
-                array_push($sortedData[$nameArea]["2-3"], $row);
-            } else if ((int)$row['CATEGORY_RO'] == 2) {
-                array_push($sortedData[$nameArea]["4-5"], $row);
-            } else if ((int)$row['CATEGORY_RO'] == 3) {
-                array_push($sortedData[$nameArea]["6-10"], $row);
-            } else {
-                array_push($sortedData[$nameArea][">11"], $row);
-            }
+            $sortedData[$nameArea][$category] = $rows;
         }
-
-        return $sortedData;
+    
+        // Convert final structure to array format
+        $sortedDataArray = json_decode(json_encode($sortedData), true);
+    
+        return $sortedDataArray;
     }
+    
+    
+    
+    
 
     public static function getallcatRange($yearS, $monthS, $yearE, $monthE)
     {
