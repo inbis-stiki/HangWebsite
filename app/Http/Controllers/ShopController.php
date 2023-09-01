@@ -28,7 +28,7 @@ class ShopController extends Controller
         $search = $req->input('search')['value'];
 
         $data_shop = Shop::join('md_district', 'md_shop.ID_DISTRICT', '=', 'md_district.ID_DISTRICT')
-            ->select("md_district.NAME_DISTRICT", "md_shop.ID_SHOP", "md_shop.NAME_SHOP", "md_shop.OWNER_SHOP", "md_shop.DETLOC_SHOP", "md_shop.TYPE_SHOP", "md_shop.deleted_at")
+            ->select("md_district.NAME_DISTRICT", "md_shop.ID_SHOP", "md_shop.NAME_SHOP", "md_shop.OWNER_SHOP", "md_shop.DETLOC_SHOP", "md_shop.TYPE_SHOP", "md_shop.deleted_at", "md_shop.PHOTO_SHOP")
             ->orWhere('md_district.NAME_DISTRICT', 'like', '%'.$search.'%')
             ->orWhere('md_shop.NAME_SHOP', 'like', '%'.$search.'%')
             ->orWhere('md_shop.OWNER_SHOP', 'like', '%'.$search.'%')
@@ -39,7 +39,7 @@ class ShopController extends Controller
 
         if($search != ''){
             $filteredSearch = Shop::join('md_district', 'md_shop.ID_DISTRICT', '=', 'md_district.ID_DISTRICT')
-            ->select("md_district.NAME_DISTRICT", "md_shop.NAME_SHOP", "md_shop.OWNER_SHOP", "md_shop.TYPE_SHOP", "md_shop.deleted_at")
+            ->select("md_district.NAME_DISTRICT", "md_shop.NAME_SHOP", "md_shop.OWNER_SHOP", "md_shop.TYPE_SHOP", "md_shop.deleted_at", "md_shop.PHOTO_SHOP")
             ->orWhere('md_district.NAME_DISTRICT', 'like', '%'.$search.'%')
             ->orWhere('md_shop.NAME_SHOP', 'like', '%'.$search.'%')
             ->orWhere('md_shop.OWNER_SHOP', 'like', '%'.$search.'%')
@@ -69,9 +69,10 @@ class ShopController extends Controller
                     "NAME_SHOP"     => $shop->NAME_SHOP,
                     "OWNER_SHOP"    => $shop->OWNER_SHOP,
                     "TYPE_SHOP"     => $shop->TYPE_SHOP,
+                    "PHOTO_SHOP"    => $shop->PHOTO_SHOP,
                     "ISACTIVE"      => $isActive,
                     "ACTION_BUTTON" => '
-                        <button data-id="'.$shop->ID_SHOP.'" data-name="'.$shop->NAME_SHOP.'" data-own="'.$shop->OWNER_SHOP.'" data-lok="'.$shop->DETLOC_SHOP.'" data-del="'.$shop->deleted_at.'" onclick="showMdlEdit(this)" class="btn btn-primary btn-sm">
+                        <button data-id="'.$shop->ID_SHOP.'" data-name="'.$shop->NAME_SHOP.'" data-own="'.$shop->OWNER_SHOP.'" data-lok="'.$shop->DETLOC_SHOP.'" data-del="'.$shop->deleted_at.'" data-shoptype="'.$shop->TYPE_SHOP.'" data-shopphoto="'.$shop->PHOTO_SHOP.'" onclick="showMdlEdit(this)" class="btn btn-primary btn-sm">
                             <i class="flaticon-381-edit-1"></i>
                         </button>
                         <button onclick="" class="btn btn-primary btn-sm">
@@ -110,6 +111,7 @@ class ShopController extends Controller
             'shop'      => 'required',
             'owner'     => 'required',
             'detlok'    => 'required',
+            'shoptype'    => 'required',
         ], [
             'required' => 'Data tidak boleh kosong!'
         ]);
@@ -125,6 +127,7 @@ class ShopController extends Controller
         $shop->NAME_SHOP     = Str::upper($req->input('shop'));
         $shop->OWNER_SHOP     = $req->input('owner');
         $shop->DETLOC_SHOP     = $req->input('detlok');
+        $shop->TYPE_SHOP     = $req->input('shoptype');
         $shop->deleted_at    = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $shop->save();
 

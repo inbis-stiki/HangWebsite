@@ -72,6 +72,7 @@
             </div>
             <div class="modal-body">
                 <form action="{{ url('master/shop/update') }}" method="POST">
+                <img id="mdlEdit_shopphoto" src="https://ru.w3docs.com/uploads/media/default/0001/05/2c669e35c4c5867094de4bed65034d0cac696df5.png"/>
                     @csrf
                     <div class="form-group">
                         <label for="">Shop</label>
@@ -85,6 +86,15 @@
                         <label for="">Detail Lokasi</label>
                         <input type="text" name="detlok" id="mdlEdit_detlok" class="form-control" placeholder="Input detail lokasi" required>
                     </div>
+                    <div class="form-group">
+                        <label for="">Tipe toko</label>
+                    <select name="shoptype" class="select2" id="mdlEdit_shoptype" required>
+                        <option value="Pedagang Sayur">Pedagang Sayur</option>           
+                            <option value="Loss">Loss</option>           
+                            <option value="Retail">Retail</option>           
+                            <option value="Permanen">Permanen</option>             
+                    </select>
+                    </div> 
                     <div class="form-group">
                         <label for="">Status</label>
                         <div class="form-group mb-0">
@@ -195,9 +205,13 @@
     ?>
 
     function showMdlEdit(e) {
+
+        console.log($(e).data('shopphoto'))
         $('#mdlEdit_id').val($(e).data('id'))
         $('#mdlEdit_name').val($(e).data('name'))
         $('#mdlEdit_owner').val($(e).data('own'))
+        $('#mdlEdit_shoptype').val($(e).data('shoptype')).change()
+        $('#mdlEdit_shopphoto').attr('src', $(e).data('shopphoto'))
         $('#mdlEdit_detlok').val($(e).data('lok'))
         if ($(e).data('del') == null || $(e).data('del') == '') {
             $('#status_enable').prop('checked', true)
