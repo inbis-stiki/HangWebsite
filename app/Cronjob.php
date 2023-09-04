@@ -2022,7 +2022,13 @@ class Cronjob extends Model
 
     public static function queryROVSTESTq($year)
     {
-        $results = DB::select("select *,ID_REGIONAL as region_name, NAME_AREA as area_name from report_rovscall_head rrh join report_rovscall_detail rrd on rrh.ID_HEAD COLLATE utf8mb4_unicode_ci = rrd.ID_HEAD ");
+        $results = DB::select("
+        select 
+            *,ID_REGIONAL as region_name, NAME_AREA as area_name 
+        from report_rovscall_head rrh 
+        join report_rovscall_detail rrd on rrh.ID_HEAD COLLATE utf8mb4_unicode_ci = rrd.ID_HEAD 
+        where rrh.TAHUN = ".$year."
+        ");
 
         $rOs = [];
 
