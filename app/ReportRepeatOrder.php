@@ -742,9 +742,9 @@ class ReportRepeatOrder
 
             foreach ($groups as $key => $detItem) {
                 $ObjSheet->mergeCells(explode(';', $detItem)[0] . '3:' . explode(';', $detItem)[2] . '3')->setCellValue(explode(';', $detItem)[0] . '3', $months[$key])->getStyle(explode(';', $detItem)[0] . '3:' . explode(';', $detItem)[2] . '3')->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
-                $ObjSheet->mergeCells(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[0] . '5')->setCellValue(explode(';', $detItem)[0] . '4', 'RT CALL')->getStyle(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[0] . '5')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
-                $ObjSheet->mergeCells(explode(';', $detItem)[2] . '4:' . explode(';', $detItem)[2] . '5')->setCellValue(explode(';', $detItem)[2] . '4', 'RT EFF CALL')->getStyle(explode(';', $detItem)[2] . '4:' . explode(';', $detItem)[2] . '5')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
-                $ObjSheet->mergeCells(explode(';', $detItem)[1] . '4:' . explode(';', $detItem)[1] . '5')->setCellValue(explode(';', $detItem)[1] . '4', 'RT RO')->getStyle(explode(';', $detItem)[1] . '4:' . explode(';', $detItem)[1] . '5')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[0] . '5')->setCellValue(explode(';', $detItem)[0] . '4', 'CALL')->getStyle(explode(';', $detItem)[0] . '4:' . explode(';', $detItem)[0] . '5')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[1] . '4:' . explode(';', $detItem)[1] . '5')->setCellValue(explode(';', $detItem)[1] . '4', 'EFF CALL')->getStyle(explode(';', $detItem)[1] . '4:' . explode(';', $detItem)[1] . '5')->applyFromArray($this->styling_title_template('FF00FF00', 'FFFFFFFF'));
+                $ObjSheet->mergeCells(explode(';', $detItem)[2] . '4:' . explode(';', $detItem)[2] . '5')->setCellValue(explode(';', $detItem)[2] . '4', 'RO')->getStyle(explode(';', $detItem)[2] . '4:' . explode(';', $detItem)[2] . '5')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
             }
 
             $ObjSheet->mergeCells('AN3:AO3')->setCellValue('AN3', 'AVERAGE ' . date('Y'))->getStyle('AN3:AO3')->applyFromArray($this->styling_title_template('FFFF66FF', 'FF000000'));
@@ -766,8 +766,8 @@ class ReportRepeatOrder
                     $TotalAllEffCall[$key] += $detItem['RTEFFCALL'][$key];
 
                     $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $detItem['RTCALL'][$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
-                    $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $detItem['RTRO'][$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
-                    $ObjSheet->setCellValue(explode(';', $groupsItem)[2] . $rowData, $detItem['RTEFFCALL'][$key])->getStyle(explode(';', $groupsItem)[2] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $detItem['RTEFFCALL'][$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
+                    $ObjSheet->setCellValue(explode(';', $groupsItem)[2] . $rowData, $detItem['RTRO'][$key])->getStyle(explode(';', $groupsItem)[2] . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'))->getAlignment()->setWrapText(true);
                 }
 
                 $totCall = array_sum($detItem['RTCALL']);
@@ -791,8 +791,8 @@ class ReportRepeatOrder
             // FOOTER
             foreach ($groups as $key => $groupsItem) {
                 $ObjSheet->setCellValue(explode(';', $groupsItem)[0] . $rowData, $TotalAllCall[$key])->getStyle(explode(';', $groupsItem)[0] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-                $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $TotalAllRO[$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
-                $ObjSheet->setCellValue(explode(';', $groupsItem)[2] . $rowData, $TotalAllEffCall[$key])->getStyle(explode(';', $groupsItem)[2] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[1] . $rowData, $TotalAllEffCall[$key])->getStyle(explode(';', $groupsItem)[2] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet->setCellValue(explode(';', $groupsItem)[2] . $rowData, $TotalAllRO[$key])->getStyle(explode(';', $groupsItem)[1] . $rowData)->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
             }
 
             $totAllCall = array_sum($TotalAllCall);
