@@ -175,6 +175,7 @@ class Cronjob extends Model
                         AND u.ID_REGIONAL = mr.ID_REGIONAL 
                         AND u.ID_ROLE = 4
                         AND u.deleted_at IS NULL
+                WHERE mr.deleted_at IS NULL
             ";
             // SET TARGET
             $tgtUser    = app(TargetUser::class)->getRegional();
@@ -198,6 +199,7 @@ class Cronjob extends Model
                         AND u.ID_LOCATION = ml.ID_LOCATION 
                         AND u.ID_ROLE = 3
                         AND u.deleted_at IS NULL
+                WHERE ml.deleted_at IS NULL
             ";
 
             // SET TARGET
@@ -233,7 +235,7 @@ class Cronjob extends Model
                 smy.REALGEPREK_STL ,
                 (" . $tgtGeprek . ") as TGTGEPREK ,
                 smy.VSGEPREK ,
-                ((smy.VSUST * " . $wUST . ") / 100) + ((smy.VSNONUST * " . $wNONUST . ") / 100) + ((smy.VSSELERAKU * " . $wSELERAKU . ") / 100) + ((smy.VSRENDANG * " . $wRENDANG . ") / 100) + ((smy.VSGEPREK * " . $wGEPREK . ") / 100) as AVG_VS
+                ROUND(((smy.VSUST * " . $wUST . ") / 100) + ((smy.VSNONUST * " . $wNONUST . ") / 100) + ((smy.VSSELERAKU * " . $wSELERAKU . ") / 100) + ((smy.VSRENDANG * " . $wRENDANG . ") / 100) + ((smy.VSGEPREK * " . $wGEPREK . ") / 100), 2) as AVG_VS
             FROM (
                 SELECT
                     stl.LOCATION_STL,
@@ -244,19 +246,19 @@ class Cronjob extends Model
                     SUM(stl.REALRENDANG_STL) as REALRENDANG_STL,
                     SUM(stl.REALGEPREK_STL) as REALGEPREK_STL,
                     (
-                        (SUM(stl.REALUST_STL) / (" . $tgtUST . ")) * 100
+                        ROUND((SUM(stl.REALUST_STL) / (" . $tgtUST . ")) * 100, 2)
                     ) as VSUST,
                     (
-                        (SUM(stl.REALNONUST_STL) / (" . $tgtNONUST . ")) * 100
+                        ROUND((SUM(stl.REALNONUST_STL) / (" . $tgtNONUST . ")) * 100, 2)
                     ) as VSNONUST,
                     (
-                        (SUM(stl.REALSELERAKU_STL) / (" . $tgtSeleraku . ")) * 100
+                        ROUND((SUM(stl.REALSELERAKU_STL) / (" . $tgtSeleraku . ")) * 100, 2)
                     ) as VSSELERAKU,
                     (
-                        (SUM(stl.REALRENDANG_STL) / (" . $tgtRendang . ")) * 100
+                        ROUND((SUM(stl.REALRENDANG_STL) / (" . $tgtRendang . ")) * 100, 2)
                     ) as VSRENDANG,
                     (
-                        (SUM(stl.REALGEPREK_STL) / (" . $tgtGeprek . ")) * 100
+                        ROUND((SUM(stl.REALGEPREK_STL) / (" . $tgtGeprek . ")) * 100, 2)
                     ) as VSGEPREK
                 FROM summary_trans_location stl
                 INNER JOIN md_location ml
@@ -283,7 +285,7 @@ class Cronjob extends Model
                 smy.REALACTRETAIL_STL ,
                 (" . $tgtRetail . ") as TGTRETAIL ,
                 smy.VSRETAIL ,
-                ((smy.VSUB * " . $wUB . ") / 100) + ((smy.VSPS * " . $wPS . ") / 100) + ((smy.VSRETAIL * " . $wRETAIL . ") / 100) as AVG_VS
+                ROUND(((smy.VSUB * " . $wUB . ") / 100) + ((smy.VSPS * " . $wPS . ") / 100) + ((smy.VSRETAIL * " . $wRETAIL . ") / 100), 2) as AVG_VS
             FROM (
                 SELECT
                     stl.LOCATION_STL,
@@ -292,13 +294,13 @@ class Cronjob extends Model
                     SUM(stl.REALACTPS_STL) as REALACTPS_STL,
                     SUM(stl.REALACTRETAIL_STL) as REALACTRETAIL_STL,
                     (
-                        (SUM(stl.REALACTUB_STL) / (" . $tgtUB . ")) * 100
+                        ROUND((SUM(stl.REALACTUB_STL) / (" . $tgtUB . ")) * 100, 2)
                     ) as VSUB,
                     (
-                        (SUM(stl.REALACTPS_STL) / (" . $tgtPS . ")) * 100
+                        ROUND((SUM(stl.REALACTPS_STL) / (" . $tgtPS . ")) * 100, 2)
                     ) as VSPS,
                     (
-                        (SUM(stl.REALACTRETAIL_STL) / (" . $tgtRetail . ")) * 100
+                        ROUND((SUM(stl.REALACTRETAIL_STL) / (" . $tgtRetail . ")) * 100, 2)
                     ) as VSRETAIL
                 FROM summary_trans_location stl
                 INNER JOIN md_location ml
@@ -416,19 +418,19 @@ class Cronjob extends Model
                 rp.REALACTRETAIL_DM ,
                 (" . $tgtRetail . ") as TGTRETAIL ,
                 rp.VSRETAIL ,
-                ((rp.VSUB * " . $wUB . ") / 100) + ((rp.VSPS * " . $wPS . ") / 100) + ((rp.VSRETAIL * " . $wRETAIL . ") / 100) as AVG_VS
+                ROUND(((rp.VSUB * " . $wUB . ") / 100) + ((rp.VSPS * " . $wPS . ") / 100) + ((rp.VSRETAIL * " . $wRETAIL . ") / 100), 2) as AVG_VS
             FROM (
                 SELECT 
                     ma.NAME_AREA ,
                     dm.*,
                     (
-                        (dm.REALACTUB_DM/ (" . $tgtUB . ")) * 100
+                        ROUND((dm.REALACTUB_DM/ (" . $tgtUB . ")) * 100, 2)
                     ) as VSUB,
                     (
-                        (dm.REALACTPS_DM/ (" . $tgtPS . ")) * 100
+                        ROUND((dm.REALACTPS_DM/ (" . $tgtPS . ")) * 100, 2)
                     ) as VSPS,
                     (
-                        (dm.REALACTRETAIL_DM/ (" . $tgtRetail . ")) * 100
+                        ROUND((dm.REALACTRETAIL_DM/ (" . $tgtRetail . ")) * 100, 2)
                     ) as VSRETAIL
                 FROM summary_trans_user dm 
                 INNER JOIN md_area ma
@@ -438,6 +440,7 @@ class Cronjob extends Model
                         AND dm.ID_REGIONAL = '" . $idRegional . "'
                         AND dm.ID_ROLE = '" . $idRole . "'
                         AND dm.ID_AREA = ma.ID_AREA
+                        AND ma.deleted_at IS NULL
             ) as rp
             ORDER BY AVG_VS DESC
         ");
@@ -466,26 +469,26 @@ class Cronjob extends Model
                 rp.REALGEPREK_DM ,
                 (" . $tgtGeprek . ") as TGTGEPREK ,
                 rp.VSGEPREK ,
-                ((rp.VSUST * " . $wUST . ") / 100) + ((rp.VSNONUST * " . $wNONUST . ") / 100) + ((rp.VSSELERAKU * " . $wSELERAKU . ") / 100) + ((rp.VSRENDANG * " . $wRENDANG . ") / 100) + ((rp.VSGEPREK * " . $wGEPREK . ") / 100) as AVG_VS
+                ROUND(((rp.VSUST * " . $wUST . ") / 100) + ((rp.VSNONUST * " . $wNONUST . ") / 100) + ((rp.VSSELERAKU * " . $wSELERAKU . ") / 100) + ((rp.VSRENDANG * " . $wRENDANG . ") / 100) + ((rp.VSGEPREK * " . $wGEPREK . ") / 100), 2) as AVG_VS
             FROM 
             (
                 SELECT 
                     ma.NAME_AREA ,
                     dm.* ,
                     (
-                        (dm.REALUST_DM/ (" . $tgtUST . ")) * 100
+                        ROUND((dm.REALUST_DM/ (" . $tgtUST . ")) * 100, 2)
                     ) as VSUST,
                     (
-                        (dm.REALNONUST_DM/ (" . $tgtNONUST . ")) * 100
+                        ROUND((dm.REALNONUST_DM/ (" . $tgtNONUST . ")) * 100, 2)
                     ) as VSNONUST,
                     (
-                        (dm.REALSELERAKU_DM/ (" . $tgtSeleraku . ")) * 100
+                        ROUND((dm.REALSELERAKU_DM/ (" . $tgtSeleraku . ")) * 100, 2)
                     ) as VSSELERAKU,
                     (
-                        (dm.REALRENDANG_DM/ (" . $tgtRendang . ")) * 100
+                        ROUND((dm.REALRENDANG_DM/ (" . $tgtRendang . ")) * 100, 2)
                     ) as VSRENDANG,
                     (
-                        (dm.REALGEPREK_DM/ (" . $tgtGeprek . ")) * 100
+                        ROUND((dm.REALGEPREK_DM/ (" . $tgtGeprek . ")) * 100, 2)
                     ) as VSGEPREK
                 FROM summary_trans_user dm 
                 INNER JOIN md_area ma
@@ -495,6 +498,7 @@ class Cronjob extends Model
                         AND dm.ID_REGIONAL = '" . $idRegional . "'
                         AND dm.ID_ROLE = '" . $idRole . "'
                         AND dm.ID_AREA = ma.ID_AREA
+                        AND ma.deleted_at IS NULL
             ) as rp
             ORDER BY AVG_VS DESC
         ");
