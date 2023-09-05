@@ -33,6 +33,8 @@ use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class CronjobController extends Controller
 {
@@ -378,12 +380,23 @@ class CronjobController extends Controller
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
-        $rOs = Cronjob::getallcat($year,$month);
+        $key = 'finna_redis_key_roshop' . str_replace('-', '', $yearMonth);
+        $redisCached = Redis::get($key);
+        $rOs = [];
+        if (isset($redisCached)) {
+            $rOs = json_decode($redisCached, true);
+        } else {
+            $data = Cronjob::getallcat($year, $month);
+            $exp = 20 * 24 * 60 * 60;
+            Redis::setex($key, $exp, $data);
+            $rOs = json_decode($data, true);
+        }
 
         // dd($rOs);die;
 
         app(ReportRepeatOrder::class)->gen_ro_shop($rOs, $updated_at);
     }
+
     public function genROSHOPbyRange(Request $req)
     {
         if (empty($_GET['dateStart']) || empty($_GET['dateEnd'])) {
@@ -639,14 +652,13 @@ class CronjobController extends Controller
 
         if ($id_pc == '2') {
             app(ReportPerformance::class)->gen_performance_nonust($rOs, $year);
-        }elseif ($id_pc == '17') {
+        } elseif ($id_pc == '17') {
             app(ReportPerformance::class)->gen_performance_geprek($rOs, $year);
-        }elseif ($id_pc == '16') {
+        } elseif ($id_pc == '16') {
             app(ReportPerformance::class)->gen_performance_rendang($rOs, $year);
-        }elseif ($id_pc == '12') {
+        } elseif ($id_pc == '12') {
             app(ReportPerformance::class)->gen_performance_ust($rOs, $year);
         }
-
     }
     public function genPerformanceREKAP($yearReq)
     {
@@ -787,20 +799,20 @@ class CronjobController extends Controller
 
         foreach ($rOs as $regionName => $entries) {
             $regionUnik = md5($regionName . $year);
-            
+
             // Insert or update Region
             Rovscall::firstOrCreate(
                 ['ID_HEAD' => $regionUnik],
                 ['ID_REGIONAL' => $regionName],
                 ['TAHUN' => $year]
             );
-            
+
             foreach ($entries as $entry) {
                 $areaName = $entry['AREA'];
                 $areaUnik = md5($areaName . $year);
 
                 $regionUnik2 = md5($regionName . $year);
-                
+
                 $rtcallArray = $entry['RTCALL'];
                 $rteffcallArray = $entry['RTEFFCALL'];
                 $rtroArray = $entry['RTRO'];
@@ -810,7 +822,7 @@ class CronjobController extends Controller
                     $rtcallValue = $rtcallArray[$i];
                     $rteffcallValue = $rteffcallArray[$i];
                     $rtroValue = $rtroArray[$i];
-            
+
                     // Insert RTCALL data
                     Rovscalldet::create([
                         'ID_HEAD' => $regionUnik2,
@@ -830,7 +842,7 @@ class CronjobController extends Controller
                         'VALUE' => $rteffcallValue,
                         'TYPE' => 'RTEFFCALL',
                     ]);
-        
+
                     // Insert RTRO data
                     Rovscalldet::create([
                         'ID_HEAD' => $regionUnik2,
