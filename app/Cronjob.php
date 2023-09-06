@@ -2109,15 +2109,8 @@ class Cronjob extends Model
             $sortedData[$nameArea][$category] = $rows;
         }
     
-        // Convert final structure to array format
-        $sortedDataArray = json_decode(json_encode($sortedData), true);
-    
-        return $sortedDataArray;
+        return json_encode($sortedData);
     }
-    
-    
-    
-    
 
     public static function getallcatRange($yearS, $monthS, $yearE, $monthE)
     {
