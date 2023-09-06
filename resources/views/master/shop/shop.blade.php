@@ -53,6 +53,9 @@
                                 <tbody>
                                 </tbody>
                             </table>
+                            <div class="custom-pagination">
+    Go to page: <input type="number" id="page-number" min="1"> <button id="go-to-page">Go</button>
+</div>
                         </div>
                     </div>
                 </div>
@@ -134,9 +137,11 @@
     <?php 
         if (Session::get('role') == 1 || Session::get('role') == 2) {        
     ?>
-    $("#datatable").DataTable({
+    var table =   $("#datatable").DataTable({
+        "pagingType": "full_numbers",
         "processing": true,
         "serverSide": true,
+        "stateSave": true,  
         "language": {
             "processing": "<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>",
             "loadingRecords": "Loading...",
@@ -147,7 +152,7 @@
         "ajax": {
             'url': "{{ url('master/shop/AllShop') }}",
             'beforeSend': function(request) {
-                request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content'));
+                console.log(request.setRequestHeader("X-CSRF-TOKEN", $('meta[name="csrf-token"]').attr('content')));
             }
         },
         "columns": [{
@@ -179,6 +184,7 @@
     $("#datatable").DataTable({
         "processing": true,
         "serverSide": true,
+        "stateSave": true,
         "language": {
             "processing": "<img src='{{ asset('images/loader.gif') }}' style='max-width: 150px;' alt=''>",
             "loadingRecords": "Loading...",
