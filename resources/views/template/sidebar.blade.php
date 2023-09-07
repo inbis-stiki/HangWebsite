@@ -4,6 +4,7 @@
 <div class="deznav">
     <div class="deznav-scroll">
         <ul class="metismenu" id="menu">
+        @if (Session::get('role') != 99)
             <li class="active">
                 <a href="{{ url('dashboard') }}" class="ai-icon" aria-expanded="false">
                     <div class="{{ request()->is('dashboard') ? 'text-primary' : 'img-grey' }}">
@@ -106,6 +107,17 @@
             @if (Session::get('role') == 1)
             <li><a href="{{ url('master/role') }}">Role</a></li>
             @endif
+            @endif
+            @if (Session::get('role') == 99)
+            <li class="active">
+                <a href="{{ url('master/shop') }}" class="ai-icon" aria-expanded="false">
+                    <div class="{{ request()->is('master/shop') ? '' : 'img-grey' }}">
+                        <img src="{{ asset('images/icon/master.svg') }}" alt="">&nbsp;
+                        <span class="nav-text">TOKO</span>
+                    </div>
+                </a>
+            </li>
+            @endif            
         </ul>
         {{-- <li class="active"><a href="{{ url('logout') }}" class="ai-icon" aria-expanded="false">
         <i class="fa fa-power-off"></i>

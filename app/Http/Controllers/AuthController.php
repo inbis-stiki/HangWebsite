@@ -36,6 +36,9 @@ class AuthController extends Controller
                 if ($user->ID_ROLE < 5) {
                     $this->setSession($req->input('username'), $user->NAME_USER, $user->ID_ROLE, $role->NAME_ROLE, $user->ID_LOCATION, $user->ID_REGIONAL, $user->ID_AREA, $user->ID_USER);
                     return redirect('dashboard');
+                } else if ($user->ID_ROLE == 99 ) {
+                    $this->setSession($req->input('username'), $user->NAME_USER, $user->ID_ROLE, $role->NAME_ROLE, $user->ID_LOCATION, $user->ID_REGIONAL, $user->ID_AREA, $user->ID_USER);
+                    return redirect('master/shop');
                 } else {
                     return redirect()->back()->with('err_msg', 'Maaf akun anda tidak berhak membuka web !!');
                 }
