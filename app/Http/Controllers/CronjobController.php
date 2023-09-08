@@ -18,6 +18,8 @@ use App\ReportTrend;
 use App\Rovscall;
 use App\Rovscalldet;
 use App\RangeRepeat;
+use App\ReportRtHead;
+use App\ReportRtDetail;
 use App\ReportAktivitasTRX;
 use App\ReportPerformance;
 use App\ReportRepeatOrder;
@@ -780,9 +782,61 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::queryROVSTESTq($year);
 
-        // dd($rOs);
+        dd($rOs);
 
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
+    }
+
+    public function genRTPerShop($yearReq)
+    {
+        $dateStart = explode('-', $yearReq);
+        $year = ltrim($dateStart[0], '0');
+
+        $rOs = Cronjob::queryGetRepeatTransPerShop($year);
+
+        // dd($rOs);
+
+        foreach ($rOs as $regionName => $areas) {
+            
+            $regionUnik = md5($regionName . $year);
+
+            $reportRtHeadData = [
+                'NAME_REGIONAL' => $regionName,
+                'YEAR' => $year,
+            ];
+
+            ReportRtHead::updateOrCreate(['ID_HEAD' => $regionUnik], $reportRtHeadData);
+
+            foreach ($areas as $areaName => $shops) {
+                foreach ($shops as $shopData) {
+
+                    $reportRtDetailData = [
+                        'ID_HEAD' => $regionUnik,
+                        'NAME_SHOP' => $shopData['SHOP'],
+                        'NAME_AREA' => $areaName,
+                        'JANUARY' => $shopData['TRANS_COUNT'][0], 
+                        'FEBRUARY' => $shopData['TRANS_COUNT'][1],
+                        'MARCH' => $shopData['TRANS_COUNT'][2],
+                        'APRIL' => $shopData['TRANS_COUNT'][3],
+                        'MAY' => $shopData['TRANS_COUNT'][4],
+                        'JUNE' => $shopData['TRANS_COUNT'][5],
+                        'JULY' => $shopData['TRANS_COUNT'][6],
+                        'AUGUST' => $shopData['TRANS_COUNT'][7],
+                        'SEPTEMBER' => $shopData['TRANS_COUNT'][8],
+                        'OCTOBER' => $shopData['TRANS_COUNT'][9],
+                        'NOVEMBER' => $shopData['TRANS_COUNT'][10],
+                        'DECEMBER' => $shopData['TRANS_COUNT'][11],
+                        'PERCENTAGE_CURRENT' => $shopData['PERCENTAGE_CURRENT_MONTH'],
+                        'CAT_PERCENTAGE' => $shopData['CATEGORY'],
+                    ];
+
+                    ReportRtDetail::updateOrCreate(
+                        ['ID_HEAD' => $regionUnik, 'NAME_SHOP' => $shopData['SHOP']],
+                        $reportRtDetailData
+                    );
+                }
+            }
+        }
     }
 
     public function genROVSCALLIN($yearReq)
