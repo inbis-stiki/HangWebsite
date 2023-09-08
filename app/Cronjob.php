@@ -2038,7 +2038,6 @@ class Cronjob extends Model
             AND t.istrans_trans = 1
             GROUP BY REGIONAL, AREA, SHOP, EXTRACT(MONTH FROM t.DATE_TRANS)
             ORDER BY REGIONAL, AREA, SHOP, month
-            LIMIT ?;
         ";
 
         $results = DB::select(DB::raw($query), [$year]);
@@ -2054,24 +2053,27 @@ class Cronjob extends Model
             $month = $row->month;
             $count = $row->transaction_count;
 
-            if (!isset($rOs[$regional])) {
-                $rOs[$regional] = [];
+            if ($count > 0 && $regional === 'JATIM 2') {
+                if (!isset($rOs[$regional])) {
+                    $rOs[$regional] = [];
+                }
+    
+                if (!isset($rOs[$regional][$area])) {
+                    $rOs[$regional][$area] = [];
+                }
+    
+                if (!isset($rOs[$regional][$area][$shop])) {
+                    // Create an indexed array for each area
+                    $rOs[$regional][$area][] = [
+                        'SHOP' => $shop,
+                        'TRANS_COUNT' => array_fill(0, 12, 0),
+                    ];
+                }
+    
+                $index = count($rOs[$regional][$area]) - 1;
+    
+                $rOs[$regional][$area][$index]['TRANS_COUNT'][$month - 1] = $count;
             }
-
-            if (!isset($rOs[$regional][$area])) {
-                $rOs[$regional][$area] = [];
-            }
-
-            if (!isset($rOs[$regional][$area][$shop])) {
-                $rOs[$regional][$area][] = [
-                    'SHOP' => $shop,
-                    'TRANS_COUNT' => array_fill(0, 12, 0),
-                ];
-            }
-            $index = count($rOs[$regional][$area]) - 1;
-
-            $rOs[$regional][$area][$index]['TRANS_COUNT'][$month - 1] = $count;
-
         }
 
         foreach ($rOs as &$regional) {

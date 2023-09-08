@@ -789,12 +789,13 @@ class CronjobController extends Controller
 
     public function genRTPerShop($yearReq)
     {
+        // set_time_limit(3600);
         $dateStart = explode('-', $yearReq);
         $year = ltrim($dateStart[0], '0');
 
         $rOs = Cronjob::queryGetRepeatTransPerShop($year);
 
-        // dd($rOs);
+        // echo json_encode($rOs);die;
 
         foreach ($rOs as $regionName => $areas) {
             
