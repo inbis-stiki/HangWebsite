@@ -45,7 +45,7 @@
                                         <th>Pemilik</th>
                                         <th>Tipe</th>
                                         <th>Status</th>
-                                        @if (Session::get('role') == 1 || Session::get('role') == 2)
+                                        @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 99)
                                         <th>Aksi</th>
                                         @endif
                                     </tr>
@@ -133,11 +133,15 @@
 @include('template/footer')
 <script>
     // $('#datatable').DataTable()
+    $('#go-to-page').on('click', function() {
+        var pageNum = $('#page-number').val() - 1; // DataTables uses zero-based indexing
+        table.page(pageNum).draw('page');
+    });
     filterData();
     <?php 
-        if (Session::get('role') == 1 || Session::get('role') == 2) {        
+        if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 99) {        
     ?>
-    var table =   $("#datatable").DataTable({
+    var table = $("#datatable").DataTable({
         "pagingType": "full_numbers",
         "processing": true,
         "serverSide": true,

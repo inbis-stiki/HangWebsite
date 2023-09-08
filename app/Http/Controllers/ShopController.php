@@ -61,7 +61,7 @@ class ShopController extends Controller
                 $isActive = '<i class="fa-solid fa-circle mr-2" style="color:#C13B3B;"></i>Disable';
             }
 
-            if($role == 1 || $role == 2){
+            if($role == 1 || $role == 2 || $role == 99){
                 
                 $data = array(
                     "NO" => $i,
