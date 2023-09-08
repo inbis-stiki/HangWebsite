@@ -64,6 +64,7 @@ Route::get('cronjob/gen-ro-test', 'CronjobController@genROTEST');
 Route::get('cronjob/gen-ro-vs-test', 'CronjobController@genROVSTEST');
 Route::get('cronjob/gen-ro-vs-test/{year}', 'CronjobController@genROVSCALLIN');
 Route::get('cronjob/gen-akt-trx-apo/{year}', 'CronjobController@genAktTRXAPO');
+Route::get('cronjob/gen-rt-per-shop/{year}', 'CronjobController@genRTPerShop');
 
 Route::get('shop/bydistrict', 'ShopController@ShopListByDistrict');
 
