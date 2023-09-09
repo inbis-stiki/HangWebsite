@@ -2024,7 +2024,94 @@ class Cronjob extends Model
         return $rOs;
     }
 
-    public static function queryROVSTESTq($year)
+    public static function queryGetRepeatTransPerShop($year)
+    {
+        $query = "
+            SELECT r.NAME_REGIONAL AS REGIONAL, a.NAME_AREA AS AREA, s.NAME_SHOP AS SHOP,
+                EXTRACT(MONTH FROM t.DATE_TRANS) AS month, COUNT(*) AS transaction_count
+            FROM transaction t
+            JOIN md_shop s ON t.ID_SHOP = s.ID_SHOP
+            JOIN md_district d ON s.ID_DISTRICT = d.ID_DISTRICT
+            JOIN md_area a ON d.ID_AREA = a.ID_AREA
+            JOIN md_regional r ON a.ID_REGIONAL = r.ID_REGIONAL
+            WHERE EXTRACT(YEAR FROM t.DATE_TRANS) = ?
+            AND t.istrans_trans = 1
+            GROUP BY REGIONAL, AREA, SHOP, EXTRACT(MONTH FROM t.DATE_TRANS)
+            ORDER BY REGIONAL, AREA, SHOP, month
+        ";
+
+        $results = DB::select(DB::raw($query), [$year]);
+
+        $currentMonth = date('n');
+
+        $rOs = [];
+
+        foreach ($results as $row) {
+            $regional = $row->REGIONAL;
+            $area = $row->AREA;
+            $shop = $row->SHOP;
+            $month = $row->month;
+            $count = $row->transaction_count;
+
+            if ($count > 0 && $regional === 'JATIM 2') {
+                if (!isset($rOs[$regional])) {
+                    $rOs[$regional] = [];
+                }
+    
+                if (!isset($rOs[$regional][$area])) {
+                    $rOs[$regional][$area] = [];
+                }
+    
+                if (!isset($rOs[$regional][$area][$shop])) {
+                    // Create an indexed array for each area
+                    $rOs[$regional][$area][] = [
+                        'SHOP' => $shop,
+                        'TRANS_COUNT' => array_fill(0, 12, 0),
+                    ];
+                }
+    
+                $index = count($rOs[$regional][$area]) - 1;
+    
+                $rOs[$regional][$area][$index]['TRANS_COUNT'][$month - 1] = $count;
+            }
+        }
+
+        foreach ($rOs as &$regional) {
+            foreach ($regional as &$area) {
+                foreach ($area as &$shop) {
+                    $countOfZeroMonths = count(
+                        array_filter(
+                            array_slice($shop['TRANS_COUNT'], 0, $currentMonth),
+                            function ($count) {
+                                return $count == 0;
+                            }
+                        )
+                    );
+        
+                    $percentage = intval(round($countOfZeroMonths > 0 ?
+                    (100 - ($countOfZeroMonths / $currentMonth) * 100) : 0));
+        
+                    $category = 1; // Default category is 1 (0%)
+                    
+                    if ($percentage < 50) {
+                        $category = 2; // Category 2 (< 50%)
+                    } elseif ($percentage >= 50 && $percentage < 70) {
+                        $category = 3; // Category 3 (50%-70%)
+                    } elseif ($percentage >= 70) {
+                        $category = 4; // Category 4 (>= 70%)
+                    }
+        
+                    $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
+                    $shop['CATEGORY'] = $category;
+                }
+            }
+        }
+
+        // Now, $regionalData contains the desired structured array
+        return $rOs;
+    }
+
+    public static function queryROVSTESTq($year, $tipe_toko)
     {
         $results = DB::select("
         select 

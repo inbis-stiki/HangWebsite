@@ -58,6 +58,8 @@
  <script src="{{ asset('vendor/pickadate/picker.js') }}"></script>
  <script src="{{ asset('vendor/pickadate/picker.time.js') }}"></script>
  <script src="{{ asset('vendor/pickadate/picker.date.js') }}"></script>
+ 
+ <script src="{{ asset('vendor/toastr/js/toastr.min.js') }}"></script>
 
  <script>
  	$(document).ready(function() {

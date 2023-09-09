@@ -11,7 +11,7 @@ class ReportRepeatController extends Controller
     public function index(Request $req)
     {
         $user = $req->session()->get('id_user');
-        $data['title']          = "";
+        $data['title']          = "Repeat Order";
         $data['sidebar']        = "repeat";
         $data['sidebar2']       = "";
 
@@ -30,6 +30,15 @@ class ReportRepeatController extends Controller
             ->where('user.ID_USER', '=', $user)
             ->get();
         }
+
+        $data['tipe_toko'] = DB::select("
+            SELECT 
+                ms.TYPE_SHOP
+            FROM 
+                md_shop ms
+            GROUP BY
+                ms.TYPE_SHOP
+        ");
 
         return view('laporan.repeat.repeat', $data);
     }
