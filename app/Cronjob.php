@@ -2111,7 +2111,7 @@ class Cronjob extends Model
         return $rOs;
     }
 
-    public static function queryROVSTESTq($year)
+    public static function queryROVSTESTq($year, $tipe_toko)
     {
         $results = DB::select("
         select 

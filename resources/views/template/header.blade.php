@@ -36,6 +36,8 @@
     <!-- <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js"></script> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/0.53.1/mapbox-gl.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/0.53.1/mapbox-gl.js"></script>
+    <!-- Toastr -->
+    <link rel="stylesheet" href="{{ asset('vendor/toastr/css/toastr.min.css') }}">
 
     {{-- FlatPicker --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
