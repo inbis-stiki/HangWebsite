@@ -42,7 +42,7 @@
                 </a>
             </li>
             <li><a class="has-arrow" href="javascript:void()">
-                    <div class="{{ request()->is('laporan/lpr-ranking','laporan/lpr-trend', 'laporan/lpr-transaction') ? '' : 'img-grey' }} || ">
+                    <div class="{{ request()->is('laporan/*') ? '' : 'img-grey' }} || ">
                         <img src="{{ asset('images/icon/laporan.svg') }}" alt="">&nbsp;
                         <span class="nav-text">Laporan</span>
                     </div>
