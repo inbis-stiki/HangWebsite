@@ -787,168 +787,22 @@ class CronjobController extends Controller
 
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
     }
-    public function genROTransToko(Request $req)
+    public function genROTransToko($yearReq)
     {
-
-        $rOs = [
-            "BALI NUSA" => [
-                "DENPASAR 1" => [
-                    [
-                        "SHOP" => "ALI RISMANJAYA",
-                        "TRANS_COUNT" => [
-                            0,
-                            0,
-                            0,
-                            1,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0
-                        ],
-                        "PERCENTAGE_CURRENT_MONTH" => 11,
-                    ],
-                    [
-                        "SHOP" => "ARTHA DANA",
-                        "TRANS_COUNT" => [
-                            0,
-                            1,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0
-                        ],
-                        "PERCENTAGE_CURRENT_MONTH" => 11,
-                    ]
-                ],
-                "DENPASAR 2" => [
-                    [
-                        "SHOP" => "AJI PANGESTU",
-                        "TRANS_COUNT" => [
-                            0,
-                            0,
-                            0,
-                            1,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0
-                        ],
-                        "PERCENTAGE_CURRENT_MONTH" => 11
-                    ],
-                    [
-                        "SHOP" => "BUDIIIIIIIII TOKO",
-                        "TRANS_COUNT" => [
-                            5,
-                            0,
-                            0,
-                            1,
-                            0,
-                            0,
-                            6,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0
-                        ],
-                        "PERCENTAGE_CURRENT_MONTH" => 10000
-                    ]
-                ]
-            ],
-            "JATIM 3" => [
-                "MALANG 1" => [
-                    [
-                        "SHOP" => "ALI RISMANJAYA",
-                        "TRANS_COUNT" => [
-                            0,
-                            0,
-                            0,
-                            1,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0
-                        ],
-                        "PERCENTAGE_CURRENT_MONTH" => 11,
-                        "CATEGORY" => 2
-                    ],
-                    [
-                        "SHOP" => "IMANDA ANJAYYYY",
-                        "TRANS_COUNT" => [
-                            0,
-                            1,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0
-                        ],
-                        "PERCENTAGE_CURRENT_MONTH" => 11,
-                        "CATEGORY" => 2
-                    ]
-                ]
-            ]
-        ];
-        // dd($rOs);
+        set_time_limit(3600);
+        $dateStart = explode('-', $yearReq);
+        $year = ltrim($dateStart[0], '0');
+        $rOs = Cronjob::queryRTSHOP($year);
+        dd($rOs);
 
         app(ReportRepeatOrder::class)->gen_ro_trans_toko($rOs);
     }
-    public function genRORutinToko(Request $req)
+    public function genRORutinToko($yearReq)
     {
-
-        $rOs = [
-            "BALI NUSA" => [
-                "DENPASAR 1" => [
-                    "TOT_KEC" => 20,
-                    "TOT_SAYUR" => 20,
-                    "CAT0" => 10,
-                    "CAT1" => 20,
-                    "CAT2" => 40,
-                    "CAT3" => 50
-                ],
-                "DENPASAR 2" => [
-                    "TOT_KEC" => 40,
-                    "TOT_SAYUR" => 40,
-                    "CAT0" => 80,
-                    "CAT1" => 90,
-                    "CAT2" => 100,
-                    "CAT3" => 50
-                ]
-            ],
-            "JATIM 3" => [
-                "MALANG 1" => [
-                    "TOT_KEC" => 80,
-                    "TOT_SAYUR" => 80,
-                    "CAT0" => 10,
-                    "CAT1" => 100,
-                    "CAT2" => 40,
-                    "CAT3" => 50
-                ]
-            ]
-        ];
+        set_time_limit(3600);
+        $dateStart = explode('-', $yearReq);
+        $year = ltrim($dateStart[0], '0');
+        $rOs = Cronjob::queryRTRUTIN($year);
         // dd($rOs);
 
         return app(ReportRepeatOrder::class)->gen_ro_rutin_toko($rOs);
