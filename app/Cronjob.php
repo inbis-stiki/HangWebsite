@@ -2053,7 +2053,7 @@ class Cronjob extends Model
             $month = $row->month;
             $count = $row->transaction_count;
 
-            if ($count > 0 && $regional === 'JATIM 2') {
+            if ($count > 0 && $regional === 'JATIM 2' && $area === 'SIDOARJO 2') {
                 if (!isset($rOs[$regional])) {
                     $rOs[$regional] = [];
                 }
@@ -2076,9 +2076,33 @@ class Cronjob extends Model
             }
         }
 
-        foreach ($rOs as &$regional) {
-            foreach ($regional as &$area) {
-                foreach ($area as &$shop) {
+
+        $outputArray = [];
+        $currentMonth = 8; // Assume it's September now, so the current month index would be 8 (0-based index)
+        
+        foreach ($rOs as $province => $cities) {
+            foreach ($cities as $city => $shops) {
+                foreach ($shops as $shopData) {
+                    $shopName = $shopData['SHOP'];
+                    
+                    if (!isset($outputArray[$province][$city][$shopName])) {
+                        $outputArray[$province][$city][$shopName] = [
+                            'SHOP' => $shopName,
+                            'TRANS_COUNT' => array_fill(0, 12, 0)
+                        ];
+                    }
+                    
+                    foreach ($shopData['TRANS_COUNT'] as $monthIndex => $count) {
+                        $outputArray[$province][$city][$shopName]['TRANS_COUNT'][$monthIndex] += $count;
+                    }
+                }
+            }
+        }
+        
+        // re-indexing the final output and categorize shops based on transaction counts
+        foreach ($outputArray as $province => &$cities) {
+            foreach ($cities as $city => &$shops) {
+                foreach ($shops as &$shop) {
                     $countOfZeroMonths = count(
                         array_filter(
                             array_slice($shop['TRANS_COUNT'], 0, $currentMonth),
@@ -2092,7 +2116,7 @@ class Cronjob extends Model
                     (100 - ($countOfZeroMonths / $currentMonth) * 100) : 0));
         
                     $category = 1; // Default category is 1 (0%)
-                    
+        
                     if ($percentage < 50) {
                         $category = 2; // Category 2 (< 50%)
                     } elseif ($percentage >= 50 && $percentage < 70) {
@@ -2104,11 +2128,13 @@ class Cronjob extends Model
                     $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
                     $shop['CATEGORY'] = $category;
                 }
+                
+                $cities[$city] = array_values($shops); // Re-index the shop entries
             }
         }
-
+        
         // Now, $regionalData contains the desired structured array
-        return $rOs;
+        return $outputArray;
     }
 
     public static function queryROVSTESTq($year, $tipe_toko)

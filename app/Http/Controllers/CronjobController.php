@@ -789,7 +789,6 @@ class CronjobController extends Controller
     }
     public function genROTransToko(Request $req)
     {
-        set_time_limit(3600);
 
         $rOs = [
             "BALI NUSA" => [
@@ -919,7 +918,6 @@ class CronjobController extends Controller
     }
     public function genRORutinToko(Request $req)
     {
-        set_time_limit(3600);
 
         $rOs = [
             "BALI NUSA" => [
