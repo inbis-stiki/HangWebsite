@@ -2078,7 +2078,7 @@ class Cronjob extends Model
 
 
         $outputArray = [];
-        $currentMonth = date('n'); // Assume it's September now, so the current month index would be 8 (0-based index)
+        $currentMonth = date('n');
         
         foreach ($rOs as $province => $cities) {
             foreach ($cities as $city => $shops) {
@@ -2099,7 +2099,6 @@ class Cronjob extends Model
             }
         }
         
-        // re-indexing the final output and categorize shops based on transaction counts
         foreach ($outputArray as $province => &$cities) {
             foreach ($cities as $city => &$shops) {
                 foreach ($shops as &$shop) {
@@ -2131,12 +2130,113 @@ class Cronjob extends Model
                     $shop['CATEGORY'] = $category;
                 }
                 
-                $cities[$city] = array_values($shops); // Re-index the shop entries
+                $cities[$city] = array_values($shops);
             }
         }
         
-        // Now, $regionalData contains the desired structured array
         return $outputArray;
+    }
+
+    public static function queryRTSHOP($year)
+    {
+        $reportData = ReportRtHead::join('report_rt_detail', 'report_rt_head.ID_HEAD', '=', 'report_rt_detail.ID_HEAD')
+            ->select(
+                'report_rt_head.NAME_REGIONAL as REGIONAL_NAME',
+                'report_rt_detail.NAME_SHOP as SHOP_NAME',
+                'report_rt_detail.NAME_AREA as AREA_NAME',
+                'report_rt_detail.JANUARY',
+                'report_rt_detail.FEBRUARY',
+                'report_rt_detail.MARCH',
+                'report_rt_detail.APRIL',
+                'report_rt_detail.MAY',
+                'report_rt_detail.JUNE',
+                'report_rt_detail.JULY',
+                'report_rt_detail.AUGUST',
+                'report_rt_detail.SEPTEMBER',
+                'report_rt_detail.OCTOBER',
+                'report_rt_detail.NOVEMBER',
+                'report_rt_detail.DECEMBER',
+                'report_rt_detail.PERCENTAGE_CURRENT',
+                'report_rt_detail.CAT_PERCENTAGE'
+            )
+            ->whereRaw("CAST(report_rt_head.YEAR AS UNSIGNED) = ?", [$year])
+            ->get();
+
+            $formattedData = [];
+
+            foreach ($reportData as $item) {
+                $regionalName = $item->REGIONAL_NAME;
+                $areaName = $item->AREA_NAME;
+                $shopName = $item->SHOP_NAME;
+                $transCount = [
+                    $item->JANUARY, $item->FEBRUARY, $item->MARCH, $item->APRIL,
+                    $item->MAY, $item->JUNE, $item->JULY, $item->AUGUST,
+                    $item->SEPTEMBER, $item->OCTOBER, $item->NOVEMBER, $item->DECEMBER,
+                ];
+                $percentageCurrent = $item->PERCENTAGE_CURRENT;
+                $catPercentage = $item->CAT_PERCENTAGE;
+
+                $formattedData[$regionalName][$areaName][] = [
+                    "SHOP" => $shopName,
+                    "TRANS_COUNT" => $transCount,
+                    "PERCENTAGE_CURRENT_MONTH" => $percentageCurrent,
+                    "CAT_PERCENTAGE" => $catPercentage,
+                ];
+            }
+
+            return $formattedData;
+    }
+
+    public static function queryRTRUTIN($year)
+    {
+        $reportData = DB::table('report_rt_head as RH')
+        ->select(
+            'RH.NAME_REGIONAL as REGIONAL_NAME',
+            'RD.NAME_AREA as AREA_NAME',
+            'RD.CAT_PERCENTAGE',
+            DB::raw('(SELECT COUNT(*) FROM md_district as MD1 
+                   JOIN md_area as MA1 ON MD1.ID_AREA = MA1.ID_AREA
+                   WHERE ISMARKET_DISTRICT = 0 AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) as TOT_KEC'),
+            DB::raw('(SELECT COUNT(*) FROM md_shop as MS1 
+                   JOIN md_district as MD1 ON MS1.ID_DISTRICT = MD1.ID_DISTRICT
+                   JOIN md_area as MA1 ON MD1.ID_AREA = MA1.ID_AREA
+                   WHERE MS1.TYPE_SHOP = "Pedagang Sayur" AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) as TOT_SAYUR'),
+            DB::raw('(SELECT COUNT(*) FROM report_rt_detail as RD1 WHERE RD1.ID_HEAD = RH.ID_HEAD AND RD1.CAT_PERCENTAGE = 1) as CAT0'),
+            DB::raw('(SELECT COUNT(*) FROM report_rt_detail as RD2 WHERE RD2.ID_HEAD = RH.ID_HEAD AND RD2.CAT_PERCENTAGE = 2) as CAT1'),
+            DB::raw('(SELECT COUNT(*) FROM report_rt_detail as RD3 WHERE RD3.ID_HEAD = RH.ID_HEAD AND RD3.CAT_PERCENTAGE = 3) as CAT2'),
+            DB::raw('(SELECT COUNT(*) FROM report_rt_detail as RD4 WHERE RD4.ID_HEAD = RH.ID_HEAD AND RD4.CAT_PERCENTAGE = 4) as CAT3')
+        )
+        ->join('report_rt_detail as RD', DB::raw('RH.ID_HEAD COLLATE utf8mb4_unicode_ci'), '=', DB::raw('RD.ID_HEAD COLLATE utf8mb4_unicode_ci'))
+        ->whereRaw("CAST(RH.YEAR AS UNSIGNED) = CAST(? AS UNSIGNED)", [$year])
+        ->groupBy('REGIONAL_NAME', 'AREA_NAME', 'CAT_PERCENTAGE')
+        ->get();
+
+        $formattedData = [];
+
+        foreach ($reportData as $item) {
+            $regionalName = $item->REGIONAL_NAME;
+            $areaName = $item->AREA_NAME;
+
+            if (!isset($formattedData[$regionalName][$areaName])) {
+                $formattedData[$regionalName][$areaName] = [
+                    "TOT_KEC" => 0,
+                    "TOT_SAYUR" => 0,
+                    "CAT0" => 0,
+                    "CAT1" => 0,
+                    "CAT2" => 0,
+                    "CAT3" => 0,
+                ];
+            }
+
+            $formattedData[$regionalName][$areaName]["TOT_KEC"] = $item->TOT_KEC;
+            $formattedData[$regionalName][$areaName]["TOT_SAYUR"] = $item->TOT_SAYUR;
+            $formattedData[$regionalName][$areaName]["CAT0"] = $item->CAT0;
+            $formattedData[$regionalName][$areaName]["CAT1"] = $item->CAT1;
+            $formattedData[$regionalName][$areaName]["CAT2"] = $item->CAT2;
+            $formattedData[$regionalName][$areaName]["CAT3"] = $item->CAT3;
+        }
+
+        return $formattedData;
     }
 
     public static function queryROVSTESTq($year, $tipe_toko)
