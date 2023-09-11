@@ -2034,7 +2034,7 @@ class Cronjob extends Model
             JOIN md_district d ON s.ID_DISTRICT = d.ID_DISTRICT
             JOIN md_area a ON d.ID_AREA = a.ID_AREA
             JOIN md_regional r ON a.ID_REGIONAL = r.ID_REGIONAL
-            WHERE EXTRACT(YEAR FROM t.DATE_TRANS) = ?
+            WHERE EXTRACT(YEAR FROM t.DATE_TRANS) = ? AND a.NAME_AREA = 'SIDOARJO 2'
             GROUP BY REGIONAL, AREA, SHOP, EXTRACT(MONTH FROM t.DATE_TRANS)
             ORDER BY REGIONAL, AREA, SHOP, month
         ";
@@ -2053,7 +2053,7 @@ class Cronjob extends Model
             $count = $row->transaction_count;
             $typeShop = $row->TYPE_SHOP;
 
-            if ($count > 0) {
+            if ($count > 0 && $area == "SIDOARJO 2") {
                 if (!isset($rOs[$regional])) {
                     $rOs[$regional] = [];
                 }

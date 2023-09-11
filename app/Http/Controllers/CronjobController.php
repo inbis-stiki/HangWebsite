@@ -855,6 +855,7 @@ class CronjobController extends Controller
                         'DECEMBER' => $shopData['TRANS_COUNT'][11],
                         'PERCENTAGE_CURRENT' => $shopData['PERCENTAGE_CURRENT_MONTH'],
                         'CAT_PERCENTAGE' => $shopData['CATEGORY'],
+                        'TYPE_SHOP' => $shopData['TYPE_SHOP'],
                     ];
 
                     ReportRtDetail::updateOrCreate(
