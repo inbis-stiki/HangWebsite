@@ -250,13 +250,13 @@
                                     <h4 class="card-title">Cetak Repeat Order Transaksi Toko</h4>
                                 </div>
                                 <div class="card-body">
-                                    <!-- <div class="row mt-4">
-                                        <div class="col-md-6" id="date-start2">
+                                    <div class="row mt-4">
+                                        <div class="col-md-6" id="date-start4">
                                             <label for="start_month">Tahun:</label>
-                                            <input type="year" class="form-control date-picker-start2" name="yearStart" required>
+                                            <input type="year" class="form-control date-picker-start4" name="year_report4" required>
                                         </div>
                                     </div>
-                                    <br></br> -->
+                                    <br></br>
                                     <button id="generate_report3" class="btn btn-primary">Generate Report</button>
                                 </div>
                             </div>
@@ -272,13 +272,13 @@
                                     <h4 class="card-title">Cetak Repeat Order Rutin Toko</h4>
                                 </div>
                                 <div class="card-body">
-                                    <!-- <div class="row mt-4">
-                                        <div class="col-md-6" id="date-start2">
+                                    <div class="row mt-4">
+                                        <div class="col-md-6" id="date-start5">
                                             <label for="start_month">Tahun:</label>
-                                            <input type="year" class="form-control date-picker-start2" name="yearStart" required>
+                                            <input type="year" class="form-control date-picker-start5" name="year_report5" required>
                                         </div>
                                     </div>
-                                    <br></br> -->
+                                    <br></br>
                                     <button id="generate_report4" class="btn btn-primary">Generate Report</button>
                                 </div>
                             </div>
@@ -337,13 +337,13 @@
             }
         });
 
-        $('#generate_report2').on('click', function() {            
+        $('#generate_report2').on('click', function() {
             var tipe_toko = $("#tipe_toko").find('option:selected').val();
             var yearStart = $("input[name='yearStart']").val();
             var msg = ''
             if (yearStart.length <= 0) {
                 msg = 'Tolong memilih tahun terlebih dahulu'
-            }else if(tipe_toko.length <= 0){
+            } else if (tipe_toko.length <= 0) {
                 msg = 'Tolong memilih tipe toko terlebih dahulu'
             }
 
@@ -355,11 +355,23 @@
         });
 
         $('#generate_report3').on('click', function() {
-            DownloadFile('{{ url("cronjob/gen-ro-trans-shop") }}')
+            var yearStart = $("input[name='year_report4']").val()
+            if (yearStart.length <= 0) {
+                msg = 'Tolong memilih tahun terlebih dahulu'
+                showToast(msg)
+            } else {
+                DownloadFile('{{ url("cronjob/gen-ro-trans-shop/") }}/' + yearStart)
+            }
         });
 
         $('#generate_report4').on('click', function() {
-            DownloadFile('{{ url("cronjob/gen-ro-rutin-shop") }}')
+            var yearStart = $("input[name='year_report5']").val()
+            if (yearStart.length <= 0) {
+                msg = 'Tolong memilih tahun terlebih dahulu'
+                showToast(msg)
+            } else {
+                DownloadFile('{{ url("cronjob/gen-ro-rutin-shop/") }}/' + yearStart)
+            }
         });
     });
 
@@ -369,6 +381,28 @@
             var year = $('#date-start2').find('.picker__select--year').val()
             var date = [year].join("-")
             $('.date-picker-start2').val(date)
+        },
+        selectYears: true,
+        buttonClear: false
+    })
+
+    $('.date-picker-start4').pickadate({
+        format: 'yyyy',
+        onClose: function() {
+            var year = $('#date-start4').find('.picker__select--year').val()
+            var date = [year].join("-")
+            $('.date-picker-start4').val(date)
+        },
+        selectYears: true,
+        buttonClear: false
+    })
+
+    $('.date-picker-start5').pickadate({
+        format: 'yyyy',
+        onClose: function() {
+            var year = $('#date-start5').find('.picker__select--year').val()
+            var date = [year].join("-")
+            $('.date-picker-start5').val(date)
         },
         selectYears: true,
         buttonClear: false
@@ -423,7 +457,7 @@
         fetch(url)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    showToast('Network response was not ok');
                 }
 
                 // Extract the filename from the Content-Disposition header
@@ -441,7 +475,7 @@
                         };
                     });
                 } else {
-                    throw new Error('Could not extract original filename from response headers');
+                    showToast('Could not extract original filename from response headers');
                 }
             })
             .then(({
@@ -465,14 +499,15 @@
                 Swal.close()
             })
             .catch(error => {
-                console.error('Error:', error);
+                Swal.close()
+                showToast('Laporan gagal di generate');
             });
     }
 
     function showToast(msg) {
         toastr.warning(msg, "Warning", {
             positionClass: "toast-top-right",
-            timeOut: 1e3,
+            timeOut: 2e3,
             closeButton: !0,
             debug: !1,
             newestOnTop: !0,

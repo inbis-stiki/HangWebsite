@@ -2028,14 +2028,13 @@ class Cronjob extends Model
     {
         $query = "
             SELECT r.NAME_REGIONAL AS REGIONAL, a.NAME_AREA AS AREA, s.NAME_SHOP AS SHOP,
-                EXTRACT(MONTH FROM t.DATE_TRANS) AS month, COUNT(*) AS transaction_count
+                EXTRACT(MONTH FROM t.DATE_TRANS) AS month, COUNT(*) AS transaction_count, s.TYPE_SHOP
             FROM transaction t
             JOIN md_shop s ON t.ID_SHOP = s.ID_SHOP
             JOIN md_district d ON s.ID_DISTRICT = d.ID_DISTRICT
             JOIN md_area a ON d.ID_AREA = a.ID_AREA
             JOIN md_regional r ON a.ID_REGIONAL = r.ID_REGIONAL
             WHERE EXTRACT(YEAR FROM t.DATE_TRANS) = ?
-            AND t.istrans_trans = 1
             GROUP BY REGIONAL, AREA, SHOP, EXTRACT(MONTH FROM t.DATE_TRANS)
             ORDER BY REGIONAL, AREA, SHOP, month
         ";
@@ -2052,8 +2051,9 @@ class Cronjob extends Model
             $shop = $row->SHOP;
             $month = $row->month;
             $count = $row->transaction_count;
+            $typeShop = $row->TYPE_SHOP;
 
-            if ($count > 0 && $regional === 'JATIM 2') {
+            if ($count > 0) {
                 if (!isset($rOs[$regional])) {
                     $rOs[$regional] = [];
                 }
@@ -2076,9 +2076,31 @@ class Cronjob extends Model
             }
         }
 
-        foreach ($rOs as &$regional) {
-            foreach ($regional as &$area) {
-                foreach ($area as &$shop) {
+
+        $outputArray = [];
+        $currentMonth = date('n');
+        
+        foreach ($rOs as $province => $cities) {
+            foreach ($cities as $city => $shops) {
+                foreach ($shops as $shopData) {
+                    $shopName = $shopData['SHOP'];
+                    
+                    if (!isset($outputArray[$province][$city][$shopName])) {
+                        $outputArray[$province][$city][$shopName] = [
+                            'SHOP' => $shopName,
+                            'TRANS_COUNT' => array_fill(0, 12, 0)
+                        ];
+                    }
+                    
+                    foreach ($shopData['TRANS_COUNT'] as $monthIndex => $count) {
+                        $outputArray[$province][$city][$shopName]['TRANS_COUNT'][$monthIndex] += $count;
+                    }
+                }
+            }
+        }
+        foreach ($outputArray as $province => &$cities) {
+            foreach ($cities as $city => &$shops) {
+                foreach ($shops as &$shop) {
                     $countOfZeroMonths = count(
                         array_filter(
                             array_slice($shop['TRANS_COUNT'], 0, $currentMonth),
@@ -2089,26 +2111,153 @@ class Cronjob extends Model
                     );
         
                     $percentage = intval(round($countOfZeroMonths > 0 ?
-                    (100 - ($countOfZeroMonths / $currentMonth) * 100) : 0));
+                    (100 - ($countOfZeroMonths / $currentMonth) * 100) : 100));
         
-                    $category = 1; // Default category is 1 (0%)
-                    
-                    if ($percentage < 50) {
+                
+        
+                    if ($percentage > 0 && $percentage < 50) {
                         $category = 2; // Category 2 (< 50%)
                     } elseif ($percentage >= 50 && $percentage < 70) {
                         $category = 3; // Category 3 (50%-70%)
                     } elseif ($percentage >= 70) {
                         $category = 4; // Category 4 (>= 70%)
+                    } else{
+                        $category = 1; // Category 1 (0%) hehe
                     }
         
                     $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
                     $shop['CATEGORY'] = $category;
+                    $shop['TYPE_SHOP'] = $typeShop;
                 }
+                
+                $cities[$city] = array_values($shops);
             }
         }
+        // dd($outputArray);
+        return $outputArray;
+    }
 
-        // Now, $regionalData contains the desired structured array
-        return $rOs;
+    public static function queryRTSHOP($year)
+    {
+        $reportData = ReportRtHead::join('report_rt_detail', 'report_rt_head.ID_HEAD', '=', 'report_rt_detail.ID_HEAD')
+            ->select(
+                'report_rt_head.NAME_REGIONAL as REGIONAL_NAME',
+                'report_rt_detail.NAME_SHOP as SHOP_NAME',
+                'report_rt_detail.NAME_AREA as AREA_NAME',
+                'report_rt_detail.JANUARY',
+                'report_rt_detail.FEBRUARY',
+                'report_rt_detail.MARCH',
+                'report_rt_detail.APRIL',
+                'report_rt_detail.MAY',
+                'report_rt_detail.JUNE',
+                'report_rt_detail.JULY',
+                'report_rt_detail.AUGUST',
+                'report_rt_detail.SEPTEMBER',
+                'report_rt_detail.OCTOBER',
+                'report_rt_detail.NOVEMBER',
+                'report_rt_detail.DECEMBER',
+                'report_rt_detail.PERCENTAGE_CURRENT',
+                'report_rt_detail.CAT_PERCENTAGE'
+            )
+            ->whereRaw("CAST(report_rt_head.YEAR AS UNSIGNED) = ?", [$year])
+            ->get();
+
+            $formattedData = [];
+
+            foreach ($reportData as $item) {
+                $regionalName = $item->REGIONAL_NAME;
+                $areaName = $item->AREA_NAME;
+                $shopName = $item->SHOP_NAME;
+                $transCount = [
+                    $item->JANUARY, $item->FEBRUARY, $item->MARCH, $item->APRIL,
+                    $item->MAY, $item->JUNE, $item->JULY, $item->AUGUST,
+                    $item->SEPTEMBER, $item->OCTOBER, $item->NOVEMBER, $item->DECEMBER,
+                ];
+                $percentageCurrent = $item->PERCENTAGE_CURRENT;
+                $catPercentage = $item->CAT_PERCENTAGE;
+
+                $formattedData[$regionalName][$areaName][] = [
+                    "SHOP" => $shopName,
+                    "TRANS_COUNT" => $transCount,
+                    "PERCENTAGE_CURRENT_MONTH" => $percentageCurrent,
+                    "CAT_PERCENTAGE" => $catPercentage,
+                ];
+            }
+
+            return $formattedData;
+    }
+
+    public static function queryRTRUTIN($year)
+    {
+        $reportData = DB::select(
+            DB::raw("
+                SELECT
+                    `RH`.`NAME_REGIONAL` AS `REGIONAL_NAME`,
+                    `RD`.`NAME_AREA` AS `AREA_NAME`,
+                    `RD`.`CAT_PERCENTAGE`,
+                    (SELECT
+                        COUNT(*)
+                    FROM
+                        md_district AS MD1
+                    JOIN md_area AS MA1 ON
+                        MD1.ID_AREA = MA1.ID_AREA
+                    WHERE
+                        ISMARKET_DISTRICT = 0
+                        AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) AS TOT_KEC,
+                    (SELECT
+                        COUNT(*)
+                    FROM
+                        md_shop AS MS1
+                    JOIN md_district AS MD1 ON
+                        MS1.ID_DISTRICT = MD1.ID_DISTRICT
+                    JOIN md_area AS MA1 ON
+                        MD1.ID_AREA = MA1.ID_AREA
+                    WHERE
+                        MS1.TYPE_SHOP = 'Pedagang Sayur'
+                        AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) AS TOT_SAYUR,
+                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 1 THEN 1 ELSE 0 END) AS CAT0,
+                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 2 THEN 1 ELSE 0 END) AS CAT1,
+                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 3 THEN 1 ELSE 0 END) AS CAT2,
+                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 4 THEN 1 ELSE 0 END) AS CAT3	
+                FROM
+                    `report_rt_head` AS `RH`
+                INNER JOIN `report_rt_detail` AS `RD` ON
+                    RH.ID_HEAD = RD.ID_HEAD
+                WHERE
+                    `RH`.`YEAR` = ". $year ."
+                GROUP BY
+                    `REGIONAL_NAME`,
+                    `AREA_NAME`,
+                    `CAT_PERCENTAGE`
+            ")
+        );
+
+        $formattedData = [];
+
+        foreach ($reportData as $item) {
+            $regionalName = $item->REGIONAL_NAME;
+            $areaName = $item->AREA_NAME;
+
+            if (!isset($formattedData[$regionalName][$areaName])) {
+                $formattedData[$regionalName][$areaName] = [
+                    "TOT_KEC" => 0,
+                    "TOT_SAYUR" => 0,
+                    "CAT0" => 0,
+                    "CAT1" => 0,
+                    "CAT2" => 0,
+                    "CAT3" => 0,
+                ];
+            }
+
+            $formattedData[$regionalName][$areaName]["TOT_KEC"] = $item->TOT_KEC;
+            $formattedData[$regionalName][$areaName]["TOT_SAYUR"] = $item->TOT_SAYUR;
+            $formattedData[$regionalName][$areaName]["CAT0"] = $item->CAT0;
+            $formattedData[$regionalName][$areaName]["CAT1"] = $item->CAT1;
+            $formattedData[$regionalName][$areaName]["CAT2"] = $item->CAT2;
+            $formattedData[$regionalName][$areaName]["CAT3"] = $item->CAT3;
+        }
+
+        return $formattedData;
     }
 
     public static function queryROVSTESTq($year, $tipe_toko)
