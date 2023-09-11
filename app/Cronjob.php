@@ -2028,14 +2028,13 @@ class Cronjob extends Model
     {
         $query = "
             SELECT r.NAME_REGIONAL AS REGIONAL, a.NAME_AREA AS AREA, s.NAME_SHOP AS SHOP,
-                EXTRACT(MONTH FROM t.DATE_TRANS) AS month, COUNT(*) AS transaction_count
+                EXTRACT(MONTH FROM t.DATE_TRANS) AS month, COUNT(*) AS transaction_count, s.TYPE_SHOP
             FROM transaction t
             JOIN md_shop s ON t.ID_SHOP = s.ID_SHOP
             JOIN md_district d ON s.ID_DISTRICT = d.ID_DISTRICT
             JOIN md_area a ON d.ID_AREA = a.ID_AREA
             JOIN md_regional r ON a.ID_REGIONAL = r.ID_REGIONAL
             WHERE EXTRACT(YEAR FROM t.DATE_TRANS) = ?
-            AND t.istrans_trans = 1
             GROUP BY REGIONAL, AREA, SHOP, EXTRACT(MONTH FROM t.DATE_TRANS)
             ORDER BY REGIONAL, AREA, SHOP, month
         ";
@@ -2052,6 +2051,7 @@ class Cronjob extends Model
             $shop = $row->SHOP;
             $month = $row->month;
             $count = $row->transaction_count;
+            $typeShop = $row->TYPE_SHOP;
 
             if ($count > 0) {
                 if (!isset($rOs[$regional])) {
@@ -2111,7 +2111,7 @@ class Cronjob extends Model
                     );
         
                     $percentage = intval(round($countOfZeroMonths > 0 ?
-                    (100 - ($countOfZeroMonths / $currentMonth) * 100) : 0));
+                    (100 - ($countOfZeroMonths / $currentMonth) * 100) : 100));
         
                 
         
@@ -2127,12 +2127,13 @@ class Cronjob extends Model
         
                     $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
                     $shop['CATEGORY'] = $category;
+                    $shop['TYPE_SHOP'] = $typeShop;
                 }
                 
                 $cities[$city] = array_values($shops);
             }
         }
-        
+        // dd($outputArray);
         return $outputArray;
     }
 

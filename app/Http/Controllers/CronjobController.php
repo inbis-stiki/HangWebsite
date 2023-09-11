@@ -775,15 +775,12 @@ class CronjobController extends Controller
     }
     public function genROVSTEST(Request $req)
     {
-        set_time_limit(3600);
 
         $dateStart = explode('-', $_GET['yearStart']);
         $year = ltrim($dateStart[0], '0');
         $tipe_toko = $_GET['tipe_toko'];
 
         $rOs = Cronjob::queryROVSTESTq($year, $tipe_toko);
-
-        // dd($rOs);
 
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
     }
@@ -820,13 +817,11 @@ class CronjobController extends Controller
     }
     public function genRTPerShop($yearReq)
     {
-        // set_time_limit(3600);
+
         $dateStart = explode('-', $yearReq);
         $year = ltrim($dateStart[0], '0');
 
         $rOs = Cronjob::queryGetRepeatTransPerShop($year);
-
-        // echo json_encode($rOs);die;
 
         foreach ($rOs as $regionName => $areas) {
 
@@ -877,8 +872,6 @@ class CronjobController extends Controller
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
         $rOs = Cronjob::queryROVSTEST($yearReq);
-
-        // dd($rOs);
 
         $monthArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -1098,7 +1091,7 @@ class CronjobController extends Controller
         if ($formData != null) {
             UserRankingActivity::insert($formData);
         }
-        dd($formData);
+        // dd($formData);
     }
     public function queryGetTargetRegional($currDate)
     {
