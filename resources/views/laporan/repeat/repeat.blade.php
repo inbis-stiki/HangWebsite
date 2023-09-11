@@ -500,7 +500,7 @@
             })
             .catch(error => {
                 Swal.close()
-                showToast('Data kosong');
+                showToast('Laporan gagal di generate');
             });
     }
 
