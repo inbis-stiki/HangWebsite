@@ -2053,7 +2053,7 @@ class Cronjob extends Model
             $count = $row->transaction_count;
             $typeShop = $row->TYPE_SHOP;
 
-            if ($count > 0) {
+            if ($count > 0 && $area === "SIDOARJO 2") {
                 if (!isset($rOs[$regional])) {
                     $rOs[$regional] = [];
                 }
@@ -2066,13 +2066,14 @@ class Cronjob extends Model
                     // Create an indexed array for each area
                     $rOs[$regional][$area][] = [
                         'SHOP' => $shop,
-                        'TRANS_COUNT' => array_fill(0, 12, 0),
+                        'TRANS_COUNT' => array_fill(0, 12, 0)
                     ];
                 }
     
                 $index = count($rOs[$regional][$area]) - 1;
     
                 $rOs[$regional][$area][$index]['TRANS_COUNT'][$month - 1] = $count;
+                $rOs[$regional][$area][$index]['TYPE_SHOP'] = $typeShop;
             }
         }
 
@@ -2128,7 +2129,6 @@ class Cronjob extends Model
         
                     $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
                     $shop['CATEGORY'] = $category;
-                    $shop['TYPE_SHOP'] = $typeShop;
                 }
                 
                 $cities[$city] = array_values($shops);
