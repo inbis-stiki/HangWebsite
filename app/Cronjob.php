@@ -2098,7 +2098,6 @@ class Cronjob extends Model
                 }
             }
         }
-        
         foreach ($outputArray as $province => &$cities) {
             foreach ($cities as $city => &$shops) {
                 foreach ($shops as &$shop) {
