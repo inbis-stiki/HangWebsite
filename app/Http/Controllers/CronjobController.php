@@ -801,18 +801,14 @@ class CronjobController extends Controller
     }
     public function genRORutinToko($yearReq)
     {
-        try {
-            set_time_limit(3600);
-            $dateStart = explode('-', $yearReq);
-            $year = ltrim($dateStart[0], '0');
-            $rOs = Cronjob::queryRTRUTIN($year);
-            // dd($rOs);
+        set_time_limit(3600);
+        $dateStart = explode('-', $yearReq);
+        $year = ltrim($dateStart[0], '0');
+        $rOs = Cronjob::queryRTRUTIN($year);
+        // dd($rOs);
 
-            if (!empty($rOs)) {
-                return app(ReportRepeatOrder::class)->gen_ro_rutin_toko($rOs);
-            }
-        } catch (Exception $exp) {
-            return 0;
+        if (!empty($rOs)) {
+            return app(ReportRepeatOrder::class)->gen_ro_rutin_toko($rOs);
         }
     }
     public function genRTPerShop($yearReq)
