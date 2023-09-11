@@ -2098,7 +2098,6 @@ class Cronjob extends Model
                 }
             }
         }
-        
         foreach ($outputArray as $province => &$cities) {
             foreach ($cities as $city => &$shops) {
                 foreach ($shops as &$shop) {
@@ -2190,27 +2189,48 @@ class Cronjob extends Model
 
     public static function queryRTRUTIN($year)
     {
-        $reportData = DB::table('report_rt_head as RH')
-        ->select(
-            'RH.NAME_REGIONAL as REGIONAL_NAME',
-            'RD.NAME_AREA as AREA_NAME',
-            'RD.CAT_PERCENTAGE',
-            DB::raw('(SELECT COUNT(*) FROM md_district as MD1 
-                   JOIN md_area as MA1 ON MD1.ID_AREA = MA1.ID_AREA
-                   WHERE ISMARKET_DISTRICT = 0 AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) as TOT_KEC'),
-            DB::raw('(SELECT COUNT(*) FROM md_shop as MS1 
-                   JOIN md_district as MD1 ON MS1.ID_DISTRICT = MD1.ID_DISTRICT
-                   JOIN md_area as MA1 ON MD1.ID_AREA = MA1.ID_AREA
-                   WHERE MS1.TYPE_SHOP = "Pedagang Sayur" AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) as TOT_SAYUR'),
-            DB::raw('(SELECT COUNT(*) FROM report_rt_detail as RD1 WHERE RD1.ID_HEAD = RH.ID_HEAD AND RD1.CAT_PERCENTAGE = 1) as CAT0'),
-            DB::raw('(SELECT COUNT(*) FROM report_rt_detail as RD2 WHERE RD2.ID_HEAD = RH.ID_HEAD AND RD2.CAT_PERCENTAGE = 2) as CAT1'),
-            DB::raw('(SELECT COUNT(*) FROM report_rt_detail as RD3 WHERE RD3.ID_HEAD = RH.ID_HEAD AND RD3.CAT_PERCENTAGE = 3) as CAT2'),
-            DB::raw('(SELECT COUNT(*) FROM report_rt_detail as RD4 WHERE RD4.ID_HEAD = RH.ID_HEAD AND RD4.CAT_PERCENTAGE = 4) as CAT3')
-        )
-        ->join('report_rt_detail as RD', DB::raw('RH.ID_HEAD COLLATE utf8mb4_unicode_ci'), '=', DB::raw('RD.ID_HEAD COLLATE utf8mb4_unicode_ci'))
-        ->whereRaw("CAST(RH.YEAR AS UNSIGNED) = CAST(? AS UNSIGNED)", [$year])
-        ->groupBy('REGIONAL_NAME', 'AREA_NAME', 'CAT_PERCENTAGE')
-        ->get();
+        $reportData = DB::select(
+            DB::raw("
+                SELECT
+                    `RH`.`NAME_REGIONAL` AS `REGIONAL_NAME`,
+                    `RD`.`NAME_AREA` AS `AREA_NAME`,
+                    `RD`.`CAT_PERCENTAGE`,
+                    (SELECT
+                        COUNT(*)
+                    FROM
+                        md_district AS MD1
+                    JOIN md_area AS MA1 ON
+                        MD1.ID_AREA = MA1.ID_AREA
+                    WHERE
+                        ISMARKET_DISTRICT = 0
+                        AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) AS TOT_KEC,
+                    (SELECT
+                        COUNT(*)
+                    FROM
+                        md_shop AS MS1
+                    JOIN md_district AS MD1 ON
+                        MS1.ID_DISTRICT = MD1.ID_DISTRICT
+                    JOIN md_area AS MA1 ON
+                        MD1.ID_AREA = MA1.ID_AREA
+                    WHERE
+                        MS1.TYPE_SHOP = 'Pedagang Sayur'
+                        AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) AS TOT_SAYUR,
+                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 1 THEN 1 ELSE 0 END) AS CAT0,
+                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 2 THEN 1 ELSE 0 END) AS CAT1,
+                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 3 THEN 1 ELSE 0 END) AS CAT2,
+                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 4 THEN 1 ELSE 0 END) AS CAT3	
+                FROM
+                    `report_rt_head` AS `RH`
+                INNER JOIN `report_rt_detail` AS `RD` ON
+                    RH.ID_HEAD = RD.ID_HEAD
+                WHERE
+                    `RH`.`YEAR` = ". $year ."
+                GROUP BY
+                    `REGIONAL_NAME`,
+                    `AREA_NAME`,
+                    `CAT_PERCENTAGE`
+            ")
+        );
 
         $formattedData = [];
 
