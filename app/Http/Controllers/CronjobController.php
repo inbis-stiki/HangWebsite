@@ -775,7 +775,6 @@ class CronjobController extends Controller
     }
     public function genROVSTEST(Request $req)
     {
-        set_time_limit(3600);
 
         $dateStart = explode('-', $_GET['yearStart']);
         $year = ltrim($dateStart[0], '0');
@@ -783,39 +782,33 @@ class CronjobController extends Controller
 
         $rOs = Cronjob::queryROVSTESTq($year, $tipe_toko);
 
-        // dd($rOs);
-
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
     }
     public function genROTransToko($yearReq)
     {
-        set_time_limit(3600);
+
         $dateStart = explode('-', $yearReq);
         $year = ltrim($dateStart[0], '0');
         $rOs = Cronjob::queryRTSHOP($year);
-        dd($rOs);
 
         app(ReportRepeatOrder::class)->gen_ro_trans_toko($rOs);
     }
     public function genRORutinToko($yearReq)
     {
-        set_time_limit(3600);
+
         $dateStart = explode('-', $yearReq);
         $year = ltrim($dateStart[0], '0');
         $rOs = Cronjob::queryRTRUTIN($year);
-        // dd($rOs);
 
         return app(ReportRepeatOrder::class)->gen_ro_rutin_toko($rOs);
     }
     public function genRTPerShop($yearReq)
     {
-        // set_time_limit(3600);
+
         $dateStart = explode('-', $yearReq);
         $year = ltrim($dateStart[0], '0');
 
         $rOs = Cronjob::queryGetRepeatTransPerShop($year);
-
-        // echo json_encode($rOs);die;
 
         foreach ($rOs as $regionName => $areas) {
 
@@ -866,8 +859,6 @@ class CronjobController extends Controller
         $updated_at     = date('Y-m-d', strtotime('-1 days'));
 
         $rOs = Cronjob::queryROVSTEST($yearReq);
-
-        // dd($rOs);
 
         $monthArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -1087,7 +1078,7 @@ class CronjobController extends Controller
         if ($formData != null) {
             UserRankingActivity::insert($formData);
         }
-        dd($formData);
+        // dd($formData);
     }
     public function queryGetTargetRegional($currDate)
     {
