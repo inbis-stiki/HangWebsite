@@ -271,11 +271,20 @@
                                 <div class="card-header">
                                     <h4 class="card-title">Cetak Repeat Order Rutin Toko</h4>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row mt-4">
+                                <div class="card-body">                                    
+                                    <div class="row">
                                         <div class="col-md-6" id="date-start5">
                                             <label for="start_month">Tahun:</label>
                                             <input type="year" class="form-control date-picker-start5" name="year_report5" required>
+                                        </div>
+                                        <div class="col-md-6" id="date-start5">
+                                            <label for="start_month">Tipe Toko:</label>
+                                            <select class="form-control default-select" id="tipe_toko_rutin">
+                                                <option value="" selected>-- Pilih tipe toko --</option>
+                                                @foreach($tipe_toko as $item)
+                                                <option value="{{ $item->TYPE_SHOP }}">{{ $item->TYPE_SHOP }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                     <br></br>
@@ -366,11 +375,16 @@
 
         $('#generate_report4').on('click', function() {
             var yearStart = $("input[name='year_report5']").val()
+            var tipe_toko = $("#tipe_toko_rutin").find('option:selected').val();
+            console.log(tipe_toko)
             if (yearStart.length <= 0) {
                 msg = 'Tolong memilih tahun terlebih dahulu'
                 showToast(msg)
+            } else if (tipe_toko.length <= 0) {
+                msg = 'Tolong memilih tipe toko terlebih dahulu'
+                showToast(msg)
             } else {
-                DownloadFile('{{ url("cronjob/gen-ro-rutin-shop/") }}/' + yearStart)
+                DownloadFile('{{ url("cronjob/gen-ro-rutin-shop/") }}?year=' + yearStart + '&tipeToko=' + tipe_toko)
             }
         });
     });
@@ -457,7 +471,7 @@
         fetch(url)
             .then(response => {
                 if (!response.ok) {
-                    showToast('Network response was not ok');
+                    showToast('Laporan gagal di generate. Mohon cek kembali jaringan anda.');
                 }
 
                 // Extract the filename from the Content-Disposition header
@@ -475,7 +489,7 @@
                         };
                     });
                 } else {
-                    showToast('Could not extract original filename from response headers');
+                    showToast('Laporan gagal di generate. Gagal mendapatkan nama original file.');
                 }
             })
             .then(({
@@ -500,14 +514,14 @@
             })
             .catch(error => {
                 Swal.close()
-                showToast('Laporan gagal di generate');
+                showToast('Laporan gagal di generate. Tidak ada data atau sistem sedang mengalami error.');
             });
     }
 
     function showToast(msg) {
         toastr.warning(msg, "Warning", {
             positionClass: "toast-top-right",
-            timeOut: 2e3,
+            timeOut: 3e3,
             closeButton: !0,
             debug: !1,
             newestOnTop: !0,

@@ -1031,7 +1031,7 @@ class ReportRepeatOrder
         $writer->save('php://output');
     }
 
-    public function gen_ro_rutin_toko($rOs)
+    public function gen_ro_rutin_toko($rOs, $tipeToko, $year)
     {
         $spreadsheet = new Spreadsheet();
         foreach ($rOs as $keyMain => $item) {
@@ -1051,18 +1051,17 @@ class ReportRepeatOrder
             $ObjSheet->getColumnDimension('L')->setWidth('15');
             $ObjSheet->getColumnDimension('M')->setWidth('15');
 
-
             // HEADER 1
-            $ObjSheet->mergeCells('B2:H2')->setCellValue('B2', 'PEDAGANG SAYUR 2023')->getStyle('B2:H2')->applyFromArray($this->styling_title_template('FF00FF00', 'FF000000'));
+            $ObjSheet->mergeCells('B2:H2')->setCellValue('B2', strtoupper($tipeToko) . ' ' . $year)->getStyle('B2:H2')->applyFromArray($this->styling_title_template('FF00FF00', 'FF000000'));
             $ObjSheet->mergeCells('B3:B4')->setCellValue('B3', 'AREA')->getStyle('B3:B4')->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
             $ObjSheet->mergeCells('C3:C4')->setCellValue('C3', 'JUMLAH KEC')->getStyle('C3:C4')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'))->getAlignment()->setWrapText(true);
-            $ObjSheet->mergeCells('D3:D4')->setCellValue('D3', 'TOTAL SAYUR')->getStyle('D3:D4')->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
+            $ObjSheet->mergeCells('D3:D4')->setCellValue('D3', 'TOTAL ' . (($tipeToko == 'Pedangang Sayur') ? 'SAYUR' : strtoupper($tipeToko)))->getStyle('D3:D4')->applyFromArray($this->styling_title_template('FF0000FF', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('E3:E4')->setCellValue('E3', 'RUTIN TRX (>=70 %)')->getStyle('E3:E4')->applyFromArray($this->styling_title_template('FF66FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('F3:F4')->setCellValue('F3', 'RUTIN TRX (50-70 %)')->getStyle('F3:F4')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('G3:G4')->setCellValue('G3', 'RUTIN TRX (<50%)')->getStyle('G3:G4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('H3:H4')->setCellValue('H3', 'TIDAK TRX (0 %)')->getStyle('H3:H4')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'))->getAlignment()->setWrapText(true);
 
-            $ObjSheet->mergeCells('J2:M2')->setCellValue('J2', '% RUTINITAS PEDAGANG SAYUR')->getStyle('J2:M2')->applyFromArray($this->styling_title_template('FF00FF00', 'FF000000'));
+            $ObjSheet->mergeCells('J2:M2')->setCellValue('J2', '% RUTINITAS ' . strtoupper($tipeToko))->getStyle('J2:M2')->applyFromArray($this->styling_title_template('FF00FF00', 'FF000000'));
             $ObjSheet->mergeCells('J3:J4')->setCellValue('J3', 'RUTIN TRX (>=70 %)')->getStyle('J3:J4')->applyFromArray($this->styling_title_template('FF66FFFF', 'FF000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('K3:K4')->setCellValue('K3', 'RUTIN TRX (50-70 %)')->getStyle('K3:K4')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'))->getAlignment()->setWrapText(true);
             $ObjSheet->mergeCells('L3:L4')->setCellValue('L3', 'RUTIN TRX (<50%)')->getStyle('L3:L4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'))->getAlignment()->setWrapText(true);
@@ -1099,7 +1098,7 @@ class ReportRepeatOrder
 
         $spreadsheet->removeSheetByIndex(0);
 
-        $fileName = 'Repeat Order Rutin Toko';
+        $fileName = 'Repeat Order Rutin Toko - ' . $tipeToko;
 
         $writer = new Xlsx($spreadsheet);
 
