@@ -857,6 +857,7 @@ class CronjobController extends Controller
                         'PERCENTAGE_CURRENT' => $shopData['PERCENTAGE_CURRENT_MONTH'],
                         'CAT_PERCENTAGE' => $shopData['CATEGORY'],
                         'TYPE_SHOP' => $shopData['TYPE_SHOP'],
+                        'NAME_DISTRICT' => $shopData['NAME_DISTRICT'],
                     ];
 
                     ReportRtDetail::updateOrCreate(

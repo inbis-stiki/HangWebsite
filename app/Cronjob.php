@@ -2027,14 +2027,14 @@ class Cronjob extends Model
     {
         $query = "
             SELECT r.NAME_REGIONAL AS REGIONAL, a.NAME_AREA AS AREA, s.NAME_SHOP AS SHOP,
-                EXTRACT(MONTH FROM t.DATE_TRANS) AS month, COUNT(*) AS transaction_count, s.TYPE_SHOP
+                MONTH(t.DATE_TRANS) AS month, COUNT(*) AS transaction_count, s.TYPE_SHOP, d.NAME_DISTRICT
             FROM transaction t
             JOIN md_shop s ON t.ID_SHOP = s.ID_SHOP
             JOIN md_district d ON s.ID_DISTRICT = d.ID_DISTRICT
             JOIN md_area a ON d.ID_AREA = a.ID_AREA
             JOIN md_regional r ON a.ID_REGIONAL = r.ID_REGIONAL
-            WHERE EXTRACT(YEAR FROM t.DATE_TRANS) = ?
-            GROUP BY REGIONAL, AREA, SHOP, EXTRACT(MONTH FROM t.DATE_TRANS)
+            WHERE YEAR(t.DATE_TRANS) = ?
+            GROUP BY REGIONAL, AREA, SHOP, month
             ORDER BY REGIONAL, AREA, SHOP, month
         ";
 
@@ -2051,6 +2051,7 @@ class Cronjob extends Model
             $month = $row->month;
             $count = $row->transaction_count;
             $typeShop = $row->TYPE_SHOP;
+            $district = $row->NAME_DISTRICT;
 
             if ($count > 0) {
                 if (!isset($rOs[$regional])) {
@@ -2065,13 +2066,15 @@ class Cronjob extends Model
                     // Create an indexed array for each area
                     $rOs[$regional][$area][] = [
                         'SHOP' => $shop,
-                        'TRANS_COUNT' => array_fill(0, 12, 0),
+                        'TRANS_COUNT' => array_fill(0, 12, 0)
                     ];
                 }
 
                 $index = count($rOs[$regional][$area]) - 1;
 
                 $rOs[$regional][$area][$index]['TRANS_COUNT'][$month - 1] = $count;
+                $rOs[$regional][$area][$index]['TYPE_SHOP'] = $typeShop;
+                $rOs[$regional][$area][$index]['NAME_DISTRICT'] = $district;
             }
         }
 
@@ -2083,11 +2086,12 @@ class Cronjob extends Model
             foreach ($cities as $city => $shops) {
                 foreach ($shops as $shopData) {
                     $shopName = $shopData['SHOP'];
-
                     if (!isset($outputArray[$province][$city][$shopName])) {
                         $outputArray[$province][$city][$shopName] = [
                             'SHOP' => $shopName,
-                            'TRANS_COUNT' => array_fill(0, 12, 0)
+                            'TRANS_COUNT' => array_fill(0, 12, 0),
+                            'TYPE_SHOP' => $shopData['TYPE_SHOP'],
+                            'NAME_DISTRICT' => $shopData['NAME_DISTRICT']
                         ];
                     }
 
@@ -2097,6 +2101,7 @@ class Cronjob extends Model
                 }
             }
         }
+        // dd($outputArray);
         foreach ($outputArray as $province => &$cities) {
             foreach ($cities as $city => &$shops) {
                 foreach ($shops as &$shop) {
@@ -2126,7 +2131,7 @@ class Cronjob extends Model
 
                     $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
                     $shop['CATEGORY'] = $category;
-                    $shop['TYPE_SHOP'] = $typeShop;
+                    // dd($shop);
                 }
 
                 $cities[$city] = array_values($shops);
