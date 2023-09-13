@@ -2027,14 +2027,14 @@ class Cronjob extends Model
     {
         $query = "
             SELECT r.NAME_REGIONAL AS REGIONAL, a.NAME_AREA AS AREA, s.NAME_SHOP AS SHOP,
-                EXTRACT(MONTH FROM t.DATE_TRANS) AS month, COUNT(*) AS transaction_count, s.TYPE_SHOP, d.NAME_DISTRICT
+                MONTH(t.DATE_TRANS) AS month, COUNT(*) AS transaction_count, s.TYPE_SHOP, d.NAME_DISTRICT
             FROM transaction t
             JOIN md_shop s ON t.ID_SHOP = s.ID_SHOP
             JOIN md_district d ON s.ID_DISTRICT = d.ID_DISTRICT
             JOIN md_area a ON d.ID_AREA = a.ID_AREA
             JOIN md_regional r ON a.ID_REGIONAL = r.ID_REGIONAL
-            WHERE EXTRACT(YEAR FROM t.DATE_TRANS) = ?
-            GROUP BY REGIONAL, AREA, SHOP, EXTRACT(MONTH FROM t.DATE_TRANS)
+            WHERE YEAR(t.DATE_TRANS) = ?
+            GROUP BY REGIONAL, AREA, SHOP, month
             ORDER BY REGIONAL, AREA, SHOP, month
         ";
 
@@ -2090,7 +2090,8 @@ class Cronjob extends Model
                         $outputArray[$province][$city][$shopName] = [
                             'SHOP' => $shopName,
                             'TRANS_COUNT' => array_fill(0, 12, 0),
-                            'TYPE_SHOP' => $shopData['TYPE_SHOP']
+                            'TYPE_SHOP' => $shopData['TYPE_SHOP'],
+                            'NAME_DISTRICT' => $shopData['NAME_DISTRICT']
                         ];
                     }
 
