@@ -1878,7 +1878,7 @@ class Cronjob extends Model
                 mr.NAME_REGIONAL,
                 ma.NAME_AREA ASC
         ");
-        
+
 
         $rOs = [];
         $months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -1947,7 +1947,7 @@ class Cronjob extends Model
                                 `transaction` t
                             WHERE
                                 YEAR(DATE_TRANS) = " . $selectedYear . "
-                                AND MONTH(DATE_TRANS) = ". $month ."
+                                AND MONTH(DATE_TRANS) = " . $month . "
                                 AND t.ISTRANS_TRANS = 1
                             GROUP BY
                                 ID_SHOP
@@ -1971,7 +1971,7 @@ class Cronjob extends Model
                             AND t.AREA_TRANS = '$area->NAME_AREA'
                             AND t.REGIONAL_TRANS = '$area->NAME_REGIONAL'
                             AND YEAR(t.DATE_TRANS) = " . $selectedYear . "
-                            AND MONTH(DATE_TRANS) = ". $month ."
+                            AND MONTH(DATE_TRANS) = " . $month . "
                         GROUP BY
                             t.ID_SHOP) as total1 
                         ) AS total
@@ -1988,7 +1988,7 @@ class Cronjob extends Model
                 $foundEffCount = false;
 
                 foreach ($CallCount as $count) {
-                    if ($count->Month == $month) { 
+                    if ($count->Month == $month) {
                         $rtcall[] = $count->TransactionCount;
                         $foundCallCount = true;
                         break;
@@ -1996,7 +1996,7 @@ class Cronjob extends Model
                 }
 
                 foreach ($EffCount as $count) {
-                    if ($count->Month == $month) { 
+                    if ($count->Month == $month) {
                         $effcall[] = $count->TransactionCount;
                         $foundEffCount = true;
                         break;
@@ -2010,7 +2010,6 @@ class Cronjob extends Model
                 if (!$foundEffCount) {
                     $effcall[] = 0;
                 }
-                
             }
 
             $rOs[$area->NAME_REGIONAL][] = [
@@ -2028,7 +2027,7 @@ class Cronjob extends Model
     {
         $query = "
             SELECT r.NAME_REGIONAL AS REGIONAL, a.NAME_AREA AS AREA, s.NAME_SHOP AS SHOP,
-                EXTRACT(MONTH FROM t.DATE_TRANS) AS month, COUNT(*) AS transaction_count, s.TYPE_SHOP
+                EXTRACT(MONTH FROM t.DATE_TRANS) AS month, COUNT(*) AS transaction_count, s.TYPE_SHOP, d.NAME_DISTRICT
             FROM transaction t
             JOIN md_shop s ON t.ID_SHOP = s.ID_SHOP
             JOIN md_district d ON s.ID_DISTRICT = d.ID_DISTRICT
@@ -2052,16 +2051,17 @@ class Cronjob extends Model
             $month = $row->month;
             $count = $row->transaction_count;
             $typeShop = $row->TYPE_SHOP;
+            $district = $row->NAME_DISTRICT;
 
             if ($count > 0) {
                 if (!isset($rOs[$regional])) {
                     $rOs[$regional] = [];
                 }
-    
+
                 if (!isset($rOs[$regional][$area])) {
                     $rOs[$regional][$area] = [];
                 }
-    
+
                 if (!isset($rOs[$regional][$area][$shop])) {
                     // Create an indexed array for each area
                     $rOs[$regional][$area][] = [
@@ -2069,18 +2069,19 @@ class Cronjob extends Model
                         'TRANS_COUNT' => array_fill(0, 12, 0)
                     ];
                 }
-    
+
                 $index = count($rOs[$regional][$area]) - 1;
-    
+
                 $rOs[$regional][$area][$index]['TRANS_COUNT'][$month - 1] = $count;
                 $rOs[$regional][$area][$index]['TYPE_SHOP'] = $typeShop;
+                $rOs[$regional][$area][$index]['NAME_DISTRICT'] = $district;
             }
         }
 
 
         $outputArray = [];
         $currentMonth = date('n');
-        
+
         foreach ($rOs as $province => $cities) {
             foreach ($cities as $city => $shops) {
                 foreach ($shops as $shopData) {
@@ -2092,7 +2093,7 @@ class Cronjob extends Model
                             'TYPE_SHOP' => $shopData['TYPE_SHOP']
                         ];
                     }
-                    
+
                     foreach ($shopData['TRANS_COUNT'] as $monthIndex => $count) {
                         $outputArray[$province][$city][$shopName]['TRANS_COUNT'][$monthIndex] += $count;
                     }
@@ -2111,27 +2112,27 @@ class Cronjob extends Model
                             }
                         )
                     );
-        
+
                     $percentage = intval(round($countOfZeroMonths > 0 ?
-                    (100 - ($countOfZeroMonths / $currentMonth) * 100) : 100));
-        
-                    
-        
+                        (100 - ($countOfZeroMonths / $currentMonth) * 100) : 100));
+
+
+
                     if ($percentage > 0 && $percentage < 50) {
                         $category = 2; // Category 2 (< 50%)
                     } elseif ($percentage >= 50 && $percentage < 70) {
                         $category = 3; // Category 3 (50%-70%)
                     } elseif ($percentage >= 70) {
                         $category = 4; // Category 4 (>= 70%)
-                    } else{
+                    } else {
                         $category = 1; // Category 1 (0%) hehe
                     }
-        
+
                     $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
                     $shop['CATEGORY'] = $category;
                     // dd($shop);
                 }
-                
+
                 $cities[$city] = array_values($shops);
             }
         }
@@ -2164,32 +2165,32 @@ class Cronjob extends Model
             ->whereRaw("CAST(report_rt_head.YEAR AS UNSIGNED) = ?", [$year])
             ->get();
 
-            $formattedData = [];
+        $formattedData = [];
 
-            foreach ($reportData as $item) {
-                $regionalName = $item->REGIONAL_NAME;
-                $areaName = $item->AREA_NAME;
-                $shopName = $item->SHOP_NAME;
-                $transCount = [
-                    $item->JANUARY, $item->FEBRUARY, $item->MARCH, $item->APRIL,
-                    $item->MAY, $item->JUNE, $item->JULY, $item->AUGUST,
-                    $item->SEPTEMBER, $item->OCTOBER, $item->NOVEMBER, $item->DECEMBER,
-                ];
-                $percentageCurrent = $item->PERCENTAGE_CURRENT;
-                $catPercentage = $item->CAT_PERCENTAGE;
+        foreach ($reportData as $item) {
+            $regionalName = $item->REGIONAL_NAME;
+            $areaName = $item->AREA_NAME;
+            $shopName = $item->SHOP_NAME;
+            $transCount = [
+                $item->JANUARY, $item->FEBRUARY, $item->MARCH, $item->APRIL,
+                $item->MAY, $item->JUNE, $item->JULY, $item->AUGUST,
+                $item->SEPTEMBER, $item->OCTOBER, $item->NOVEMBER, $item->DECEMBER,
+            ];
+            $percentageCurrent = $item->PERCENTAGE_CURRENT;
+            $catPercentage = $item->CAT_PERCENTAGE;
 
-                $formattedData[$regionalName][$areaName][] = [
-                    "SHOP" => $shopName,
-                    "TRANS_COUNT" => $transCount,
-                    "PERCENTAGE_CURRENT_MONTH" => $percentageCurrent,
-                    "CAT_PERCENTAGE" => $catPercentage,
-                ];
-            }
+            $formattedData[$regionalName][$areaName][] = [
+                "SHOP" => $shopName,
+                "TRANS_COUNT" => $transCount,
+                "PERCENTAGE_CURRENT_MONTH" => $percentageCurrent,
+                "CAT_PERCENTAGE" => $catPercentage,
+            ];
+        }
 
-            return $formattedData;
+        return $formattedData;
     }
 
-    public static function queryRTRUTIN($year)
+    public static function queryRTRUTIN($year, $tipeToko)
     {
         $reportData = DB::select(
             DB::raw("
@@ -2206,17 +2207,7 @@ class Cronjob extends Model
                     WHERE
                         ISMARKET_DISTRICT = 0
                         AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) AS TOT_KEC,
-                    (SELECT
-                        COUNT(*)
-                    FROM
-                        md_shop AS MS1
-                    JOIN md_district AS MD1 ON
-                        MS1.ID_DISTRICT = MD1.ID_DISTRICT
-                    JOIN md_area AS MA1 ON
-                        MD1.ID_AREA = MA1.ID_AREA
-                    WHERE
-                        MS1.TYPE_SHOP = 'Pedagang Sayur'
-                        AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) AS TOT_SAYUR,
+                    SUM(CASE WHEN `RD`.TYPE_SHOP = '" . $tipeToko . "' THEN 1 ELSE 0 END) AS TOT_SAYUR,
                     SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 1 THEN 1 ELSE 0 END) AS CAT0,
                     SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 2 THEN 1 ELSE 0 END) AS CAT1,
                     SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 3 THEN 1 ELSE 0 END) AS CAT2,
@@ -2225,8 +2216,10 @@ class Cronjob extends Model
                     `report_rt_head` AS `RH`
                 INNER JOIN `report_rt_detail` AS `RD` ON
                     RH.ID_HEAD = RD.ID_HEAD
+                    AND
+                    `RD`.TYPE_SHOP = '" . $tipeToko . "'
                 WHERE
-                    `RH`.`YEAR` = ". $year ."
+                    `RH`.`YEAR` = " . $year . "
                 GROUP BY
                     `REGIONAL_NAME`,
                     `AREA_NAME`,
@@ -2251,12 +2244,12 @@ class Cronjob extends Model
                 ];
             }
 
-            $formattedData[$regionalName][$areaName]["TOT_KEC"] = $item->TOT_KEC;
-            $formattedData[$regionalName][$areaName]["TOT_SAYUR"] = $item->TOT_SAYUR;
-            $formattedData[$regionalName][$areaName]["CAT0"] = $item->CAT0;
-            $formattedData[$regionalName][$areaName]["CAT1"] = $item->CAT1;
-            $formattedData[$regionalName][$areaName]["CAT2"] = $item->CAT2;
-            $formattedData[$regionalName][$areaName]["CAT3"] = $item->CAT3;
+            $formattedData[$regionalName][$areaName]["TOT_KEC"] += (int)$item->TOT_KEC;
+            $formattedData[$regionalName][$areaName]["TOT_SAYUR"] += (int)$item->TOT_SAYUR;
+            $formattedData[$regionalName][$areaName]["CAT0"] += (int)$item->CAT0;
+            $formattedData[$regionalName][$areaName]["CAT1"] += (int)$item->CAT1;
+            $formattedData[$regionalName][$areaName]["CAT2"] += (int)$item->CAT2;
+            $formattedData[$regionalName][$areaName]["CAT3"] += (int)$item->CAT3;
         }
 
         return $formattedData;
@@ -2269,7 +2262,7 @@ class Cronjob extends Model
             *,ID_REGIONAL as region_name, NAME_AREA as area_name 
         from report_rovscall_head rrh 
         join report_rovscall_detail rrd on rrh.ID_HEAD COLLATE utf8mb4_unicode_ci = rrd.ID_HEAD 
-        where rrh.TAHUN = ".$year."
+        where rrh.TAHUN = " . $year . "
         ");
 
         $rOs = [];
@@ -2322,20 +2315,20 @@ class Cronjob extends Model
             ->where('rsh.BULAN', $month)
             ->where('rsh.TAHUN', $year)
             ->get();
-    
+
         // Flattened structure
         $tempData = [];
-    
+
         foreach ($results as $row) {
             $key = $row->NAME_AREA . '|' . $row->category_label;
             $tempData[$key][] = $row;
         }
-    
+
         // Convert flattened structure to final nested structure
         $sortedData = [];
         foreach ($tempData as $key => $rows) {
             list($nameArea, $category) = explode('|', $key);
-            
+
             if (!isset($sortedData[$nameArea])) {
                 $sortedData[$nameArea] = [
                     "2-3" => [],
@@ -2346,7 +2339,7 @@ class Cronjob extends Model
             }
             $sortedData[$nameArea][$category] = $rows;
         }
-    
+
         return json_encode($sortedData);
     }
 
