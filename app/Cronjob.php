@@ -2053,7 +2053,7 @@ class Cronjob extends Model
             $count = $row->transaction_count;
             $typeShop = $row->TYPE_SHOP;
 
-            if ($count > 0 && $area === "SIDOARJO 2") {
+            if ($count > 0) {
                 if (!isset($rOs[$regional])) {
                     $rOs[$regional] = [];
                 }
@@ -2085,11 +2085,11 @@ class Cronjob extends Model
             foreach ($cities as $city => $shops) {
                 foreach ($shops as $shopData) {
                     $shopName = $shopData['SHOP'];
-                    
                     if (!isset($outputArray[$province][$city][$shopName])) {
                         $outputArray[$province][$city][$shopName] = [
                             'SHOP' => $shopName,
-                            'TRANS_COUNT' => array_fill(0, 12, 0)
+                            'TRANS_COUNT' => array_fill(0, 12, 0),
+                            'TYPE_SHOP' => $shopData['TYPE_SHOP']
                         ];
                     }
                     
@@ -2099,6 +2099,7 @@ class Cronjob extends Model
                 }
             }
         }
+        // dd($outputArray);
         foreach ($outputArray as $province => &$cities) {
             foreach ($cities as $city => &$shops) {
                 foreach ($shops as &$shop) {
@@ -2114,7 +2115,7 @@ class Cronjob extends Model
                     $percentage = intval(round($countOfZeroMonths > 0 ?
                     (100 - ($countOfZeroMonths / $currentMonth) * 100) : 100));
         
-                
+                    
         
                     if ($percentage > 0 && $percentage < 50) {
                         $category = 2; // Category 2 (< 50%)
@@ -2128,6 +2129,7 @@ class Cronjob extends Model
         
                     $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
                     $shop['CATEGORY'] = $category;
+                    // dd($shop);
                 }
                 
                 $cities[$city] = array_values($shops);
