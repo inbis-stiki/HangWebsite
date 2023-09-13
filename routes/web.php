@@ -66,7 +66,7 @@ Route::get('cronjob/gen-ro-vs-test/{year}', 'CronjobController@genROVSCALLIN');
 Route::get('cronjob/gen-akt-trx-apo/{year}', 'CronjobController@genAktTRXAPO');
 Route::get('cronjob/gen-rt-per-shop/{year}', 'CronjobController@genRTPerShop');
 Route::get('cronjob/gen-ro-trans-shop/{year}', 'CronjobController@genROTransToko');
-Route::get('cronjob/gen-ro-rutin-shop/{year}', 'CronjobController@genRORutinToko');
+Route::get('cronjob/gen-ro-rutin-shop', 'CronjobController@genRORutinToko');
 
 Route::get('shop/bydistrict', 'ShopController@ShopListByDistrict');
 
