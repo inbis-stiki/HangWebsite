@@ -2143,52 +2143,53 @@ class Cronjob extends Model
 
     public static function queryRTSHOP($year)
     {
-        $reportData = ReportRtHead::join('report_rt_detail', 'report_rt_head.ID_HEAD', '=', 'report_rt_detail.ID_HEAD')
-            ->select(
-                'report_rt_head.NAME_REGIONAL as REGIONAL_NAME',
-                'report_rt_detail.NAME_SHOP as SHOP_NAME',
-                'report_rt_detail.NAME_AREA as AREA_NAME',
-                'report_rt_detail.JANUARY',
-                'report_rt_detail.FEBRUARY',
-                'report_rt_detail.MARCH',
-                'report_rt_detail.APRIL',
-                'report_rt_detail.MAY',
-                'report_rt_detail.JUNE',
-                'report_rt_detail.JULY',
-                'report_rt_detail.AUGUST',
-                'report_rt_detail.SEPTEMBER',
-                'report_rt_detail.OCTOBER',
-                'report_rt_detail.NOVEMBER',
-                'report_rt_detail.DECEMBER',
-                'report_rt_detail.PERCENTAGE_CURRENT',
-                'report_rt_detail.CAT_PERCENTAGE'
-            )
-            ->whereRaw("CAST(report_rt_head.YEAR AS UNSIGNED) = ?", [$year])
-            ->get();
-
+        $reportData = DB::select(
+            DB::raw("
+                SELECT 	
+                    rrh.NAME_REGIONAL as REGIONAL_NAME ,
+                    rrd.NAME_SHOP as SHOP_NAME ,
+                    rrd.NAME_AREA as AREA_NAME ,
+                    rrd.JANUARY ,
+                    rrd.FEBRUARY ,
+                    rrd.MARCH ,
+                    rrd.APRIL ,
+                    rrd.MAY ,
+                    rrd.JUNE ,
+                    rrd.JULY ,
+                    rrd.AUGUST ,
+                    rrd.SEPTEMBER ,
+                    rrd.OCTOBER ,
+                    rrd.NOVEMBER ,
+                    rrd.DECEMBER ,
+                    rrd.PERCENTAGE_CURRENT ,
+                    rrd.CAT_PERCENTAGE
+                FROM 
+                    report_rt_head rrh 
+                LEFT JOIN report_rt_detail rrd ON
+                    rrd.ID_HEAD = rrh.ID_HEAD 
+                WHERE 
+                    rrh.`YEAR` = '" . $year . "'
+            ")
+        );
+                
         $formattedData = [];
 
         foreach ($reportData as $item) {
-            $regionalName = $item->REGIONAL_NAME;
-            $areaName = $item->AREA_NAME;
-            $shopName = $item->SHOP_NAME;
-            $transCount = [
-                $item->JANUARY, $item->FEBRUARY, $item->MARCH, $item->APRIL,
-                $item->MAY, $item->JUNE, $item->JULY, $item->AUGUST,
-                $item->SEPTEMBER, $item->OCTOBER, $item->NOVEMBER, $item->DECEMBER,
-            ];
-            $percentageCurrent = $item->PERCENTAGE_CURRENT;
-            $catPercentage = $item->CAT_PERCENTAGE;
-
-            $formattedData[$regionalName][$areaName][] = [
-                "SHOP" => $shopName,
-                "TRANS_COUNT" => $transCount,
-                "PERCENTAGE_CURRENT_MONTH" => $percentageCurrent,
-                "CAT_PERCENTAGE" => $catPercentage,
+            $formattedData[$item->REGIONAL_NAME][$item->AREA_NAME][] = [
+                "SHOP" => $item->SHOP_NAME,
+                "TRANS_COUNT" => [
+                    $item->JANUARY, $item->FEBRUARY, $item->MARCH, $item->APRIL,
+                    $item->MAY, $item->JUNE, $item->JULY, $item->AUGUST,
+                    $item->SEPTEMBER, $item->OCTOBER, $item->NOVEMBER, $item->DECEMBER,
+                ],
+                "PERCENTAGE_CURRENT_MONTH" => $item->PERCENTAGE_CURRENT,
+                "CAT_PERCENTAGE" => $item->CAT_PERCENTAGE
             ];
         }
 
         return $formattedData;
+
+        
     }
 
     public static function queryRTRUTIN($year, $tipeToko)
@@ -2199,15 +2200,7 @@ class Cronjob extends Model
                     `RH`.`NAME_REGIONAL` AS `REGIONAL_NAME`,
                     `RD`.`NAME_AREA` AS `AREA_NAME`,
                     `RD`.`CAT_PERCENTAGE`,
-                    (SELECT
-                        COUNT(*)
-                    FROM
-                        md_district AS MD1
-                    JOIN md_area AS MA1 ON
-                        MD1.ID_AREA = MA1.ID_AREA
-                    WHERE
-                        ISMARKET_DISTRICT = 0
-                        AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) AS TOT_KEC,
+                    COUNT(`RD`.NAME_DISTRICT) AS TOT_KEC,
                     SUM(CASE WHEN `RD`.TYPE_SHOP = '" . $tipeToko . "' THEN 1 ELSE 0 END) AS TOT_SAYUR,
                     SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 1 THEN 1 ELSE 0 END) AS CAT0,
                     SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 2 THEN 1 ELSE 0 END) AS CAT1,
