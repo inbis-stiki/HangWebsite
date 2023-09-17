@@ -786,8 +786,8 @@ class CronjobController extends Controller
     }
     public function genROTransToko($yearReq)
     {
+        set_time_limit(3600);
         try {
-            set_time_limit(3600);
             $dateStart = explode('-', $yearReq);
             $year = ltrim($dateStart[0], '0');
             $rOs = Cronjob::queryRTSHOP($year);
@@ -801,8 +801,8 @@ class CronjobController extends Controller
     }
     public function genRORutinToko(Request $req)
     {
+        set_time_limit(3600);
         try {
-            set_time_limit(3600);
             $dateStart = explode('-', $_GET['year']);
             $YearDate = ltrim($dateStart[0], '0');
             $tipeToko = $_GET['tipeToko'];
