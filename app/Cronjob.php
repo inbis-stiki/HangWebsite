@@ -2171,7 +2171,7 @@ class Cronjob extends Model
                     rrh.`YEAR` = '" . $year . "'
             ")
         );
-                
+
         $formattedData = [];
 
         foreach ($reportData as $item) {
@@ -2188,8 +2188,6 @@ class Cronjob extends Model
         }
 
         return $formattedData;
-
-        
     }
 
     public static function queryRTRUTIN($year, $tipeToko)
@@ -2200,7 +2198,15 @@ class Cronjob extends Model
                     `RH`.`NAME_REGIONAL` AS `REGIONAL_NAME`,
                     `RD`.`NAME_AREA` AS `AREA_NAME`,
                     `RD`.`CAT_PERCENTAGE`,
-                    COUNT(`RD`.NAME_DISTRICT) AS TOT_KEC,
+                    (SELECT
+                        COUNT(*)
+                    FROM
+                        md_district AS MD1
+                    JOIN md_area AS MA1 ON
+                        MD1.ID_AREA = MA1.ID_AREA
+                    WHERE
+                        ISMARKET_DISTRICT = 0
+                        AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) AS TOT_KEC,
                     SUM(CASE WHEN `RD`.TYPE_SHOP = '" . $tipeToko . "' THEN 1 ELSE 0 END) AS TOT_SAYUR,
                     SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 1 THEN 1 ELSE 0 END) AS CAT0,
                     SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 2 THEN 1 ELSE 0 END) AS CAT1,
