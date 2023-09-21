@@ -255,6 +255,16 @@
                                             <label for="start_month">Tahun:</label>
                                             <input type="year" class="form-control date-picker-start4" name="year_report4" required>
                                         </div>
+
+                                        <div class="col-md-6" id="regional-trans-4">
+                                            <label for="start_month">Tipe Toko:</label>
+                                            <select class="form-control default-select" id="regionaltrans-input-4">
+                                                <option value="" selected>-- Pilih regional --</option>
+                                                @foreach($regional as $item)
+                                                <option value="{{ $item->NAME_REGIONAL }}">{{ $item->NAME_REGIONAL }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                     <br></br>
                                     <button id="generate_report3" class="btn btn-primary">Generate Report</button>
@@ -271,7 +281,7 @@
                                 <div class="card-header">
                                     <h4 class="card-title">Cetak Repeat Order Rutin Toko</h4>
                                 </div>
-                                <div class="card-body">                                    
+                                <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6" id="date-start5">
                                             <label for="start_month">Tahun:</label>
@@ -365,11 +375,15 @@
 
         $('#generate_report3').on('click', function() {
             var yearStart = $("input[name='year_report4']").val()
+            var regional = $("#regionaltrans-input-4").find('option:selected').val();
             if (yearStart.length <= 0) {
                 msg = 'Tolong memilih tahun terlebih dahulu'
                 showToast(msg)
+            } else if (regional.length <= 0) {
+                msg = 'Tolong memilih regional terlebih dahulu'
+                showToast(msg)
             } else {
-                DownloadFile('{{ url("cronjob/gen-ro-trans-shop/") }}/' + yearStart)
+                DownloadFile('{{ url("cronjob/gen-ro-trans-shop/") }}?year=' + yearStart + '&region=' + regional)
             }
         });
 
