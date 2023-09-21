@@ -2141,7 +2141,7 @@ class Cronjob extends Model
         return $outputArray;
     }
 
-    public static function queryRTSHOP($year)
+    public static function queryRTSHOP($year, $region)
     {
         $reportData = DB::select(
             DB::raw("
@@ -2169,6 +2169,8 @@ class Cronjob extends Model
                     rrd.ID_HEAD = rrh.ID_HEAD 
                 WHERE 
                     rrh.`YEAR` = '" . $year . "'
+                    AND 
+                    rrh.`NAME_REGIONAL` = '" . $region . "'
             ")
         );
 

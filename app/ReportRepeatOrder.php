@@ -959,45 +959,47 @@ class ReportRepeatOrder
     public function gen_ro_trans_toko($rOs)
     {
         $spreadsheet = new Spreadsheet();
+        $regional = '';
         foreach ($rOs as $keyMain => $item) {
-            $ObjSheet = $spreadsheet->createSheet();
-            $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $keyMain));
-
-            $ObjSheet->getColumnDimension('B')->setWidth('25');
-            $ObjSheet->getColumnDimension('C')->setWidth('9');
-            $ObjSheet->getColumnDimension('D')->setWidth('9');
-            $ObjSheet->getColumnDimension('E')->setWidth('9');
-            $ObjSheet->getColumnDimension('F')->setWidth('9');
-            $ObjSheet->getColumnDimension('G')->setWidth('9');
-            $ObjSheet->getColumnDimension('H')->setWidth('9');
-            $ObjSheet->getColumnDimension('I')->setWidth('9');
-            $ObjSheet->getColumnDimension('J')->setWidth('9');
-            $ObjSheet->getColumnDimension('K')->setWidth('9');
-            $ObjSheet->getColumnDimension('L')->setWidth('9');
-            $ObjSheet->getColumnDimension('M')->setWidth('9');
-            $ObjSheet->getColumnDimension('N')->setWidth('9');
-            $ObjSheet->getColumnDimension('O')->setWidth('18');
-
-            // HEADER 2
-            $ObjSheet->mergeCells('B3:N3')->setCellValue('B3', 'TRANSAKSI')->getStyle('B3:N3')->applyFromArray($this->styling_title_template('FF00FF00', 'FF000000'));
-            $ObjSheet->setCellValue('B4', 'NAMA TOKO')->getStyle('B4')->applyFromArray($this->styling_title_template('FF66FFFF', 'FF000000'));
-            $ObjSheet->setCellValue('C4', 'JAN')->getStyle('C4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('D4', 'FEB')->getStyle('D4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('E4', 'MAR')->getStyle('E4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('F4', 'APR')->getStyle('F4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('G4', 'MAY')->getStyle('G4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('H4', 'JUN')->getStyle('H4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('I4', 'JUL')->getStyle('I4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('J4', 'AUG')->getStyle('J4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('K4', 'SEP')->getStyle('K4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('L4', 'OCT')->getStyle('L4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('M4', 'NOV')->getStyle('M4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->setCellValue('N4', 'DEC')->getStyle('N4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
-            $ObjSheet->mergeCells('O3:O4')->setCellValue('O3', 'PERCENTAGE (%)')->getStyle('O3:O4')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
-
-            // ISI KONTEN 2  
-            $lastRow2 = 5;
+            $regional = $keyMain;
             foreach ($item as $subKeyItem => $subItem) {
+                $ObjSheet = $spreadsheet->createSheet();
+                $ObjSheet->setTitle(preg_replace("/[^a-zA-Z0-9 ]/", "", $subKeyItem));
+
+                $ObjSheet->getColumnDimension('B')->setWidth('25');
+                $ObjSheet->getColumnDimension('C')->setWidth('9');
+                $ObjSheet->getColumnDimension('D')->setWidth('9');
+                $ObjSheet->getColumnDimension('E')->setWidth('9');
+                $ObjSheet->getColumnDimension('F')->setWidth('9');
+                $ObjSheet->getColumnDimension('G')->setWidth('9');
+                $ObjSheet->getColumnDimension('H')->setWidth('9');
+                $ObjSheet->getColumnDimension('I')->setWidth('9');
+                $ObjSheet->getColumnDimension('J')->setWidth('9');
+                $ObjSheet->getColumnDimension('K')->setWidth('9');
+                $ObjSheet->getColumnDimension('L')->setWidth('9');
+                $ObjSheet->getColumnDimension('M')->setWidth('9');
+                $ObjSheet->getColumnDimension('N')->setWidth('9');
+                $ObjSheet->getColumnDimension('O')->setWidth('18');
+
+                // HEADER 2
+                $ObjSheet->mergeCells('B3:N3')->setCellValue('B3', 'TRANSAKSI')->getStyle('B3:N3')->applyFromArray($this->styling_title_template('FF00FF00', 'FF000000'));
+                $ObjSheet->setCellValue('B4', 'NAMA TOKO')->getStyle('B4')->applyFromArray($this->styling_title_template('FF66FFFF', 'FF000000'));
+                $ObjSheet->setCellValue('C4', 'JAN')->getStyle('C4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('D4', 'FEB')->getStyle('D4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('E4', 'MAR')->getStyle('E4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('F4', 'APR')->getStyle('F4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('G4', 'MAY')->getStyle('G4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('H4', 'JUN')->getStyle('H4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('I4', 'JUL')->getStyle('I4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('J4', 'AUG')->getStyle('J4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('K4', 'SEP')->getStyle('K4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('L4', 'OCT')->getStyle('L4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('M4', 'NOV')->getStyle('M4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->setCellValue('N4', 'DEC')->getStyle('N4')->applyFromArray($this->styling_title_template('FFFF9900', 'FF000000'));
+                $ObjSheet->mergeCells('O3:O4')->setCellValue('O3', 'PERCENTAGE (%)')->getStyle('O3:O4')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+
+                // ISI KONTEN 2
+                $lastRow2 = 5;
                 foreach ($subItem as $subSubKeyItem => $subSubItem) {
                     $ObjSheet->setCellValue('B' . $lastRow2, $subSubItem['SHOP'])->getStyle('B' . $lastRow2)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('C' . $lastRow2, $subSubItem['TRANS_COUNT'][0])->getStyle('C' . $lastRow2)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
@@ -1015,13 +1017,13 @@ class ReportRepeatOrder
                     $ObjSheet->setCellValue('O' . $lastRow2, $subSubItem['PERCENTAGE_CURRENT_MONTH'] . '%')->getStyle('O' . $lastRow2)->applyFromArray($this->styling_title_template('FF00FF00', 'FF000000'))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_PERCENTAGE);
                     $lastRow2++;
                 }
+                $ObjSheet->setAutoFilter('B4:B' . $lastRow2);
             }
-            $ObjSheet->setAutoFilter('B4:B' . $lastRow2);
         }
 
         $spreadsheet->removeSheetByIndex(0);
 
-        $fileName = 'Repeat Order Transaksi Toko';
+        $fileName = 'Repeat Order Transaksi Toko - ' . $regional;
 
         $writer = new Xlsx($spreadsheet);
 
