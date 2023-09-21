@@ -784,16 +784,21 @@ class CronjobController extends Controller
 
         app(ReportRepeatOrder::class)->gen_ro_vs_test($rOs);
     }
-    public function genROTransToko($yearReq)
+    public function genROTransToko(Request $req)
     {
         set_time_limit(3600);
         try {
+            $yearReq = $_GET['year'];
+            $region = $_GET['region'];
             $dateStart = explode('-', $yearReq);
             $year = ltrim($dateStart[0], '0');
-            $rOs = Cronjob::queryRTSHOP($year);
+            $rOs = Cronjob::queryRTSHOP($year, $region);
             // dd($rOs);
+
             if (!empty($rOs)) {
                 return app(ReportRepeatOrder::class)->gen_ro_trans_toko($rOs);
+            } else {
+                return 0;
             }
         } catch (Exception $exp) {
             return 0;
