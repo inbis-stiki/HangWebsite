@@ -36,24 +36,24 @@
         <div class="card-body">
             <ul class="bg-light nav nav-pills mb-4">
                 <li class="nav-item mt-2">
-                    <a href="#navpills-1" class="nav-link custom-nav active" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="false">Repeat Order APO</a>
+                    <!-- <a href="#navpills-1" class="nav-link custom-nav active" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="false">Repeat Order APO</a> -->
                 </li>
                 <li class="nav-item mt-2">
-                    <a href="#navpills-2" class="nav-link custom-nav" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="false">Repeat Order Toko</a>
+                    <a href="#navpills-2" class="nav-link custom-nav active" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="false">Master Outlet</a>
                 </li>
                 <li class="nav-item mt-2">
-                    <a href="#navpills-3" class="nav-link custom-nav" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="true">Repeat Order VS Call</a>
+                    <a href="#navpills-3" class="nav-link custom-nav" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="true">Call, EC & RO</a>
                 </li>
                 <li class="nav-item mt-2">
-                    <a href="#navpills-4" class="nav-link custom-nav" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="true">Repeat Order Transaksi Toko</a>
+                    <!-- <a href="#navpills-4" class="nav-link custom-nav" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="true">Repeat Order Transaksi Toko</a> -->
                 </li>
                 <li class="nav-item mt-2">
-                    <a href="#navpills-5" class="nav-link custom-nav" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="true">Repeat Order Rutin Toko</a>
+                    <a href="#navpills-5" class="nav-link custom-nav" style="border-radius: 7px !important;" data-toggle="tab" aria-expanded="true">Rekap Outlet Rutin Order</a>
                 </li>
             </ul>
             <div class="tab-content">
                 <!-- Repeat Order APO -->
-                <div id="navpills-1" class="tab-pane active">
+                <div id="navpills-1" class="tab-pane">
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
@@ -177,12 +177,12 @@
                     </div>
                 </div>
                 <!-- Repeat Order Toko -->
-                <div id="navpills-2" class="tab-pane">
+                <div id="navpills-2" class="tab-pane active">
                     <div class="row">
                         <div class="col-12" style="margin-bottom: 5px;">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Cetak Repeat Order Toko</h4>
+                                    <h4 class="card-title">Cetak Master Outlet</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -216,7 +216,7 @@
                         <div class="col-12" style="margin-bottom: 5px;">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Cetak Repeat Order VS Call</h4>
+                                    <h4 class="card-title">Cetak Call, EC & RO</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -279,7 +279,7 @@
                         <div class="col-12" style="margin-bottom: 5px;">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Cetak Repeat Order Rutin Toko</h4>
+                                    <h4 class="card-title">Cetak Rekap Outlet Rutin Order</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
