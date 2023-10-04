@@ -478,7 +478,7 @@ class ReportRepeatOrder
         $lastRange = '';
         $Totalcolumn = 0;
         $lastRange2 = '';
-        $dataRange = array_slice($this->CustomRange('AF'), count(range('A', 'G')));
+        $dataRange = array_slice($this->CustomRange('AF'), count(range('A', 'H')));
         $groupsDataRange = array();
         for ($i = 0; $i < count($dataRange) - 1; $i += 2) {
             $group = $dataRange[$i] . ';' . $dataRange[$i + 1];
@@ -496,6 +496,7 @@ class ReportRepeatOrder
                 $ObjSheet->getColumnDimension('E')->setWidth('20');
                 $ObjSheet->getColumnDimension('F')->setWidth('26');
                 $ObjSheet->getColumnDimension('G')->setWidth('15');
+                $ObjSheet->getColumnDimension('H')->setWidth('17');
 
                 // HEADER
                 $ObjSheet->mergeCells('B2:B3')->setCellValue('B2', 'NAMA TOKO')->getStyle('B2:B3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
@@ -504,36 +505,50 @@ class ReportRepeatOrder
                 $ObjSheet->mergeCells('E2:E3')->setCellValue('E2', 'PEMILIK')->getStyle('E2:E3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                 $ObjSheet->mergeCells('F2:F3')->setCellValue('F2', 'NOMOR TELEPON')->getStyle('F2:F3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
                 $ObjSheet->mergeCells('G2:G3')->setCellValue('G2', 'TIPE TOKO')->getStyle('G2:G3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
+                $ObjSheet->mergeCells('H2:H3')->setCellValue('H2', 'LEVEL TOKO')->getStyle('H2:H3')->applyFromArray($this->styling_title_template('00FFFF', '000000'));
 
                 $rowData = 4;
                 foreach ($item as $detItem) {
-                    // ISI KONTEN
+                    // ISI KONTEN                    
+                    $tmpArray = json_decode(json_encode($detItem), true);
+                    $groupedData2 = [];
+                    for ($i = 0; $i < $totMonth; $i++) {
+                        $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[0])->setWidth('20');
+                        $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[1])->setWidth('20');
+
+                        $ObjSheet->mergeCells(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->setCellValue(explode(';', $groupsDataRange[$i])[0] . '2', $months[$i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
+                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '3', 'TOTAL AKTIVITAS')->getStyle(explode(';', $groupsDataRange[$i])[0] . '3')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '3', 'TOTAL INNER')->getStyle(explode(';', $groupsDataRange[$i])[1] . '3')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+
+                        // ISI KONTEN
+                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '' . $rowData, $tmpArray["VALUE" . $i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '' . $rowData, $tmpArray["VALUE2" . $i])->getStyle(explode(';', $groupsDataRange[$i])[1] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                        array_push($groupedData2, explode(';', $groupsDataRange[$i])[0] . '' . $rowData);
+                    }
+
                     $ObjSheet->setCellValue('B' . $rowData, $detItem->NAME_SHOP)->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('C' . $rowData, $detItem->DETLOC_SHOP)->getStyle('C' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('D' . $rowData, $detItem->NAME_DISTRICT)->getStyle('D' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('E' . $rowData, $detItem->OWNER_SHOP)->getStyle('E' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('F' . $rowData, (!empty($detItem->TELP_SHOP) ? $detItem->TELP_SHOP : 'Tidak Ada Nomor Telepon'))->getStyle('F' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('G' . $rowData, $detItem->TYPE_SHOP)->getStyle('G' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    $ObjSheet->setCellValue('H' . $rowData, '=IF((SUM(' . implode(',', $groupedData2) . ')/12)*100 <= 49, "(0%)", IF((SUM(' . implode(',', $groupedData2) . ')/12)*100 <= 79, "(<50%)", IF((SUM(' . implode(',', $groupedData2) . ')/12)*100 <= 89, "(50-70%)", "(>=70%)")))')->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
 
-                    $tmpArray = json_decode(json_encode($detItem), true);
-                    for ($i = 0; $i < $totMonth; $i++) {
-                        $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[0])->setWidth('20');
-                        $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[1])->setWidth('20');
-                        $keyData = $tmpArray["KEY" . $i];
-
-                        $ObjSheet->mergeCells(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->setCellValue(explode(';', $groupsDataRange[$i])[0] . '2', $months[$i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '2:' . explode(';', $groupsDataRange[$i])[1] . '2')->applyFromArray($this->styling_title_template('FF00FFFF', 'FF000000'));
-                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '3', 'TOTAL AKTIVITAS')->getStyle(explode(';', $groupsDataRange[$i])[0] . '3')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
-                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '3', 'TOTAL INNER')->getStyle(explode(';', $groupsDataRange[$i])[1] . '3')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
-
-
-                        // ISI KONTEN
-                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '' . $rowData, $tmpArray["VALUE" . $i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
-                        $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '' . $rowData, $tmpArray["VALUE2" . $i])->getStyle(explode(';', $groupsDataRange[$i])[1] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
-                    }
-
+                    // $LevelCell = $ObjSheet->getCell('H' . $rowData);
+                    // $cellValue = $LevelCell->getValue();
+                    // if ($cellValue == "(0%)") {
+                    //     $LevelCell->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    // } elseif ($cellValue == "(<50%)") {
+                    //     $LevelCell->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    // } elseif ($cellValue == "(50-70%)") {
+                    //     $LevelCell->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    // } elseif ($cellValue == "(>=70%)") {
+                    //     $LevelCell->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                    // }
                     $rowData++;
                 }
-                $ObjSheet->setAutoFilter('B2:G' . $rowData);
+                $ObjSheet->setAutoFilter('B2:H' . $rowData);
             }
         }
 
