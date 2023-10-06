@@ -537,7 +537,7 @@ class ReportRepeatOrder
                     $ObjSheet->setCellValue('G' . $rowData, $detItem->TYPE_SHOP)->getStyle('G' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
 
                     
-                    $formulaLevel = '=IFERROR(IF(SUMPRODUCT((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')))/5*100 = 0, "(0%)", IF(SUMPRODUCT((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')))/5*100 <= 49, "(<50%)", IF(SUMPRODUCT((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')))/5*100 <= 70, "(50-70%)", "(>=70%)"))), "ERROR")';
+                    $formulaLevel = '=IFERROR(   IF(SUM((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')<>0)*1)/8*100 = 0, "(0%)",      IF(SUM((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')<>0)*1)/8*100 <= 49, "(<50%)",         IF(SUM((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')<>0)*1)/8*100 <= 70, "(50-70%)", "(>=70%)"))),"ERROR")';
                     $ObjSheet->setCellValue('H' . $rowData, $formulaLevel)->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
 
                     // $LevelCell = $ObjSheet->getCell('H' . $rowData);
