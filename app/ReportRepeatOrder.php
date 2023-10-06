@@ -512,6 +512,7 @@ class ReportRepeatOrder
                     // ISI KONTEN                    
                     $tmpArray = json_decode(json_encode($detItem), true);
                     $groupedData2 = [];
+                    $groupedIndex2 = [];
                     for ($i = 0; $i < $totMonth; $i++) {
                         $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[0])->setWidth('20');
                         $ObjSheet->getColumnDimension(explode(';', $groupsDataRange[$i])[1])->setWidth('20');
@@ -525,15 +526,19 @@ class ReportRepeatOrder
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '' . $rowData, $tmpArray["VALUE2" . $i])->getStyle(explode(';', $groupsDataRange[$i])[1] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
 
                         array_push($groupedData2, explode(';', $groupsDataRange[$i])[0] . '' . $rowData);
+                        array_push($groupedIndex2, ($i + 1));
                     }
-
+                    
                     $ObjSheet->setCellValue('B' . $rowData, $detItem->NAME_SHOP)->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('C' . $rowData, $detItem->DETLOC_SHOP)->getStyle('C' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('D' . $rowData, $detItem->NAME_DISTRICT)->getStyle('D' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('E' . $rowData, $detItem->OWNER_SHOP)->getStyle('E' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('F' . $rowData, (!empty($detItem->TELP_SHOP) ? $detItem->TELP_SHOP : 'Tidak Ada Nomor Telepon'))->getStyle('F' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                     $ObjSheet->setCellValue('G' . $rowData, $detItem->TYPE_SHOP)->getStyle('G' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
-                    $ObjSheet->setCellValue('H' . $rowData, '=IF((SUM(' . implode(',', $groupedData2) . ')/12)*100 <= 49, "(0%)", IF((SUM(' . implode(',', $groupedData2) . ')/12)*100 <= 79, "(<50%)", IF((SUM(' . implode(',', $groupedData2) . ')/12)*100 <= 89, "(50-70%)", "(>=70%)")))')->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+
+                    
+                    $formulaLevel = '=IFERROR(IF(SUMPRODUCT((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')))/5*100 = 0, "(0%)", IF(SUMPRODUCT((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')))/5*100 <= 49, "(<50%)", IF(SUMPRODUCT((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')))/5*100 <= 70, "(50-70%)", "(>=70%)"))), "ERROR")';
+                    $ObjSheet->setCellValue('H' . $rowData, $formulaLevel)->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
 
                     // $LevelCell = $ObjSheet->getCell('H' . $rowData);
                     // $cellValue = $LevelCell->getValue();
