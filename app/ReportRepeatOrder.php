@@ -524,9 +524,17 @@ class ReportRepeatOrder
                         // ISI KONTEN
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[0] . '' . $rowData, $tmpArray["VALUE" . $i])->getStyle(explode(';', $groupsDataRange[$i])[0] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
                         $ObjSheet->setCellValue(explode(';', $groupsDataRange[$i])[1] . '' . $rowData, $tmpArray["VALUE2" . $i])->getStyle(explode(';', $groupsDataRange[$i])[1] . '' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
+                        
+                        $cell= explode(';', $groupsDataRange[$i])[0] . '' . $rowData;
 
-                        array_push($groupedData2, explode(';', $groupsDataRange[$i])[0] . '' . $rowData);
-                        array_push($groupedIndex2, ($i + 1));
+                        array_push($groupedData2, $cell);
+                        // array_push($groupedIndex2, ($i + 1));
+
+                        $checks = array_map(function($cell) {
+                            return "(" . $cell . "<>0)";
+                        }, $groupedData2);
+                        
+                        $sumChecks = implode('+', $checks);
                     }
                     
                     $ObjSheet->setCellValue('B' . $rowData, $detItem->NAME_SHOP)->getStyle('B' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
@@ -537,7 +545,7 @@ class ReportRepeatOrder
                     $ObjSheet->setCellValue('G' . $rowData, $detItem->TYPE_SHOP)->getStyle('G' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
 
                     
-                    $formulaLevel = '=IFERROR(   IF(SUM((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')<>0)*1)/8*100 = 0, "(0%)",      IF(SUM((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')<>0)*1)/8*100 <= 49, "(<50%)",         IF(SUM((CHOOSE({' . implode(',', $groupedIndex2) . '},' . implode(',', $groupedData2) . ')<>0)*1)/8*100 <= 70, "(50-70%)", "(>=70%)"))),"ERROR")';
+                    $formulaLevel = '=IFERROR(IF((' . $sumChecks . ')/' . count($groupedData2) . '*100 = 0, "(0%)", IF((' . $sumChecks . ')/' . count($groupedData2) . '*100 <= 49, "(<50%)", IF((' . $sumChecks . ')/' . count($groupedData2) . '*100 <= 70, "(50-70%)", "(>=70%)"))),"ERROR")';
                     $ObjSheet->setCellValue('H' . $rowData, $formulaLevel)->getStyle('H' . $rowData)->applyFromArray($this->styling_default_template('00FFFFFF', '000000'));
 
                     // $LevelCell = $ObjSheet->getCell('H' . $rowData);
