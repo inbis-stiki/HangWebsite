@@ -2278,11 +2278,27 @@ class Cronjob extends Model
     public static function queryROVSTESTq($year, $tipe_toko)
     {
         $results = DB::select("
-        select 
-            *,ID_REGIONAL as region_name, NAME_AREA as area_name 
-        from report_rovscall_head rrh 
-        join report_rovscall_detail rrd on rrh.ID_HEAD COLLATE utf8mb4_unicode_ci = rrd.ID_HEAD 
-        where rrh.TAHUN = " . $year . "
+            select 
+                rrd.ID_HEAD,
+                rrd.ID_REGION ,
+                rrh.TAHUN,
+                rrd.ID_DET,
+                rrd.NAME_AREA,
+                rrd.`MONTH`,
+                MAX(rrd.VALUE) AS VALUE,
+                rrd.`TYPE`,
+                ID_REGIONAL as region_name, 
+                NAME_AREA as area_name 
+            from 
+                report_rovscall_head rrh 
+            join report_rovscall_detail rrd on 
+                rrh.ID_HEAD COLLATE utf8mb4_unicode_ci = rrd.ID_HEAD 
+            where 
+                rrh.TAHUN = " . $year . "
+            GROUP BY 
+                rrd.NAME_AREA,
+                rrd.`MONTH`,
+                rrd.`TYPE`
         ");
 
         $rOs = [];
@@ -2297,7 +2313,6 @@ class Cronjob extends Model
                 $rOs[$regionName] = [];
             }
 
-            // Initialize the area array if it doesn't exist
             if (!isset($rOs[$regionName][$areaName])) {
                 $rOs[$regionName][$areaName] = [
                     "AREA" => $areaName,
@@ -2307,11 +2322,9 @@ class Cronjob extends Model
                 ];
             }
 
-            // Append the value to the appropriate type array
             $rOs[$regionName][$areaName][$type][] = $value;
         }
-
-        // Reset the area indices to numeric values
+        
         foreach ($rOs as &$region) {
             $region = array_values($region);
         }
