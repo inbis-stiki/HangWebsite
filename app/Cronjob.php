@@ -2138,7 +2138,7 @@ class Cronjob extends Model
                 $cities[$city] = array_values($shops);
             }
         }
-        dd($outputArray);
+        // dd($outputArray);
         return $outputArray;
     }
 
