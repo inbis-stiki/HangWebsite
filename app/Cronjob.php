@@ -2117,8 +2117,6 @@ class Cronjob extends Model
                     $percentage = intval(round($countOfZeroMonths > 0 ?
                         (100 - ($countOfZeroMonths / $currentMonth) * 100) : 100));
 
-
-
                     if ($percentage > 0 && $percentage < 50) {
                         $category = 2; // Category 2 (< 50%)
                     } elseif ($percentage >= 50 && $percentage < 70) {
@@ -2129,6 +2127,9 @@ class Cronjob extends Model
                         $category = 1; // Category 1 (0%) hehe
                     }
 
+                    if(($currentMonth - $countOfZeroMonths) == 1){
+                        $category = 1;
+                    }
                     $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
                     $shop['CATEGORY'] = $category;
                     // dd($shop);
@@ -2137,7 +2138,7 @@ class Cronjob extends Model
                 $cities[$city] = array_values($shops);
             }
         }
-        // dd($outputArray);
+        dd($outputArray);
         return $outputArray;
     }
 
