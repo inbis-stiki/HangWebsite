@@ -56,7 +56,7 @@ class Shop extends Model
                     WHERE ms.ID_DISTRICT IN (
                         SELECT md.ID_DISTRICT 
                         FROM md_district md 
-                        WHERE md.ID_AREA = ma.ID_AREA AND md.ISMARKET_DISTRICT = 0
+                        WHERE md.ID_AREA = ma.ID_AREA AND md.ISMARKET_DISTRICT = 0  AND ms.deleted_at is NULL
                     ) AND ms.TYPE_SHOP = "Pedagang Sayur" 
                 ) as TOT_PS,
                 (
@@ -65,7 +65,7 @@ class Shop extends Model
                     WHERE ms.ID_DISTRICT IN (
                         SELECT md.ID_DISTRICT 
                         FROM md_district md 
-                        WHERE md.ID_AREA = ma.ID_AREA AND md.ISMARKET_DISTRICT = 0
+                        WHERE md.ID_AREA = ma.ID_AREA AND md.ISMARKET_DISTRICT = 0  AND ms.deleted_at is NULL
                     ) AND ms.TYPE_SHOP = "Retail" 
                 ) as TOT_RETAIL,
                 (
@@ -74,7 +74,7 @@ class Shop extends Model
                     WHERE ms.ID_DISTRICT IN (
                         SELECT md.ID_DISTRICT 
                         FROM md_district md 
-                        WHERE md.ID_AREA = ma.ID_AREA AND md.ISMARKET_DISTRICT = 0
+                        WHERE md.ID_AREA = ma.ID_AREA AND md.ISMARKET_DISTRICT = 0  AND ms.deleted_at is NULL
                     ) AND ms.TYPE_SHOP = "Loss" 
                 ) as TOT_LOSS,
                 (
@@ -83,7 +83,7 @@ class Shop extends Model
                     WHERE ms.ID_DISTRICT IN (
                         SELECT md.ID_DISTRICT 
                         FROM md_district md 
-                        WHERE md.ID_AREA = ma.ID_AREA AND md.ISMARKET_DISTRICT = 0
+                        WHERE md.ID_AREA = ma.ID_AREA AND md.ISMARKET_DISTRICT = 0  AND ms.deleted_at is NULL
                     ) AND ms.TYPE_SHOP = "Permanen" 
                 ) as TOT_PERMANEN
             FROM md_area ma
@@ -97,22 +97,22 @@ class Shop extends Model
                 (
                     SELECT COUNT(ms.ID_SHOP)
                     FROM md_shop ms 
-                    WHERE ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Pedagang Sayur' 
+                    WHERE ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Pedagang Sayur' AND ms.deleted_at is NULL
                 ) as TOT_PS,
                 (
                     SELECT COUNT(ms.ID_SHOP)
                     FROM md_shop ms 
-                    WHERE ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Retail'
+                    WHERE ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Retail' AND ms.deleted_at is NULL
                 ) as TOT_RETAIL,
                 (
                     SELECT COUNT(ms.ID_SHOP)
                     FROM md_shop ms 
-                    WHERE ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Loss' 
+                    WHERE ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Loss' AND ms.deleted_at is NULL 
                 ) as TOT_LOSS,
                 (
                     SELECT COUNT(ms.ID_SHOP)
                     FROM md_shop ms 
-                    WHERE ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Permanen' 
+                    WHERE ms.ID_DISTRICT = md.ID_DISTRICT AND ms.TYPE_SHOP = 'Permanen' AND ms.deleted_at is NULL 
                 ) as TOT_PERMANEN
             FROM md_district md 
             WHERE md.ID_AREA = ".$idArea." AND md.ISMARKET_DISTRICT = 0
