@@ -76,12 +76,11 @@ class AreaController extends Controller
     public function update(Request $req){
         $validator = Validator::make($req->all(), [
             'id'        => 'required',
-            'area'      => 'required|unique:md_area,NAME_AREA',
+            'area'      => 'required',
             'regional'  => 'required',
             'status'    => 'required',
         ], [
-            'required' => 'Data tidak boleh kosong!',
-            'unique'   => 'Data :attribute telah terdaftar!'
+            'required' => 'Data tidak boleh kosong!'
         ]);
 
         if($validator->fails()){
