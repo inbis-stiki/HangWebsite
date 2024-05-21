@@ -86,7 +86,6 @@ class AreaController extends Controller
         if($validator->fails()){
             return redirect('master/location/area')->withErrors($validator);
         }
-
         
         $area = Area::find($req->input('id'));
 
@@ -98,6 +97,22 @@ class AreaController extends Controller
         
         $changedFields = array_keys($area->getDirty());
         $area->save();
+        
+        DB::statement("
+            UPDATE
+                `user` u
+            SET
+                u.ID_REGIONAL = (
+                    SELECT 
+                        ma.ID_REGIONAL 
+                    FROM 
+                        md_area ma 
+                    WHERE 
+                        ma.ID_AREA = u.ID_AREA
+                )
+            WHERE 
+                u.ID_AREA = " . $req->input('id') . "
+        ");
 
         $newValues = [];
         foreach($changedFields as $field) {
