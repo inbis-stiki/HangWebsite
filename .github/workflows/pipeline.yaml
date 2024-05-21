@@ -17,5 +17,5 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd ${{ secrets.DIR }}
-          git pull origin development && composer install && composer update && php artisan optimize
-          php artisan config:clear
+          git pull origin development && php7.4 /usr/local/bin/composer install && php7.4 /usr/local/bin/composer update && php7.4 artisan optimize
+          php7.4 artisan config:clear
