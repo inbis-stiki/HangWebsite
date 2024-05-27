@@ -268,7 +268,7 @@
 
         $("#mdlEdit_area").change(function() {
             var val_area = $("#mdlEdit_area").val();
-            getDataEditDistrict(location, parent)
+            getDataEditDistrict(val_area, parent)
         });
     }
 
