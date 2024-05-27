@@ -120,9 +120,9 @@ class MarketController extends Controller
             ['ISMARKET_DISTRICT', '=', '1']
         ])->exists();
 
-        if ($dist == true) {
-            return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
-        }
+        // if ($dist == true) {
+        //     return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
+        // }
 
 
         $district = new District();
