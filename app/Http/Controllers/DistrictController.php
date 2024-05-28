@@ -109,15 +109,15 @@ class DistrictController extends Controller
             return redirect('master/location/district')->withErrors($validator);
         }
 
-        $dist = District::where([
-            ['NAME_DISTRICT', '=', $req->input('district')],
-            ['ID_AREA', '=', $req->input('area')],
-            ['ISMARKET_DISTRICT', '=', '0']
-        ])->exists();
+        // $dist = District::where([
+        //     ['NAME_DISTRICT', '=', $req->input('district')],
+        //     ['ID_AREA', '=', $req->input('area')],
+        //     ['ISMARKET_DISTRICT', '=', '0']
+        // ])->exists();
 
-        if($dist){
-            return redirect('master/location/district')->with('err_msg', 'Data Kecamatan telah terdaftar');
-        }
+        // if($dist){
+        //     return redirect('master/location/district')->with('err_msg', 'Data Kecamatan telah terdaftar');
+        // }
 
         
         $district = District::find($req->input('id'));
