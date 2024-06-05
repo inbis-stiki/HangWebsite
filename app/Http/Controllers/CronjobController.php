@@ -350,6 +350,32 @@ class CronjobController extends Controller
             ";
         }
 
+        $productPrice = DB::select("
+            SELECT 
+                mp.CODE_PRODUCT,
+                COALESCE((
+                    SELECT
+                        pp.PRICE_PP
+                    FROM 
+                        product_price pp
+                    LEFT JOIN md_regional mr ON
+                        mr.ID_REGIONAL = pp.ID_REGIONAL
+                    WHERE 
+                        mr.NAME_REGIONAL = '$nRegional'
+                        AND 
+                        pp.ID_PRODUCT = mp.ID_PRODUCT
+                ), 0) AS PRICE_PP
+            FROM 
+                md_product mp
+        ");
+        $groupPriceData = [];
+        // Loop through the results and group by CODE_PRODUCT
+        foreach ($productPrice as $row) {
+            $codeProduct = $row->CODE_PRODUCT;
+            $pricePP = $row->PRICE_PP;
+            $groupPriceData[$codeProduct] = $pricePP;
+        }
+
         $querySumProd = implode(',', $querySumProd);
         $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, $date, $nRegional);
         // dd($transDaily);die;
@@ -363,7 +389,7 @@ class CronjobController extends Controller
             // dd($noTransDaily);die;
         }
 
-        app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional, $date);
+        app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional, $date, $groupPriceData);
     }
     public function genRORPO($yearMonth)
     {
