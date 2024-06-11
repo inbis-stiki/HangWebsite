@@ -157,12 +157,12 @@ class TestController extends Controller
             $time_end = microtime(true);
             echo "</br>";
             $execution_time = ($time_end - $time_start)/60;
-            echo "time to execute: ". $execution_time;
+            echo "time to execute: ". number_format((float) $execution_time, 10);
             echo "</br>";            
         }
         echo "--- end here --- </br>";
         $time_end_all = microtime(true);
         $execution_time_all = ($time_end_all - $time_start_all)/60;
-        echo "time to execute all: ". $execution_time_all;
+        echo "time to execute all: ". number_format((float) $execution_time_all, 10);
     }
 }
