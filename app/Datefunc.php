@@ -17,11 +17,11 @@ class Datefunc
             // $response = Http::withOptions(['timeout' => 2])->retry(5,5000,null)->get('https://vip.timezonedb.com/v2.1/get-time-zone?key=DHQJPS68JTER&format=json&by=position&lat='.$lat.'&lng='.$long);
             $response = Http::withOptions(['timeout' => 2])->retry(5,5000,null)->get('https://zone.tjireng.my.id/api?lat='.$lat.'&lng='.$long);
 
-        } while (!isset($response->json()['zoneName']));
+        } while (!isset($response->json()['name']));
         
-        if (isset($response['zoneName'])) {
+        if (isset($response['name'])) {
         
-            $timezone = stripcslashes($response->json()['zoneName']);
+            $timezone = stripcslashes($response->json()['name']);
             date_default_timezone_set($timezone);
             return date('Y-m-d H:i:s');
         }
