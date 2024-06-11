@@ -150,8 +150,9 @@ class TestController extends Controller
     public function TestPerformance()
     {
         for ($i = 0; $i < 20; $i++) {
-            echo date("Y-m-d H:i:s");
+            echo date("Y-m-d H:i:s"). " -- ";
             $this->TestDate();
+            echo "</br>";
         }
     }
 }
