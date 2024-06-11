@@ -150,7 +150,7 @@ class TestController extends Controller
     public function TestPerformance()
     {
         $time_start_all = microtime(true);
-        for ($i = 0; $i < 500; $i++) {
+        for ($i = 0; $i < 200; $i++) {
             $time_start = microtime(true); 
             echo "executed at : ". date("Y-m-d H:i:s") ." -- ";
             echo "got data : ";$this->TestDate();
