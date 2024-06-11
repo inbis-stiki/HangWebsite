@@ -146,4 +146,11 @@ class TestController extends Controller
 
         echo $currDate;
     }
+
+    public function TestPerformance()
+    {
+        for ($i = 0; $i < 500; $i++) {
+            $this->TestDate();
+        }
+    }
 }
