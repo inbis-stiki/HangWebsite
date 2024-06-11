@@ -149,6 +149,7 @@ class TestController extends Controller
 
     public function TestPerformance()
     {
+        $time_start_all = microtime(true);
         for ($i = 0; $i < 50; $i++) {
             $time_start = microtime(true); 
             echo "executed at : ". date("Y-m-d H:i:s") ." -- ";
@@ -156,7 +157,11 @@ class TestController extends Controller
             $time_end = microtime(true);
             echo "</br>";
             $execution_time = ($time_end - $time_start)/60;
+            echo "time to execute: ". $execution_time;
             echo "</br></br>";            
         }
+        $time_end_all = microtime(true);
+        $execution_time_all = ($time_end_all - $time_start_all)/60;
+        echo "time to execute all: ". $execution_time_all;
     }
 }
