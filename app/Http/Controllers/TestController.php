@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\RegionalPriceImport;
+use App\Datefunc;
 use App\Product;
 use App\Regional;
 use App\RegionalPrice;
@@ -129,5 +130,20 @@ class TestController extends Controller
         header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
+    }
+
+    public function TestDate()
+    {
+        $dateFunc = new Datefunc();
+        if (empty($dateFunc->currDate('112.6075501782834', '-7.965909011268979'))) {
+            return response([
+                "status_code"       => 403,
+                "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+            ], 200);
+        }
+
+        $currDate = $dateFunc->currDate('112.6075501782834', '-7.965909011268979');
+
+        echo $currDate;
     }
 }

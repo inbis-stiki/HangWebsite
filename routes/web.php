@@ -24,6 +24,7 @@ Route::get('testTemplate', 'CronjobController@TestTemplate');
 Route::get('tesQuery', 'CronjobController@tesQuery');
 Route::get('listDatePresence', 'CronjobController@listDatePresence');
 Route::get('tes', 'CronjobController@TestTemplate');
+Route::get('tes/tanggal', 'TestController@TestDate');
 
 //Login
 Route::get('/', 'AuthController@login');
