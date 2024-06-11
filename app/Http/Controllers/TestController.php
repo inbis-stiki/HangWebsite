@@ -149,10 +149,14 @@ class TestController extends Controller
 
     public function TestPerformance()
     {
-        for ($i = 0; $i < 20; $i++) {
-            echo date("Y-m-d H:i:s"). " -- ";
-            $this->TestDate();
+        for ($i = 0; $i < 50; $i++) {
+            $time_start = microtime(true); 
+            echo "executed at : "date("Y-m-d H:i:s"). " -- ";
+            echo "got data : ";$this->TestDate();
+            $time_end = microtime(true);
             echo "</br>";
+            $execution_time = ($time_end - $time_start)/60;
+            echo "</br></br>";            
         }
     }
 }
