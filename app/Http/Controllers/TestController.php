@@ -151,7 +151,7 @@ class TestController extends Controller
     {
         for ($i = 0; $i < 50; $i++) {
             $time_start = microtime(true); 
-            echo "executed at : "date("Y-m-d H:i:s"). " -- ";
+            echo "executed at : ". date("Y-m-d H:i:s") ." -- ";
             echo "got data : ";$this->TestDate();
             $time_end = microtime(true);
             echo "</br>";
