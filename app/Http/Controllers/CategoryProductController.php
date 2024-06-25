@@ -51,6 +51,7 @@ class CategoryProductController extends Controller
                 $category_product->TGTREGIONAL_PC   = $req->input('target_reg_prod');
                 $category_product->TGTUSER_PC       = $req->input('target_user_prod');
                 $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
+                $category_product->GROUP_PRODUCT    = $req->input('group_product');
                 $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');    
                 try {
                     $category_product->save();
@@ -96,6 +97,7 @@ class CategoryProductController extends Controller
             $category_product->TGTREGIONAL_PC   = $req->input('target_reg_prod');
             $category_product->TGTUSER_PC       = $req->input('target_user_prod');
             $category_product->PERCENTAGE_PC    = $req->input('percentage_product');
+            $category_product->GROUP_PRODUCT    = $req->input('group_product');
             $category_product->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
             $category_product->save();
 
