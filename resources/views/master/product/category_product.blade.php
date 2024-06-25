@@ -72,7 +72,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlEdit('{{ $item->ID_PC }}', '{{ $item->NAME_PC }}', '{{ $item->TGTLOCATION_PC }}', '{{ $item->TGTREGIONAL_PC }}', '{{ $item->TGTUSER_PC }}', '{{ $item->PERCENTAGE_PC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $item->ID_PC }}', '{{ $item->NAME_PC }}', '{{ $item->TGTLOCATION_PC }}', '{{ $item->TGTREGIONAL_PC }}', '{{ $item->TGTUSER_PC }}', '{{ $item->PERCENTAGE_PC }}', '{{ $item->deleted_at }}', '{{ $item->GROUP_PRODUCT }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                             {{-- <button onclick="showMdlDelete('{{ $item->ID_PC }}')" class="btn btn-primary btn-sm">
@@ -129,6 +129,10 @@
                         <label class="radio-inline mr-3"><input type="radio" name="status" value="0" required> Disable</label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="">Group Produk</label>
+                    <input type="text" name="group_product" maxlength="20" style="text-transform:uppercase" class="form-control" placeholder="Input Group Produk" required>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="this.form.reset();">Batalkan</button>
@@ -177,6 +181,10 @@
                         <label class="radio-inline mr-3"><input type="radio" id="status_disable" name="status" value="0" required> Disable</label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="">Group Produk</label>
+                    <input type="text" name="group_product" id="mdlEdit_group" maxlength="20" style="text-transform:uppercase" class="form-control" placeholder="Input Group Produk" required>
+                </div>
             </div>
             <div class="modal-footer">
                 <input type="hidden" name="id" id="mdlEdit_id">
@@ -219,7 +227,7 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, name, targetasmen, targetreg, targetuser, percentage, status){
+    function showMdlEdit(id, name, targetasmen, targetreg, targetuser, percentage, status, group){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
         $('#mdlEdit_asm').val(targetasmen)
@@ -231,6 +239,7 @@
         } else {
             $('#status_disable').prop('checked', true)
         }
+        $('#mdlEdit_group').val(group)
         $('#mdlEdit').modal('show');
     }
 

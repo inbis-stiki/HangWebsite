@@ -623,7 +623,7 @@ class Cronjob extends Model
                 mt.NAME_TYPE
             ORDER BY
                 td.AREA_TD ASC,
-                u.NAME_USER ASC;
+                u.NAME_USER ASC
 	    ");
     }
 
