@@ -417,72 +417,7 @@ class CronjobController extends Controller
             }
         }
 
-        // $dummyData = [
-        //     "GROUP_1" => [
-        //         [
-        //             "ID_USER" => "34af7909",
-        //             "NAME_USER" => "FERDIANSYAH",
-        //             "NAME_TYPE" => "SPREADING",
-        //             "AREA_TD" => "CIANJUR",
-        //             "DISTRICT" => "GEKBRONG",
-        //             "DETAIL_LOCATION" => null,
-        //             "NAME_ROLE" => "APO",
-        //             "UST18" => "0",
-        //             "USP18" => "8",
-        //             "USU15" => "6",
-        //             "FSU60" => "0",
-        //             "FSB60" => "0",
-        //             "USB20" => "0",
-        //             "USTR15" => "7",
-        //             "USI20" => "0",
-        //             "USK18" => "6",
-        //             "USR20" => "8",
-        //             "ISFINISHED_TD" => 0,
-        //             "TOTAL_TD" => null
-        //         ],
-        //         [
-        //             "ID_USER" => "de6e4248",
-        //             "NAME_USER" => "luthfi akbar",
-        //             "NAME_TYPE" => "SPREADING",
-        //             "AREA_TD" => "CIANJUR",
-        //             "DISTRICT" => "CIANJUR",
-        //             "DETAIL_LOCATION" => null,
-        //             "NAME_ROLE" => "SALES",
-        //             "UST18" => "5",
-        //             "USP18" => "3",
-        //             "USU15" => "3",
-        //             "FSU60" => "0",
-        //             "FSB60" => "0",
-        //             "USB20" => "3",
-        //             "USTR15" => "3",
-        //             "USI20" => "4",
-        //             "USK18" => "4",
-        //             "USR20" => "4",
-        //             "ISFINISHED_TD" => 0,
-        //             "TOTAL_TD" => null
-        //         ],
-        //     ],
-        //     "GROUP_2" => [
-        //         [
-        //             "ID_USER" => "71570e68",
-        //             "NAME_USER" => "Aas Triani",
-        //             "NAME_TYPE" => "SPREADING",
-        //             "AREA_TD" => "CIMAHI BARAT",
-        //             "DISTRICT" => "CIHAMPELAS",
-        //             "DETAIL_LOCATION" => null,
-        //             "NAME_ROLE" => "APO",
-        //             "UGP18" => "4",
-        //             "URD18" => "5",
-        //             "ISFINISHED_TD" => 0,
-        //             "TOTAL_TD" => null
-        //         ]
-        //     ],
-        // ];
-
-        // dd(($dummyData));
-
-        app(ReportTransaction::class)->generate_transaksi_harian_withGroup($result, $groupProduct, $nRegional, $date);
-        die;
+        app(ReportTransaction::class)->generate_transaksi_harian_withGroup($result, $groupProduct, $noTransDaily, $nRegional, $date);
     }
     public function genRORPO($yearMonth)
     {

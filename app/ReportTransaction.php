@@ -222,7 +222,7 @@ class ReportTransaction
         $writer->save('php://output');
     }
 
-    public function generate_transaksi_harian_withGroup($transDaily, $groupProduct, $regionalName, $date)
+    public function generate_transaksi_harian_withGroup($transDaily, $groupProduct, $noTransDaily, $regionalName, $date)
     {
         $colData = ['I', "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE"];
         $date    = date_format(date_create($date), 'j F Y');
@@ -329,32 +329,32 @@ class ReportTransaction
         // SHEET 2 USER TIDAK TRANSAKSI
         $spreadsheet->createSheet();
         $spreadsheet->setActiveSheetIndex(($lastSheetindex + 1));
-        $ObjSheet2 = $spreadsheet->getActiveSheet()->setTitle("USER TIDAK TRANSAKSI");
+        $ObjSheet3 = $spreadsheet->getActiveSheet()->setTitle("USER TIDAK TRANSAKSI");
 
-        // $ObjSheet2->getColumnDimension('A')->setWidth('18');
-        // $ObjSheet2->getColumnDimension('B')->setWidth('30');
-        // $ObjSheet2->getColumnDimension('C')->setWidth('15');
-        // $ObjSheet2->getColumnDimension('D')->setWidth('18');
+        $ObjSheet3->getColumnDimension('A')->setWidth('18');
+        $ObjSheet3->getColumnDimension('B')->setWidth('30');
+        $ObjSheet3->getColumnDimension('C')->setWidth('15');
+        $ObjSheet3->getColumnDimension('D')->setWidth('18');
 
-        // $ObjSheet2->mergeCells('A1:D2')->setCellValue('A1', "REKAP USER YANG TIDAK MELAKUKAN TRANSAKSI")->getStyle('A1:D2')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
-        // $ObjSheet2->mergeCells('A3:D4')->setCellValue('A3', "")->getStyle('A3:D4')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FFFF0000'));
+        $ObjSheet3->mergeCells('A1:D2')->setCellValue('A1', "REKAP USER YANG TIDAK MELAKUKAN TRANSAKSI")->getStyle('A1:D2')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
+        $ObjSheet3->mergeCells('A3:D4')->setCellValue('A3', "")->getStyle('A3:D4')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FFFF0000'));
 
-        // $ObjSheet2->mergeCells('A5:A7')->setCellValue('A5', 'TANGGAL')->getStyle('A5:A7')->applyFromArray($this->styling_title_template('FF00B0F0', 'FF000000'));
-        // $ObjSheet2->mergeCells('B5:B7')->setCellValue('B5', 'NAMA')->getStyle('B5:B7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
-        // $ObjSheet2->mergeCells('C5:C7')->setCellValue('C5', 'JABATAN')->getStyle('C5:C7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
-        // $ObjSheet2->mergeCells('D5:D7')->setCellValue('D5', 'AREA')->getStyle('D5:D7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+        $ObjSheet3->mergeCells('A5:A7')->setCellValue('A5', 'TANGGAL')->getStyle('A5:A7')->applyFromArray($this->styling_title_template('FF00B0F0', 'FF000000'));
+        $ObjSheet3->mergeCells('B5:B7')->setCellValue('B5', 'NAMA')->getStyle('B5:B7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+        $ObjSheet3->mergeCells('C5:C7')->setCellValue('C5', 'JABATAN')->getStyle('C5:C7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+        $ObjSheet3->mergeCells('D5:D7')->setCellValue('D5', 'AREA')->getStyle('D5:D7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
 
-        // $rowStart = 8;
-        // if ($noTransDaily != null) {
-        //     foreach ($noTransDaily as $noTrans) {
-        //         $ObjSheet2->setCellValue('A' . $rowStart, $date)->getStyle('A' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-        //         $ObjSheet2->setCellValue('B' . $rowStart, $noTrans->NAME_USER)->getStyle('B' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-        //         $ObjSheet2->setCellValue('C' . $rowStart, $noTrans->NAME_ROLE)->getStyle('C' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
-        //         $ObjSheet2->setCellValue('D' . $rowStart, $noTrans->NAME_AREA)->getStyle('D' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+        $rowStart = 8;
+        if ($noTransDaily != null) {
+            foreach ($noTransDaily as $noTrans) {
+                $ObjSheet3->setCellValue('A' . $rowStart, $date)->getStyle('A' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet3->setCellValue('B' . $rowStart, $noTrans->NAME_USER)->getStyle('B' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet3->setCellValue('C' . $rowStart, $noTrans->NAME_ROLE)->getStyle('C' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet3->setCellValue('D' . $rowStart, $noTrans->NAME_AREA)->getStyle('D' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
 
-        //         $rowStart++;
-        //     }
-        // }
+                $rowStart++;
+            }
+        }
 
         $spreadsheet->removeSheetByIndex(0);
         $spreadsheet->setActiveSheetIndex(0);
