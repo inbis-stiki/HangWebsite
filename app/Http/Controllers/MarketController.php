@@ -120,9 +120,9 @@ class MarketController extends Controller
             ['ISMARKET_DISTRICT', '=', '1']
         ])->exists();
 
-        if ($dist == true) {
-            return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
-        }
+        // if ($dist == true) {
+        //     return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
+        // }
 
 
         $district = new District();
@@ -150,17 +150,6 @@ class MarketController extends Controller
         if ($validator->fails()) {
             return redirect('master/location/market')->withErrors($validator);
         }
-
-        $dist = District::where([
-            ['NAME_DISTRICT', '=', $req->input('district')],
-            ['PARENT_DISTRICT', '=', $req->input('districtK')],
-            ['ISMARKET_DISTRICT', '=', '1']
-        ])->exists();
-
-        if ($dist == true) {
-            return redirect('master/location/market')->with('err_msg', 'Data pasar telah terdaftar');
-        }
-
 
 
         $district = District::find($req->input('id'));

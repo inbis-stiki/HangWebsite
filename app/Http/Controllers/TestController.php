@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\RegionalPriceImport;
+use App\Datefunc;
 use App\Product;
 use App\Regional;
 use App\RegionalPrice;
@@ -129,5 +130,39 @@ class TestController extends Controller
         header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
+    }
+
+    public function TestDate()
+    {
+        $dateFunc = new Datefunc();
+        if (empty($dateFunc->currDate('112.6075501782834', '-7.965909011268979'))) {
+            return response([
+                "status_code"       => 403,
+                "status_message"    => 'Data timezone tidak ditemukan di lokasi anda'
+            ], 200);
+        }
+
+        $currDate = $dateFunc->currDate('112.6075501782834', '-7.965909011268979');
+
+        echo $currDate;
+    }
+
+    public function TestPerformance()
+    {
+        $time_start_all = microtime(true);
+        for ($i = 0; $i < 1000; $i++) {
+            $time_start = microtime(true); 
+            echo "executed at : ". date("Y-m-d H:i:s") ." -- ";
+            echo "got data : ";$this->TestDate();
+            $time_end = microtime(true);
+            echo "</br>";
+            $execution_time = ($time_end - $time_start)/60;
+            echo "time to execute: ". number_format((float) $execution_time, 10);
+            echo "</br>";            
+        }
+        echo "--- end here --- </br>";
+        $time_end_all = microtime(true);
+        $execution_time_all = ($time_end_all - $time_start_all)/60;
+        echo "time to execute all: ". number_format((float) $execution_time_all, 10);
     }
 }

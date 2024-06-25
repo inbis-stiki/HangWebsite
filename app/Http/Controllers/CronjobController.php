@@ -332,38 +332,183 @@ class CronjobController extends Controller
     {
         $nRegional  = Regional::find($_POST['idRegional'])->NAME_REGIONAL;
         $date       = date_format(date_create($_POST['date']), 'Y-m-d');
-        $products       = Product::where('deleted_at', NULL)->orderBy('ORDER_PRODUCT', 'ASC')->get();
-        $querySumProd   = [];
-        $idUsers        = null;
+        // $products       = Product::where('deleted_at', NULL)->orderBy('ORDER_PRODUCT', 'ASC')->get();
+        // $querySumProd   = [];
+        // $idUsers        = null;
         $noTransDaily   = null;
 
-        foreach ($products as $product) {
-            $querySumProd[] = "
-                COALESCE((
-                    SELECT sum(td2.QTY_TD)
-                    FROM transaction_detail td2
-                    JOIN transaction t ON t.ID_TRANS  = td2.ID_TRANS  
-                    JOIN md_type mt2 ON t.ID_TYPE = mt2.ID_TYPE
-                    WHERE t.ID_TD = td.ID_TD
-                    AND td2.ID_PRODUCT = " . $product->ID_PRODUCT . " AND mt.NAME_TYPE = mt2.NAME_TYPE
-                ), 0) as '" . $product->CODE_PRODUCT . "'
-            ";
-        }
+        // foreach ($products as $product) {
+        //     $querySumProd[] = "
+        //         COALESCE((
+        //             SELECT sum(td2.QTY_TD)
+        //             FROM transaction_detail td2
+        //             JOIN transaction t ON t.ID_TRANS  = td2.ID_TRANS  
+        //             JOIN md_type mt2 ON t.ID_TYPE = mt2.ID_TYPE
+        //             WHERE t.ID_TD = td.ID_TD
+        //             AND td2.ID_PRODUCT = " . $product->ID_PRODUCT . " AND mt.NAME_TYPE = mt2.NAME_TYPE
+        //         ), 0) as '" . $product->CODE_PRODUCT . "'
+        //     ";
+        // }
 
-        $querySumProd = implode(',', $querySumProd);
-        $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, $date, $nRegional);
+        // $querySumProd = implode(',', $querySumProd);
+        // $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, $date, $nRegional);
         // dd($transDaily);die;
-        if ($transDaily != null) {
-            $idUsers    = implode(',', array_map(function ($entry) {
-                return "'" . $entry->ID_USER . "'";
-            }, $transDaily));
+        // if ($transDaily != null) {
+        //     $idUsers    = implode(',', array_map(function ($entry) {
+        //         return "'" . $entry->ID_USER . "'";
+        //     }, $transDaily));
 
-            $noTransDaily   = Users::getUserByRegional($_POST['idRegional'], $idUsers);
+        //     $noTransDaily   = Users::getUserByRegional($_POST['idRegional'], $idUsers);
 
-            // dd($noTransDaily);die;
+        //     // dd($noTransDaily);die;
+        // }
+
+        // app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional, $date, $groupPriceData);
+
+        $dataProductGroup = DB::select("
+            SELECT
+                mp.* ,
+                mpc.GROUP_PRODUCT ,
+                COALESCE((
+                    SELECT
+                        pp.PRICE_PP
+                    FROM 
+                        product_price pp
+                    LEFT JOIN md_regional mr ON
+                        mr.ID_REGIONAL = pp.ID_REGIONAL
+                    WHERE 
+                        mr.NAME_REGIONAL = '$nRegional'
+                        AND 
+                        pp.ID_PRODUCT = mp.ID_PRODUCT
+                ), 0) AS PRICE_PP
+            FROM
+                md_product mp
+            LEFT JOIN md_product_category mpc ON 
+                mpc.ID_PC = mp.ID_PC
+            WHERE
+                mp.deleted_at IS NULL
+            ORDER BY 
+                mp.ORDER_GROUPING ASC
+        ");
+
+        $groupProduct = [];
+        foreach ($dataProductGroup as $item) {
+            $groupProduct['GROUP_' . $item->GROUP_PRODUCT][] = json_decode(json_encode($item), true);
         }
 
-        app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional, $date);
+        $dummyData = [
+            "GROUP_1" => [
+                [
+                    "ID_USER" => "34af7909",
+                    "NAME_USER" => "FERDIANSYAH",
+                    "NAME_TYPE" => "SPREADING",
+                    "AREA_TD" => "CIANJUR",
+                    "DISTRICT" => "GEKBRONG",
+                    "DETAIL_LOCATION" => null,
+                    "NAME_ROLE" => "APO",
+                    "UST18" => "0",
+                    "USP18" => "8",
+                    "USU15" => "6",
+                    "FSU60" => "0",
+                    "FSB60" => "0",
+                    "USB20" => "0",
+                    "USTR15" => "7",
+                    "USI20" => "0",
+                    "USK18" => "6",
+                    "USR20" => "8",
+                    "ISFINISHED_TD" => 0,
+                    "TOTAL_TD" => null
+                ],
+                [
+                    "ID_USER" => "de6e4248",
+                    "NAME_USER" => "luthfi akbar",
+                    "NAME_TYPE" => "SPREADING",
+                    "AREA_TD" => "CIANJUR",
+                    "DISTRICT" => "CIANJUR",
+                    "DETAIL_LOCATION" => null,
+                    "NAME_ROLE" => "SALES",
+                    "UST18" => "5",
+                    "USP18" => "3",
+                    "USU15" => "3",
+                    "FSU60" => "0",
+                    "FSB60" => "0",
+                    "USB20" => "3",
+                    "USTR15" => "3",
+                    "USI20" => "4",
+                    "USK18" => "4",
+                    "USR20" => "4",
+                    "ISFINISHED_TD" => 0,
+                    "TOTAL_TD" => null
+                ],
+                [
+                    "ID_USER" => "71570e68",
+                    "NAME_USER" => "Aas Triani",
+                    "NAME_TYPE" => "SPREADING",
+                    "AREA_TD" => "CIMAHI BARAT",
+                    "DISTRICT" => "CIHAMPELAS",
+                    "DETAIL_LOCATION" => null,
+                    "NAME_ROLE" => "APO",
+                    "UST18" => "10",
+                    "USP18" => "0",
+                    "USU15" => "5",
+                    "FSU60" => "0",
+                    "FSB60" => "0",
+                    "USB20" => "0",
+                    "USTR15" => "0",
+                    "USI20" => "10",
+                    "USK18" => "6",
+                    "USR20" => "0",
+                    "ISFINISHED_TD" => 0,
+                    "TOTAL_TD" => null
+                ]
+            ],
+            "GROUP_2" => [
+                [
+                    "ID_USER" => "34af7909",
+                    "NAME_USER" => "FERDIANSYAH",
+                    "NAME_TYPE" => "SPREADING",
+                    "AREA_TD" => "CIANJUR",
+                    "DISTRICT" => "GEKBRONG",
+                    "DETAIL_LOCATION" => null,
+                    "NAME_ROLE" => "APO",
+                    "UGP18" => "5",
+                    "URD18" => "5",
+                    "ISFINISHED_TD" => 0,
+                    "TOTAL_TD" => null
+                ],
+                [
+                    "ID_USER" => "de6e4248",
+                    "NAME_USER" => "luthfi akbar",
+                    "NAME_TYPE" => "SPREADING",
+                    "AREA_TD" => "CIANJUR",
+                    "DISTRICT" => "CIANJUR",
+                    "DETAIL_LOCATION" => null,
+                    "NAME_ROLE" => "SALES",
+                    "UGP18" => "3",
+                    "URD18" => "2",
+                    "ISFINISHED_TD" => 0,
+                    "TOTAL_TD" => null
+                ],
+                [
+                    "ID_USER" => "71570e68",
+                    "NAME_USER" => "Aas Triani",
+                    "NAME_TYPE" => "SPREADING",
+                    "AREA_TD" => "CIMAHI BARAT",
+                    "DISTRICT" => "CIHAMPELAS",
+                    "DETAIL_LOCATION" => null,
+                    "NAME_ROLE" => "APO",
+                    "UGP18" => "4",
+                    "URD18" => "5",
+                    "ISFINISHED_TD" => 0,
+                    "TOTAL_TD" => null
+                ]
+            ],
+        ];
+
+        // dd(($groupProduct));
+
+        app(ReportTransaction::class)->generate_transaksi_harian_withGroup($dummyData, $groupProduct, $nRegional, $date);
+        die;
     }
     public function genRORPO($yearMonth)
     {

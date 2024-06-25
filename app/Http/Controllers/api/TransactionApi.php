@@ -248,12 +248,12 @@ class TransactionApi extends Controller
 
             $cekDistrict = District::select('md_district.*')
                 ->where('NAME_DISTRICT', '=', $req->input('name_district'))
+                ->where('ID_AREA', '=', $req->input('id_area'))
                 ->where('ISMARKET_DISTRICT', '=', 0)
                 ->where('deleted_at', '=', NULL)
                 ->first();
 
             $cekArea  = area::select('md_area.*')
-                ->where('ID_AREA', '=', $req->input('id_area'))
                 ->where('ID_AREA', '=', $cekDistrict['ID_AREA'])
                 ->where('deleted_at', '=', NULL)
                 ->first();

@@ -604,7 +604,7 @@ class Cronjob extends Model
                 td.TOTAL_TD
             FROM
                 transaction_daily td
-            JOIN md_type mt ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "' AND (mt.ID_TYPE = td.ID_TYPE OR td.ID_TYPE IS NULL)
+            JOIN md_type mt ON DATE(td.DATE_TD) = '" . $date . "' AND td.REGIONAL_TD = '" . $regional . "'
             INNER JOIN `user` u ON
                 u.ID_USER = td.ID_USER
             INNER JOIN md_role mr ON
@@ -2117,8 +2117,6 @@ class Cronjob extends Model
                     $percentage = intval(round($countOfZeroMonths > 0 ?
                         (100 - ($countOfZeroMonths / $currentMonth) * 100) : 100));
 
-
-
                     if ($percentage > 0 && $percentage < 50) {
                         $category = 2; // Category 2 (< 50%)
                     } elseif ($percentage >= 50 && $percentage < 70) {
@@ -2129,6 +2127,9 @@ class Cronjob extends Model
                         $category = 1; // Category 1 (0%) hehe
                     }
 
+                    if(($currentMonth - $countOfZeroMonths) == 1){
+                        $category = 1;
+                    }
                     $shop['PERCENTAGE_CURRENT_MONTH'] = $percentage;
                     $shop['CATEGORY'] = $category;
                     // dd($shop);
@@ -2195,37 +2196,55 @@ class Cronjob extends Model
     public static function queryRTRUTIN($year, $tipeToko)
     {
         $reportData = DB::select(
-            DB::raw("
+            DB::raw("                
                 SELECT
-                    `RH`.`NAME_REGIONAL` AS `REGIONAL_NAME`,
-                    `RD`.`NAME_AREA` AS `AREA_NAME`,
-                    `RD`.`CAT_PERCENTAGE`,
-                    (SELECT
-                        COUNT(*)
-                    FROM
-                        md_district AS MD1
-                    JOIN md_area AS MA1 ON
-                        MD1.ID_AREA = MA1.ID_AREA
-                    WHERE
-                        ISMARKET_DISTRICT = 0
-                        AND MA1.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci) AS TOT_KEC,
-                    SUM(CASE WHEN `RD`.TYPE_SHOP = '" . $tipeToko . "' THEN 1 ELSE 0 END) AS TOT_SAYUR,
-                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 1 THEN 1 ELSE 0 END) AS CAT0,
-                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 2 THEN 1 ELSE 0 END) AS CAT1,
-                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 3 THEN 1 ELSE 0 END) AS CAT2,
-                    SUM(CASE WHEN `RD`.CAT_PERCENTAGE = 4 THEN 1 ELSE 0 END) AS CAT3	
+                    RH.NAME_REGIONAL AS REGIONAL_NAME,
+                    RD.NAME_AREA AS AREA_NAME,
+                    RD.CAT_PERCENTAGE,
+                    MAX(kec_temp.TOTAL) AS TOT_KEC,
+                    SUM(CASE WHEN RD.TYPE_SHOP = '" . $tipeToko . "' THEN 1 ELSE 0 END) AS TOT_SAYUR,
+                    SUM(CASE WHEN RD.CAT_PERCENTAGE = 1 THEN 1 ELSE 0 END) AS CAT0,
+                    SUM(CASE WHEN RD.CAT_PERCENTAGE = 2 THEN 1 ELSE 0 END) AS CAT1,
+                    SUM(CASE WHEN RD.CAT_PERCENTAGE = 3 THEN 1 ELSE 0 END) AS CAT2,
+                    SUM(CASE WHEN RD.CAT_PERCENTAGE = 4 THEN 1 ELSE 0 END) AS CAT3
                 FROM
-                    `report_rt_head` AS `RH`
-                INNER JOIN `report_rt_detail` AS `RD` ON
+                    report_rt_head AS RH
+                INNER JOIN report_rt_detail AS RD ON
                     RH.ID_HEAD = RD.ID_HEAD
                     AND
-                    `RD`.TYPE_SHOP = '" . $tipeToko . "'
+                    RD.TYPE_SHOP = '" . $tipeToko . "'
+                LEFT JOIN (
+                    SELECT 
+                        temp.NAME_AREA,
+                        COUNT(DISTINCT temp.NAME_DISTRICT) AS TOTAL
+                    FROM 
+                        (
+                            SELECT
+                                rrd.NAME_AREA,
+                                rrd.NAME_DISTRICT,
+                                rrd.TYPE_SHOP
+                            FROM
+                                report_rt_detail rrd 
+                            LEFT JOIN md_district md ON 
+                                md.NAME_DISTRICT = rrd.NAME_DISTRICT COLLATE utf8mb4_unicode_ci
+                                AND 
+                                md.ISMARKET_DISTRICT = 0
+                            WHERE 
+                                rrd.TYPE_SHOP = '" . $tipeToko . "'
+                            GROUP BY
+                                rrd.NAME_DISTRICT,
+                                rrd.NAME_AREA
+                        ) AS temp
+                    GROUP BY 
+                        temp.NAME_AREA
+                ) AS kec_temp ON
+                    kec_temp.NAME_AREA = RD.NAME_AREA COLLATE utf8mb4_unicode_ci
                 WHERE
-                    `RH`.`YEAR` = " . $year . "
+                    RH.YEAR = " . $year . "
                 GROUP BY
-                    `REGIONAL_NAME`,
-                    `AREA_NAME`,
-                    `CAT_PERCENTAGE`
+                    REGIONAL_NAME,
+                    AREA_NAME,
+                    CAT_PERCENTAGE
             ")
         );
 
@@ -2246,7 +2265,7 @@ class Cronjob extends Model
                 ];
             }
 
-            $formattedData[$regionalName][$areaName]["TOT_KEC"] += (int)$item->TOT_KEC;
+            $formattedData[$regionalName][$areaName]["TOT_KEC"] = (int)$item->TOT_KEC;
             $formattedData[$regionalName][$areaName]["TOT_SAYUR"] += (int)$item->TOT_SAYUR;
             $formattedData[$regionalName][$areaName]["CAT0"] += (int)$item->CAT0;
             $formattedData[$regionalName][$areaName]["CAT1"] += (int)$item->CAT1;
@@ -2260,11 +2279,27 @@ class Cronjob extends Model
     public static function queryROVSTESTq($year, $tipe_toko)
     {
         $results = DB::select("
-        select 
-            *,ID_REGIONAL as region_name, NAME_AREA as area_name 
-        from report_rovscall_head rrh 
-        join report_rovscall_detail rrd on rrh.ID_HEAD COLLATE utf8mb4_unicode_ci = rrd.ID_HEAD 
-        where rrh.TAHUN = " . $year . "
+            select 
+                rrd.ID_HEAD,
+                rrd.ID_REGION ,
+                rrh.TAHUN,
+                rrd.ID_DET,
+                rrd.NAME_AREA,
+                rrd.`MONTH`,
+                MAX(rrd.VALUE) AS VALUE,
+                rrd.`TYPE`,
+                ID_REGIONAL as region_name, 
+                NAME_AREA as area_name 
+            from 
+                report_rovscall_head rrh 
+            join report_rovscall_detail rrd on 
+                rrh.ID_HEAD COLLATE utf8mb4_unicode_ci = rrd.ID_HEAD 
+            where 
+                rrh.TAHUN = " . $year . "
+            GROUP BY 
+                rrd.NAME_AREA,
+                rrd.`MONTH`,
+                rrd.`TYPE`
         ");
 
         $rOs = [];
@@ -2279,7 +2314,6 @@ class Cronjob extends Model
                 $rOs[$regionName] = [];
             }
 
-            // Initialize the area array if it doesn't exist
             if (!isset($rOs[$regionName][$areaName])) {
                 $rOs[$regionName][$areaName] = [
                     "AREA" => $areaName,
@@ -2289,11 +2323,9 @@ class Cronjob extends Model
                 ];
             }
 
-            // Append the value to the appropriate type array
             $rOs[$regionName][$areaName][$type][] = $value;
         }
-
-        // Reset the area indices to numeric values
+        
         foreach ($rOs as &$region) {
             $region = array_values($region);
         }
