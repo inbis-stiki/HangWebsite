@@ -28,6 +28,7 @@
         Scripts
     ***********************************-->
  <!-- Required vendors -->
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
  <script src="{{ asset('vendor/global/global.min.js') }}"></script>
  <script src="{{ asset('vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
  <script src="{{ asset('vendor/chart.js/Chart.bundle.min.js') }}"></script>
@@ -39,13 +40,13 @@
  <!-- Chart piety plugin files -->
  <script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
 
- 
-{{-- ApexCharts --}}
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-{{-- FlatPicker --}}
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+ {{-- ApexCharts --}}
+ <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+ {{-- FlatPicker --}}
+ <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+ <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
 
  <!-- Apex Chart -->
  {{-- <script src="{{ asset('vendor/apexchart/apexchart.js') }}"></script> --}}
@@ -53,17 +54,45 @@
  <!-- Dashboard 1 -->
  {{-- <script src="{{ asset('js/dashboard/dashboard-1.js') }}"></script> --}}
  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
- <script src="{{ asset('vendor/select2/js/select2.full.min.js') }}"></script>
+ <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
  <!-- pickdate -->
  <script src="{{ asset('vendor/pickadate/picker.js') }}"></script>
  <script src="{{ asset('vendor/pickadate/picker.time.js') }}"></script>
  <script src="{{ asset('vendor/pickadate/picker.date.js') }}"></script>
- 
+
  <script src="{{ asset('vendor/toastr/js/toastr.min.js') }}"></script>
 
  <script>
  	$(document).ready(function() {
  		$('.select2').select2();
+
+		if ($('.select2-toko-rute').length > 0) {
+			const url = '<?= url('master/rute/search-shops') ?>';
+			$('.select2-toko-rute').select2({
+				ajax: {
+					url: url,
+					dataType: 'json',
+					delay: 250,
+					processResults: function(data) {
+						return {
+							results: $.map(data, function(item) {
+								return {
+									text: item.NAME_SHOP + ' - ' + item.NAME_AREA,
+									id: item.ID_SHOP
+								}
+							})
+						};
+					},
+					cache: true
+				},
+				minimumInputLength: 1
+			});
+			<?php if (!empty($user_route)) { ?>
+				<?php foreach (explode(';', $user_route->ID_SHOP) as $key => $ID_SHOP) { ?>
+					$('.select2-toko-rute').append(new Option('<?= explode(';', $user_route->NAME_SHOP)[$key] . '-' . explode(';', $user_route->NAME_AREA)[$key] ?>', '<?= $ID_SHOP ?>', true, true)).trigger('change');
+				<?php } ?>
+			<?php } ?>
+		}
  	})
 
  	function carouselReview() {
@@ -128,24 +157,26 @@
  		document.all ? k = e.keyCode : k = e.which;
  		return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57));
  	}
+
  	function alphaNumSpace(e) {
-		var charCode = (e.which) ? e.which : e.keyCode;
-			if(charCode == 32){
-			return false
-		}
+ 		var charCode = (e.which) ? e.which : e.keyCode;
+ 		if (charCode == 32) {
+ 			return false
+ 		}
 
  		var k;
  		document.all ? k = e.keyCode : k = e.which;
  		return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57));
  	}
-	 function preventSpace(evt){
-            evt = (evt) ? evt : window.event;
-            var charCode = (evt.which) ? evt.which : evt.keyCode;
-            if(charCode == 32){
-            return false
-            }
-            return true
-        }
+
+ 	function preventSpace(evt) {
+ 		evt = (evt) ? evt : window.event;
+ 		var charCode = (evt.which) ? evt.which : evt.keyCode;
+ 		if (charCode == 32) {
+ 			return false
+ 		}
+ 		return true
+ 	}
  </script>
  </body>
 

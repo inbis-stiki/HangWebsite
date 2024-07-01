@@ -15,15 +15,15 @@
                 </a>
             </div>
         </div>
-        
+
         @if ($errors->any())
-            <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
+        <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
         @endif
         @if (session('succ_msg'))
-            <div class="alert alert-success">{{ session('succ_msg') }}</div>
+        <div class="alert alert-success">{{ session('succ_msg') }}</div>
         @endif
         @if (session('err_msg'))
-            <div class="alert alert-danger">{{ session('err_msg') }}</div>
+        <div class="alert alert-danger">{{ session('err_msg') }}</div>
         @endif
 
         <!-- Add Order -->
@@ -47,7 +47,7 @@
                                 </thead>
                                 <tbody>
                                     @php
-                                        $no = 1;
+                                    $no = 1;
                                     @endphp
                                     @foreach ($routes as $item)
                                     <tr>
@@ -56,9 +56,14 @@
                                         <td>{{ $item->WEEK }}</td>
                                         <td>Grup {{ $item->ROUTE_GROUP }}</td>
                                         <td>
-                                            <button onclick="" class="btn btn-primary btn-sm">
-                                                <i class="flaticon-381-edit-1"></i>
-                                            </button>
+                                            <form action="<?= url('master/rute/edit') ?>" method="get">
+                                                <input type="hidden" name="id_user" value="{{ $item->ID_USER }}">
+                                                <input type="hidden" name="route_group" value="{{ $item->ROUTE_GROUP }}">
+                                                <input type="hidden" name="week" value="{{ $item->WEEK }}">
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    <i class="flaticon-381-edit-1"></i>
+                                                </button>
+                                            </form>
                                             <button onclick="" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-trash-1"></i>
                                             </button>
