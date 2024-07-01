@@ -155,9 +155,11 @@ Route::group(['middleware' => ['checkLogin']], function () {
 
     //MASTER ROUTE
     Route::get('master/rute', 'RouteController@index');
+    Route::get('master/rute/edit', 'RouteController@index_edit');
     Route::get('master/rute/create', 'RouteController@create');
     Route::get('master/rute/search-shops', 'RouteController@searchShops');
     Route::post('master/rute/store', 'RouteController@store');
+    Route::post('master/rute/update', 'RouteController@update');
 
     // MASTER USER
     Route::get('master/user', 'UserController@index');

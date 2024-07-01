@@ -12,19 +12,16 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ url('master/rute/store') }}" method="POST">
+                        <form action="{{ url('master/rute/update') }}" method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="ID_USER">Nama User</label>
-                                <select name="ID_USER" id="ID_USER" class="form-control">
-                                    @foreach($users as $user)
-                                    <option value="{{ $user->ID_USER }}">{{ $user->NAME_USER }}</option>
-                                    @endforeach
-                                </select>
+                                <p><?= $user_route->NAME_USER ?></p>
+                                <input type="hidden" name="ID_USER" value="<?= $user_route->ID_USER ?>">
                             </div>
                             <div class="form-group">
                                 <label for="WEEK">Minggu</label>
-                                <input type="number" name="WEEK" id="WEEK" class="form-control" required>
+                                <input type="number" name="WEEK" id="WEEK" class="form-control" value="<?= $user_route->WEEK ?>" required>
                             </div>
                             <div class="form-group">
                                 <label for="ID_SHOP">Nama Toko</label>
@@ -32,7 +29,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="ROUTE_GROUP">Rute Grup</label>
-                                <input type="number" name="ROUTE_GROUP" id="ROUTE_GROUP" class="form-control" required>
+                                <input type="number" name="ROUTE_GROUP" id="ROUTE_GROUP" class="form-control" value="<?= $user_route->ROUTE_GROUP ?>" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Simpan</button>
                         </form>
