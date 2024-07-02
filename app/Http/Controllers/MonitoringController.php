@@ -222,8 +222,12 @@ class MonitoringController extends Controller
             'data'              => $All_Data
         ], 200);
     }
-    public function downloadPresenceMonthly()
+    public function downloadPresenceMonthly(Request $req)
     {
+        $dateRequsest = $req->input('dateReq');
+        $year = explode('-', $dateRequsest)[0];
+        $month = explode('-', $dateRequsest)[1];
+        dd($dateRequsest);
         $regionals          = Regional::where('deleted_at', NULL)->get();
         $sundays            = [];
         $totDate            = date('t');
