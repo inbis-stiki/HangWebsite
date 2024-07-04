@@ -7,7 +7,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReportPresence
 {
-    public function generateMonthly($presences, $totDate, $sundays){
+    public function generateMonthly($presences, $totDate, $sundays, $year, $month){
         // Create new Spreadsheet object
         $spreadsheet = new Spreadsheet();
         $countSheet = 0;
@@ -31,14 +31,14 @@ class ReportPresence
     
             // TITLE MONITORING
             $ObjSheet->mergeCells('A2:AP2')->setCellValue('A2', 'REKAP ABSENSI')->getStyle('A2:AP2')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('A3:AP3')->setCellValue('A3', 'BULAN '.strtoupper(date('F')).' '.date('Y'))->getStyle('A3:AP3')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('A3:AP3')->setCellValue('A3', 'BULAN '.strtoupper($month).' '.$year)->getStyle('A3:AP3')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
             
             // HEADER
             $ObjSheet->mergeCells('A4:A6')->setCellValue('A4', 'NO')->getStyle('A4:A6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
             $ObjSheet->mergeCells('B4:B6')->setCellValue('B4', 'NAMA')->getStyle('B4:B6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
             $ObjSheet->mergeCells('C4:C6')->setCellValue('C4', 'JABATAN')->getStyle('C4:C6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
             $ObjSheet->mergeCells('D4:D6')->setCellValue('D4', 'AREA')->getStyle('D4:D6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
-            $ObjSheet->mergeCells('E4:AI5')->setCellValue('E4', 'BULAN '.strtoupper(date('F')).' TAHUN '.date('Y'))->getStyle('E4:AI5')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('E4:AI5')->setCellValue('E4', 'BULAN '.strtoupper($month).' TAHUN '.$year)->getStyle('E4:AI5')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
             
             $abjad = "E";
             foreach (range(1, 31) as $i) { 
@@ -116,7 +116,7 @@ class ReportPresence
 
         $spreadsheet->setActiveSheetIndex(0);
 
-        $fileName = 'MONITORING PRESENSI BULAN '.strtoupper(date('F'))." ".date('Y')."_".date('d-m-Y');
+        $fileName = 'MONITORING PRESENSI BULAN '.strtoupper($month)." ".date('Y')."_".date('d-m-Y');
         $writer = new Xlsx($spreadsheet);
 
         header('Content-Type: application/vnd.ms-excel'); // generate excel file

@@ -178,7 +178,7 @@
         format: 'yyyy-mm',
         onClose: function() {
             var year = $('#date-start').find('.picker__select--year').val()
-            var month = $('#date-start').find('.picker__select--month').val()
+            var month = (parseInt($('#date-start').find('.picker__select--month').val()) + 1)
             var date = [year, month].join("-")
             $('.date-picker').val(date)
         },
