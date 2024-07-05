@@ -8,6 +8,7 @@ use App\CategoryProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Session;
 
 class ProductController extends Controller
@@ -26,8 +27,8 @@ class ProductController extends Controller
         $validator = Validator::make($req->all(), [
             'name_product'      => 'required',
             'code_product'      => 'required|unique:md_product,CODE_PRODUCT',
-            'category_product'    => 'required',
-            'status'                => 'required',
+            'category_product'  => 'required',
+            'status'            => 'required',
         ], [
             'required' => 'Data tidak boleh kosong!',
         ]);
@@ -35,8 +36,6 @@ class ProductController extends Controller
         if($validator->fails()){
             return redirect('master/product')->withErrors($validator);
         }
-
-        
 
         $cek = Product::where('CODE_PRODUCT', '=', $req->input('code_product'))->exists();
         if ($cek == true) {
@@ -48,6 +47,7 @@ class ProductController extends Controller
             $product->NAME_PRODUCT          = $req->input('name_product');
             $product->CODE_PRODUCT          = $req->input('code_product');
             $product->ID_PC                 = $req->input('category_product');
+            $product->ORDER_GROUPING         = $req->input('order_product');
             $product->IMAGE_PRODUCT         = Storage::disk('s3')->url($path);
             $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
             $product->save();
@@ -82,6 +82,7 @@ class ProductController extends Controller
             $product->NAME_PRODUCT          = $req->input('name_product');
             $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
             $product->ID_PC                 = $req->input('category_product');
+            $product->ORDER_GROUPING         = $req->input('order_product');
             if (!empty($req->file('image'))) {
                 $product->IMAGE_PRODUCT     = Storage::disk('s3')->url($path);
             }
@@ -116,6 +117,7 @@ class ProductController extends Controller
                 $product->NAME_PRODUCT          = $req->input('name_product');
                 $product->CODE_PRODUCT          = strtoupper($req->input('code_product'));
                 $product->ID_PC                 = $req->input('category_product');
+                $product->ORDER_GROUPING         = $req->input('order_product');
                 if (!empty($req->file('image'))) {
                     $product->IMAGE_PRODUCT     = Storage::disk('s3')->url($path);
                 }

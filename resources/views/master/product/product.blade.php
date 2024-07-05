@@ -65,7 +65,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlEdit('{{ $item->ID_PRODUCT }}', '{{ $item->NAME_PRODUCT }}', '{{ $item->CODE_PRODUCT }}', '{{ $item->ID_PC }}', '{{ $item->IMAGE_PRODUCT }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $item->ID_PRODUCT }}', '{{ $item->NAME_PRODUCT }}', '{{ $item->CODE_PRODUCT }}', '{{ $item->ID_PC }}', '{{ $item->ORDER_GROUPING }}', '{{ $item->IMAGE_PRODUCT }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                             <button onclick="showMdlDelete('{{ $item->ID_PRODUCT }}')" class="btn btn-primary btn-sm">
@@ -127,6 +127,10 @@
                         <label class="radio-inline mr-3"><input type="radio" name="status" value="0" required> Disable</label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="">Urutan Produk</label>
+                    <input type="text" name="order_product" maxlength="20" style="text-transform:uppercase" class="form-control" placeholder="Input Kode Produk" required>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="this.form.reset();">Batalkan</button>
@@ -183,6 +187,10 @@
                         <label class="radio-inline mr-3"><input type="radio" id="status_disable" name="status" value="0" required> Disable</label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="">Urutan Produk</label>
+                    <input type="text" name="order_product" id="mdlEdit_order" maxlength="20" style="text-transform:uppercase" class="form-control" placeholder="Input Kode Produk" required>
+                </div>
             </div>
             <div class="modal-footer">
                 <input type="hidden" name="id" id="mdlEdit_id">
@@ -225,11 +233,12 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, name, code, category, image, status){
+    function showMdlEdit(id, name, code, category, order, image, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
         $('#mdlEdit_code').val(code)
         $('#mdlEdit_category').val(category).change()
+        $('#mdlEdit_order').val(order)
         if (image == null || image == '') {
             $("#mdlEdit_image").attr("src", "https://comnplayscience.eu/app/images/notfound.png");
         }else{

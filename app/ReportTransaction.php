@@ -114,14 +114,14 @@ class ReportTransaction
         $colIndex = 0;
         foreach ($products as $product) {
             $ObjSheet->getColumnDimension($colData[$colIndex])->setWidth('15');
-            $ObjSheet->setCellValue($colData[$colIndex] . '6', $product->CODE_PRODUCT)->getStyle($colData[$colIndex] . "6")->applyFromArray($this->styling_title_template('FFC0504D', 'FF000000'));
+            $ObjSheet->setCellValue($colData[$colIndex] . '7', $product->CODE_PRODUCT)->getStyle($colData[$colIndex] . '7')->applyFromArray($this->styling_title_template('FFC0504D', 'FF000000'));
             $ObjSheet->getStyle($colData[$colIndex++] . '7')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
             $totDetProd[$product->CODE_PRODUCT] = 0;
             $totPriceProd[$product->CODE_PRODUCT] = 0;
         }
 
         $ObjSheet->getColumnDimension($colData[$colIndex])->setWidth('20');
-        $ObjSheet->mergeCells($colData[$colIndex] . '5:' . $colData[$colIndex] . '6')->setCellValue($colData[$colIndex] . '5', 'TOTAL DISPLAY')->getStyle($colData[$colIndex] . '5:' . $colData[$colIndex++] . '6')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+        $ObjSheet->mergeCells($colData[$colIndex] . '5:' . $colData[$colIndex] . '7')->setCellValue($colData[$colIndex] . '5', 'TOTAL DISPLAY')->getStyle($colData[$colIndex] . '5:' . $colData[$colIndex++] . '7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
         $ObjSheet->getStyle($colData[$colIndex] . '7')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
         $ObjSheet->getColumnDimension($colData[$colIndex])->setWidth('20');
         $ObjSheet->mergeCells($colData[$colIndex] . '5:' . $colData[$colIndex] . '7')->setCellValue($colData[$colIndex] . '5', 'TOTAL OMSET')->getStyle($colData[$colIndex] . '5:' . $colData[$colIndex++] . '7')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
@@ -211,6 +211,152 @@ class ReportTransaction
         }
 
 
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $fileName = 'TRANSAKSI HARIAN - ' . $regionalName . ' - APO SPG - ' . $date;
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.ms-excel'); // generate excel file
+        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
+    public function generate_transaksi_harian_withGroup($transDaily, $groupProduct, $noTransDaily, $regionalName, $date)
+    {
+        $colData = ['I', "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE"];
+        $date    = date_format(date_create($date), 'j F Y');
+
+        $spreadsheet = new Spreadsheet();
+        $lastSheetindex = 0;
+        foreach ($groupProduct as $keyMain => $dataProduct) {
+            $totDetProd     = [];
+            $totAllDisplay  = 0;
+            $totAllOmzet    = 0;
+            $totProd = count($dataProduct);
+            $ObjSheet2 = $spreadsheet->createSheet();
+            $ObjSheet2->setTitle("TRANSAKSI HARIAN " . explode('_', $keyMain)[0] . ' ' . explode('_', $keyMain)[1]);
+
+            $ObjSheet2->getColumnDimension('A')->setWidth('18');
+            $ObjSheet2->getColumnDimension('B')->setWidth('30');
+            $ObjSheet2->getColumnDimension('C')->setWidth('15');
+            $ObjSheet2->getColumnDimension('D')->setWidth('18');
+            $ObjSheet2->getColumnDimension('E')->setWidth('18');
+
+            $ObjSheet2->getColumnDimension('F')->setWidth('10');
+            $ObjSheet2->getColumnDimension('G')->setWidth('10');
+            $ObjSheet2->getColumnDimension('H')->setWidth('10');
+
+            $ObjSheet2->mergeCells('A1:' . $colData[$totProd + 2] . '2')->setCellValue('A1', "REKAP HARIAN REGIONAL PROMOTION OFFICER")->getStyle('A1:' . $colData[$totProd + 2] . '2')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
+            $ObjSheet2->mergeCells('A3:' . $colData[$totProd + 2] . '4')->setCellValue('A3', "*Uleg dalam satuan Inner dan Pars dalam satuan paket")->getStyle('A3:' . $colData[$totProd + 2] . '4')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FFFF0000'));
+
+            $ObjSheet2->mergeCells('A5:A7')->setCellValue('A5', 'TANGGAL')->getStyle('A5:A7')->applyFromArray($this->styling_title_template('FF00B0F0', 'FF000000'));
+            $ObjSheet2->mergeCells('B5:B7')->setCellValue('B5', 'NAMA')->getStyle('B5:B7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+            $ObjSheet2->mergeCells('C5:C7')->setCellValue('C5', 'JABATAN')->getStyle('C5:C7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+            $ObjSheet2->mergeCells('D5:D7')->setCellValue('D5', 'AREA')->getStyle('D5:D7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+            $ObjSheet2->mergeCells('E5:E7')->setCellValue('E5', 'AKTIVITAS')->getStyle('E5:E7')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+            $ObjSheet2->mergeCells('F5:H7')->setCellValue('F5', 'LOKASI')->getStyle('F5:H7')->applyFromArray($this->styling_title_template('FFFFFF00', 'FF000000'));
+
+            $ObjSheet2->mergeCells($colData[0] . '5:' . $colData[$totProd - 1] . '5')->setCellValue($colData[0] . '5', 'ITEM TERJUAL')->getStyle($colData[0] . '5:' . $colData[$totProd - 1] . '5')->applyFromArray($this->styling_title_template('FFFFC000', 'FFFF0000'));
+
+            $colIndex = 0;
+            foreach ($dataProduct as $product) {
+                $ObjSheet2->getColumnDimension($colData[$colIndex])->setWidth('15');
+                $ObjSheet2->setCellValue($colData[$colIndex] . '6', $product['CODE_PRODUCT'])->getStyle($colData[$colIndex] . "6")->applyFromArray($this->styling_title_template('FFC0504D', 'FF000000'));
+                $ObjSheet2->getStyle($colData[$colIndex++] . '7')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
+                $totDetProd[$product['CODE_PRODUCT']] = 0;
+            }
+
+            $ObjSheet2->getColumnDimension($colData[$colIndex])->setWidth('20');
+            $ObjSheet2->mergeCells($colData[$colIndex] . '5:' . $colData[$colIndex] . '7')->setCellValue($colData[$colIndex] . '5', 'TOTAL DISPLAY')->getStyle($colData[$colIndex] . '5:' . $colData[$colIndex++] . '7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+            $ObjSheet2->getStyle($colData[$colIndex] . '7')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
+            $ObjSheet2->getColumnDimension($colData[$colIndex])->setWidth('20');
+            $ObjSheet2->mergeCells($colData[$colIndex] . '5:' . $colData[$colIndex] . '7')->setCellValue($colData[$colIndex] . '5', 'TOTAL OMSET')->getStyle($colData[$colIndex] . '5:' . $colData[$colIndex++] . '7')->applyFromArray($this->styling_title_template('FFFF0000', 'FFFFFFFF'));
+            $ObjSheet2->getColumnDimension($colData[$colIndex])->setWidth('20');
+            $ObjSheet2->mergeCells($colData[$colIndex] . '5:' . $colData[$colIndex] . '7')->setCellValue($colData[$colIndex] . '5', 'KETERANGAN')->getStyle($colData[$colIndex] . '5:' . $colData[$colIndex++] . '7')->applyFromArray($this->styling_title_template('FFBFBFBF', 'FF000000'));
+
+            // $ObjSheet2->setAutoFilter('A7:V' . (count($this->dataTransaksiHarian) + 7));
+
+            $rowStart = 8;
+            foreach ($transDaily[$keyMain] as $trans) {
+                $ObjSheet2->setCellValue('A' . $rowStart, $date)->getStyle('A' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet2->setCellValue('B' . $rowStart, $trans['NAME_USER'])->getStyle('B' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet2->setCellValue('C' . $rowStart, $trans['NAME_ROLE'])->getStyle('C' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet2->setCellValue('D' . $rowStart, $trans['AREA_TD'])->getStyle('D' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet2->setCellValue('E' . $rowStart, $trans['NAME_TYPE'])->getStyle('E' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+
+                $detLoc = $trans['DETAIL_LOCATION'] != NULL ? ", " . $trans['DETAIL_LOCATION'] : "";
+                $ObjSheet2->setCellValue('F' . $rowStart, $trans['DISTRICT'] . $detLoc)->mergeCells('F' . $rowStart . ':H' . $rowStart)->getStyle('F' . $rowStart . ':H' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+
+                $colIndex   = 0;
+                $totDisplay = 0;
+                $totPrice = 0;
+                foreach ($dataProduct as $product) {
+                    $arrTrans = json_decode(json_encode($trans), true);
+                    $ObjSheet2->setCellValue($colData[$colIndex] . $rowStart, $arrTrans[$product['CODE_PRODUCT']])->getStyle($colData[$colIndex] . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+
+                    $totDisplay += $arrTrans[$product['CODE_PRODUCT']];
+                    $totDetProd[$product['CODE_PRODUCT']] += $arrTrans[$product['CODE_PRODUCT']];
+                    $totPrice = $totDisplay * $product['PRICE_PP'];
+                    $colIndex++;
+                }
+
+                $ObjSheet2->setCellValue($colData[$colIndex] . $rowStart, $totDisplay)->getStyle($colData[$colIndex++] . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet2->setCellValue($colData[$colIndex] . $rowStart, $totPrice)->getStyle($colData[$colIndex++] . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+
+                $ket = $trans['ISFINISHED_TD'] == "0" ? "TIDAK TUTUP FAKTUR" : "";
+                $ObjSheet2->setCellValue($colData[$colIndex] . $rowStart, $ket)->getStyle($colData[$colIndex] . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+
+                $rowStart++;
+                $totAllDisplay += $totDisplay;
+                $totAllOmzet += $totPrice;
+                // http: //127.0.0.1:8000/cronjob/generate-transaction
+            }
+
+            // SUMMARY TOTAL
+            $ObjSheet2->mergeCells('A' . $rowStart . ':H' . $rowStart)->setCellValue("A" . $rowStart, "TOTAL")->getStyle('A' . $rowStart . ':H' . $rowStart)->applyFromArray($this->styling_content_template('FF92D050', '00000000'))->getAlignment()->setWrapText(true);
+            $colIndex   = 0;
+            foreach ($totDetProd as $tot) {
+                $ObjSheet2->setCellValue($colData[$colIndex] . $rowStart, $tot)->getStyle($colData[$colIndex++] . $rowStart)->applyFromArray($this->styling_content_template('FF92D050', '00000000'))->getAlignment()->setWrapText(true);
+            }
+            $ObjSheet2->setCellValue($colData[$colIndex] . $rowStart, $totAllDisplay)->getStyle($colData[$colIndex++] . $rowStart)->applyFromArray($this->styling_content_template('FF92D050', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet2->setCellValue($colData[$colIndex] . $rowStart, $totAllOmzet)->getStyle($colData[$colIndex++] . $rowStart)->applyFromArray($this->styling_content_template('FF92D050', '00000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet2->setCellValue($colData[$colIndex] . $rowStart, "")->getStyle($colData[$colIndex++] . $rowStart)->applyFromArray($this->styling_content_template('FF92D050', '00000000'))->getAlignment()->setWrapText(true);
+
+            $lastSheetindex++;
+        }
+
+        // SHEET 2 USER TIDAK TRANSAKSI
+        $spreadsheet->createSheet();
+        $spreadsheet->setActiveSheetIndex(($lastSheetindex + 1));
+        $ObjSheet3 = $spreadsheet->getActiveSheet()->setTitle("USER TIDAK TRANSAKSI");
+
+        $ObjSheet3->getColumnDimension('A')->setWidth('18');
+        $ObjSheet3->getColumnDimension('B')->setWidth('30');
+        $ObjSheet3->getColumnDimension('C')->setWidth('15');
+        $ObjSheet3->getColumnDimension('D')->setWidth('18');
+
+        $ObjSheet3->mergeCells('A1:D2')->setCellValue('A1', "REKAP USER YANG TIDAK MELAKUKAN TRANSAKSI")->getStyle('A1:D2')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
+        $ObjSheet3->mergeCells('A3:D4')->setCellValue('A3', "")->getStyle('A3:D4')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FFFF0000'));
+
+        $ObjSheet3->mergeCells('A5:A7')->setCellValue('A5', 'TANGGAL')->getStyle('A5:A7')->applyFromArray($this->styling_title_template('FF00B0F0', 'FF000000'));
+        $ObjSheet3->mergeCells('B5:B7')->setCellValue('B5', 'NAMA')->getStyle('B5:B7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+        $ObjSheet3->mergeCells('C5:C7')->setCellValue('C5', 'JABATAN')->getStyle('C5:C7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+        $ObjSheet3->mergeCells('D5:D7')->setCellValue('D5', 'AREA')->getStyle('D5:D7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+
+        $rowStart = 8;
+        if ($noTransDaily != null) {
+            foreach ($noTransDaily as $noTrans) {
+                $ObjSheet3->setCellValue('A' . $rowStart, $date)->getStyle('A' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet3->setCellValue('B' . $rowStart, $noTrans->NAME_USER)->getStyle('B' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet3->setCellValue('C' . $rowStart, $noTrans->NAME_ROLE)->getStyle('C' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet3->setCellValue('D' . $rowStart, $noTrans->NAME_AREA)->getStyle('D' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+
+                $rowStart++;
+            }
+        }
+
+        $spreadsheet->removeSheetByIndex(0);
         $spreadsheet->setActiveSheetIndex(0);
 
         $fileName = 'TRANSAKSI HARIAN - ' . $regionalName . ' - APO SPG - ' . $date;

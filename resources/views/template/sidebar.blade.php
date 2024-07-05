@@ -76,6 +76,7 @@
                     <li><a href="{{ url('master/activity-category') }}">Kategori Aktivitas</a></li>
                     <li><a href="{{ url('master/category-product') }}">Kategori Produk</a></li>
                     <li><a href="{{ url('master/product') }}">Produk</a></li>
+                    <li><a href="{{ url('master/rute') }}">Rute User</a></li>
                     @endif
 
                     <li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Lokasi</a>

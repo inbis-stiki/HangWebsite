@@ -332,10 +332,10 @@ class CronjobController extends Controller
     {
         $nRegional  = Regional::find($_POST['idRegional'])->NAME_REGIONAL;
         $date       = date_format(date_create($_POST['date']), 'Y-m-d');
-        $products       = Product::where('deleted_at', NULL)->orderBy('ORDER_PRODUCT', 'ASC')->get();
-        $querySumProd   = [];
-        $idUsers        = null;
-        $noTransDaily   = null;
+        $products   = Product::where('deleted_at', NULL)->orderBy('ORDER_GROUPING', 'ASC')->get();
+        $querySumProd = [];
+        $idUsers    = null;
+        $noTransDaily = null;
 
         foreach ($products as $product) {
             $querySumProd[] = "
@@ -350,46 +350,74 @@ class CronjobController extends Controller
             ";
         }
 
-        $productPrice = DB::select("
-            SELECT 
-                mp.CODE_PRODUCT,
-                COALESCE((
-                    SELECT
-                        pp.PRICE_PP
-                    FROM 
-                        product_price pp
-                    LEFT JOIN md_regional mr ON
-                        mr.ID_REGIONAL = pp.ID_REGIONAL
-                    WHERE 
-                        mr.NAME_REGIONAL = '$nRegional'
-                        AND 
-                        pp.ID_PRODUCT = mp.ID_PRODUCT
-                ), 0) AS PRICE_PP
-            FROM 
-                md_product mp
-        ");
-        $groupPriceData = [];
-        // Loop through the results and group by CODE_PRODUCT
-        foreach ($productPrice as $row) {
-            $codeProduct = $row->CODE_PRODUCT;
-            $pricePP = $row->PRICE_PP;
-            $groupPriceData[$codeProduct] = $pricePP;
-        }
-
         $querySumProd = implode(',', $querySumProd);
-        $transDaily     = Cronjob::queryGetTransactionDaily($querySumProd, $date, $nRegional);
-        // dd($transDaily);die;
+        $transDaily   = Cronjob::queryGetTransactionDaily($querySumProd, $date, $nRegional);
+
         if ($transDaily != null) {
             $idUsers    = implode(',', array_map(function ($entry) {
                 return "'" . $entry->ID_USER . "'";
             }, $transDaily));
 
-            $noTransDaily   = Users::getUserByRegional($_POST['idRegional'], $idUsers);
+            $noTransDaily = Users::getUserByRegional($_POST['idRegional'], $idUsers);
+        }
+        
+        $dataProductGroup = DB::select("
+            SELECT
+                mp.* ,
+                mpc.GROUP_PRODUCT,
+                COALESCE((
+                    SELECT pp.PRICE_PP
+                    FROM product_price pp
+                    LEFT JOIN md_regional mr ON mr.ID_REGIONAL = pp.ID_REGIONAL
+                    WHERE mr.NAME_REGIONAL = '$nRegional'
+                    AND pp.ID_PRODUCT = mp.ID_PRODUCT
+                ), 0) AS PRICE_PP
+            FROM
+                md_product mp
+            LEFT JOIN md_product_category mpc ON mpc.ID_PC = mp.ID_PC
+            WHERE mp.deleted_at IS NULL
+            ORDER BY mp.ORDER_GROUPING ASC
+        ");
 
-            // dd($noTransDaily);die;
+        $groupProduct = [];
+        foreach ($dataProductGroup as $item) {
+            $groupProduct['GROUP_' . $item->GROUP_PRODUCT][] = json_decode(json_encode($item), true);
         }
 
-        app(ReportTransaction::class)->generate_transaksi_harian($products, $transDaily, $noTransDaily, $nRegional, $date, $groupPriceData);
+        $result = [];
+        foreach ($transDaily as $trans) {
+            foreach ($groupProduct as $groupKey => $products) {
+                $userEntry = [
+                    "ID_USER" => $trans->ID_USER,
+                    "NAME_USER" => $trans->NAME_USER,
+                    "NAME_TYPE" => $trans->NAME_TYPE,
+                    "AREA_TD" => $trans->AREA_TD,
+                    "DISTRICT" => $trans->DISTRICT,
+                    "DETAIL_LOCATION" => $trans->DETAIL_LOCATION,
+                    "NAME_ROLE" => $trans->NAME_ROLE
+                ];
+                
+                $hasProductInGroup = false;
+                $productQuantities = [];
+                foreach ($products as $product) {
+                    $productCode = $product['CODE_PRODUCT'];
+                    if (isset($trans->$productCode)) {
+                        $productQuantities[$productCode] = $trans->$productCode ?? "0";
+                        $hasProductInGroup = true;
+                    }
+                }
+                
+                if ($hasProductInGroup) {
+                    $userEntry = array_merge($userEntry, $productQuantities, [
+                        "ISFINISHED_TD" => $trans->ISFINISHED_TD,
+                        "TOTAL_TD" => $trans->TOTAL_TD
+                    ]);
+                    $result[$groupKey][] = $userEntry;
+                }
+            }
+        }
+
+        app(ReportTransaction::class)->generate_transaksi_harian_withGroup($result, $groupProduct, $noTransDaily, $nRegional, $date);
     }
     public function genRORPO($yearMonth)
     {

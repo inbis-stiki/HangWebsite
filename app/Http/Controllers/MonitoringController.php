@@ -6,6 +6,7 @@ use App\Product;
 use App\CategoryProduct;
 use App\Regional;
 use App\ReportPresence;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -222,13 +223,22 @@ class MonitoringController extends Controller
             'data'              => $All_Data
         ], 200);
     }
-    public function downloadPresenceMonthly()
+    public function downloadPresenceMonthly(Request $req)
     {
+        $dateRequsest = $req->input('dateReq');
+        $year = explode('-', $dateRequsest)[0];
+        $month = explode('-', $dateRequsest)[1];
+        // dd($dateRequsest);
         $regionals          = Regional::where('deleted_at', NULL)->get();
         $sundays            = [];
-        $totDate            = date('t');
-        $currDate           = date('j');
-        $yearMonth          = date('Y-m-');
+        $totDate = date('t', strtotime("$year-$month-01"));
+        $currDate = date('j', strtotime("$year-$month-" . max(date('j'), $totDate)));
+        $yearMonth = date('Y-m-', strtotime("$year-$month-01"));
+
+        $date = Carbon::createFromDate($year, $month, 1);
+        Carbon::setLocale('id');
+        $formattedMonth = $date->translatedFormat('F');
+
         $queryDatePresence  = "";
         $presences          = [];
 
@@ -270,7 +280,7 @@ class MonitoringController extends Controller
         }
 
         $report = new ReportPresence();
-        $report->generateMonthly($presences, $totDate, $sundays);
+        $report->generateMonthly($presences, $totDate, $sundays, $year, $formattedMonth);
     }
     public function downloadPresenceDaily()
     {

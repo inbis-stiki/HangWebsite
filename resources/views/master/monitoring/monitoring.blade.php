@@ -30,7 +30,30 @@
                     </div>
                 </div> -->
             </div>
-            
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Laporan Presensi</h4>
+                        </div>
+                        <div class="card-body" id="table-presence">
+                            <form action="{{ url('monitoring/download-presence-monthly') }}" method="get">
+                                <div class="d-flex align-items-end justify-content-between">
+                                    <div class="col-9" id="date-start">
+                                        <label for="start_month">Tahun:</label>
+                                        <input type="month" class="form-control date-picker" name="dateReq" required>
+                                    </div>
+                                    <div class="col-3 text-right">
+                                        <button type="submit" class="btn btn-primary w-100"><i class="fa fa-download"></i> Generate Laporan</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -41,7 +64,7 @@
                             <div class="row mb-4 mt-2">
                                 <div class="col text-right">
                                     <a href="{{ url('monitoring/download-presence-daily') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('j/M/Y') }}</a>
-                                    <a href="{{ url('monitoring/download-presence-monthly') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('F') }}</a>
+                                    <!-- <a href="{{ url('monitoring/download-presence-monthly') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('F') }}</a> -->
                                 </div>
                             </div>
                             <div class="table-responsive">
@@ -114,10 +137,55 @@
 <!--**********************************
     Content body end
 ***********************************-->
+<style>
+    .picker__select--month {
+        font-size: 20px;
+        height: 50px;
+    }
+
+
+    .picker__select--year {
+        font-size: 20px;
+        height: 50px;
+    }
+
+    .picker__table {
+        display: none;
+    }
+
+    .picker__button--clear {
+        display: none;
+    }
+
+    .picker__button--today {
+        display: none;
+    }
+
+    .picker__button--close {
+        display: none;
+    }
+
+    .picker__frame {
+        margin-bottom: 26%;
+    }
+</style>
 @include('template/footer')
 <script>
     var tgl_trans = "<?= date("Y-m-d"); ?>";
     var RegionalSearch = "0"
+
+    $('.date-picker').pickadate({
+        format: 'yyyy-mm',
+        onClose: function() {
+            var year = $('#date-start').find('.picker__select--year').val()
+            var month = (parseInt($('#date-start').find('.picker__select--month').val()) + 1)
+            var date = [year, month].join("-")
+            $('.date-picker').val(date)
+        },
+        selectMonths: true,
+        selectYears: true,
+        buttonClear: false
+    })
 
     $('.default-tab').trigger('click')
 
