@@ -366,7 +366,7 @@ class CronjobController extends Controller
         $dataProductGroup = DB::select("
             SELECT
                 mp.* ,
-                mpc.GROUP_PRODUCT,
+                mpc.ID_GROUP AS GROUP_PRODUCT,
                 COALESCE((
                     SELECT pp.PRICE_PP
                     FROM product_price pp
@@ -947,6 +947,45 @@ class CronjobController extends Controller
             }
         } catch (Exception $exp) {
             return 0;
+        }
+    }
+    public function genROCATShopRange(Request $req)
+    {
+        if (empty($_GET['dateStart']) || empty($_GET['dateEnd'])) {
+            return redirect('laporan/lpr-repeat')->with('err_msg', 'Inputan tanggal awal atau tanggal akhir tidak boleh kosong');
+        } else {
+            $dateStart = explode('-', $_GET['dateStart']);
+            $startY = ltrim($dateStart[0], '0');
+            $startM = ltrim($dateStart[1], '0');
+
+            $dateEnd = explode('-', $_GET['dateEnd']);
+            $endY = ltrim($dateEnd[0], '0');
+            $endM = ltrim($dateEnd[1], '0');
+
+            $idRegional =  $req->input('regional');
+
+            $totalMonth = 0;
+            for ($y = $startY; $y <= $endY; $y++) {
+                for ($m = 1; $m <= 12; $m++) {
+                    if ($y == $startY && $m < $startM) {
+                        continue;
+                    }
+                    if ($y == $endY && $m > $endM) {
+                        continue;
+                    }
+                    $totalMonth++;
+                }
+            }
+
+            if ($idRegional === "null" || empty($idRegional)) {
+                return redirect('laporan/lpr-repeat')->with('err_msg', 'Regional tidak boleh kosong');
+            } elseif ($totalMonth > 12) {
+                return redirect('laporan/lpr-repeat')->with('err_msg', 'Range bulanan tidak boleh lebih dari 12 bulan');
+            } else {
+                $rOs = Cronjob::queryGetShopCatByRange($startM, $startY, $endM, $endY, $idRegional);
+                dd($rOs);
+                app(ReportRepeatOrder::class)->gen_ro_shop_range($rOs, $totalMonth);
+            }
         }
     }
     public function genRTPerShop($yearReq)

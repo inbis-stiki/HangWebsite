@@ -48,6 +48,7 @@ Route::post('report/trans-daily', 'CronjobController@genTransDaily');
 Route::get('cronjob/gen-ro-rpo/{yearMonth}', 'CronjobController@genRORPO');
 Route::get('cronjob/gen-ro-shop/{yearMonth}', 'CronjobController@genROSHOP');
 Route::get('cronjob/gen-ro-shop-range', 'CronjobController@genROSHOPbyRange');
+Route::get('cronjob/gen-ro-shopcat-range', 'CronjobController@genROCATShopRange');
 Route::get('cronjob/gen-ro-shop-rcat/{yearMonth}', 'CronjobController@genRORCAT');
 Route::get('cronjob/gen-ro-rpo-s/{yearMonth}', 'CronjobController@genRORPOS');
 
