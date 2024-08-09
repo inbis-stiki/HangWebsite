@@ -1439,7 +1439,7 @@ class Cronjob extends Model
             WHERE
                 YEAR(DATE_TD) = " . $year . "
                 AND MONTH(DATE_TD) = " . $month . "
-                GROUP BY
+            GROUP BY
                 ID_SHOP,
                 ID_PC
             HAVING
@@ -1447,7 +1447,7 @@ class Cronjob extends Model
         ) t2 ON
             t2.ID_SHOP = t.ID_SHOP
         LEFT JOIN md_shop ms ON
-            ms.ID_SHOP = t.ID_SHOP
+            ms.ID_SHOP = t.ID_SHOP AND ms.ID_SHOP IS NOT NULL
         INNER JOIN md_district md ON
             md.ID_DISTRICT = ms.ID_DISTRICT
         INNER JOIN md_area ma ON
@@ -1459,8 +1459,7 @@ class Cronjob extends Model
         INNER JOIN md_product_category pc ON
             td.ID_PC = pc.ID_PC AND pc.deleted_at IS NULL
         WHERE
-            ms.ID_SHOP IS NOT NULL
-            AND YEAR(t.DATE_TRANS) = " . $year . "
+            YEAR(t.DATE_TRANS) = " . $year . "
             AND MONTH(t.DATE_TRANS) = " . $month . "
             AND ISTRANS_TRANS = 1
         GROUP BY
@@ -1468,6 +1467,7 @@ class Cronjob extends Model
             td.ID_PC
         ORDER BY
             mr.ID_REGIONAL ASC, ms.ID_SHOP ASC
+        LIMIT 100
         ");
 
         return $rOs;
@@ -1582,6 +1582,119 @@ class Cronjob extends Model
                 JOIN report_shop_head rh ON rd.ID_HEAD = rh.ID_HEAD
                 WHERE mr.NAME_REGIONAL = '" . $area->NAME_REGIONAL . "' AND ma.NAME_AREA = '" . $area->NAME_AREA . "'
                 GROUP BY s.NAME_SHOP
+            ");
+        }
+        return $rOs;
+    }
+
+    public static function queryGetShopCatByRange($startM, $startY, $endM, $endY, $idRegional)
+    {
+        $areas = DB::select("
+            SELECT mr.NAME_REGIONAL, ma.NAME_AREA
+            FROM `md_shop` ms
+            JOIN `md_district` md ON md.ID_DISTRICT = ms.ID_DISTRICT
+            JOIN `md_area` ma ON ma.ID_AREA = md.ID_AREA
+            JOIN `md_regional` mr ON mr.ID_REGIONAL = ma.ID_REGIONAL
+            WHERE mr.ID_REGIONAL = " . $idRegional . "
+            GROUP BY mr.NAME_REGIONAL, ma.NAME_AREA
+            ORDER BY mr.NAME_REGIONAL, ma.NAME_AREA ASC
+        ");
+
+        $dataValue = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataValue,
+                    "CASE WHEN rh.BULAN = " . $m . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO ELSE 0 END AS 'VALUE" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
+        $dataValue2 = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataValue2,
+                    "IFNULL(CASE WHEN rh.BULAN = " . $m . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO_PRODUCT ELSE 0 END, 0) AS 'VALUE2" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
+        $dataKey = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataKey,
+                    "('" . $m . ";" . $y . "') AS 'KEY" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
+        $dataKey2 = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataKey2,
+                    "('" . $m . ";" . $y . "') AS 'KEY" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
+        $rOs = [];
+
+        foreach ($areas as $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) $rOs[$area->NAME_REGIONAL] = [];
+            $rOs[$area->NAME_REGIONAL][$area->NAME_AREA] = DB::select("
+                SELECT 
+                    s.NAME_SHOP,
+                    s.OWNER_SHOP,
+                    s.DETLOC_SHOP,
+                    md.NAME_DISTRICT,
+                    s.TYPE_SHOP" . (!empty($dataKey2) ? ',' : '') . "
+                    " . implode(',',  $dataKey2) . "" . (!empty($dataValue2) ? ',' : '') . "
+                    " . implode(',',  $dataValue2) . ",
+                    s.TELP_SHOP" . (!empty($dataKey) ? ',' : '') . "
+                    " . implode(',',  $dataKey) . "" . (!empty($dataValue) ? ',' : '') . "
+                    " . implode(',',  $dataValue) . "
+                FROM md_shop s
+                JOIN md_district md ON md.ID_DISTRICT = s.ID_DISTRICT
+                JOIN md_area ma ON ma.ID_AREA = md.ID_AREA
+                JOIN md_regional mr ON mr.ID_REGIONAL = ma.ID_REGIONAL
+                JOIN report_recat_detail rd ON s.ID_SHOP = rd.ID_SHOP
+                JOIN report_recat_head rh ON rd.ID_HEAD = rh.ID_HEAD
+                WHERE mr.NAME_REGIONAL = '" . $area->NAME_REGIONAL . "' AND ma.NAME_AREA = '" . $area->NAME_AREA . "'
             ");
         }
         return $rOs;
