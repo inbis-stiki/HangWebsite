@@ -18,7 +18,7 @@ class RouteController extends Controller
 
     public function index()
     {
-        $data['title']      = "Route";
+        $data['title']      = "Rute";
         $data['sidebar']    = "master";
         $data['sidebar2']   = "route";
         $data['routes']      = DB::select('
@@ -77,6 +77,7 @@ class RouteController extends Controller
                 mr.ROUTE_GROUP ,
                 mr.WEEK ,
                 u.NAME_USER ,
+                ma.ID_AREA ,
                 GROUP_CONCAT(mr.ID_SHOP SEPARATOR ';') AS ID_SHOP,
                 GROUP_CONCAT(ms.NAME_SHOP SEPARATOR ';') AS NAME_SHOP ,
                 GROUP_CONCAT(ma.NAME_AREA SEPARATOR ';') AS NAME_AREA
@@ -100,6 +101,15 @@ class RouteController extends Controller
                 mr.ID_USER ,
                 mr.ROUTE_GROUP ,
                 mr.WEEK
+        ");
+
+        $data['user_data'] = DB::select("
+            SELECT 
+                u.*
+            FROM
+                user u
+            WHERE
+                u.ID_AREA = " . $data['user_route']->ID_AREA . "
         ");
 
         return view('master.route.route_edit', $data);
@@ -161,6 +171,24 @@ class RouteController extends Controller
     }
 
     public function update(Request $req)
+    {
+        try {
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+            $where = [
+                'ID_USER' => $req->input('ID_USER'),
+                'WEEK' => $req->input('WEEK'),
+                'ROUTE_GROUP' => $req->input('ROUTE_GROUP'),
+            ];
+            Route::where($where)->update(['ID_USER' => $req->input('ID_USER_NEW')]);
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+            return redirect('master/rute')->with('succ_msg', 'Route updated successfully!');
+        } catch (Exception $err) {
+            return redirect('master/rute')->with('err_msg', 'Route updated failed!, error : ' . $err);
+        }
+    }
+
+    public function updateOld(Request $req)
     {
         try {
             $data = [
