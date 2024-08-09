@@ -366,7 +366,7 @@ class CronjobController extends Controller
         $dataProductGroup = DB::select("
             SELECT
                 mp.* ,
-                mpc.GROUP_PRODUCT,
+                mpc.ID_GROUP AS GROUP_PRODUCT,
                 COALESCE((
                     SELECT pp.PRICE_PP
                     FROM product_price pp
