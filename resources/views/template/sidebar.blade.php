@@ -52,6 +52,7 @@
                     <li><a href="{{ url('laporan/lpr-ranking') }}">Ranking</a></li>
                     <li><a href="{{ url('laporan/lpr-trend') }}">Trend</a></li>
                     <li><a href="{{ url('laporan/lpr-repeat') }}">Repeat Order</a></li>
+                    <li><a href="{{ url('laporan/lpr-repeat-cat') }}">Repeat Order Kategori</a></li>
                     <li><a href="{{ url('laporan/lpr-performance') }}">Performance</a></li>
                     <li><a href="{{ url('laporan/lpr-transaction') }}">Transaksi Harian</a></li>
                 </ul>

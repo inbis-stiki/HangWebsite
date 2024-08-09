@@ -983,8 +983,7 @@ class CronjobController extends Controller
                 return redirect('laporan/lpr-repeat')->with('err_msg', 'Range bulanan tidak boleh lebih dari 12 bulan');
             } else {
                 $rOs = Cronjob::queryGetShopCatByRange($startM, $startY, $endM, $endY, $idRegional);
-                dd($rOs);
-                app(ReportRepeatOrder::class)->gen_ro_shop_range($rOs, $totalMonth);
+                app(ReportRepeatOrder::class)->gen_ro_shop_range_by_cat($rOs, $totalMonth);
             }
         }
     }

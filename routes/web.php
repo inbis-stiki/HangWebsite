@@ -213,6 +213,7 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('laporan/lpr-ranking', 'ReportRankingController@index');
     Route::get('laporan/lpr-trend', 'ReportTrendController@index');
     Route::get('laporan/lpr-repeat', 'ReportRepeatController@index');
+    Route::get('laporan/lpr-repeat-cat', 'ReportRepeatController@index_repeat_cat');
     Route::get('laporan/lpr-transaction', 'ReportTransactionController@index');
     Route::get('laporan/lpr-performance', 'ReportPerformanceController@index');
 });
