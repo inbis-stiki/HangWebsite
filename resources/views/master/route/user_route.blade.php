@@ -7,6 +7,8 @@
     <!-- row -->
     <div class="container-fluid">
 
+        <?php $hide = true; ?>
+        @if(!$hide)
         <div class="row mb-4">
             <div class="col">
                 <a href="{{ url('master/rute/create') }}" class="btn btn-sm btn-primary" style="float: right;">
@@ -15,6 +17,7 @@
                 </a>
             </div>
         </div>
+        @endif
 
         @if ($errors->any())
         <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>

@@ -1682,6 +1682,7 @@ class Cronjob extends Model
                     s.OWNER_SHOP,
                     s.DETLOC_SHOP,
                     md.NAME_DISTRICT,
+                    rd.CATEGORY_SELLING,
                     s.TYPE_SHOP" . (!empty($dataKey2) ? ',' : '') . "
                     " . implode(',',  $dataKey2) . "" . (!empty($dataValue2) ? ',' : '') . "
                     " . implode(',',  $dataValue2) . ",

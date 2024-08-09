@@ -44,7 +44,7 @@
     <!-- <script>
         $.fn.dataTable.ext.errMode = 'throw';
     </script> -->
-    <link href="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.css') }}" rel="stylesheet">
+    <!-- <link href="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.css') }}" rel="stylesheet"> -->
     
 </head>
 
