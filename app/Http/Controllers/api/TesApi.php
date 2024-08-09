@@ -4,6 +4,8 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Tes;
+use App\Pickup;
+use App\Product;
 use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
@@ -148,5 +150,38 @@ class TesApi extends Controller
                 'status_message'    => $exp->getMessage(),
             ], $exp->getCode());
         }
+    }
+
+    public function getpickup(Request $req)
+    {
+        $req->validate([
+            'id_user' => 'required|string',
+        ]);
+
+        $id_user = $req->input('id_user');
+        $pickup = Pickup::where('ID_USER', $id_user)
+                        ->orderBy('TIME_PICKUP', 'desc')
+                        ->first();
+
+        if (!$pickup) {
+            return response()->json(['message' => 'No pickup records found for the specified user.'], 404);
+        }
+
+        $products = explode(';', $pickup->ID_PRODUCT);
+        $productNames = explode(';', $pickup->NAMEPRODUCT_PICKUP);
+        $totals = explode(';', $pickup->TOTAL_PICKUP);
+        $remainingStocks = explode(';', $pickup->REMAINING_STOCK);
+
+        $data = [];
+
+        foreach ($products as $index => $productId) {
+            $data[] = [
+                'Name Product' => $productNames[$index] ?? null,
+                'Total Pickup' => $totals[$index] ?? null,
+                'Remaining' => $remainingStocks[$index] ?? null
+            ];
+        }
+
+        return response()->json($data);
     }
 }

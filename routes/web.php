@@ -48,6 +48,7 @@ Route::post('report/trans-daily', 'CronjobController@genTransDaily');
 Route::get('cronjob/gen-ro-rpo/{yearMonth}', 'CronjobController@genRORPO');
 Route::get('cronjob/gen-ro-shop/{yearMonth}', 'CronjobController@genROSHOP');
 Route::get('cronjob/gen-ro-shop-range', 'CronjobController@genROSHOPbyRange');
+Route::get('cronjob/gen-ro-shop-rcat/{yearMonth}', 'CronjobController@genRORCAT');
 Route::get('cronjob/gen-ro-rpo-s/{yearMonth}', 'CronjobController@genRORPOS');
 
 Route::get('cronjob/gen-performance', 'CronjobController@genPerformance');
@@ -139,6 +140,8 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('master/category-product/store', 'CategoryProductController@store');
     Route::get('master/category-product/update', 'CategoryProductController@update');
     Route::get('master/category-product/destroy', 'CategoryProductController@destroy');
+    Route::get('master/grouping/search', 'CategoryProductController@search');
+    Route::post('master/grouping/store', 'CategoryProductController@storegroup');
 
     //MASTER PRODUK
     Route::get('master/product', 'ProductController@index');

@@ -1410,6 +1410,69 @@ class Cronjob extends Model
         return $rOs;
     }
 
+    public static function queryGetRepeatOrderShopCat($year, $month)
+    {
+        $rOs = DB::select("
+        SELECT
+            ms.ID_SHOP,
+            ms.NAME_SHOP,
+            md.NAME_DISTRICT,
+            ms.OWNER_SHOP,
+            ms.DETLOC_SHOP,
+            ms.TYPE_SHOP,
+            ms.TELP_SHOP,
+            ma.NAME_AREA,
+            mr.NAME_REGIONAL,
+            t.REGIONAL_TRANS,
+            pc.NAME_PC,
+            t2.TOTAL_TEST,
+            SUM(td.QTY_TD) AS TOTAL_RO_PRODUCT
+        FROM
+            transaction t
+        INNER JOIN (
+            SELECT
+                ID_SHOP,
+                ID_PC,
+                COUNT(ID_PC) AS TOTAL_TEST
+            FROM
+                transaction_detail
+            WHERE
+                YEAR(DATE_TD) = " . $year . "
+                AND MONTH(DATE_TD) = " . $month . "
+                GROUP BY
+                ID_SHOP,
+                ID_PC
+            HAVING
+                COUNT(ID_PC) BETWEEN 2 AND 100
+        ) t2 ON
+            t2.ID_SHOP = t.ID_SHOP
+        LEFT JOIN md_shop ms ON
+            ms.ID_SHOP = t.ID_SHOP
+        INNER JOIN md_district md ON
+            md.ID_DISTRICT = ms.ID_DISTRICT
+        INNER JOIN md_area ma ON
+            ma.ID_AREA = md.ID_AREA
+        INNER JOIN md_regional mr ON
+            mr.ID_REGIONAL = ma.ID_REGIONAL
+        INNER JOIN transaction_detail td ON
+            t.ID_TRANS = td.ID_TRANS AND t2.ID_PC = td.ID_PC
+        INNER JOIN md_product_category pc ON
+            td.ID_PC = pc.ID_PC AND pc.deleted_at IS NULL
+        WHERE
+            ms.ID_SHOP IS NOT NULL
+            AND YEAR(t.DATE_TRANS) = " . $year . "
+            AND MONTH(t.DATE_TRANS) = " . $month . "
+            AND ISTRANS_TRANS = 1
+        GROUP BY
+            t.ID_SHOP,
+            td.ID_PC
+        ORDER BY
+            mr.ID_REGIONAL ASC, ms.ID_SHOP ASC
+        ");
+
+        return $rOs;
+    }
+
     public static function queryGetShopByRange($startM, $startY, $endM, $endY, $idRegional)
     {
         $areas = DB::select("

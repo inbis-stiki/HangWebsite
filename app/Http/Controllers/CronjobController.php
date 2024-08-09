@@ -26,6 +26,8 @@ use App\ReportRepeatOrder;
 use App\Shop;
 use App\ReportShopHead;
 use App\ReportShopDet;
+use App\ReportRcatHead;
+use App\ReportRcatDetail;
 use App\User;
 use App\Users;
 use Carbon\Carbon;
@@ -542,6 +544,78 @@ class CronjobController extends Controller
                 $ReportDet->OWNER_SHOP            = $item->OWNER_SHOP;
                 $ReportDet->TOTAL_RO              = $item->TOTAL_TEST;
                 $ReportDet->TOTAL_RO_PRODUCT      = $item->TOTAL_RO_PRODUCT;
+
+                $ReportDet->save();
+            }
+
+            $ranges = DB::table('md_range_repeat')->select('ID_RANGE', 'START', 'END')->get();
+
+            foreach ($ranges as $range) {
+                $range_id = $range->ID_RANGE;
+                $min_total_ro = $range->START;
+                $max_total_ro = $range->END;
+
+                // Execute the SQL query for the current range
+                DB::table('report_shop_detail')
+                    ->whereBetween('TOTAL_RO', [$min_total_ro, $max_total_ro])
+                    ->update(['CATEGORY_RO' => $range_id]);
+            }
+        }
+
+        // dd($rOs);die;
+    }
+    public function genRORCAT($yearMonth)
+    {
+        set_time_limit(3600);
+        $year = date_format(date_create($yearMonth), 'Y');
+        $month = date_format(date_create($yearMonth), 'n');
+        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+
+        $rOs = Cronjob::queryGetRepeatOrderShopCat($year, $month);
+
+        // dd($rOs);die;
+
+        $area = Cronjob::getreg($year, $month);
+
+        // dd($area);die;
+
+        if (!empty($rOs)) {
+            foreach ($area as $reg) {
+                $ReportHead        = new ReportRcatHead();
+                $unik = md5($reg->REGIONAL_TRANS . $year . $month);
+                // if ($reg->REGIONAL_TRANS == 'SUM 1') {
+                //     $unik = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
+                // }else{
+                //     $unik = md5($reg->REGIONAL_TRANS . $year . $month);
+                // }
+                $ReportHead->ID_HEAD          = "REP_" . $unik;
+                $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
+                $ReportHead->BULAN            = $month;
+                $ReportHead->TAHUN            = $year;
+                $ReportHead->save();
+            }
+
+            foreach ($rOs as $item) {
+                $ReportDet        = new ReportRcatDetail();
+                // $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
+                if ($item->REGIONAL_TRANS == 'SUM 1') {
+                    $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $item->REGIONAL_TRANS) . $year . $month);
+                } else {
+                    $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
+                }
+                $ReportDet->ID_HEAD               = "REP_" . $unik2;
+                $ReportDet->NAME_AREA             = $item->NAME_AREA;
+                $ReportDet->NAME_REGIONAL         = $item->NAME_REGIONAL;
+                $ReportDet->NAME_DISTRICT         = $item->NAME_DISTRICT;
+                $ReportDet->ID_SHOP               = $item->ID_SHOP;
+                $ReportDet->NAME_SHOP             = $item->NAME_SHOP;
+                $ReportDet->DETLOC_SHOP           = $item->DETLOC_SHOP;
+                $ReportDet->TELP_SHOP             = $item->TELP_SHOP;
+                $ReportDet->TYPE_SHOP             = $item->TYPE_SHOP;
+                $ReportDet->OWNER_SHOP            = $item->OWNER_SHOP;
+                $ReportDet->TOTAL_RO              = $item->TOTAL_TEST;
+                $ReportDet->TOTAL_RO_PRODUCT      = $item->TOTAL_RO_PRODUCT;
+                $ReportDet->CATEGORY_SELLING      = $item->NAME_PC;
 
                 $ReportDet->save();
             }

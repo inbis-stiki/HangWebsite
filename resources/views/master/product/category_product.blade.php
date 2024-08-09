@@ -6,14 +6,14 @@
 <div class="content-body">
     <!-- row -->
     <div class="container-fluid">
-        {{-- <div class="row mb-4">
+        <div class="row mb-4">
             <div class="col">
                 <button style="float: right;" data-toggle="modal" data-target="#mdlAdd"  class="btn btn-sm btn-primary">
                     <i class="flaticon-381-add-2"></i>
                     Tambah Kategori Produk
                 </button>
             </div>
-        </div> --}}
+        </div>
         
         @if ($errors->any())
             <div class="alert alert-danger" style="margin-top: 1rem;">{{ $errors->first() }}</div>
@@ -72,7 +72,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <button onclick="showMdlEdit('{{ $item->ID_PC }}', '{{ $item->NAME_PC }}', '{{ $item->TGTLOCATION_PC }}', '{{ $item->TGTREGIONAL_PC }}', '{{ $item->TGTUSER_PC }}', '{{ $item->PERCENTAGE_PC }}', '{{ $item->deleted_at }}', '{{ $item->GROUP_PRODUCT }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $item->ID_PC }}', '{{ $item->NAME_PC }}', '{{ $item->TGTLOCATION_PC }}', '{{ $item->TGTREGIONAL_PC }}', '{{ $item->TGTUSER_PC }}', '{{ $item->PERCENTAGE_PC }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                             {{-- <button onclick="showMdlDelete('{{ $item->ID_PC }}')" class="btn btn-primary btn-sm">
@@ -130,8 +130,13 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="">Group Produk</label>
-                    <input type="text" name="group_product" maxlength="20" style="text-transform:uppercase" class="form-control" placeholder="Input Group Produk" required>
+                    <label for="group_product">Grouping Produk</label>
+                    <select name="group_product" id="group_product" class="form-control select2" required>
+                        <option value="" disabled selected>Pilih Group</option>
+                        @foreach ($groupings as $group)
+                            <option value="{{ $group->ID_GROUP }}">{{ $group->NAME_GROUP }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -182,8 +187,13 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="">Group Produk</label>
-                    <input type="text" name="group_product" id="mdlEdit_group" maxlength="20" style="text-transform:uppercase" class="form-control" placeholder="Input Group Produk" required>
+                    <label for="group_product">Grouping Produk</label>
+                    <select name="group_product" id="group_product" class="form-control select2" required>
+                        <option value="" disabled selected>Pilih Group</option>
+                        @foreach ($groupings as $group)
+                            <option value="{{ $group->ID_GROUP }}">{{ $group->NAME_GROUP }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -227,7 +237,7 @@
 <script>
     $('#datatable').DataTable()
 
-    function showMdlEdit(id, name, targetasmen, targetreg, targetuser, percentage, status, group){
+    function showMdlEdit(id, name, targetasmen, targetreg, targetuser, percentage, status){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
         $('#mdlEdit_asm').val(targetasmen)
@@ -239,7 +249,6 @@
         } else {
             $('#status_disable').prop('checked', true)
         }
-        $('#mdlEdit_group').val(group)
         $('#mdlEdit').modal('show');
     }
 
@@ -247,4 +256,58 @@
         $('#mdlDelete_id').val(id)
         $('#mdlDelete').modal('show');
     }
+
+    $(document).ready(function() {
+        $('#group_product').select2({
+            tags: true,
+            ajax: {
+                url: '{{ url("master/grouping/search") }}',  // Create a route and controller to handle search and create functionality
+                dataType: 'json',
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                text: item.NAME_GROUP,
+                                id: item.ID_GROUP
+                            }
+                        })
+                    };
+                }
+            },
+            createTag: function(params) {
+                var term = $.trim(params.term);
+                if (term === '') {
+                    return null;
+                }
+                return {
+                    id: term,
+                    text: term,
+                    newOption: true
+                };
+            },
+            insertTag: function(data, tag) {
+                data.push(tag);
+            }
+        });
+
+        $('#group_product').on('select2:select', function (e) {
+            var data = e.params.data;
+            if(data.newOption){
+                // Send an AJAX request to save the new group
+                $.ajax({
+                    url: '{{ url("master/grouping/store") }}',
+                    type: 'POST',
+                    data: {
+                        name_group: data.text,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        // Update the select2 dropdown with the new group
+                        var newOption = new Option(response.NAME_GROUP, response.ID_GROUP, true, true);
+                        $('#group_product').append(newOption).trigger('change');
+                    }
+                });
+            }
+        });
+    });
 </script>
