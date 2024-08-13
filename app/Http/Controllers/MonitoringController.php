@@ -288,6 +288,7 @@ class MonitoringController extends Controller
         $sundays            = [];
         $totDate            = date('t');
         $currDate           = date('Y-m-d');
+        // $currDate           = '2024-08-01';
         $queryDatePresence  = "";
         $presences          = [];
 
