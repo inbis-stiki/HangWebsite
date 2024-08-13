@@ -282,15 +282,35 @@ class MonitoringController extends Controller
         $report = new ReportPresence();
         $report->generateMonthly($presences, $totDate, $sundays, $year, $formattedMonth);
     }
-    public function downloadPresenceDaily()
+    public function downloadPresenceDaily_pdf()
     {
         $regionals          = Regional::where('deleted_at', NULL)->get();
         $sundays            = [];
         $totDate            = date('t');
         $currDate           = date('Y-m-d');
         // $currDate           = '2024-08-01';
-        $queryDatePresence  = "";
-        $presences          = [];
+        $queryDatePresence  = "";        
+        $presences          = $this->QueryGetPresence($regionals, $currDate);
+
+        $report = new ReportPresence();
+        $report->generateDaily_pdf($presences, $totDate, $sundays);
+    }
+
+    public function downloadPresenceDaily_xlsx()
+    {
+        $regionals          = Regional::where('deleted_at', NULL)->get();
+        $sundays            = [];
+        $totDate            = date('t');
+        $currDate           = date('Y-m-d');
+        // $currDate           = '2024-08-01';
+        $presences          = $this->QueryGetPresence($regionals, $currDate);
+
+        $report = new ReportPresence();
+        $report->generateDaily_xlsx($presences, $totDate, $sundays);
+    }
+
+    public function QueryGetPresence($regionals, $currDate){
+        $presences = [];
 
         $index = 0;
         foreach ($regionals as $regional) {
@@ -379,7 +399,6 @@ class MonitoringController extends Controller
             $presences[$index++]['NAME_REGIONAL'] = $regional->NAME_REGIONAL;
         }
 
-        $report = new ReportPresence();
-        $report->generateDaily($presences, $totDate, $sundays);
+        return $presences;
     }
 }

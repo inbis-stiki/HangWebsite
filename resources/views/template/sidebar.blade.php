@@ -13,7 +13,7 @@
                     </div>
                 </a>
             </li>
-            @if (Session::get('role') == 1 || Session::get('role') == 2)
+            @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 3 || Session::get('role') == 4)
             <li class="active">
                 <a href="{{ url('monitoring') }}" class="ai-icon" aria-expanded="false">
                     <div class="{{ request()->is('monitoring') ? '' : 'img-grey' }} ">
