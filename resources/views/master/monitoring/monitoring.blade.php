@@ -63,7 +63,11 @@
                         <div class="card-body" id="table-presence">
                             <div class="row mb-4 mt-2">
                                 <div class="col text-right">
-                                    <a href="{{ url('monitoring/download-presence-daily') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('j/M/Y') }}</a>
+                                    @if(Session::get('role') > 3)
+                                    <a href="{{ url('monitoring/download-presence-daily-pdf') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('j/M/Y') }}</a>
+                                    @else
+                                    <a href="{{ url('monitoring/download-presence-daily-xlsx') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('j/M/Y') }}</a>
+                                    @endif
                                     <!-- <a href="{{ url('monitoring/download-presence-monthly') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('F') }}</a> -->
                                 </div>
                             </div>
