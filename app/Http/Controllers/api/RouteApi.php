@@ -15,8 +15,8 @@ class RouteApi extends Controller
 {
     public function GetDataRute(Request $request) {
         try {
-            // $id_user = $request->input('id_user');
-            $id_user = "cd333716";
+            $id_user = $request->input('id_user');
+            // $id_user = "cd333716";
     
             $data['Route'] = DB::table('md_route as r')
                 ->join('md_shop as s', 'r.ID_SHOP', '=', 's.ID_SHOP')
