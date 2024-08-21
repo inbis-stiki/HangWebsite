@@ -2,19 +2,133 @@
 
 namespace App;
 
+use Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReportPresence
 {
-    public function generateMonthly($presences, $totDate, $sundays, $year, $month)
+    public function generateMonthly_pdf($presences, $totDate, $sundays, $year, $month)
     {
         // Create new Spreadsheet object
         $spreadsheet = new Spreadsheet();
         $countSheet = 0;
         foreach ($presences as $presence) {
-            # code...
+            $spreadsheet->createSheet();
+            $spreadsheet->setActiveSheetIndex($countSheet++);
+            $ObjSheet = $spreadsheet->getActiveSheet()->setTitle($presence['NAME_REGIONAL']);
+
+            $ObjSheet->getColumnDimension('A')->setWidth(10);
+            $ObjSheet->getColumnDimension('B')->setWidth(25);
+            $ObjSheet->getColumnDimension('C')->setWidth(11);
+            $ObjSheet->getColumnDimension('D')->setWidth(25);
+            $ObjSheet->getColumnDimension('AJ')->setWidth(15);
+            $ObjSheet->getColumnDimension('AL')->setWidth(15);
+            $ObjSheet->getColumnDimension('AM')->setWidth(18);
+            $ObjSheet->getColumnDimension('AN')->setWidth(15);
+            $ObjSheet->getColumnDimension('AO')->setWidth(15);
+            $ObjSheet->getColumnDimension('AK')->setWidth(15);
+            $ObjSheet->getColumnDimension('AP')->setWidth(25);
+
+            $spreadsheet->getActiveSheet()->getRowDimension(2)->setRowHeight(20);
+            $spreadsheet->getActiveSheet()->getRowDimension(3)->setRowHeight(20);
+            $spreadsheet->getActiveSheet()->getRowDimension(4)->setRowHeight(25);
+            $spreadsheet->getActiveSheet()->getRowDimension(5)->setRowHeight(25);
+            $spreadsheet->getActiveSheet()->getRowDimension(6)->setRowHeight(25);
+
+            // TITLE MONITORING
+            $ObjSheet->mergeCells('A2:AK2')->setCellValue('A2', 'REKAP ABSENSI')->getStyle('A2:AK2')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('A3:AK3')->setCellValue('A3', 'BULAN ' . strtoupper($month) . ' ' . $year)->getStyle('A3:AK3')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+
+            // HEADER
+            $ObjSheet->mergeCells('A4:A6')->setCellValue('A4', 'NO')->getStyle('A4:A6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('B4:B6')->setCellValue('B4', 'NAMA')->getStyle('B4:B6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('C4:C6')->setCellValue('C4', 'JABATAN')->getStyle('C4:C6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('D4:D6')->setCellValue('D4', 'AREA')->getStyle('D4:D6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $abjad = "E";
+            foreach (range(1, 31) as $i) {
+                $ObjSheet->getColumnDimension($abjad)->setWidth(5);
+                $fillColor = "fcd5b5";
+                $txtColor  = "000000";
+                if (!empty($sundays[$i])) {
+                    $fillColor = "c12807";
+                    $txtColor  = "ffffff";
+                } else if ($i > (int)$totDate) {
+                    $fillColor = "535c68";
+                    $txtColor  = "000000";
+                }
+
+                $ObjSheet->mergeCells($abjad . '4:' . $abjad . '6')->setCellValue($abjad . '4', $i)->getStyle($abjad . '4:' . $abjad . '6')->applyFromArray($this->styling_title_template($fillColor, $txtColor));
+                $abjad++;
+            }
+
+            $ObjSheet->mergeCells('AJ4:AJ6')->setCellValue('AJ4', 'HARI KERJA EFEKTIF')->getStyle('AJ4:AJ6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'))->getAlignment()->setWrapText(true);
+            $ObjSheet->mergeCells('AK4:AK6')->setCellValue('AK4', 'ABSENSI')->getStyle('AK4:AK6')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+
+            // ISI KONTEN
+            $row = 7;
+            $no = 1;
+            foreach ($presence['PRESENCES'] as $data) {
+                $temp = (array)$data;
+                $ObjSheet->setCellValue('A' . $row, $no++)->getStyle('A' . $row)->applyFromArray($this->styling_default_template('11', '000000', 'ffffff'));
+                $ObjSheet->setCellValue('B' . $row, $data->NAME_USER)->getStyle('B' . $row)->applyFromArray($this->styling_default_template_left('11', '000000'));
+                $ObjSheet->setCellValue('C' . $row, $data->NAME_ROLE)->getStyle('C' . $row)->applyFromArray($this->styling_default_template('11', '000000', 'ffffff'));
+                $ObjSheet->setCellValue('D' . $row, $data->NAME_AREA)->getStyle('D' . $row)->applyFromArray($this->styling_default_template('11', '000000', 'ffffff'));
+                $abjad = "E";
+                $absent = 0;
+
+                for ($i = 1; $i <= 31; $i++) {
+                    $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(30);
+
+                    $fillColor = "ffffff";
+                    $txtColor  = "000000";
+                    if (!empty($sundays[$i])) {
+                        $fillColor = "c12807";
+                        $txtColor  = "ffffff";
+                    } else if ($i > (int)$totDate) {
+                        $fillColor = "535c68";
+                        $txtColor  = "000000";
+                    }
+
+                    if (!empty($temp["TGL" . $i])) {
+                        if ($temp["TGL" . $i] == "M") {
+                            $ObjSheet->setCellValue($abjad . '' . $row, 'V')->getStyle($abjad . '' . $row)->applyFromArray($this->styling_default_template('11', $txtColor, $fillColor));
+                            $absent++;
+                        } else {
+                            $ObjSheet->setCellValue($abjad . '' . $row, '-')->getStyle($abjad . '' . $row)->applyFromArray($this->styling_default_template('11', $txtColor, $fillColor));
+                        }
+                    } else {
+                        $ObjSheet->setCellValue($abjad . '' . $row, '')->getStyle($abjad . '' . $row)->applyFromArray($this->styling_default_template('11', $txtColor, $fillColor));
+                    }
+
+                    $abjad++;
+                }
+                $ObjSheet->setCellValue('AJ' . $row, '25')->getStyle('AJ' . $row)->applyFromArray($this->styling_default_template('11', '000000', 'ffffff'));
+                $ObjSheet->setCellValue('AK' . $row, $absent)->getStyle('AK' . $row)->applyFromArray($this->styling_default_template('11', '000000', 'ffffff'));
+
+                $row++;
+            }
+        }
+
+        $spreadsheet->setActiveSheetIndex(0);
+        $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+        $fileName = 'MONITORING PRESENSI BULAN ' . strtoupper($month) . " " . date('Y') . "_" . date('d-m-Y') . '.pdf';
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Mpdf');
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
+
+    public function generateMonthly_xslx($presences, $totDate, $sundays, $year, $month)
+    {
+        // Create new Spreadsheet object
+        $spreadsheet = new Spreadsheet();
+        $countSheet = 0;
+        foreach ($presences as $presence) {
             $spreadsheet->createSheet();
             $spreadsheet->setActiveSheetIndex($countSheet++);
             $ObjSheet = $spreadsheet->getActiveSheet()->setTitle($presence['NAME_REGIONAL']);
@@ -270,17 +384,12 @@ class ReportPresence
         }
 
         $spreadsheet->setActiveSheetIndex(0);
-
         $fileName = 'MONITORING PRESENSI TANGGAL ' . date('d-m-Y');
 
         $writer = new Xlsx($spreadsheet);
-        // header('Content-Type: application/vnd.ms-excel');
-        // header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
-
         $writer = IOFactory::createWriter($spreadsheet, 'Mpdf');
         $writer->writeAllSheets();
         header('Content-Disposition: attachment;filename="' . $fileName . '.pdf"');
-
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
@@ -505,5 +614,38 @@ class ReportPresence
         $styleContent['alignment']['vertical']                = \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER;
 
         return $styleContent;
+    }
+
+    public function CustomRange($end_column, $first_letters = '')
+    {
+        $columns = array();
+        $length = strlen($end_column);
+        $letters = range('A', 'Z');
+
+        // Iterate over 26 letters.
+        foreach ($letters as $letter) {
+            // Paste the $first_letters before the next.
+            $column = $first_letters . $letter;
+
+            // Add the column to the final array.
+            $columns[] = $column;
+
+            // If it was the end column that was added, return the columns.
+            if ($column == $end_column)
+                return $columns;
+        }
+
+        // Add the column children.
+        foreach ($columns as $column) {
+            // Don't itterate if the $end_column was already set in a previous itteration.
+            // Stop iterating if you've reached the maximum character length.
+            if (!in_array($end_column, $columns) && strlen($column) < $length) {
+                $new_columns = $this->CustomRange($end_column, $column);
+                // Merge the new columns which were created with the final columns array.
+                $columns = array_merge($columns, $new_columns);
+            }
+        }
+
+        return $columns;
     }
 }

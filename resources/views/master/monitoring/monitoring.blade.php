@@ -31,14 +31,15 @@
                 </div> -->
             </div>
 
-            <div class="row">
+            @if(Session::get('role') <= 3)
+                <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
                             <h4 class="card-title">Laporan Presensi</h4>
                         </div>
                         <div class="card-body" id="table-presence">
-                            <form action="{{ url('monitoring/download-presence-monthly') }}" method="get">
+                            <form action="{{ url('monitoring/download-presence-monthly-xlsx') }}" method="get">
                                 <div class="d-flex align-items-end justify-content-between">
                                     <div class="col-9" id="date-start">
                                         <label for="start_month">Tahun:</label>
@@ -52,91 +53,92 @@
                         </div>
                     </div>
                 </div>
-            </div>
+        </div>
+        @endif
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        {{-- <div class="card-header">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    {{-- <div class="card-header">
                         <h4 class="card-title">Daftar Produk</h4>
                     </div> --}}
-                        <div class="card-body" id="table-presence">
-                            <div class="row mb-4 mt-2">
-                                <div class="col text-right">
-                                    @if(Session::get('role') > 3)
-                                    <a href="{{ url('monitoring/download-presence-daily-pdf') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('j/M/Y') }}</a>
-                                    @else
-                                    <a href="{{ url('monitoring/download-presence-daily-xlsx') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('j/M/Y') }}</a>
-                                    @endif
-                                    <!-- <a href="{{ url('monitoring/download-presence-monthly') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('F') }}</a> -->
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table id="datatable-presence" class="display min-w850">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Regional</th>
-                                            <th>
-                                                < 07:01 </th>
-                                            <th>07:01 - 07:15</th>
-                                            <th>07:16 - 07:30</th>
-                                            <th>> 07:31</th>
-                                            <th>Belum Presensi</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th>0</th>
-                                            <th>0</th>
-                                            <th>0</th>
-                                            <th>0</th>
-                                            <th>0</th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                    <div class="card-body" id="table-presence">
+                        <div class="row mb-4 mt-2">
+                            <div class="col text-right">
+                                @if(Session::get('role') > 3)
+                                <a href="{{ url('monitoring/download-presence-daily-pdf') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('j/M/Y') }}</a>
+                                <a href="{{ url('monitoring/download-presence-monthly-pdf') . '?dateReq='.date('Y-m') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('F') }}</a>
+                                @else
+                                <a href="{{ url('monitoring/download-presence-daily-xlsx') }}" class="btn btn-primary"><i class="fa fa-download"></i> Laporan {{ date('j/M/Y') }}</a>
+                                @endif
                             </div>
                         </div>
-                        <div class="card-body" id="table-trans">
-                            <div class="table-responsive">
-                                <table id="datatable-trans" class="display min-w850">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Regional</th>
-                                            <th>
-                                                < 11 </th>
-                                            <th>11 - 15</th>
-                                            <th>16 - 20</th>
-                                            <th>21 - 25</th>
-                                            <th>> 25</th>
-                                            <th>Belum Transaksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th>0</th>
-                                            <th>0</th>
-                                            <th>0</th>
-                                            <th>0</th>
-                                            <th>0</th>
-                                            <th>0</th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table id="datatable-presence" class="display min-w850">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Regional</th>
+                                        <th>
+                                            < 07:01 </th>
+                                        <th>07:01 - 07:15</th>
+                                        <th>07:16 - 07:30</th>
+                                        <th>> 07:31</th>
+                                        <th>Belum Presensi</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th>0</th>
+                                        <th>0</th>
+                                        <th>0</th>
+                                        <th>0</th>
+                                        <th>0</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-body" id="table-trans">
+                        <div class="table-responsive">
+                            <table id="datatable-trans" class="display min-w850">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Regional</th>
+                                        <th>
+                                            < 11 </th>
+                                        <th>11 - 15</th>
+                                        <th>16 - 20</th>
+                                        <th>21 - 25</th>
+                                        <th>> 25</th>
+                                        <th>Belum Transaksi</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th>0</th>
+                                        <th>0</th>
+                                        <th>0</th>
+                                        <th>0</th>
+                                        <th>0</th>
+                                        <th>0</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Add Order -->
-
     </div>
+    <!-- Add Order -->
+
+</div>
 </div>
 <!--**********************************
     Content body end
