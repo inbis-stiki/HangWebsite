@@ -184,7 +184,8 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('monitoring', 'MonitoringController@index');
     Route::get('monitoring/download-presence-daily-pdf', 'MonitoringController@downloadPresenceDaily_pdf');
     Route::get('monitoring/download-presence-daily-xlsx', 'MonitoringController@downloadPresenceDaily_xlsx');
-    Route::get('monitoring/download-presence-monthly', 'MonitoringController@downloadPresenceMonthly');
+    Route::get('monitoring/download-presence-monthly-pdf', 'MonitoringController@downloadPresenceMonthly_pdf');
+    Route::get('monitoring/download-presence-monthly-xlsx', 'MonitoringController@downloadPresenceMonthly_xlsx');
     Route::post('monitoring/monitoring-data', 'MonitoringController@monitoring_data');
 
     // PRESENCE
