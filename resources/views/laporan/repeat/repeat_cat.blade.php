@@ -110,8 +110,8 @@
             }
 
             if (regional.length > 0 && dateStart.length > 0 && dateEnd.length > 0) {
-                // DownloadFile('{{ url("cronjob/gen-ro-shop-range") }}?dateStart=' + dateStart + '&dateEnd=' + dateEnd + '&regional=' + regional)
-                location.href=`http://127.0.0.1:8000/cronjob/gen-ro-shopcat-range?dateEnd=${dateEnd}&dateStart=${dateStart}&regional=${regional}`
+                DownloadFile('{{ url("cronjob/gen-ro-shop-range") }}?dateStart=' + dateStart + '&dateEnd=' + dateEnd + '&regional=' + regional)
+                // location.href=`http://127.0.0.1:8000/cronjob/gen-ro-shopcat-range?dateEnd=${dateEnd}&dateStart=${dateStart}&regional=${regional}`
             } else {
                 showToast(msg)
             }

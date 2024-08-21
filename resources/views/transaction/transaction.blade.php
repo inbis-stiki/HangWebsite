@@ -191,7 +191,7 @@
                 "emptyTable": "  "
             },
             "ajax": $.fn.dataTable.pipeline({
-                pages: 5,
+                pages: 2,
                 url: "{{ url('master/transaction/Alltransaction') }}",
                 crossDomain: true,
                 data: {
