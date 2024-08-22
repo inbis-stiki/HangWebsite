@@ -41,28 +41,28 @@ class DetailTransController extends Controller
                     SELECT COUNT(transaction.ID_TRANS) 
                     FROM transaction 
                     LEFT JOIN md_shop ms ON ms.ID_SHOP = transaction.ID_SHOP 
-                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Pedagang Sayur" AND transaction.DATE_TRANS LIKE "'.$date.'%"
+                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Pedagang Sayur" AND transaction.DATE_TRANS = "'.$date.'"
                 ) AS TOT_PS'),
                 DB::raw('
                 (
                     SELECT COUNT(transaction.ID_TRANS) 
                     FROM transaction 
                     LEFT JOIN md_shop ms ON ms.ID_SHOP = transaction.ID_SHOP 
-                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Retail" AND transaction.DATE_TRANS LIKE "'.$date.'%"
+                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Retail" AND transaction.DATE_TRANS = "'.$date.'"
                 ) AS TOT_RETAIL'),
                 DB::raw('
                 (
                     SELECT COUNT(transaction.ID_TRANS) 
                     FROM transaction 
                     LEFT JOIN md_shop ms ON ms.ID_SHOP = transaction.ID_SHOP 
-                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Loss" AND transaction.DATE_TRANS LIKE "'.$date.'%"
+                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Loss" AND transaction.DATE_TRANS = "'.$date.'"
                 ) AS TOT_LOSS'),
                 DB::raw('
                 (
                     SELECT COUNT(transaction.ID_TRANS) 
                     FROM transaction 
                     LEFT JOIN md_shop ms ON ms.ID_SHOP = transaction.ID_SHOP 
-                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Permanen" AND transaction.DATE_TRANS LIKE "'.$date.'%"
+                    WHERE transaction.ID_TYPE = "'.$type.'" AND transaction.ID_USER = "'.$id_user.'" AND ms.TYPE_SHOP = "Permanen" AND transaction.DATE_TRANS = "'.$date.'"
                 ) AS TOT_PERMA'),
                 'transaction.ID_TRANS',
                 'transaction.DATE_TRANS',
@@ -78,7 +78,7 @@ class DetailTransController extends Controller
             )
             ->leftJoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
             ->leftJoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
-            ->where('transaction.DATE_TRANS', 'like', $date . '%')
+            ->whereDate('transaction.DATE_TRANS', '=', $date)
             ->where('transaction.ID_USER', '=', $id_user)
             ->where('transaction.ID_TYPE', '=', $type)
             ->orderBy('transaction.DATE_TRANS', 'DESC')
@@ -197,7 +197,7 @@ class DetailTransController extends Controller
                 (transaction.QTY_TRANS) as TOTAL')
             ->leftjoin('transaction', 'transaction.ID_SHOP', '=', 'md_shop.ID_SHOP')
             ->whereIn('md_shop.ID_DISTRICT', $data_area)
-            ->where('transaction.DATE_TRANS', 'like', $date . '%')
+            ->whereDate('transaction.DATE_TRANS', '=', $date)
             ->where('transaction.ISTRANS_TRANS', 0)
             ->whereNotIn('md_shop.ID_SHOP', $shop_id_trans)
             ->groupBy('md_shop.ID_SHOP')
@@ -206,13 +206,13 @@ class DetailTransController extends Controller
         $data['shop_no_trans2'] = DB::table('transaction')
             ->select('*')
             ->where('transaction.ID_USER', '=', $id_user)
-            ->where('transaction.DATE_TRANS', 'like', $date . '%')
+            ->whereDate('transaction.DATE_TRANS', '=', $date)
             ->where('transaction.ISTRANS_TRANS', 0)->get();
 
         $data['shop_trans2'] = DB::table('transaction')
             ->select('*')
             ->where('transaction.ID_USER', '=', $id_user)
-            ->where('transaction.DATE_TRANS', 'like', $date . '%')
+            ->whereDate('transaction.DATE_TRANS', '=', $date)
             ->where('transaction.ISTRANS_TRANS', 1)->get();
 
         return view('transaction.detail_spread', $data);
@@ -235,7 +235,7 @@ class DetailTransController extends Controller
         $transaction = DB::table('transaction')
             ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER', 'user.ID_AREA')
             ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
-            ->where('transaction.DATE_TRANS', 'like', $date . '%')
+            ->whereDate('transaction.DATE_TRANS', '=', $date)
             ->where('transaction.ID_USER', '=', $id_user)
             ->where('transaction.ID_TYPE', '=', $type)
             ->orderBy('transaction.DATE_TRANS', 'DESC')
@@ -325,7 +325,7 @@ class DetailTransController extends Controller
         $transaction = DB::table('transaction')
             ->select('transaction.*', 'user.ID_USER', 'user.NAME_USER')
             ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
-            ->where('transaction.DATE_TRANS', 'like', $date . '%')
+            ->whereDate('transaction.DATE_TRANS', '=', $date)
             ->where('transaction.ID_USER', '=', $id_user)
             ->where('transaction.ID_TYPE', '=', $type)
             ->orderBy('transaction.DATE_TRANS', 'DESC')
