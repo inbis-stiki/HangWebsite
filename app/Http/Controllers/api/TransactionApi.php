@@ -580,7 +580,7 @@ class TransactionApi extends Controller
             if ($tgl != NULL) {
                 $dataTrans = Transaction::select('transaction.*', 'user.*', 'md_shop.*')
                     ->where('transaction.ID_USER', '=', $req->input('id_user'))
-                    ->where('transaction.DATE_TRANS', 'LIKE', '%' . $FrmtTgl . '%')
+                    ->whereDate('transaction.DATE_TRANS', '=', $FrmtTgl)
                     ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
                     ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
                     ->orderBy('DATE_TRANS', 'DESC')

@@ -35,7 +35,7 @@ class FakturController extends Controller
         if ($data_user->ID_ROLE == 3) {
             $data_fakturs        = DB::table('transaction_daily')
                 ->where('transaction_daily.LOCATION_TD', $data_user->NAME_LOCATION)
-                ->where('transaction_daily.DATEFACTUR_TD', 'like', $tgl_trans . '%')
+                ->whereDate('transaction_daily.DATEFACTUR_TD', '=', $tgl_trans)
                 ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
                 ->orderBy('transaction_daily.DATEFACTUR_TD', 'DESC')
@@ -45,7 +45,7 @@ class FakturController extends Controller
         if ($data_user->ID_ROLE == 4) {
             $data_fakturs        = DB::table('transaction_daily')
                 ->where('transaction_daily.REGIONAL_TD', $data_user->NAME_REGIONAL)
-                ->where('transaction_daily.DATEFACTUR_TD', 'like', $tgl_trans . '%')
+                ->whereDate('transaction_daily.DATEFACTUR_TD', '=', $tgl_trans)
                 ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
                 ->orderBy('transaction_daily.DATEFACTUR_TD', 'DESC')
@@ -53,7 +53,7 @@ class FakturController extends Controller
                 ->get();
         } else {
             $data_fakturs        = DB::table('transaction_daily')
-                ->where('transaction_daily.DATEFACTUR_TD', 'like', $tgl_trans . '%')
+                ->whereDate('transaction_daily.DATEFACTUR_TD', '=', $tgl_trans)
                 ->join('user', 'user.ID_USER', '=', 'transaction_daily.ID_USER')
                 ->join('md_type', 'md_type.ID_TYPE', '=', 'transaction_daily.ID_TYPE')
                 ->orderBy('transaction_daily.DATEFACTUR_TD', 'DESC')
@@ -102,7 +102,7 @@ class FakturController extends Controller
             ->latest('ID_TD')->first();
 
         $transaction = Transaction::where('ID_USER', '=', $ID_USER)
-            ->where('DATE_TRANS', 'like', $DATE . '%')
+            ->whereDate('DATE_TRANS', '=', $DATE)
             ->get();
 
         $dataT = array();
