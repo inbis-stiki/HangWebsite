@@ -16,11 +16,17 @@ class RouteApi extends Controller
     public function GetDataRute(Request $request) {
         try {
             $id_user = $request->input('id_user');
+            $latitude = $request->get('lat_user'); // "-7.965769846888459"
+            $longitude = $request->get('lng_user'); // "112.60750389398623"
             // $id_user = "cd333716";
     
-            $data['Route'] = DB::table('md_route as r')
+            $route = DB::table('md_route as r')
                 ->join('md_shop as s', 'r.ID_SHOP', '=', 's.ID_SHOP')
                 ->select('r.*', 's.*')
+                ->selectRaw("ST_DISTANCE_SPHERE(
+                    point('$longitude', '$latitude'),
+                    point(s.LONG_SHOP, s.LAT_SHOP)
+                )  AS DISTANCE_SHOP")
                 ->where('r.ID_USER', $id_user)
                 ->where('r.WEEK', function($query) use ($id_user) {
                     $query->select(DB::raw('MIN(WEEK)'))
@@ -40,12 +46,24 @@ class RouteApi extends Controller
                 })
                 ->orderBy('r.WEEK', 'ASC')
                 ->orderBy('r.ROUTE_GROUP', 'ASC')
-                ->get();
+                ->orderBy('DISTANCE_SHOP', 'asc')
+                ->paginate(10);
+
+            $dataPagination = array();
+            array_push(
+                $dataPagination,
+                array(
+                    "TOTAL_DATA" => $route->total(),
+                    "PAGE" => $route->currentPage(),
+                    "TOTAL_PAGE" => $route->lastPage()
+                )
+            );
     
             return response([
                 'status_code'       => 200,
                 'status_message'    => 'Data berhasil diambil!',
-                'data'              => $data
+                'data'              => $route->items(),
+                'status_pagination' => $dataPagination
             ], 200);
         } catch (Exception $exp) {
             return response([
