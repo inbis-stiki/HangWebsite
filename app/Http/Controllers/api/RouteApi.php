@@ -44,6 +44,7 @@ class RouteApi extends Controller
                           })
                           ->where('STATUS', 0);
                 })
+                ->where('r.STATUS', '=', 0)
                 ->orderBy('r.WEEK', 'ASC')
                 ->orderBy('r.ROUTE_GROUP', 'ASC')
                 ->orderBy('DISTANCE_SHOP', 'asc')
