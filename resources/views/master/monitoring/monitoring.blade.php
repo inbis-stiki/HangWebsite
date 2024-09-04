@@ -9,7 +9,7 @@
         <div class="col-xl-12">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="event-tabs mb-3 ml-3">
+                    <div class="event-tabs mb-3">
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link default-tab" data-toggle="tab" href="Javascript:void(0)" role="tab" aria-selected="false" onclick="show_tb_presence()">
@@ -31,14 +31,14 @@
                 </div> -->
             </div>
 
-            @if(Session::get('role') <= 3)
-                <div class="row">
+        @if(Session::get('role') <= 3)
+            <div class="row" id="filter-presence">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
                             <h4 class="card-title">Laporan Presensi</h4>
                         </div>
-                        <div class="card-body" id="table-presence">
+                        <div class="card-body">
                             <form action="{{ url('monitoring/download-presence-monthly-xlsx') }}" method="get">
                                 <div class="d-flex align-items-end justify-content-between">
                                     <div class="col-9" id="date-start">
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                 </div>
-        </div>
+            </div>
         @endif
 
         <div class="row">
@@ -196,14 +196,21 @@
     $('.default-tab').trigger('click')
 
     function show_tb_trans() {
-        $('#table-trans').show()
+        $('#filter-presence').hide()
         $('#table-presence').hide()
+        $('#table-trans').hide()
+
+        $('#table-trans').show()
         fetch_data(1)
     }
 
     function show_tb_presence() {
-        $('#table-presence').show()
+        $('#filter-presence').hide()
+        $('#table-presence').hide()
         $('#table-trans').hide()
+
+        $('#filter-presence').show()
+        $('#table-presence').show()
         fetch_data(2)
     }
 
