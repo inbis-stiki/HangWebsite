@@ -39,7 +39,7 @@ class ReportPresence
             $spreadsheet->getActiveSheet()->getRowDimension(6)->setRowHeight(25);
 
             // TITLE MONITORING
-            $ObjSheet->mergeCells('A2:AK2')->setCellValue('A2', 'REKAP ABSENSI')->getStyle('A2:AK2')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
+            $ObjSheet->mergeCells('A2:AK2')->setCellValue('A2', 'REKAP ABSENSI '. $presence['NAME_REGIONAL'])->getStyle('A2:AK2')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
             $ObjSheet->mergeCells('A3:AK3')->setCellValue('A3', 'BULAN ' . strtoupper($month) . ' ' . $year)->getStyle('A3:AK3')->applyFromArray($this->styling_title_template('fcd5b5', '000000'));
 
             // HEADER
@@ -110,15 +110,16 @@ class ReportPresence
 
                 $row++;
             }
-        }
 
+        }
         $spreadsheet->setActiveSheetIndex(0);
         $spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
         $fileName = 'MONITORING PRESENSI BULAN ' . strtoupper($month) . " " . date('Y') . "_" . date('d-m-Y') . '.pdf';
 
+        $writer = new Xlsx($spreadsheet);
         $writer = IOFactory::createWriter($spreadsheet, 'Mpdf');
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        $writer->writeAllSheets();
+        header('Content-Disposition: attachment;filename="' . $fileName . '.pdf"');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
     }
