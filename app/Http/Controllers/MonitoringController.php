@@ -280,6 +280,8 @@ class MonitoringController extends Controller
             $presences[$index++]['PRESENCES']   = $datas;
         }
 
+        // dd($presences);
+
         $report = new ReportPresence();
         ob_start();
         $report->generateMonthly_pdf($presences, $totDate, $sundays, $year, $formattedMonth);
