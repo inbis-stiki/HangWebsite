@@ -120,7 +120,7 @@ class PresenceApi extends Controller
                     $presence->ID_DISTRICT          = $district->ID_DISTRICT;
                     $presence->LONG_PRESENCE        = $req->input('longitude');
                     $presence->LAT_PRESENCE         = $req->input('latitude');
-                    $presence->PHOTO_PRESENCE       = $this->UploadFile($req->file('image'), 'images');
+                    $presence->PHOTO_PRESENCE       = $this->UploadFileR2($req->file('image'), 'images');
                     $presence->DATE_PRESENCE        = $currDate;
                     $presence->save();
 
