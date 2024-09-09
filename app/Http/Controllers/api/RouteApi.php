@@ -20,9 +20,9 @@ class RouteApi extends Controller
             $longitude = $request->get('lng_user'); // "112.60750389398623"
             // $id_user = "cd333716";
     
-            $route = DB::table('md_route as r')
+            $route = DB::table('md_split_route as r')
                 ->join('md_shop as s', 'r.ID_SHOP', '=', 's.ID_SHOP')
-                ->select('r.*', 's.*')
+                ->select('r.ID_SPLIT AS ID_RUTE', 'r.ID_USER', 'r.WEEK', 'r.ID_SHOP', 'r.ROUTE_GROUP', 'r.STATUS', 's.*')
                 ->selectRaw("ST_DISTANCE_SPHERE(
                     point('$longitude', '$latitude'),
                     point(s.LONG_SHOP, s.LAT_SHOP)
@@ -30,16 +30,16 @@ class RouteApi extends Controller
                 ->where('r.ID_USER', $id_user)
                 ->where('r.WEEK', function($query) use ($id_user) {
                     $query->select(DB::raw('MIN(WEEK)'))
-                          ->from('md_route')
+                          ->from('md_split_route')
                           ->where('ID_USER', $id_user);
                 })
                 ->where('r.ROUTE_GROUP', function($query) use ($id_user) {
                     $query->select(DB::raw('MIN(ROUTE_GROUP)'))
-                          ->from('md_route')
+                          ->from('md_split_route')
                           ->where('ID_USER', $id_user)
                           ->where('WEEK', function($subquery) use ($id_user) {
                               $subquery->select(DB::raw('MIN(WEEK)'))
-                                       ->from('md_route')
+                                       ->from('md_split_route')
                                        ->where('ID_USER', $id_user);
                           })
                           ->where('STATUS', 0);

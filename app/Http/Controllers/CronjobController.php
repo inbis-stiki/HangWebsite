@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ActivityCategory;
+use App\Area;
 use App\CategoryProduct;
 use App\Cronjob;
 use App\Http\Controllers\Controller;
@@ -24,10 +25,12 @@ use App\ReportAktivitasTRX;
 use App\ReportPerformance;
 use App\ReportRepeatOrder;
 use App\Shop;
+use App\Route;
 use App\ReportShopHead;
 use App\ReportShopDet;
 use App\ReportRcatHead;
 use App\ReportRcatDetail;
+use App\SplitRoute;
 use App\User;
 use App\Users;
 use Carbon\Carbon;
@@ -1440,6 +1443,81 @@ class CronjobController extends Controller
             GROUP BY t.ID_USER 
         ");
     }
+
+    function splitRoutesForArea() {
+        
+        set_time_limit(3600);
+
+        $areas = DB::table('md_route')
+            ->join('md_shop', 'md_route.ID_SHOP', '=', 'md_shop.ID_SHOP')
+            ->join('md_district', 'md_shop.ID_DISTRICT', '=', 'md_district.ID_DISTRICT')
+            ->join('md_area', 'md_district.ID_AREA', '=', 'md_area.ID_AREA')
+            ->select('md_area.ID_AREA', 'md_area.NAME_AREA')
+            ->whereNull('md_area.deleted_at')
+            ->whereNull('md_district.deleted_at')
+            ->whereNull('md_shop.deleted_at')
+            ->distinct()
+            ->get();
+
+        foreach ($areas as $area) {
+
+            $users = DB::table('user')
+                ->where('ID_AREA', $area->ID_AREA)
+                ->whereNull('deleted_at')
+                ->whereIn('ID_ROLE', [5, 6])
+                ->pluck('ID_USER');
+
+            $routes = DB::table('md_route')
+                ->join('md_shop', 'md_route.ID_SHOP', '=', 'md_shop.ID_SHOP')
+                ->join('md_district', 'md_shop.ID_DISTRICT', '=', 'md_district.ID_DISTRICT')
+                ->where('md_district.ID_AREA', $area->ID_AREA)
+                ->whereNull('md_shop.deleted_at')
+                ->whereNull('md_district.deleted_at')
+                ->select('md_route.ID_RUTE', 'md_route.ID_SHOP', 'md_route.ROUTE_GROUP')
+                ->get();
+
+            $userCount = count($users);
+            $week = 1;
+            $group = 1;
+            $userIndex = 0;
+            $routeCount = 0;
+            $batch = [];
+
+            foreach ($routes as $route) {
+                $batch[] = [
+                    'ID_USER' => $users[$userIndex],
+                    'WEEK' => $week,
+                    'ID_SHOP' => $route->ID_SHOP,
+                    'ROUTE_GROUP' => $group,
+                    'STATUS' => 0,
+                ];
+
+                $routeCount++;
+
+                if ($routeCount % 30 == 0) {
+
+                    DB::table('md_split_route')->insert($batch);
+
+                    $batch = [];
+                    $userIndex = ($userIndex + 1) % $userCount;
+
+                    if ($userIndex == 0) {
+                        $group++;
+                        if ($group > 6) {
+                            $group = 1;
+                            $week++;
+                        }
+                    }
+                }
+            }
+
+            // Insert any remaining routes that didn't fill a complete batch
+            if (!empty($batch)) {
+                DB::table('md_split_route')->insert($batch);
+            }
+        }
+    }
+
     public function tesQuery()
     {
         $data       = array();
