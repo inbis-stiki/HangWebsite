@@ -72,6 +72,8 @@ Route::get('cronjob/gen-rt-per-shop/{year}', 'CronjobController@genRTPerShop');
 Route::get('cronjob/gen-ro-trans-shop', 'CronjobController@genROTransToko');
 Route::get('cronjob/gen-ro-rutin-shop', 'CronjobController@genRORutinToko');
 
+Route::get('cronjob/split', 'CronjobController@splitRoutesForArea');
+
 Route::get('shop/bydistrict', 'ShopController@ShopListByDistrict');
 
 Route::group(['middleware' => ['checkLogin']], function () {
