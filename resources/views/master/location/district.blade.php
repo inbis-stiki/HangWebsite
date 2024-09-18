@@ -56,7 +56,7 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <button onclick="showMdlEdit('{{ $district->ID_DISTRICT }}', '{{ $district->NAME_DISTRICT }}', '{{ $district->ID_AREA }}', '{{ $district->deleted_at }}')" class="btn btn-primary btn-sm">
+                                                <button onclick="showMdlEdit('{{ $district->ID_DISTRICT }}', '{{ $district->NAME_DISTRICT }}', '{{ $district->ID_AREA }}', '{{ $district->deleted_at }}', '{{ $district->ISGROUPING }}')" class="btn btn-primary btn-sm">
                                                     <i class="flaticon-381-edit-1"></i>
                                                 </button>
                                                 <button onclick="showMdlDelete('{{ $district->ID_DISTRICT }}')" class="btn btn-primary btn-sm">
@@ -106,6 +106,13 @@
                         <label class="radio-inline mr-3"><input type="radio" name="status" value="0" required> Disable</label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="">Status Cluster Rute</label>
+                    <div class="form-group mb-0">
+                        <label class="radio-inline mr-3"><input type="radio" name="status_group" value="1" required> Enable</label>
+                        <label class="radio-inline mr-3"><input type="radio" name="status_group" value="0" required> Disable</label>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Batalkan</button>
@@ -145,6 +152,13 @@
                     <div class="form-group mb-0">
                         <label class="radio-inline mr-3"><input type="radio" id="status_enable" name="status" value="1" required> Enable</label>
                         <label class="radio-inline mr-3"><input type="radio" id="status_disable" name="status" value="0" required> Disable</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="">Status Cluster Rute</label>
+                    <div class="form-group mb-0">
+                        <label class="radio-inline mr-3"><input type="radio" id="statusgroup_enable" name="status_group" value="1" required> Enable</label>
+                        <label class="radio-inline mr-3"><input type="radio" id="statusgroup_disable" name="status_group" value="0" required> Disable</label>
                     </div>
                 </div>
             </div>
@@ -190,7 +204,7 @@
         $('#formAdd').trigger('reset')
         $('#mdlAdd_select').val("").change()
     })
-    function showMdlEdit(id, name, location, status){
+    function showMdlEdit(id, name, location, status, grouping){
         $('#mdlEdit_id').val(id)
         $('#mdlEdit_name').val(name)
         $('#mdlEdit_area').val(location).change()
@@ -198,6 +212,11 @@
             $('#status_enable').prop('checked', true)
         } else {
             $('#status_disable').prop('checked', true)
+        }
+        if (grouping == '1') {
+            $('#statusgroup_enable').prop('checked', true)
+        } else {
+            $('#statusgroup_disable').prop('checked', true)
         }
         $('#mdlEdit').modal('show');
     }

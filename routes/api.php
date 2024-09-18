@@ -49,6 +49,7 @@ Route::middleware(['checkAuthApi'])->group(function(){
 
     //API SHOP
     Route::post("shop", 'api\ShopApi@store');
+    Route::get("cek/shop", 'api\ShopApi@cekAllowedTrans');
     Route::get("shop", 'api\ShopApi@list_store');
     Route::get("shop/rec", 'api\ShopApi@list_store_rekomendasi');
     Route::get("shop/route", 'api\ShopApi@route');

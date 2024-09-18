@@ -47,7 +47,7 @@ class RouteApi extends Controller
                 ->where('r.STATUS', '=', 0)
                 ->orderBy('r.WEEK', 'ASC')
                 ->orderBy('r.ROUTE_GROUP', 'ASC')
-                ->orderBy('DISTANCE_SHOP', 'asc')
+                ->orderBy('DISTANCE_SHOP', 'ASC')
                 ->paginate(10);
 
             $dataPagination = array();

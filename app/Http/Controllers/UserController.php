@@ -92,7 +92,17 @@ class UserController extends Controller
         //     ->whereNull('md_area.deleted_at')->get();
         // }
         else {
-            $data['users']      = DB::table('user')->join('md_role', 'user.ID_ROLE', '=', 'md_role.ID_ROLE')->select('user.*', "md_role.ID_ROLE", "md_role.NAME_ROLE")->get();
+            $data['users']      = DB::table('user')
+                                    ->join('md_role', 'user.ID_ROLE', '=', 'md_role.ID_ROLE')
+                                    ->leftJoin(DB::raw('
+                                        (SELECT ID_USER, MAX(DATE_TRANS) as latest_date FROM transaction GROUP BY ID_USER) t_latest_date
+                                    '), 'user.ID_USER', '=', 't_latest_date.ID_USER')
+                                    ->leftJoin('transaction as t_latest', function($join) {
+                                        $join->on('user.ID_USER', '=', 't_latest.ID_USER')
+                                            ->on('t_latest.DATE_TRANS', '=', 't_latest_date.latest_date');
+                                    })
+                                    ->select('user.*', "md_role.ID_ROLE", "md_role.NAME_ROLE", "t_latest.DATE_TRANS")
+                                    ->get();
             $data['roles']      = Role::whereNull('deleted_at')->get();
             $data['areas']      = Area::whereNull('deleted_at')->get();
             $data['location']      = Location::whereNull('deleted_at')->get();
@@ -113,7 +123,7 @@ class UserController extends Controller
             'email'         => 'required | unique:user,EMAIL_USER',
             'phone'         => 'required | unique:user,TELP_USER',
             'ktp'           => 'required | unique:user,KTP_USER',
-            'name'          => 'required ',
+            'name'          => 'required',
             'password'      => 'required',
             'area'          => 'required',
             'role'          => 'required',
@@ -181,6 +191,7 @@ class UserController extends Controller
         $user->TELP_USER        = $req->input('phone');
         $user->PASS_USER        = hash('sha256', md5($req->input('password')));
         $user->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+        $user->ALLOWED_TRANS    = $req->input('allowed_trans') == '0' ? '0' : '1';
 
         if ($user->ID_ROLE > 4) {
             $this->generateUserTarget($user->ID_USER, $user->ID_REGIONAL);
