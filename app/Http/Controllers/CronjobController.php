@@ -369,7 +369,7 @@ class CronjobController extends Controller
         $dataProductGroup = DB::select("
             SELECT
                 mp.* ,
-                mpc.ID_GROUP AS GROUP_PRODUCT,
+                mg.NAME_GROUP AS GROUP_PRODUCT,
                 COALESCE((
                     SELECT pp.PRICE_PP
                     FROM product_price pp
@@ -380,6 +380,7 @@ class CronjobController extends Controller
             FROM
                 md_product mp
             LEFT JOIN md_product_category mpc ON mpc.ID_PC = mp.ID_PC
+            LEFT JOIN md_grouping mg ON mg.ID_GROUP = mpc.ID_GROUP
             WHERE mp.deleted_at IS NULL
             ORDER BY mp.ORDER_GROUPING ASC
         ");
@@ -569,7 +570,7 @@ class CronjobController extends Controller
     }
     public function genRORCAT($yearMonth)
     {
-        set_time_limit(3600);
+        set_time_limit(7200);
         $year = date_format(date_create($yearMonth), 'Y');
         $month = date_format(date_create($yearMonth), 'n');
         $updated_at     = date('Y-m-d', strtotime('-1 days'));

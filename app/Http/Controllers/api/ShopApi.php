@@ -15,6 +15,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\District;
+use App\User;
 
 class ShopApi extends Controller
 {
@@ -310,6 +311,34 @@ class ShopApi extends Controller
         }
     }
 
+    public function cekAllowedTrans(Request $req)
+    {
+        try {
+            $cekAllowed = User::where([
+                ['ID_USER', '=', $req->input('id_user')]
+            ])->first();
+            
+            if ($cekAllowed->ALLOWED_TRANS == '1') {
+                $succ   = 0;
+                $msg    = 'Maaf anda tidak dapat menambahkan toko!. Silahkan hubungi RPO masing-masing.';
+            }else {
+                $succ   = 1;
+                $msg    = 'SIlahkan menambahkan toko.';
+            }
+
+            return response([
+                'status_code'       => 200,
+                'status_message'    => $msg,
+                'status_success'    => $succ,
+                'data'              => []
+            ], 200);
+        } catch (Exception $exp) {
+            return response([
+                'status_code'       => 500,
+                'status_message'    => $exp->getMessage(),
+            ], 500);
+        }
+    }
 
     public function route(Request $req)
     {
