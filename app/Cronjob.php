@@ -1385,7 +1385,7 @@ class Cronjob extends Model
             GROUP BY
                 ID_SHOP
             HAVING
-                COUNT(*) BETWEEN 2 AND 100
+                COUNT(*) BETWEEN 1 AND 100
         ) t2 ON
             t2.ID_SHOP = t.ID_SHOP
         LEFT JOIN md_shop ms ON
@@ -1406,6 +1406,134 @@ class Cronjob extends Model
         ORDER BY
             mr.ID_REGIONAL ASC
         ");
+
+        return $rOs;
+    }
+
+    public static function getregOmset($year, $month)
+    {
+        $areas = DB::select("
+            SELECT mr.NAME_REGIONAL AS REGIONAL_TRANS
+            FROM `transaction` t
+            JOIN md_shop ms ON t.ID_SHOP = ms.ID_SHOP
+            JOIN md_district md ON ms.ID_DISTRICT = md.ID_DISTRICT
+            JOIN md_area ma ON md.ID_AREA = ma.ID_AREA
+            JOIN md_regional mr ON ma.ID_REGIONAL = mr.ID_REGIONAL 
+            WHERE t.ID_SHOP IS NOT NULL AND YEAR(t.DATE_TRANS) = " . $year . " AND MONTH(t.DATE_TRANS) = " . $month . "
+            GROUP BY mr.ID_REGIONAL 
+            ORDER BY mr.NAME_REGIONAL ASC
+        ");
+
+        return $areas;
+    }
+
+    public static function queryGetUserCatType($idRegional)
+    {
+        $rOs = DB::select("
+            SELECT 
+                u.ID_USER,
+                ma.NAME_AREA,
+                pc.ID_PC, 
+                ts.NAME_TYPE AS TYPE_SHOP,
+                mr.NAME_REGIONAL AS REGIONAL_TRANS
+            FROM 
+                user u
+            JOIN md_area ma ON u.ID_AREA = ma.ID_AREA
+            JOIN md_regional mr ON ma.ID_REGIONAL = mr.ID_REGIONAL 
+            CROSS JOIN 
+                md_product_category pc
+            CROSS JOIN 
+                md_type_shop ts
+            WHERE
+                mr.ID_REGIONAL = " . $idRegional . " 
+                AND u.deleted_at IS NULL
+                AND pc.deleted_at IS NULL
+                AND ts.deleted_at IS NULL
+        ");
+
+        return $rOs;
+    }
+
+    public static function queryGetRepeatOrderShopDaily($inputDate)
+    {
+        // Use today's date if input date is null
+        $date = $inputDate ?? date('Y-m-d');
+
+        $rOs = DB::select("
+            SELECT
+                ms.ID_SHOP,
+                ms.NAME_SHOP,
+                md.NAME_DISTRICT,
+                ms.OWNER_SHOP,
+                ms.DETLOC_SHOP,
+                ms.TYPE_SHOP,
+                ms.TELP_SHOP,
+                ma.NAME_AREA,
+                mr.NAME_REGIONAL,
+                t.REGIONAL_TRANS,
+                COUNT(t.ID_SHOP) AS TOTAL_TEST,
+                SUM(t.QTY_TRANS) AS TOTAL_RO_PRODUCT
+            FROM
+                `transaction` t
+            INNER JOIN (
+                SELECT
+                    ID_SHOP
+                FROM
+                    `transaction`
+                WHERE
+                    DATE(DATE_TRANS) = '" . $date . "'
+                    AND ISTRANS_TRANS = 1
+                GROUP BY
+                    ID_SHOP
+                HAVING
+                    COUNT(*) BETWEEN 1 AND 100
+            ) t2 ON
+                t2.ID_SHOP = t.ID_SHOP
+            LEFT JOIN md_shop ms ON
+                ms.ID_SHOP = t.ID_SHOP
+            INNER JOIN md_district md ON
+                md.ID_DISTRICT = ms.ID_DISTRICT
+            INNER JOIN md_area ma ON
+                ma.ID_AREA = md.ID_AREA
+            INNER JOIN md_regional mr ON
+                mr.ID_REGIONAL = ma.ID_REGIONAL
+            WHERE
+                ms.ID_SHOP IS NOT NULL
+                AND DATE(t.DATE_TRANS) = '" . $date . "'
+                AND ISTRANS_TRANS = 1
+            GROUP BY
+                t.ID_SHOP
+            ORDER BY
+                mr.ID_REGIONAL ASC
+        ");
+
+        return $rOs;
+    }
+
+    public static function queryGetOmsetData($year, $month)
+    {
+        $rOs = DB::table('transaction as t')
+        ->select(
+            't.ID_USER',
+            'u.ID_AREA',
+            'a.NAME_AREA',
+            'trd.ID_PC',
+            's.TYPE_SHOP',
+            'mr.NAME_REGIONAL AS REGIONAL_TRANS',
+            DB::raw('COALESCE(SUM(trd.QTY_TD), 0) AS TOTAL_OMSET'),
+            DB::raw('COALESCE(COUNT(DISTINCT t.ID_SHOP), 0) AS TOTAL_OUTLET')
+        )
+        ->rightJoin('md_shop as s', 't.ID_SHOP', '=', 's.ID_SHOP')
+        ->join('transaction_detail as trd', 't.ID_TRANS', '=', 'trd.ID_TRANS')
+        ->join('user as u', 't.ID_USER', '=', 'u.ID_USER')
+        ->join('md_area as a', 'u.ID_AREA', '=', 'a.ID_AREA')
+        ->join('md_regional as mr', 'a.ID_REGIONAL', '=', 'mr.ID_REGIONAL')
+        ->whereYear('t.DATE_TRANS', $year)
+        ->whereMonth('t.DATE_TRANS', $month)
+        ->where('t.TYPE_ACTIVITY', '!=', 'Aktivitas UB')
+        ->whereNotNull('t.ID_SHOP')
+        ->groupBy('t.ID_USER', 'trd.ID_PC', 's.TYPE_SHOP', 'u.ID_AREA', 'a.NAME_AREA')
+        ->get();
 
         return $rOs;
     }

@@ -114,6 +114,8 @@ class TransactionApi extends Controller
                     ['ID_DISTRICT', '=', $id_district->ID_DISTRICT]
                 ])->whereNull('deleted_at')->get();
 
+            // dd($req);
+
             $transDaily = TransactionDaily::whereDate('DATE_TD', '=', date('Y-m-d'))
                 ->where('ID_USER', '=', $req->input('id_user'))
                 ->first();
