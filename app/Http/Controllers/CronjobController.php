@@ -21,6 +21,8 @@ use App\Rovscalldet;
 use App\RangeRepeat;
 use App\ReportRtHead;
 use App\ReportRtDetail;
+use App\ReportOmsetHead;
+use App\ReportOmsetDetail;
 use App\ReportAktivitasTRX;
 use App\ReportPerformance;
 use App\ReportRepeatOrder;
@@ -497,6 +499,7 @@ class CronjobController extends Controller
             }
         }
     }
+    
     public function genRORPOS($yearMonth)
     {
         set_time_limit(3600);
@@ -568,60 +571,211 @@ class CronjobController extends Controller
 
         // dd($rOs);die;
     }
-    public function genRORCAT($yearMonth)
+
+    public function generateOmsetReport($idRegional, $yearMonth)
     {
-        set_time_limit(7200);
+        set_time_limit(3600);
         $year = date_format(date_create($yearMonth), 'Y');
         $month = date_format(date_create($yearMonth), 'n');
-        $updated_at     = date('Y-m-d', strtotime('-1 days'));
+        // Get the data from the query
+        $area = Cronjob::getregOmset($year, $month);
 
-        $rOs = Cronjob::queryGetRepeatOrderShopCat($year, $month);
+        $rOs = Cronjob::queryGetUserCatType($idRegional);
 
-        // dd($rOs);die;
+        foreach ($area as $row) {
+            $unik = md5($row->REGIONAL_TRANS . $year . $month);
+            $id_head = "REP_" . $unik;
 
-        $area = Cronjob::getreg($year, $month);
+            ReportOmsetHead::updateOrCreate(
+                ['ID_HEAD' => $id_head],
+                [
+                    'ID_REGIONAL' => $row->REGIONAL_TRANS,
+                    'BULAN' => $month,
+                    'TAHUN' => $year,
+                ]
+            );
+        }
 
-        // dd($area);die;
+        foreach ($rOs as $item) {
 
-        if (!empty($rOs)) {
-            foreach ($area as $reg) {
-                $ReportHead        = new ReportRcatHead();
-                $unik = md5($reg->REGIONAL_TRANS . $year . $month);
-                // if ($reg->REGIONAL_TRANS == 'SUM 1') {
-                //     $unik = md5(str_replace('SUM 1', 'SUMATERA 1', $reg->REGIONAL_TRANS) . $year . $month);
-                // }else{
-                //     $unik = md5($reg->REGIONAL_TRANS . $year . $month);
-                // }
-                $ReportHead->ID_HEAD          = "REP_" . $unik;
-                $ReportHead->ID_REGIONAL      = $reg->REGIONAL_TRANS;
-                $ReportHead->BULAN            = $month;
-                $ReportHead->TAHUN            = $year;
-                $ReportHead->save();
+            if ($item->REGIONAL_TRANS == 'SUM 1') {
+                $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $item->REGIONAL_TRANS) . $year . $month);
+            } else {
+                $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
             }
 
+            ReportOmsetDetail::updateOrCreate(
+                [
+                    'ID_HEAD' => "REP_" . $unik2,
+                    'NAME_AREA' => $item->NAME_AREA,
+                    'ID_USER' => $item->ID_USER,
+                    'ID_PC' => $item->ID_PC,
+                    'TYPE_SHOP' => $item->TYPE_SHOP,
+                ],
+                [
+                    'TOTAL_OMSET' => NULL,
+                    'TOTAL_OUTLET' => NULL,
+                    'last_updated' => now(),
+                ]
+            );
+        }
+    }
+
+    public function generateUpdateOmset($yearMonth)
+    {
+        $year = date_format(date_create($yearMonth), 'Y');
+        $month = date_format(date_create($yearMonth), 'n');
+
+        $rOs = Cronjob::queryGetOmsetData($year, $month);
+
+        foreach ($rOs as $item) {
+
+            if ($item->REGIONAL_TRANS == 'SUM 1') {
+                $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $item->REGIONAL_TRANS) . $year . $month);
+            } else {
+                $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
+            }
+
+            ReportOmsetDetail::updateOrCreate(
+                [
+                    'ID_HEAD' => "REP_" . $unik2,
+                    'NAME_AREA' => $item->NAME_AREA,
+                    'ID_USER' => $item->ID_USER,
+                    'ID_PC' => $item->ID_PC,
+                    'TYPE_SHOP' => $item->TYPE_SHOP,
+                ],
+                [
+                    'TOTAL_OMSET' => $item->TOTAL_OMSET,
+                    'TOTAL_OUTLET' => $item->TOTAL_OUTLET,
+                    'last_updated' => now(),
+                ]
+            );
+        }
+    }
+
+    public function genRORPOSDaily($inputDate = null)
+    {
+        set_time_limit(3600);
+        
+        $date = $inputDate ? date_create($inputDate) : date_create();
+        $year = date_format($date, 'Y');
+        $month = date_format($date, 'n');
+        $day = date_format($date, 'd');
+
+        $updated_at = date('Y-m-d', strtotime('-1 days'));
+        
+        $rOs = Cronjob::queryGetRepeatOrderShopDaily($date);
+        
+        $area = Cronjob::getreg($year, $month);
+    
+        if (!empty($rOs)) {
+            foreach ($area as $reg) {
+                $unik = md5($reg->REGIONAL_TRANS . $year . $month);
+    
+                ReportShopHead::updateOrCreate(
+                    ['ID_HEAD' => "REP_" . $unik],
+                    [
+                        'ID_REGIONAL' => $reg->REGIONAL_TRANS,
+                        'BULAN' => $month,
+                        'TAHUN' => $year
+                    ]
+                );
+            }
+    
             foreach ($rOs as $item) {
-                $ReportDet        = new ReportRcatDetail();
-                // $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
                 if ($item->REGIONAL_TRANS == 'SUM 1') {
                     $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $item->REGIONAL_TRANS) . $year . $month);
                 } else {
                     $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
                 }
-                $ReportDet->ID_HEAD               = "REP_" . $unik2;
-                $ReportDet->NAME_AREA             = $item->NAME_AREA;
-                $ReportDet->NAME_REGIONAL         = $item->NAME_REGIONAL;
-                $ReportDet->NAME_DISTRICT         = $item->NAME_DISTRICT;
-                $ReportDet->ID_SHOP               = $item->ID_SHOP;
-                $ReportDet->NAME_SHOP             = $item->NAME_SHOP;
-                $ReportDet->DETLOC_SHOP           = $item->DETLOC_SHOP;
-                $ReportDet->TELP_SHOP             = $item->TELP_SHOP;
-                $ReportDet->TYPE_SHOP             = $item->TYPE_SHOP;
-                $ReportDet->OWNER_SHOP            = $item->OWNER_SHOP;
-                $ReportDet->TOTAL_RO              = $item->TOTAL_TEST;
-                $ReportDet->TOTAL_RO_PRODUCT      = $item->TOTAL_RO_PRODUCT;
-                $ReportDet->CATEGORY_SELLING      = $item->NAME_PC;
+    
+                $existingReportDetail = ReportShopDet::where('ID_HEAD', "REP_" . $unik2)
+                                                     ->where('ID_SHOP', $item->ID_SHOP)
+                                                     ->first();
+    
+                if ($existingReportDetail) {
+                    $existingReportDetail->TOTAL_RO += $item->TOTAL_TEST;
+                    $existingReportDetail->TOTAL_RO_PRODUCT += $item->TOTAL_RO_PRODUCT;
+                    $existingReportDetail->save();
+                } else {
+                    ReportShopDet::create([
+                        'ID_HEAD'               => "REP_" . $unik2,
+                        'NAME_AREA'             => $item->NAME_AREA,
+                        'NAME_REGIONAL'         => $item->NAME_REGIONAL,
+                        'NAME_DISTRICT'         => $item->NAME_DISTRICT,
+                        'ID_SHOP'               => $item->ID_SHOP,
+                        'NAME_SHOP'             => $item->NAME_SHOP,
+                        'DETLOC_SHOP'           => $item->DETLOC_SHOP,
+                        'TELP_SHOP'             => $item->TELP_SHOP,
+                        'TYPE_SHOP'             => $item->TYPE_SHOP,
+                        'OWNER_SHOP'            => $item->OWNER_SHOP,
+                        'TOTAL_RO'              => $item->TOTAL_TEST,
+                        'TOTAL_RO_PRODUCT'      => $item->TOTAL_RO_PRODUCT
+                    ]);
+                }
+            }
+    
+            // Update CATEGORY_RO based on md_range_repeat ranges
+            $ranges = DB::table('md_range_repeat')->select('ID_RANGE', 'START', 'END')->get();
+            foreach ($ranges as $range) {
+                DB::table('report_shop_detail')
+                    ->whereBetween('TOTAL_RO', [$range->START, $range->END])
+                    ->update(['CATEGORY_RO' => $range->ID_RANGE]);
+            }
+        }
+    }
 
-                $ReportDet->save();
+    public function genRORCAT($yearMonth)
+    {
+        set_time_limit(7200);
+        $year = date_format(date_create($yearMonth), 'Y');
+        $month = date_format(date_create($yearMonth), 'n');
+        $updated_at = date('Y-m-d', strtotime('-1 days'));
+
+        $rOs = Cronjob::queryGetRepeatOrderShopCat($year, $month);
+
+        $area = Cronjob::getreg($year, $month);
+
+        if (!empty($rOs)) {
+            foreach ($area as $reg) {
+                $unik = md5($reg->REGIONAL_TRANS . $year . $month);
+                
+                ReportRcatHead::updateOrInsert(
+                    ['ID_HEAD' => "REP_" . $unik], // Conditions for update
+                    [
+                        'ID_REGIONAL' => $reg->REGIONAL_TRANS,
+                        'BULAN' => $month,
+                        'TAHUN' => $year
+                    ]
+                );
+            }
+
+            foreach ($rOs as $item) {
+                if ($item->REGIONAL_TRANS == 'SUM 1') {
+                    $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $item->REGIONAL_TRANS) . $year . $month);
+                } else {
+                    $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
+                }
+
+                ReportRcatDetail::updateOrInsert(
+                    [
+                        'ID_HEAD' => "REP_" . $unik2,
+                        'ID_SHOP' => $item->ID_SHOP,
+                    ], // Conditions for update
+                    [
+                        'NAME_AREA' => $item->NAME_AREA,
+                        'NAME_REGIONAL' => $item->NAME_REGIONAL,
+                        'NAME_DISTRICT' => $item->NAME_DISTRICT,
+                        'NAME_SHOP' => $item->NAME_SHOP,
+                        'DETLOC_SHOP' => $item->DETLOC_SHOP,
+                        'TELP_SHOP' => $item->TELP_SHOP,
+                        'TYPE_SHOP' => $item->TYPE_SHOP,
+                        'OWNER_SHOP' => $item->OWNER_SHOP,
+                        'TOTAL_RO' => $item->TOTAL_TEST,
+                        'TOTAL_RO_PRODUCT' => $item->TOTAL_RO_PRODUCT,
+                        'CATEGORY_SELLING' => $item->NAME_PC
+                    ]
+                );
             }
 
             $ranges = DB::table('md_range_repeat')->select('ID_RANGE', 'START', 'END')->get();
@@ -631,15 +785,13 @@ class CronjobController extends Controller
                 $min_total_ro = $range->START;
                 $max_total_ro = $range->END;
 
-                // Execute the SQL query for the current range
-                DB::table('report_shop_detail')
+                DB::table('report_recat_detail')
                     ->whereBetween('TOTAL_RO', [$min_total_ro, $max_total_ro])
                     ->update(['CATEGORY_RO' => $range_id]);
             }
         }
-
-        // dd($rOs);die;
     }
+
     public function genROTEST()
     {
         $rOs = array(
