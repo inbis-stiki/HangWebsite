@@ -613,8 +613,8 @@ class CronjobController extends Controller
                     'TYPE_SHOP' => $item->TYPE_SHOP,
                 ],
                 [
-                    'TOTAL_OMSET' => NULL,
-                    'TOTAL_OUTLET' => NULL,
+                    'TOTAL_OMSET' => 0,
+                    'TOTAL_OUTLET' => 0,
                     'last_updated' => now(),
                 ]
             );
