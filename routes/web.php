@@ -53,7 +53,7 @@ Route::get('cronjob/gen-ro-shop-rcat/{yearMonth}', 'CronjobController@genRORCAT'
 Route::get('cronjob/gen-ro-rpo-s/{yearMonth}', 'CronjobController@genRORPOS');
 Route::get('cronjob/gen-ro-s-daily/{yearMonth}', 'CronjobController@genRORPOSDaily');
 Route::get('cronjob/gen-omset-data/{idRegional}/{yearMonth}', 'CronjobController@generateOmsetReport');
-Route::get('cronjob/gen-update-omset-data/{yearMonth}', 'CronjobController@generateUpdateOmset');
+Route::get('cronjob/gen-update-omset-data/{idRegional}/{yearMonth}', 'CronjobController@generateUpdateOmset');
 
 Route::get('cronjob/gen-performance', 'CronjobController@genPerformance');
 Route::get('cronjob/gen-performance-geprek', 'CronjobController@genPerformanceGEPREK');

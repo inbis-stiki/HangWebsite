@@ -1510,7 +1510,7 @@ class Cronjob extends Model
         return $rOs;
     }
 
-    public static function queryGetOmsetData($year, $month)
+    public static function queryGetOmsetData($year, $month, $idRegional)
     {
         $rOs = DB::table('transaction as t')
         ->select(
@@ -1530,6 +1530,7 @@ class Cronjob extends Model
         ->join('md_regional as mr', 'a.ID_REGIONAL', '=', 'mr.ID_REGIONAL')
         ->whereYear('t.DATE_TRANS', $year)
         ->whereMonth('t.DATE_TRANS', $month)
+        ->where('mr.ID_REGIONAL', '=', $idRegional)
         ->where('t.TYPE_ACTIVITY', '!=', 'Aktivitas UB')
         ->whereNotNull('t.ID_SHOP')
         ->groupBy('t.ID_USER', 'trd.ID_PC', 's.TYPE_SHOP', 'u.ID_AREA', 'a.NAME_AREA')
