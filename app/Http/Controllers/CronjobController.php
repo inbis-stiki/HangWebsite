@@ -621,12 +621,12 @@ class CronjobController extends Controller
         }
     }
 
-    public function generateUpdateOmset($yearMonth)
+    public function generateUpdateOmset($idRegional, $yearMonth)
     {
         $year = date_format(date_create($yearMonth), 'Y');
         $month = date_format(date_create($yearMonth), 'n');
 
-        $rOs = Cronjob::queryGetOmsetData($year, $month);
+        $rOs = Cronjob::queryGetOmsetData($year, $month, $idRegional);
 
         foreach ($rOs as $item) {
 
