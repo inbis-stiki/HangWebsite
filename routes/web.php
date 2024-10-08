@@ -223,4 +223,5 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('laporan/lpr-repeat-cat', 'ReportRepeatController@index_repeat_cat');
     Route::get('laporan/lpr-transaction', 'ReportTransactionController@index');
     Route::get('laporan/lpr-performance', 'ReportPerformanceController@index');
+    Route::get('laporan/lpr-omset', 'ReportOmsetController@index');
 });

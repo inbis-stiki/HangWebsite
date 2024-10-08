@@ -623,6 +623,7 @@ class CronjobController extends Controller
 
     public function generateUpdateOmset($idRegional, $yearMonth)
     {
+        set_time_limit(3600);
         $year = date_format(date_create($yearMonth), 'Y');
         $month = date_format(date_create($yearMonth), 'n');
 

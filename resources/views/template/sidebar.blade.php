@@ -55,6 +55,7 @@
                     <li><a href="{{ url('laporan/lpr-repeat-cat') }}">Repeat Order Kategori</a></li>
                     <li><a href="{{ url('laporan/lpr-performance') }}">Performance</a></li>
                     <li><a href="{{ url('laporan/lpr-transaction') }}">Transaksi Harian</a></li>
+                    <!-- <li><a href="{{ url('laporan/lpr-omset') }}">Omset</a></li> -->
                 </ul>
             </li>
             <li class="active">
