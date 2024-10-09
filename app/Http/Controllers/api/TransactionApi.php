@@ -114,6 +114,8 @@ class TransactionApi extends Controller
                     ['ID_DISTRICT', '=', $id_district->ID_DISTRICT]
                 ])->whereNull('deleted_at')->get();
 
+            // dd($req);
+
             $transDaily = TransactionDaily::whereDate('DATE_TD', '=', date('Y-m-d'))
                 ->where('ID_USER', '=', $req->input('id_user'))
                 ->first();
@@ -580,7 +582,7 @@ class TransactionApi extends Controller
             if ($tgl != NULL) {
                 $dataTrans = Transaction::select('transaction.*', 'user.*', 'md_shop.*')
                     ->where('transaction.ID_USER', '=', $req->input('id_user'))
-                    ->where('transaction.DATE_TRANS', 'LIKE', '%' . $FrmtTgl . '%')
+                    ->whereDate('transaction.DATE_TRANS', '=', $FrmtTgl)
                     ->leftjoin('user', 'user.ID_USER', '=', 'transaction.ID_USER')
                     ->leftjoin('md_shop', 'md_shop.ID_SHOP', '=', 'transaction.ID_SHOP')
                     ->orderBy('DATE_TRANS', 'DESC')

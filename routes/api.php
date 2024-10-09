@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', 'api\AuthApi@login');
 
+Route::post("get/pickup", 'api\TesApi@getpickup');
+
 Route::middleware(['checkAuthApi'])->group(function(){
     // API TES
     Route::get("tes", 'api\TesApi@index');
@@ -47,6 +49,7 @@ Route::middleware(['checkAuthApi'])->group(function(){
 
     //API SHOP
     Route::post("shop", 'api\ShopApi@store');
+    Route::get("cek/shop", 'api\ShopApi@cekAllowedTrans');
     Route::get("shop", 'api\ShopApi@list_store');
     Route::get("shop/rec", 'api\ShopApi@list_store_rekomendasi');
     Route::get("shop/route", 'api\ShopApi@route');
@@ -80,4 +83,9 @@ Route::middleware(['checkAuthApi'])->group(function(){
     // API RANKING
     Route::get("ranking/sale", 'api\RankingApi@rankingSale');
     Route::get("ranking/activity", 'api\RankingApi@rankingActivity');
+
+    // API RUTE
+    Route::get("route/shop", 'api\RouteApi@GetDataRute');
+    Route::post("route/update", 'api\RouteApi@UpdateStatusRoute');
+
 });

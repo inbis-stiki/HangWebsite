@@ -1385,7 +1385,7 @@ class Cronjob extends Model
             GROUP BY
                 ID_SHOP
             HAVING
-                COUNT(*) BETWEEN 2 AND 100
+                COUNT(*) BETWEEN 1 AND 100
         ) t2 ON
             t2.ID_SHOP = t.ID_SHOP
         LEFT JOIN md_shop ms ON
@@ -1405,6 +1405,198 @@ class Cronjob extends Model
             t.ID_SHOP
         ORDER BY
             mr.ID_REGIONAL ASC
+        ");
+
+        return $rOs;
+    }
+
+    public static function getregOmset($year, $month)
+    {
+        $areas = DB::select("
+            SELECT mr.NAME_REGIONAL AS REGIONAL_TRANS
+            FROM `transaction` t
+            JOIN md_shop ms ON t.ID_SHOP = ms.ID_SHOP
+            JOIN md_district md ON ms.ID_DISTRICT = md.ID_DISTRICT
+            JOIN md_area ma ON md.ID_AREA = ma.ID_AREA
+            JOIN md_regional mr ON ma.ID_REGIONAL = mr.ID_REGIONAL 
+            WHERE t.ID_SHOP IS NOT NULL AND YEAR(t.DATE_TRANS) = " . $year . " AND MONTH(t.DATE_TRANS) = " . $month . "
+            GROUP BY mr.ID_REGIONAL 
+            ORDER BY mr.NAME_REGIONAL ASC
+        ");
+
+        return $areas;
+    }
+
+    public static function queryGetUserCatType($idRegional)
+    {
+        $rOs = DB::select("
+            SELECT 
+                u.ID_USER,
+                ma.NAME_AREA,
+                pc.ID_PC, 
+                ts.NAME_TYPE AS TYPE_SHOP,
+                mr.NAME_REGIONAL AS REGIONAL_TRANS
+            FROM 
+                user u
+            JOIN md_area ma ON u.ID_AREA = ma.ID_AREA
+            JOIN md_regional mr ON ma.ID_REGIONAL = mr.ID_REGIONAL 
+            CROSS JOIN 
+                md_product_category pc
+            CROSS JOIN 
+                md_type_shop ts
+            WHERE
+                mr.ID_REGIONAL = " . $idRegional . " 
+                AND u.deleted_at IS NULL
+                AND pc.deleted_at IS NULL
+                AND ts.deleted_at IS NULL
+        ");
+
+        return $rOs;
+    }
+
+    public static function queryGetRepeatOrderShopDaily($inputDate)
+    {
+        // Use today's date if input date is null
+        $date = $inputDate ?? date('Y-m-d');
+
+        $rOs = DB::select("
+            SELECT
+                ms.ID_SHOP,
+                ms.NAME_SHOP,
+                md.NAME_DISTRICT,
+                ms.OWNER_SHOP,
+                ms.DETLOC_SHOP,
+                ms.TYPE_SHOP,
+                ms.TELP_SHOP,
+                ma.NAME_AREA,
+                mr.NAME_REGIONAL,
+                t.REGIONAL_TRANS,
+                COUNT(t.ID_SHOP) AS TOTAL_TEST,
+                SUM(t.QTY_TRANS) AS TOTAL_RO_PRODUCT
+            FROM
+                `transaction` t
+            INNER JOIN (
+                SELECT
+                    ID_SHOP
+                FROM
+                    `transaction`
+                WHERE
+                    DATE(DATE_TRANS) = '" . $date . "'
+                    AND ISTRANS_TRANS = 1
+                GROUP BY
+                    ID_SHOP
+                HAVING
+                    COUNT(*) BETWEEN 1 AND 100
+            ) t2 ON
+                t2.ID_SHOP = t.ID_SHOP
+            LEFT JOIN md_shop ms ON
+                ms.ID_SHOP = t.ID_SHOP
+            INNER JOIN md_district md ON
+                md.ID_DISTRICT = ms.ID_DISTRICT
+            INNER JOIN md_area ma ON
+                ma.ID_AREA = md.ID_AREA
+            INNER JOIN md_regional mr ON
+                mr.ID_REGIONAL = ma.ID_REGIONAL
+            WHERE
+                ms.ID_SHOP IS NOT NULL
+                AND DATE(t.DATE_TRANS) = '" . $date . "'
+                AND ISTRANS_TRANS = 1
+            GROUP BY
+                t.ID_SHOP
+            ORDER BY
+                mr.ID_REGIONAL ASC
+        ");
+
+        return $rOs;
+    }
+
+    public static function queryGetOmsetData($year, $month, $idRegional)
+    {
+        $rOs = DB::table('transaction as t')
+        ->select(
+            't.ID_USER',
+            'u.ID_AREA',
+            'a.NAME_AREA',
+            'trd.ID_PC',
+            's.TYPE_SHOP',
+            'mr.NAME_REGIONAL AS REGIONAL_TRANS',
+            DB::raw('COALESCE(SUM(trd.QTY_TD), 0) AS TOTAL_OMSET'),
+            DB::raw('COALESCE(COUNT(DISTINCT t.ID_SHOP), 0) AS TOTAL_OUTLET')
+        )
+        ->rightJoin('md_shop as s', 't.ID_SHOP', '=', 's.ID_SHOP')
+        ->join('transaction_detail as trd', 't.ID_TRANS', '=', 'trd.ID_TRANS')
+        ->join('user as u', 't.ID_USER', '=', 'u.ID_USER')
+        ->join('md_area as a', 'u.ID_AREA', '=', 'a.ID_AREA')
+        ->join('md_regional as mr', 'a.ID_REGIONAL', '=', 'mr.ID_REGIONAL')
+        ->whereYear('t.DATE_TRANS', $year)
+        ->whereMonth('t.DATE_TRANS', $month)
+        ->where('mr.ID_REGIONAL', '=', $idRegional)
+        ->where('t.TYPE_ACTIVITY', '!=', 'Aktivitas UB')
+        ->whereNotNull('t.ID_SHOP')
+        ->groupBy('t.ID_USER', 'trd.ID_PC', 's.TYPE_SHOP', 'u.ID_AREA', 'a.NAME_AREA')
+        ->get();
+
+        return $rOs;
+    }
+
+    public static function queryGetRepeatOrderShopCat($year, $month)
+    {
+        $rOs = DB::select("
+        SELECT
+            ms.ID_SHOP,
+            ms.NAME_SHOP,
+            md.NAME_DISTRICT,
+            ms.OWNER_SHOP,
+            ms.DETLOC_SHOP,
+            ms.TYPE_SHOP,
+            ms.TELP_SHOP,
+            ma.NAME_AREA,
+            mr.NAME_REGIONAL,
+            t.REGIONAL_TRANS,
+            pc.NAME_PC,
+            t2.TOTAL_TEST,
+            SUM(td.QTY_TD) AS TOTAL_RO_PRODUCT
+        FROM
+            transaction t
+        INNER JOIN (
+            SELECT
+                ID_SHOP,
+                ID_PC,
+                COUNT(ID_PC) AS TOTAL_TEST
+            FROM
+                transaction_detail
+            WHERE
+                YEAR(DATE_TD) = " . $year . "
+                AND MONTH(DATE_TD) = " . $month . "
+            GROUP BY
+                ID_SHOP,
+                ID_PC
+            HAVING
+                COUNT(ID_PC) BETWEEN 2 AND 100
+        ) t2 ON
+            t2.ID_SHOP = t.ID_SHOP
+        LEFT JOIN md_shop ms ON
+            ms.ID_SHOP = t.ID_SHOP AND ms.ID_SHOP IS NOT NULL
+        INNER JOIN md_district md ON
+            md.ID_DISTRICT = ms.ID_DISTRICT
+        INNER JOIN md_area ma ON
+            ma.ID_AREA = md.ID_AREA
+        INNER JOIN md_regional mr ON
+            mr.ID_REGIONAL = ma.ID_REGIONAL
+        INNER JOIN transaction_detail td ON
+            t.ID_TRANS = td.ID_TRANS AND t2.ID_PC = td.ID_PC
+        INNER JOIN md_product_category pc ON
+            td.ID_PC = pc.ID_PC AND pc.deleted_at IS NULL
+        WHERE
+            YEAR(t.DATE_TRANS) = " . $year . "
+            AND MONTH(t.DATE_TRANS) = " . $month . "
+            AND ISTRANS_TRANS = 1
+        GROUP BY
+            t.ID_SHOP,
+            td.ID_PC
+        ORDER BY
+            mr.ID_REGIONAL ASC, ms.ID_SHOP ASC
+        LIMIT 100
         ");
 
         return $rOs;
@@ -1519,6 +1711,120 @@ class Cronjob extends Model
                 JOIN report_shop_head rh ON rd.ID_HEAD = rh.ID_HEAD
                 WHERE mr.NAME_REGIONAL = '" . $area->NAME_REGIONAL . "' AND ma.NAME_AREA = '" . $area->NAME_AREA . "'
                 GROUP BY s.NAME_SHOP
+            ");
+        }
+        return $rOs;
+    }
+
+    public static function queryGetShopCatByRange($startM, $startY, $endM, $endY, $idRegional)
+    {
+        $areas = DB::select("
+            SELECT mr.NAME_REGIONAL, ma.NAME_AREA
+            FROM `md_shop` ms
+            JOIN `md_district` md ON md.ID_DISTRICT = ms.ID_DISTRICT
+            JOIN `md_area` ma ON ma.ID_AREA = md.ID_AREA
+            JOIN `md_regional` mr ON mr.ID_REGIONAL = ma.ID_REGIONAL
+            WHERE mr.ID_REGIONAL = " . $idRegional . "
+            GROUP BY mr.NAME_REGIONAL, ma.NAME_AREA
+            ORDER BY mr.NAME_REGIONAL, ma.NAME_AREA ASC
+        ");
+
+        $dataValue = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataValue,
+                    "CASE WHEN rh.BULAN = " . $m . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO ELSE 0 END AS 'VALUE" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
+        $dataValue2 = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataValue2,
+                    "IFNULL(CASE WHEN rh.BULAN = " . $m . " AND rh.TAHUN = " . $y . " THEN rd.TOTAL_RO_PRODUCT ELSE 0 END, 0) AS 'VALUE2" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
+        $dataKey = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataKey,
+                    "('" . $m . ";" . $y . "') AS 'KEY" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
+        $dataKey2 = [];
+        $no = 0;
+        for ($y = $startY; $y <= $endY; $y++) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($y == $startY && $m < $startM) {
+                    continue;
+                }
+                if ($y == $endY && $m > $endM) {
+                    continue;
+                }
+                array_push(
+                    $dataKey2,
+                    "('" . $m . ";" . $y . "') AS 'KEY" . $no . "'"
+                );
+                $no++;
+            }
+        }
+
+        $rOs = [];
+
+        foreach ($areas as $area) {
+            if (empty($rOs[$area->NAME_REGIONAL])) $rOs[$area->NAME_REGIONAL] = [];
+            $rOs[$area->NAME_REGIONAL][$area->NAME_AREA] = DB::select("
+                SELECT 
+                    s.NAME_SHOP,
+                    s.OWNER_SHOP,
+                    s.DETLOC_SHOP,
+                    md.NAME_DISTRICT,
+                    rd.CATEGORY_SELLING,
+                    s.TYPE_SHOP" . (!empty($dataKey2) ? ',' : '') . "
+                    " . implode(',',  $dataKey2) . "" . (!empty($dataValue2) ? ',' : '') . "
+                    " . implode(',',  $dataValue2) . ",
+                    s.TELP_SHOP" . (!empty($dataKey) ? ',' : '') . "
+                    " . implode(',',  $dataKey) . "" . (!empty($dataValue) ? ',' : '') . "
+                    " . implode(',',  $dataValue) . "
+                FROM md_shop s
+                JOIN md_district md ON md.ID_DISTRICT = s.ID_DISTRICT
+                JOIN md_area ma ON ma.ID_AREA = md.ID_AREA
+                JOIN md_regional mr ON mr.ID_REGIONAL = ma.ID_REGIONAL
+                JOIN report_recat_detail rd ON s.ID_SHOP = rd.ID_SHOP
+                JOIN report_recat_head rh ON rd.ID_HEAD = rh.ID_HEAD
+                WHERE mr.NAME_REGIONAL = '" . $area->NAME_REGIONAL . "' AND ma.NAME_AREA = '" . $area->NAME_AREA . "'
             ");
         }
         return $rOs;

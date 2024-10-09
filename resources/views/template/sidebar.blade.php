@@ -13,7 +13,7 @@
                     </div>
                 </a>
             </li>
-            @if (Session::get('role') == 1 || Session::get('role') == 2)
+            @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 3 || Session::get('role') == 4)
             <li class="active">
                 <a href="{{ url('monitoring') }}" class="ai-icon" aria-expanded="false">
                     <div class="{{ request()->is('monitoring') ? '' : 'img-grey' }} ">
@@ -52,8 +52,10 @@
                     <li><a href="{{ url('laporan/lpr-ranking') }}">Ranking</a></li>
                     <li><a href="{{ url('laporan/lpr-trend') }}">Trend</a></li>
                     <li><a href="{{ url('laporan/lpr-repeat') }}">Repeat Order</a></li>
+                    <li><a href="{{ url('laporan/lpr-repeat-cat') }}">Repeat Order Kategori</a></li>
                     <li><a href="{{ url('laporan/lpr-performance') }}">Performance</a></li>
                     <li><a href="{{ url('laporan/lpr-transaction') }}">Transaksi Harian</a></li>
+                    <!-- <li><a href="{{ url('laporan/lpr-omset') }}">Omset</a></li> -->
                 </ul>
             </li>
             <li class="active">

@@ -120,7 +120,7 @@ class PresenceApi extends Controller
                     $presence->ID_DISTRICT          = $district->ID_DISTRICT;
                     $presence->LONG_PRESENCE        = $req->input('longitude');
                     $presence->LAT_PRESENCE         = $req->input('latitude');
-                    $presence->PHOTO_PRESENCE       = $this->UploadFile($req->file('image'), 'images');
+                    $presence->PHOTO_PRESENCE       = $this->UploadFileR2($req->file('image'), 'images');
                     $presence->DATE_PRESENCE        = $currDate;
                     $presence->save();
 
@@ -188,5 +188,36 @@ class PresenceApi extends Controller
         ]);
 
         return 'https://' . $bucket . '.is3.cloudhost.id/' . $path;
+    }
+
+    public function UploadFileR2($fileData, $folder)
+    {
+        $extension = $fileData->getClientOriginalExtension();
+        $fileName = $fileData->getClientOriginalName();
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
+
+        // Configure the S3 client to use Cloudflare R2 endpoint
+        $s3 = Storage::disk('r2')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.r2.bucket');
+
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->path(),
+            'ACL' => 'public-read',
+            'ContentType' => $fileData->getMimeType(),
+            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+
+        // Return the URL to the uploaded file on Cloudflare R2
+        return 'https://finna.yntkts.my.id/' . $path;
     }
 }

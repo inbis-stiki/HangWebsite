@@ -103,7 +103,7 @@ class DashboardController extends Controller
                         AND 
                         ml.deleted_at IS NULL
                     WHERE
-                        stl.updated_at LIKE '" . date('Y-m') . "%'
+                        DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
                     GROUP BY
                         stl.LOCATION_STL
                 ");
@@ -184,7 +184,7 @@ class DashboardController extends Controller
                         AND 
                         mr.deleted_at IS NULL
                     WHERE
-                        stl.updated_at LIKE '" . date('Y-m') . "%'
+                        DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
                     GROUP BY
                         stl.REGIONAL_STL
                 ");
@@ -268,7 +268,7 @@ class DashboardController extends Controller
                         AND 
                         ml.deleted_at IS NULL
                     WHERE
-                        stl.updated_at LIKE '" . date('Y-m') . "%'
+                        DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
                         AND ml.ID_LOCATION = " . $id_location . "
                     GROUP BY
                         stl.LOCATION_STL
@@ -350,7 +350,7 @@ class DashboardController extends Controller
                         AND 
                         mr.deleted_at IS NULL
                     WHERE
-                        stl.updated_at LIKE '" . date('Y-m') . "%'
+                        DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
                         AND mr.ID_LOCATION = " . $id_location . "
                     GROUP BY
                         stl.REGIONAL_STL
@@ -434,7 +434,7 @@ class DashboardController extends Controller
                     AND 
                     mr.deleted_at IS NULL
                 WHERE
-                    stl.updated_at LIKE '" . date('Y-m') . "%'
+                    DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
                     AND mr.ID_REGIONAL = " . $id_regional . "
                 GROUP BY
                     stl.AREA_STL
@@ -523,7 +523,7 @@ class DashboardController extends Controller
                 ) AS TB_RETAIL,
                 summary_trans_location stl
             WHERE
-                stl.updated_at LIKE '" . date('Y-m') . "%'
+                DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
             GROUP BY
                 stl.LOCATION_STL
             ORDER BY
@@ -603,7 +603,7 @@ class DashboardController extends Controller
                 ) AS TB_RETAIL,
                 summary_trans_location stl
             WHERE
-                stl.updated_at LIKE '" . date('Y-m') . "%'
+                DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
             GROUP BY 
                 stl.REGIONAL_STL 
             ORDER BY 
@@ -683,7 +683,7 @@ class DashboardController extends Controller
                 ) AS TB_RETAIL,
                 summary_trans_location stl
             WHERE
-                stl.updated_at LIKE '" . date('Y-m') . "%'
+                DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
             GROUP BY 
                 stl.AREA_STL 
             ORDER BY 
@@ -813,7 +813,7 @@ class DashboardController extends Controller
                 ) AS TB_GEPREK,
                 summary_trans_location stl
             WHERE
-                stl.updated_at LIKE '" . date('Y-m') . "%'
+                DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
             GROUP BY
                 stl.LOCATION_STL
             ORDER BY
@@ -934,7 +934,7 @@ class DashboardController extends Controller
                 ) AS TB_GEPREK,
                 summary_trans_location stl
             WHERE
-                stl.updated_at LIKE '" . date('Y-m') . "%'
+                DATE_FORMAT(stl.updated_at, '%Y-%m') = '" . date('Y-m') . "'
             GROUP BY 
                 stl.REGIONAL_STL 
             ORDER BY

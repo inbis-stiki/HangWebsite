@@ -35,7 +35,8 @@
  <script src="{{ asset('js/custom.min.js') }}"></script>
  <script src="{{ asset('js/deznav-init.js') }}"></script>
  <script src="{{ asset('vendor/owl-carousel/owl.carousel.js') }}"></script>
- <script src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
+ <!-- <script src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script> -->
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
  <!-- Chart piety plugin files -->
  <script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
@@ -66,33 +67,33 @@
  	$(document).ready(function() {
  		$('.select2').select2();
 
-		if ($('.select2-toko-rute').length > 0) {
-			const url = '<?= url('master/rute/search-shops') ?>';
-			$('.select2-toko-rute').select2({
-				ajax: {
-					url: url,
-					dataType: 'json',
-					delay: 250,
-					processResults: function(data) {
-						return {
-							results: $.map(data, function(item) {
-								return {
-									text: item.NAME_SHOP + ' - ' + item.NAME_AREA,
-									id: item.ID_SHOP
-								}
-							})
-						};
-					},
-					cache: true
-				},
-				minimumInputLength: 1
-			});
-			<?php if (!empty($user_route)) { ?>
-				<?php foreach (explode(';', $user_route->ID_SHOP) as $key => $ID_SHOP) { ?>
-					$('.select2-toko-rute').append(new Option('<?= explode(';', $user_route->NAME_SHOP)[$key] . '-' . explode(';', $user_route->NAME_AREA)[$key] ?>', '<?= $ID_SHOP ?>', true, true)).trigger('change');
-				<?php } ?>
-			<?php } ?>
-		}
+ 		if ($('.select2-toko-rute').length > 0) {
+ 			const url = '<?= url('master/rute/search-shops') ?>';
+ 			$('.select2-toko-rute').select2({
+ 				ajax: {
+ 					url: url,
+ 					dataType: 'json',
+ 					delay: 250,
+ 					processResults: function(data) {
+ 						return {
+ 							results: $.map(data, function(item) {
+ 								return {
+ 									text: item.NAME_SHOP + ' - ' + item.NAME_AREA,
+ 									id: item.ID_SHOP
+ 								}
+ 							})
+ 						};
+ 					},
+ 					cache: true
+ 				},
+ 				minimumInputLength: 1
+ 			});
+ 			<?php if (!empty($user_route)) { ?>
+ 				<?php foreach (explode(';', $user_route->ID_SHOP) as $key => $ID_SHOP) { ?>
+ 					$('.select2-toko-rute').append(new Option(`<?= explode(';', $user_route->NAME_SHOP)[$key] . '-' . explode(';', $user_route->NAME_AREA)[$key] ?>`, '<?= $ID_SHOP ?>', true, true)).trigger('change');
+ 				<?php } ?>
+ 			<?php } ?>
+ 		}
  	})
 
  	function carouselReview() {
@@ -177,6 +178,18 @@
  		}
  		return true
  	}
+
+ 	const Toast = Swal.mixin({
+ 		toast: true,
+ 		position: "top-end",
+ 		showConfirmButton: false,
+ 		timer: 3000,
+ 		timerProgressBar: true,
+ 		didOpen: (toast) => {
+ 			toast.onmouseenter = Swal.stopTimer;
+ 			toast.onmouseleave = Swal.resumeTimer;
+ 		}
+ 	});
  </script>
  </body>
 

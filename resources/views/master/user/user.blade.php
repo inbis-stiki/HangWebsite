@@ -41,6 +41,9 @@
                                         <th>Nama User</th>
                                         <th>Username</th>
                                         <th>Role</th>
+                                        @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 99)
+                                        <th>Transaksi Terakhir</th>
+                                        @endif
                                         <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -55,6 +58,9 @@
                                         <td>{{ $item->NAME_USER }}</td>
                                         <td>{{ $item->USERNAME_USER }}</td>
                                         <td>{{ $item->NAME_ROLE }}</td>
+                                        @if (Session::get('role') == 1 || Session::get('role') == 2 || Session::get('role') == 99)
+                                        <td>{{ $item->DATE_TRANS }}</td>
+                                        @endif
                                         <td>
                                             @if (empty($item->deleted_at))
                                             <i class="fa-solid fa-circle mr-2" style="color:#3CC13B;"></i>
@@ -68,7 +74,7 @@
                                             <button onclick="showMdlChangePass('{{ $item->ID_USER }}', '{{ $item->USERNAME_USER }}', '{{ $item->ID_ROLE }}', '{{ ($item->ID_ROLE == 3) ? $item->ID_LOCATION : (($item->ID_ROLE == 2) ? $item->ID_REGIONAL : $item->ID_AREA) }}', '{{ $item->KTP_USER }}', '{{ $item->NAME_USER }}', '{{ $item->EMAIL_USER }}', '{{ $item->TELP_USER }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-key"></i>
                                             </button>
-                                            <button onclick="showMdlEdit('{{ $item->ID_USER }}', '{{ $item->USERNAME_USER }}', '{{ $item->ID_ROLE }}', '{{ ($item->ID_ROLE == 3) ? $item->ID_LOCATION : (($item->ID_ROLE == 4) ? $item->ID_REGIONAL : $item->ID_AREA) }}', '{{ $item->KTP_USER }}', '{{ $item->NAME_USER }}', '{{ $item->EMAIL_USER }}', '{{ $item->TELP_USER }}', '{{ $item->deleted_at }}')" class="btn btn-primary btn-sm">
+                                            <button onclick="showMdlEdit('{{ $item->ID_USER }}', '{{ $item->USERNAME_USER }}', '{{ $item->ID_ROLE }}', '{{ ($item->ID_ROLE == 3) ? $item->ID_LOCATION : (($item->ID_ROLE == 4) ? $item->ID_REGIONAL : $item->ID_AREA) }}', '{{ $item->KTP_USER }}', '{{ $item->NAME_USER }}', '{{ $item->EMAIL_USER }}', '{{ $item->TELP_USER }}', '{{ $item->deleted_at }}', '{{ $item->ALLOWED_TRANS }}')" class="btn btn-primary btn-sm">
                                                 <i class="flaticon-381-edit-1"></i>
                                             </button>
                                             <button onclick="showMdlDelete('{{ $item->ID_USER }}')" class="btn btn-primary btn-sm">
@@ -159,6 +165,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row form-group">
+                        <div class="col-md-6">
+                            <label for="">User dapat menambah toko.</label>
+                            <div class="form-group mb-0">
+                                <label class="radio-inline mr-3"><input type="radio" name="status_toko" value="1" required> Enable</label>
+                                <label class="radio-inline mr-3"><input type="radio" name="status_toko" value="0" required> Disable</label>
+                            </div>
+                        </div>
+                    </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="this.form.reset();">Batalkan</button>
@@ -235,6 +250,15 @@
                             <div class="form-group mb-0">
                                 <label class="radio-inline mr-3"><input type="radio" id="status_enable" name="status" value="1" required> Enable</label>
                                 <label class="radio-inline mr-3"><input type="radio" id="status_disable" name="status" value="0" required> Disable</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-6">
+                            <label for="">User dapat menambah toko.</label>
+                            <div class="form-group mb-0">
+                                <label class="radio-inline mr-3"><input type="radio" id="statustoko_enable" name="status_toko" value="1" required> Enable</label>
+                                <label class="radio-inline mr-3"><input type="radio" id="statustoko_disable" name="status_toko" value="0" required> Disable</label>
                             </div>
                         </div>
                     </div>
@@ -337,7 +361,7 @@
         });
     });
 
-    function showMdlEdit(id, username, idrole, area, ktp, name, email, phone, status) {
+    function showMdlEdit(id, username, idrole, area, ktp, name, email, phone, status, status_toko) {
         
         setDropdownAreaModalUpdate(idrole)
         $('#role_edit').on('change', function(e){
@@ -358,6 +382,12 @@
         } else {
             $('#status_disable').prop('checked', true)
         }
+        if (status_toko == '0') {
+            $('#statustoko_enable').prop('checked', true)
+        } else {
+            $('#statustoko_disable').prop('checked', true)
+        }
+
 
         $('#mdlEdit').modal('show');
     }

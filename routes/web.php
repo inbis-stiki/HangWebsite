@@ -48,7 +48,12 @@ Route::post('report/trans-daily', 'CronjobController@genTransDaily');
 Route::get('cronjob/gen-ro-rpo/{yearMonth}', 'CronjobController@genRORPO');
 Route::get('cronjob/gen-ro-shop/{yearMonth}', 'CronjobController@genROSHOP');
 Route::get('cronjob/gen-ro-shop-range', 'CronjobController@genROSHOPbyRange');
+Route::get('cronjob/gen-ro-shopcat-range', 'CronjobController@genROCATShopRange');
+Route::get('cronjob/gen-ro-shop-rcat/{yearMonth}', 'CronjobController@genRORCAT');
 Route::get('cronjob/gen-ro-rpo-s/{yearMonth}', 'CronjobController@genRORPOS');
+Route::get('cronjob/gen-ro-s-daily/{yearMonth}', 'CronjobController@genRORPOSDaily');
+Route::get('cronjob/gen-omset-data/{idRegional}/{yearMonth}', 'CronjobController@generateOmsetReport');
+Route::get('cronjob/gen-update-omset-data/{idRegional}/{yearMonth}', 'CronjobController@generateUpdateOmset');
 
 Route::get('cronjob/gen-performance', 'CronjobController@genPerformance');
 Route::get('cronjob/gen-performance-geprek', 'CronjobController@genPerformanceGEPREK');
@@ -69,6 +74,8 @@ Route::get('cronjob/gen-akt-trx-apo/{year}', 'CronjobController@genAktTRXAPO');
 Route::get('cronjob/gen-rt-per-shop/{year}', 'CronjobController@genRTPerShop');
 Route::get('cronjob/gen-ro-trans-shop', 'CronjobController@genROTransToko');
 Route::get('cronjob/gen-ro-rutin-shop', 'CronjobController@genRORutinToko');
+
+Route::get('cronjob/split', 'CronjobController@splitRoutesForArea');
 
 Route::get('shop/bydistrict', 'ShopController@ShopListByDistrict');
 
@@ -139,6 +146,8 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('master/category-product/store', 'CategoryProductController@store');
     Route::get('master/category-product/update', 'CategoryProductController@update');
     Route::get('master/category-product/destroy', 'CategoryProductController@destroy');
+    Route::get('master/grouping/search', 'CategoryProductController@search');
+    Route::post('master/grouping/store', 'CategoryProductController@storegroup');
 
     //MASTER PRODUK
     Route::get('master/product', 'ProductController@index');
@@ -178,8 +187,10 @@ Route::group(['middleware' => ['checkLogin']], function () {
 
     // MASTER MONITORING
     Route::get('monitoring', 'MonitoringController@index');
-    Route::get('monitoring/download-presence-daily', 'MonitoringController@downloadPresenceDaily');
-    Route::get('monitoring/download-presence-monthly', 'MonitoringController@downloadPresenceMonthly');
+    Route::get('monitoring/download-presence-daily-pdf', 'MonitoringController@downloadPresenceDaily_pdf');
+    Route::get('monitoring/download-presence-daily-xlsx', 'MonitoringController@downloadPresenceDaily_xlsx');
+    Route::get('monitoring/download-presence-monthly-pdf', 'MonitoringController@downloadPresenceMonthly_pdf');
+    Route::get('monitoring/download-presence-monthly-xlsx', 'MonitoringController@downloadPresenceMonthly_xlsx');
     Route::post('monitoring/monitoring-data', 'MonitoringController@monitoring_data');
 
     // PRESENCE
@@ -209,6 +220,8 @@ Route::group(['middleware' => ['checkLogin']], function () {
     Route::get('laporan/lpr-ranking', 'ReportRankingController@index');
     Route::get('laporan/lpr-trend', 'ReportTrendController@index');
     Route::get('laporan/lpr-repeat', 'ReportRepeatController@index');
+    Route::get('laporan/lpr-repeat-cat', 'ReportRepeatController@index_repeat_cat');
     Route::get('laporan/lpr-transaction', 'ReportTransactionController@index');
     Route::get('laporan/lpr-performance', 'ReportPerformanceController@index');
+    Route::get('laporan/lpr-omset', 'ReportOmsetController@index');
 });

@@ -91,6 +91,7 @@ class DistrictController extends Controller
         $district->ISMARKET_DISTRICT    = '0';
         $district->ISFOCUS_DISTRICT     = '0';
         $district->deleted_at           = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+        $district->ISGROUPING           = ($req->input('status_group') == '0' || $req->input('status_group') == null) ? '0' : '1';
         $district->save();
 
         return redirect('master/location/district')->with('succ_msg', 'Berhasil menambah data kecamatan!');
@@ -127,6 +128,7 @@ class DistrictController extends Controller
         $district->ID_AREA          = $req->input('area');
         $district->NAME_DISTRICT    = Str::upper($req->input('district'));
         $district->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+        $district->ISGROUPING       = ($req->input('status_group') == '0' || $req->input('status_group') == null) ? '0' : '1';
 
         $changedFields = array_keys($district->getDirty());
         $district->save();
