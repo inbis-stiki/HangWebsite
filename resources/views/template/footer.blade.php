@@ -54,7 +54,6 @@
 
  <!-- Dashboard 1 -->
  {{-- <script src="{{ asset('js/dashboard/dashboard-1.js') }}"></script> --}}
- <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
  <!-- pickdate -->
  <script src="{{ asset('vendor/pickadate/picker.js') }}"></script>
@@ -62,6 +61,10 @@
  <script src="{{ asset('vendor/pickadate/picker.date.js') }}"></script>
 
  <script src="{{ asset('vendor/toastr/js/toastr.min.js') }}"></script>
+
+ <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-fixedcolumns/4.3.1/dataTables.fixedColumns.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables-fixedheader/4.0.1/dataTables.fixedHeader.min.js"></script>
 
  <script>
  	$(document).ready(function() {

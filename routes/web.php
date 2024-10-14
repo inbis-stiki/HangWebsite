@@ -212,6 +212,9 @@ Route::group(['middleware' => ['checkLogin']], function () {
     //MASTER ACTIVITY CATEGORY
     Route::get('master/activity-category', 'ActivityCategoryController@index');
     Route::get('master/activity-category/update', 'ActivityCategoryController@update');
+
+    // OMSET
+    Route::post('master/all-omset-data', 'ReportOmsetController@pipeline_datatable');
     
     //LAPORAN
     Route::get('laporan/lpr-shop', 'ReportShopController@index');
