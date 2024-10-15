@@ -572,6 +572,79 @@ class CronjobController extends Controller
         // dd($rOs);die;
     }
 
+    public function queryGetGenDataOmset(Request $req)
+    {
+        set_time_limit(3600);
+
+        $year = 2024;
+        $idpc = 2;
+
+        $months = range(1, 12);
+
+        $selects = [];
+        foreach ($months as $month) {
+            $selects[] = DB::raw("SUM(CASE WHEN head.BULAN = $month THEN det.TOTAL_OMSET ELSE 0 END) as MONTH{$month}_TOTAL_OMSET");
+            $selects[] = DB::raw("SUM(CASE WHEN head.BULAN = $month THEN det.TOTAL_OUTLET ELSE 0 END) as MONTH{$month}_TOTAL_OUTLET");
+        }
+
+        $data = DB::table('report_omset_head as head')
+            ->join('report_omset_detail as det', 'head.ID_HEAD', '=', 'det.ID_HEAD')
+            ->join('user as u', 'det.ID_USER', '=', DB::raw('u.ID_USER COLLATE utf8mb4_general_ci'))
+            ->join('md_product_category as mpc', 'det.ID_PC', '=', 'mpc.ID_PC')
+            ->select(
+                'mpc.NAME_PC',
+                'det.ID_USER',
+                'u.NAME_USER',
+                ...$selects
+            )
+            ->whereNull('u.deleted_at')
+            ->where(function ($query) use ($year) {
+                $query->where('head.TAHUN', $year)
+                    ->orWhereNull('head.TAHUN');
+            })
+            ->where('det.ID_PC', '=', $idpc)
+            ->groupBy('det.ID_PC', 'det.ID_USER')
+            ->orderBy('mpc.ID_PC')
+            ->get()
+            ->groupBy('NAME_PC');
+
+        $result = $data->map(function ($users) {
+            return $users->map(function ($row) {
+                return [
+                    'NAME_USER' => $row->NAME_USER,
+                    'MONTH1_TOTAL_OMSET' => (float) $row->MONTH1_TOTAL_OMSET,
+                    'MONTH1_TOTAL_OUTLET' => (float) $row->MONTH1_TOTAL_OUTLET,
+                    'MONTH2_TOTAL_OMSET' => (float) $row->MONTH2_TOTAL_OMSET,
+                    'MONTH2_TOTAL_OUTLET' => (float) $row->MONTH2_TOTAL_OUTLET,
+                    'MONTH3_TOTAL_OMSET' => (float) $row->MONTH3_TOTAL_OMSET,
+                    'MONTH3_TOTAL_OUTLET' => (float) $row->MONTH3_TOTAL_OUTLET,
+                    'MONTH4_TOTAL_OMSET' => (float) $row->MONTH4_TOTAL_OMSET,
+                    'MONTH4_TOTAL_OUTLET' => (float) $row->MONTH4_TOTAL_OUTLET,
+                    'MONTH5_TOTAL_OMSET' => (float) $row->MONTH5_TOTAL_OMSET,
+                    'MONTH5_TOTAL_OUTLET' => (float) $row->MONTH5_TOTAL_OUTLET,
+                    'MONTH6_TOTAL_OMSET' => (float) $row->MONTH6_TOTAL_OMSET,
+                    'MONTH6_TOTAL_OUTLET' => (float) $row->MONTH6_TOTAL_OUTLET,
+                    'MONTH7_TOTAL_OMSET' => (float) $row->MONTH7_TOTAL_OMSET,
+                    'MONTH7_TOTAL_OUTLET' => (float) $row->MONTH7_TOTAL_OUTLET,
+                    'MONTH8_TOTAL_OMSET' => (float) $row->MONTH8_TOTAL_OMSET,
+                    'MONTH8_TOTAL_OUTLET' => (float) $row->MONTH8_TOTAL_OUTLET,
+                    'MONTH9_TOTAL_OMSET' => (float) $row->MONTH9_TOTAL_OMSET,
+                    'MONTH9_TOTAL_OUTLET' => (float) $row->MONTH9_TOTAL_OUTLET,
+                    'MONTH10_TOTAL_OMSET' => (float) $row->MONTH10_TOTAL_OMSET,
+                    'MONTH10_TOTAL_OUTLET' => (float) $row->MONTH10_TOTAL_OUTLET,
+                    'MONTH11_TOTAL_OMSET' => (float) $row->MONTH11_TOTAL_OMSET,
+                    'MONTH11_TOTAL_OUTLET' => (float) $row->MONTH11_TOTAL_OUTLET,
+                    'MONTH12_TOTAL_OMSET' => (float) $row->MONTH12_TOTAL_OMSET,
+                    'MONTH12_TOTAL_OUTLET' => (float) $row->MONTH12_TOTAL_OUTLET,
+                ];
+            })->toArray(); // Convert the inner collection to array
+        })->toArray(); // Convert the outer collection to array
+
+        dd($result);
+
+        return $result;
+    }
+
     public function generateOmsetReport($idRegional, $yearMonth)
     {
         set_time_limit(3600);
