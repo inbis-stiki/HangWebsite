@@ -27,7 +27,7 @@ class RouteController extends Controller
                 u.NAME_USER,
                 ms.NAME_SHOP
             FROM 
-                md_route mr
+                md_split_route mr
             LEFT JOIN `user` u ON
                 mr.ID_USER = u.ID_USER
             LEFT JOIN md_shop ms ON
@@ -58,7 +58,7 @@ class RouteController extends Controller
                 u.NAME_USER,
                 ms.NAME_SHOP
             FROM 
-                md_route mr
+                md_split_route mr
             LEFT JOIN `user` u ON
                 mr.ID_USER = u.ID_USER
             LEFT JOIN md_shop ms ON
@@ -82,7 +82,7 @@ class RouteController extends Controller
                 GROUP_CONCAT(ms.NAME_SHOP SEPARATOR ';') AS NAME_SHOP ,
                 GROUP_CONCAT(ma.NAME_AREA SEPARATOR ';') AS NAME_AREA
             FROM
-                md_route mr
+                md_split_route mr
             LEFT JOIN md_shop ms ON
                 ms.ID_SHOP = mr.ID_SHOP
             LEFT JOIN md_district md ON 
