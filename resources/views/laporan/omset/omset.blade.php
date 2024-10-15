@@ -30,26 +30,18 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-6">
+                            <div class="col-3">
+                                <h4 class="card-title">Tipe Filter</h4>
+                                <select name="shopProd" id="TypeShopKat" class="select2">
+                                    <option selected value="">Show All</option>
+                                    <option value="SHOP_CATEGORY">Tipe Toko</option>
+                                    <option value="PRODUCT_CATEGORY">Kategori Produk</option>
+                                </select>
+                            </div>
+                            <div class="col-3">
                                 <h4 class="card-title">Tipe Toko / Kategori Produk</h4>
                                 <select name="shopProd" id="SelectShopKat" class="select2">
                                     <option selected value="">Show All</option>
-                                    @foreach($shop_prod as $key => $item)
-                                    @if($key == 'SHOP_CATEGORY')
-                                    <optgroup label="Tipe Toko">
-                                        @foreach($item as $itemChild)
-                                        <option value="{{$itemChild->NAMA}}" data-tipeFilter='{{$itemChild->TYPE}}'>{{$itemChild->NAMA}}</option>
-                                        @endforeach
-                                    </optgroup>
-                                    @endif
-                                    @if($key == 'PRODUCT_CATEGORY')
-                                    <optgroup label="Kategori Produk">
-                                        @foreach($item as $itemChild)
-                                        <option value="{{$itemChild->ID_CAT}}" data-tipeFilter='{{$itemChild->TYPE}}'>{{$itemChild->NAMA}}</option>
-                                        @endforeach
-                                    </optgroup>
-                                    @endif
-                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-2">
@@ -124,8 +116,10 @@
 <script>
     var regional = $('#SelectRegional').val()
     var shopProduct = $('#SelectShopKat').val()
-    var typeShopProduct = $('#SelectShopKat').find(':selected').attr('data-tipeFilter')
+    var typeShopProduct = $('#TypeShopKat').val()
     const tableElem = $('#datatable')
+
+    var dataKat = JSON.parse(`<?= json_encode($shop_prod) ?>`)
 
     var customColumn = [{
         data: 'NAME_USER'
@@ -291,12 +285,135 @@
 
     filterDataOmset()
 
-    $('#btn-filter-omset').click(function() {
-        regional = $('#SelectRegional').val()
-        shopProduct = $('#SelectShopKat').val()
-        typeShopProduct = $('#SelectShopKat').find(':selected').attr('data-tipeFilter')
+    $('#SelectRegional').change(function() {
+        setterValue()
+    })
 
+    $('#SelectShopKat').change(function() {
+        setterValue()
+    })
+
+    $('#TypeShopKat').change(function() {
+        $('#SelectShopKat').empty();
+        $('#SelectShopKat').append(`<option selected value="">Show All</option>`);
+        if ($(this).val() == 'PRODUCT_CATEGORY') {
+            $.each(dataKat.PRODUCT_CATEGORY, function(index, item) {
+                $('#SelectShopKat').append(`<option value="${item.NAMA}" data-tipeFilter="${item.TYPE}">${item.NAMA}</option>`);
+            });
+        } else if ($(this).val() == 'SHOP_CATEGORY') {
+            $.each(dataKat.SHOP_CATEGORY, function(index, item) {
+                $('#SelectShopKat').append(`<option value="${item.NAMA}" data-tipeFilter="${item.TYPE}">${item.NAMA}</option>`);
+            });
+        }
+        setterValue()
+    });
+
+    $('#btn-filter-omset').click(function() {
+        setterValue()
         tableElem.DataTable().destroy();
         filterDataOmset()
     })
+
+    function setterValue() {
+        regional = $('#SelectRegional').val()
+        shopProduct = $('#SelectShopKat').val()
+        typeShopProduct = $('#TypeShopKat').val()
+    }
+
+    $('#btn-download-omset').click(function() {
+        if (regional) {
+            DownloadFile(`<?= url('cronjob/gen-data-omset') ?>?prodShop=${shopProduct}&type=${typeShopProduct}&regional=${regional}`)
+        } else {
+            showToast('Laporan gagal di generate. jika ingin melakukan generate laporan, regional tidak boleh kosong.');
+        }
+    })
+
+    function DownloadFile(url) {
+        Swal.fire({
+            title: 'Sedang Membuat Laporan ...',
+            html: `Laporan sedang dibuat mohon untuk bersabar
+                <br>
+                <div style="background-color: transparent; width: 100px; height: 100px; display: flex; transform: translate(180%, 0%); justify-content: center; align-items: center;">
+                    <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
+                        <path fill="#f26f21" d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+                            <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s" from="0 50 50" to="360 50 50" repeatCount="indefinite" />
+                        </path>
+                    </svg>
+                </div>`,
+            timerProgressBar: false,
+            showCancelButton: false,
+            showConfirmButton: false,
+            allowOutsideClick: false
+        })
+
+        fetch(url)
+            .then(response => {
+                // if (!response.ok) {
+                //     showToast('Laporan gagal di generate. Mohon cek kembali jaringan anda.');
+                // }
+
+                // Extract the filename from the Content-Disposition header
+                const contentDisposition = response.headers.get('content-disposition');
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+
+                if (filenameMatch && filenameMatch.length > 1) {
+                    const originalFilename = filenameMatch[1];
+
+                    // Create a blob URL for the data
+                    return response.blob().then(blob => {
+                        return {
+                            blob,
+                            originalFilename
+                        };
+                    });
+                } else {
+                    showToast('Laporan gagal di generate. Gagal mendapatkan nama original file.');
+                }
+            })
+            .then(({
+                blob,
+                originalFilename
+            }) => {
+                // Create a blob URL for the data
+                const blobUrl = URL.createObjectURL(blob);
+
+                // Create a hidden link and trigger the download with the original filename
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = originalFilename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+
+                // Clean up
+                URL.revokeObjectURL(blobUrl);
+
+                Swal.close()
+            })
+            .catch(error => {
+                Swal.close()
+                showToast('Laporan gagal di generate. Tidak ada data atau sistem sedang mengalami error.');
+            });
+    }
+
+    function showToast(msg) {
+        toastr.warning(msg, "Warning", {
+            positionClass: "toast-top-right",
+            timeOut: 3e3,
+            closeButton: !0,
+            debug: !1,
+            newestOnTop: !0,
+            progressBar: 0,
+            preventDuplicates: 0,
+            onclick: null,
+            showDuration: "300",
+            hideDuration: "500",
+            extendedTimeOut: "500",
+            showEasing: "swing",
+            hideEasing: "linear",
+            showMethod: "fadeIn",
+            hideMethod: "fadeOut",
+            tapToDismiss: !1
+        })
+    }
 </script>

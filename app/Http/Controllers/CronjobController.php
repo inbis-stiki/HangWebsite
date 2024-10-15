@@ -24,6 +24,7 @@ use App\ReportRtDetail;
 use App\ReportOmsetHead;
 use App\ReportOmsetDetail;
 use App\ReportAktivitasTRX;
+use App\ReportOmsetExcell;
 use App\ReportPerformance;
 use App\ReportRepeatOrder;
 use App\Shop;
@@ -367,7 +368,7 @@ class CronjobController extends Controller
 
             $noTransDaily = Users::getUserByRegional($_POST['idRegional'], $idUsers);
         }
-        
+
         $dataProductGroup = DB::select("
             SELECT
                 mp.* ,
@@ -404,7 +405,7 @@ class CronjobController extends Controller
                     "DETAIL_LOCATION" => $trans->DETAIL_LOCATION,
                     "NAME_ROLE" => $trans->NAME_ROLE
                 ];
-                
+
                 $hasProductInGroup = false;
                 $productQuantities = [];
                 foreach ($products as $product) {
@@ -414,7 +415,7 @@ class CronjobController extends Controller
                         $hasProductInGroup = true;
                     }
                 }
-                
+
                 if ($hasProductInGroup) {
                     $userEntry = array_merge($userEntry, $productQuantities, [
                         "ISFINISHED_TD" => $trans->ISFINISHED_TD,
@@ -499,7 +500,7 @@ class CronjobController extends Controller
             }
         }
     }
-    
+
     public function genRORPOS($yearMonth)
     {
         set_time_limit(3600);
@@ -570,6 +571,114 @@ class CronjobController extends Controller
         }
 
         // dd($rOs);die;
+    }
+
+    public function queryGetGenDataOmset(Request $req)
+    {
+        set_time_limit(3600);
+
+        $year = 2024;
+        $months = range(1, 12);   
+
+        $shopProduct = $req->input('prodShop');
+        $typeshopProduct = $req->input('type');
+        $regional = $req->input('regional');
+
+        $condition = [];
+        if (!empty($regional)) {
+            $condition[] = "head.ID_REGIONAL = '$regional'";
+        }
+        if (!empty($typeshopProduct) && !empty($shopProduct)) {
+            if ($typeshopProduct == 'SHOP_CATEGORY') {
+                $condition[] = "det.TYPE_SHOP = '$shopProduct'";
+            }
+            if ($typeshopProduct == 'PRODUCT_CATEGORY') {
+                $condition[] = "mpc.NAME_PC = '$shopProduct'";
+            }
+        }
+
+        $selects = [];
+        foreach ($months as $month) {
+            $selects[] = DB::raw("SUM(CASE WHEN head.BULAN = $month THEN det.TOTAL_OMSET ELSE 0 END) as MONTH{$month}_TOTAL_OMSET");
+            $selects[] = DB::raw("SUM(CASE WHEN head.BULAN = $month THEN det.TOTAL_OUTLET ELSE 0 END) as MONTH{$month}_TOTAL_OUTLET");
+        }
+
+        $data = DB::table('report_omset_head as head')
+            ->join('report_omset_detail as det', 'head.ID_HEAD', '=', 'det.ID_HEAD')
+            ->join('user as u', 'det.ID_USER', '=', DB::raw('u.ID_USER COLLATE utf8mb4_general_ci'))
+            ->join('md_product_category as mpc', 'det.ID_PC', '=', 'mpc.ID_PC')
+            ->select(
+                'mpc.NAME_PC',
+                'det.TYPE_SHOP',
+                'det.ID_USER',
+                'u.NAME_USER',
+                ...$selects
+            )
+            ->whereNull('u.deleted_at')
+            ->where(function ($query) use ($year) {
+                $query->where('head.TAHUN', $year)
+                    ->orWhereNull('head.TAHUN');
+            })
+            ->groupBy('det.ID_USER')
+            ->orderBy('mpc.ID_PC');
+
+        if (!empty($condition)) {
+            $conditionWhere = implode(' AND ', $condition);
+            $data->whereRaw($conditionWhere);
+        }
+
+        if (!empty($typeshopProduct) || !empty($shopProduct)) {
+            if ($typeshopProduct == 'SHOP_CATEGORY') {
+                $dataCollection = $data->groupBy('TYPE_SHOP')->get();
+            }
+            if ($typeshopProduct == 'PRODUCT_CATEGORY') {
+                $dataCollection = $data->groupBy('NAME_PC')->get();
+            }
+        } else {            
+            $dataCollection = $data->get();
+        }
+        
+        $result = [];
+        
+        foreach($dataCollection as $row){
+            if ($typeshopProduct == 'SHOP_CATEGORY') {
+                $groupKey = $row->TYPE_SHOP;
+            } else if ($typeshopProduct == 'PRODUCT_CATEGORY') {
+                $groupKey = $row->NAME_PC;
+            } else {
+                $groupKey = 'Sheet 1';
+            }
+            
+            $result[$groupKey][] = [
+                'NAME_USER' => $row->NAME_USER,
+                'MONTH1_TOTAL_OMSET' => (float) $row->MONTH1_TOTAL_OMSET,
+                'MONTH1_TOTAL_OUTLET' => (float) $row->MONTH1_TOTAL_OUTLET,
+                'MONTH2_TOTAL_OMSET' => (float) $row->MONTH2_TOTAL_OMSET,
+                'MONTH2_TOTAL_OUTLET' => (float) $row->MONTH2_TOTAL_OUTLET,
+                'MONTH3_TOTAL_OMSET' => (float) $row->MONTH3_TOTAL_OMSET,
+                'MONTH3_TOTAL_OUTLET' => (float) $row->MONTH3_TOTAL_OUTLET,
+                'MONTH4_TOTAL_OMSET' => (float) $row->MONTH4_TOTAL_OMSET,
+                'MONTH4_TOTAL_OUTLET' => (float) $row->MONTH4_TOTAL_OUTLET,
+                'MONTH5_TOTAL_OMSET' => (float) $row->MONTH5_TOTAL_OMSET,
+                'MONTH5_TOTAL_OUTLET' => (float) $row->MONTH5_TOTAL_OUTLET,
+                'MONTH6_TOTAL_OMSET' => (float) $row->MONTH6_TOTAL_OMSET,
+                'MONTH6_TOTAL_OUTLET' => (float) $row->MONTH6_TOTAL_OUTLET,
+                'MONTH7_TOTAL_OMSET' => (float) $row->MONTH7_TOTAL_OMSET,
+                'MONTH7_TOTAL_OUTLET' => (float) $row->MONTH7_TOTAL_OUTLET,
+                'MONTH8_TOTAL_OMSET' => (float) $row->MONTH8_TOTAL_OMSET,
+                'MONTH8_TOTAL_OUTLET' => (float) $row->MONTH8_TOTAL_OUTLET,
+                'MONTH9_TOTAL_OMSET' => (float) $row->MONTH9_TOTAL_OMSET,
+                'MONTH9_TOTAL_OUTLET' => (float) $row->MONTH9_TOTAL_OUTLET,
+                'MONTH10_TOTAL_OMSET' => (float) $row->MONTH10_TOTAL_OMSET,
+                'MONTH10_TOTAL_OUTLET' => (float) $row->MONTH10_TOTAL_OUTLET,
+                'MONTH11_TOTAL_OMSET' => (float) $row->MONTH11_TOTAL_OMSET,
+                'MONTH11_TOTAL_OUTLET' => (float) $row->MONTH11_TOTAL_OUTLET,
+                'MONTH12_TOTAL_OMSET' => (float) $row->MONTH12_TOTAL_OMSET,
+                'MONTH12_TOTAL_OUTLET' => (float) $row->MONTH12_TOTAL_OUTLET,
+            ];
+        }
+        
+        app(ReportOmsetExcell::class)->gen_omset($result, $regional, $shopProduct, $typeshopProduct);
     }
 
     public function generateOmsetReport($idRegional, $yearMonth)
@@ -657,22 +766,22 @@ class CronjobController extends Controller
     public function genRORPOSDaily($inputDate = null)
     {
         set_time_limit(3600);
-        
+
         $date = $inputDate ? date_create($inputDate) : date_create();
         $year = date_format($date, 'Y');
         $month = date_format($date, 'n');
         $day = date_format($date, 'd');
 
         $updated_at = date('Y-m-d', strtotime('-1 days'));
-        
+
         $rOs = Cronjob::queryGetRepeatOrderShopDaily($date);
-        
+
         $area = Cronjob::getreg($year, $month);
-    
+
         if (!empty($rOs)) {
             foreach ($area as $reg) {
                 $unik = md5($reg->REGIONAL_TRANS . $year . $month);
-    
+
                 ReportShopHead::updateOrCreate(
                     ['ID_HEAD' => "REP_" . $unik],
                     [
@@ -682,18 +791,18 @@ class CronjobController extends Controller
                     ]
                 );
             }
-    
+
             foreach ($rOs as $item) {
                 if ($item->REGIONAL_TRANS == 'SUM 1') {
                     $unik2 = md5(str_replace('SUM 1', 'SUMATERA 1', $item->REGIONAL_TRANS) . $year . $month);
                 } else {
                     $unik2 = md5($item->REGIONAL_TRANS . $year . $month);
                 }
-    
+
                 $existingReportDetail = ReportShopDet::where('ID_HEAD', "REP_" . $unik2)
-                                                     ->where('ID_SHOP', $item->ID_SHOP)
-                                                     ->first();
-    
+                    ->where('ID_SHOP', $item->ID_SHOP)
+                    ->first();
+
                 if ($existingReportDetail) {
                     $existingReportDetail->TOTAL_RO += $item->TOTAL_TEST;
                     $existingReportDetail->TOTAL_RO_PRODUCT += $item->TOTAL_RO_PRODUCT;
@@ -715,7 +824,7 @@ class CronjobController extends Controller
                     ]);
                 }
             }
-    
+
             // Update CATEGORY_RO based on md_range_repeat ranges
             $ranges = DB::table('md_range_repeat')->select('ID_RANGE', 'START', 'END')->get();
             foreach ($ranges as $range) {
@@ -740,7 +849,7 @@ class CronjobController extends Controller
         if (!empty($rOs)) {
             foreach ($area as $reg) {
                 $unik = md5($reg->REGIONAL_TRANS . $year . $month);
-                
+
                 ReportRcatHead::updateOrInsert(
                     ['ID_HEAD' => "REP_" . $unik], // Conditions for update
                     [
@@ -1598,8 +1707,9 @@ class CronjobController extends Controller
         ");
     }
 
-    function splitRoutesForArea() {
-        
+    function splitRoutesForArea()
+    {
+
         set_time_limit(3600);
 
         $areas = DB::table('md_route')
