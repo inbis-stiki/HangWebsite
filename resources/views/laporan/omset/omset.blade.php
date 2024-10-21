@@ -24,13 +24,17 @@
                             <div class="col-4">
                                 <h4 class="card-title">Regional</h4>
                                 <select name="transaksi" id="SelectRegional" class="select2">
-                                    <option selected value="">All Regional</option>
+                                    <?php $valAll = []; ?>
+                                    <?php foreach ($data_regional as $item) : ?>
+                                        <?php array_push($valAll, $item->NAME_REGIONAL); ?>
+                                    <?php endforeach; ?>
+                                    <option selected value="<?= implode(';', $valAll) ?>" selected>All Regional</option>
                                     @foreach($data_regional as $item)
                                     <option value="{{$item->NAME_REGIONAL}}">{{$item->NAME_REGIONAL}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 <h4 class="card-title">Tipe Filter</h4>
                                 <select name="shopProd" id="TypeShopKat" class="select2">
                                     <option selected value="">Show All</option>
@@ -38,16 +42,16 @@
                                     <option value="PRODUCT_CATEGORY">Kategori Produk</option>
                                 </select>
                             </div>
-                            <div class="col-3">
+                            <div class="col-4">
                                 <h4 class="card-title">Tipe Toko / Kategori Produk</h4>
                                 <select name="shopProd" id="SelectShopKat" class="select2">
                                     <option selected value="">Show All</option>
                                 </select>
                             </div>
-                            <div class="col-2">
+                            <div class="col-12 mt-5">
                                 <div class="d-flex align-items-end justify-content-end h-100">
-                                    <button type="button" id="btn-filter-omset" class="btn btn-primary mr-3"><i class="fa-solid fa-filter"></i></button>
-                                    <button type="button" id="btn-download-omset" class="btn btn-primary"><i class="fa-solid fa-file-arrow-down"></i></button>
+                                    <button type="button" id="btn-download-omset" class="btn btn-primary mr-3"><i class="fa-solid fa-file-arrow-down"></i> Generate Excell</button>
+                                    <button type="button" id="btn-filter-omset" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Filter Table</button>
                                 </div>
                             </div>
                         </div>
