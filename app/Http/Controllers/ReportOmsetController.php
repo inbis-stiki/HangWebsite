@@ -34,6 +34,7 @@ class ReportOmsetController extends Controller
             $data['data_regional']  = DB::table('md_regional')->get();
         }
 
+        // dd($data);
         $data['shop_prod'] = $this->shop_prod_kat();
 
         // $year = 2024;
@@ -115,7 +116,13 @@ class ReportOmsetController extends Controller
 
         $condition = [];
         if (!empty($regional)) {
-            $condition[] = "h.ID_REGIONAL = '$regional'";
+            $regionalArray = [];
+            foreach (explode(';', $regional) as $item) {
+                $regionalArray[] = "'" . $item . "'";
+            }
+            $regCnvrt = implode(',', $regionalArray);
+
+            $condition[] = "h.ID_REGIONAL IN ($regCnvrt)";
         }
         if (!empty($typeshopProduct) && !empty($shopProduct)) {
             if ($typeshopProduct == 'SHOP_CATEGORY') {
