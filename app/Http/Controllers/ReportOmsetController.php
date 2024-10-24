@@ -122,7 +122,7 @@ class ReportOmsetController extends Controller
                 $condition[] = "d.TYPE_SHOP = '$shopProduct'";
             }
             if ($typeshopProduct == 'PRODUCT_CATEGORY') {
-                $condition[] = "d.ID_PC = '$shopProduct'";
+                $condition[] = "mpc.NAME_PC = '$shopProduct'";
             }
         }
         if (!empty($search)) {
@@ -168,6 +168,7 @@ class ReportOmsetController extends Controller
             )
             ->leftJoin('report_omset_detail as d', DB::raw('u.ID_USER COLLATE utf8mb4_general_ci'), '=', 'd.ID_USER')
             ->leftJoin('report_omset_head as h', 'd.ID_HEAD', '=', 'h.ID_HEAD')
+            ->leftjoin('md_product_category as mpc', 'd.ID_PC', '=', 'mpc.ID_PC')
             ->whereNull('u.deleted_at')
             ->where(function ($query) use ($year) {
                 $query->where('h.TAHUN', $year)
