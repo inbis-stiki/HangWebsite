@@ -20,7 +20,8 @@ class Users extends Model
                 u.ID_USER,
                 u.NAME_USER,
                 ma.NAME_AREA,
-                mr.NAME_ROLE
+                mr.NAME_ROLE,
+                t.LATEST_DATE_TRANS
             FROM
                 `user` u
             INNER JOIN md_area ma ON
@@ -28,6 +29,15 @@ class Users extends Model
                 AND ma.ID_AREA = u.ID_AREA
             INNER JOIN md_role mr ON
                 mr.ID_ROLE = u.ID_ROLE
+            LEFT JOIN (
+                SELECT
+                    ID_USER,
+                    MAX(DATE_TRANS) AS LATEST_DATE_TRANS
+                FROM
+                    transaction
+                GROUP BY
+                    ID_USER
+            ) t ON t.ID_USER = u.ID_USER
             WHERE
                 ma.ID_REGIONAL = " . $idRegional . "
                 AND u.ID_ROLE IN (5, 6)

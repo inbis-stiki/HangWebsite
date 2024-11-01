@@ -335,14 +335,16 @@ class ReportTransaction
         $ObjSheet3->getColumnDimension('B')->setWidth('30');
         $ObjSheet3->getColumnDimension('C')->setWidth('15');
         $ObjSheet3->getColumnDimension('D')->setWidth('18');
+        $ObjSheet3->getColumnDimension('E')->setWidth('30');
 
-        $ObjSheet3->mergeCells('A1:D2')->setCellValue('A1', "REKAP USER YANG TIDAK MELAKUKAN TRANSAKSI")->getStyle('A1:D2')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
-        $ObjSheet3->mergeCells('A3:D4')->setCellValue('A3', "")->getStyle('A3:D4')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FFFF0000'));
+        $ObjSheet3->mergeCells('A1:E2')->setCellValue('A1', "REKAP USER YANG TIDAK MELAKUKAN TRANSAKSI")->getStyle('A1:E2')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FF000000'));
+        $ObjSheet3->mergeCells('A3:E4')->setCellValue('A3', "")->getStyle('A3:E4')->applyFromArray($this->styling_title_template('FFFFFFFF', 'FFFF0000'));
 
         $ObjSheet3->mergeCells('A5:A7')->setCellValue('A5', 'TANGGAL')->getStyle('A5:A7')->applyFromArray($this->styling_title_template('FF00B0F0', 'FF000000'));
         $ObjSheet3->mergeCells('B5:B7')->setCellValue('B5', 'NAMA')->getStyle('B5:B7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
         $ObjSheet3->mergeCells('C5:C7')->setCellValue('C5', 'JABATAN')->getStyle('C5:C7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
         $ObjSheet3->mergeCells('D5:D7')->setCellValue('D5', 'AREA')->getStyle('D5:D7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
+        $ObjSheet3->mergeCells('E5:E7')->setCellValue('E5', 'TRANSAKSI TERAKHIR')->getStyle('E5:E7')->applyFromArray($this->styling_title_template('FF92D050', 'FF000000'));
 
         $rowStart = 8;
         if ($noTransDaily != null) {
@@ -351,6 +353,7 @@ class ReportTransaction
                 $ObjSheet3->setCellValue('B' . $rowStart, $noTrans->NAME_USER)->getStyle('B' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
                 $ObjSheet3->setCellValue('C' . $rowStart, $noTrans->NAME_ROLE)->getStyle('C' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
                 $ObjSheet3->setCellValue('D' . $rowStart, $noTrans->NAME_AREA)->getStyle('D' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
+                $ObjSheet3->setCellValue('E' . $rowStart, $noTrans->LATEST_DATE_TRANS)->getStyle('E' . $rowStart)->applyFromArray($this->styling_content_template('00FFFFFF', '00000000'))->getAlignment()->setWrapText(true);
 
                 $rowStart++;
             }

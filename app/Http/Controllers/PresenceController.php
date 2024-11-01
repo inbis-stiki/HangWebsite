@@ -21,15 +21,19 @@ class PresenceController extends Controller
         if ($id_role == 3) {
             $data['data_regional']  = DB::table('md_area')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+                ->whereNull('md_regional.deleted_at')
                 ->where('md_regional.ID_LOCATION', '=', $id_location)
                 ->get();
         } else if ($id_role == 4) {
             $data['data_regional']  = DB::table('md_area')
                 ->leftjoin('md_regional', 'md_regional.ID_REGIONAL', '=', 'md_area.ID_REGIONAL')
+                ->whereNull('md_regional.deleted_at')
                 ->where('md_regional.ID_REGIONAL', '=', $id_regional)
                 ->get();
         } else {
-            $data['data_regional']  = DB::table('md_area')->get();
+            $data['data_regional']  = DB::table('md_area')
+                ->whereNull('md_area.deleted_at')
+                ->get();
         }
 
         return view('master.presence.presence', $data);
