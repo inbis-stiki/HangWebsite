@@ -120,7 +120,7 @@ class ShopApi extends Controller
                     $shop->LONG_SHOP            = $req->input('long_shop');
                     $shop->LAT_SHOP             = $req->input('lat_shop');
                     $shop->ISRECOMMEND_SHOP     = "1";
-                    $shop->PHOTO_SHOP           = $this->UploadFile($req->file('photo_shop'), 'images');
+                    $shop->PHOTO_SHOP           = $this->UploadFileR2($req->file('photo_shop'), 'images');
                     $shop->save();
 
                     return response([
@@ -569,5 +569,34 @@ class ShopApi extends Controller
         ]);
 
         return 'https://' . $bucket . '.is3.cloudhost.id/' . $path;
+    }
+
+    public function UploadFileR2($fileData, $folder)
+    {
+        $extension = $fileData->getClientOriginalExtension();
+        $fileName = $fileData->getClientOriginalName();
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
+
+        $s3 = Storage::disk('r2')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.r2.bucket');
+
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->path(),
+            'ACL' => 'public-read',
+            'ContentType' => $fileData->getMimeType(),
+            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+        
+        return 'https://finna.yntkts.my.id/' . $path;
     }
 }
