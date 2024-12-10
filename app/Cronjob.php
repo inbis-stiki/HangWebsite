@@ -1596,7 +1596,6 @@ class Cronjob extends Model
             td.ID_PC
         ORDER BY
             mr.ID_REGIONAL ASC, ms.ID_SHOP ASC
-        LIMIT 100
         ");
 
         return $rOs;
@@ -1823,7 +1822,7 @@ class Cronjob extends Model
                 JOIN md_area ma ON ma.ID_AREA = md.ID_AREA
                 JOIN md_regional mr ON mr.ID_REGIONAL = ma.ID_REGIONAL
                 JOIN report_recat_detail rd ON s.ID_SHOP = rd.ID_SHOP
-                JOIN report_recat_head rh ON rd.ID_HEAD = rh.ID_HEAD COLLATE utf8mb4_general_ci
+                JOIN report_recat_head rh ON rd.ID_HEAD = rh.ID_HEAD
                 WHERE mr.NAME_REGIONAL = '" . $area->NAME_REGIONAL . "' AND ma.NAME_AREA = '" . $area->NAME_AREA . "'
             ");
         }
