@@ -202,8 +202,8 @@ class InvoiceApi extends Controller
             }
             $currDate = $dateFunc->currDate($req->input('long_trans'), $req->input('lat_trans'));
 
-            $url_faktur1   = $this->UploadFile($req->file('photo_faktur_1'), 'images');
-            $url_faktur2   = $this->UploadFile($req->file('photo_faktur_2'), 'images');
+            $url_faktur1   = $this->UploadFileR2($req->file('photo_faktur_1'), 'images');
+            $url_faktur2   = $this->UploadFileR2($req->file('photo_faktur_2'), 'images');
             $url_array     = array();
 
             array_push($url_array, $url_faktur1);
@@ -328,5 +328,34 @@ class InvoiceApi extends Controller
         ]);
 
         return 'https://' . $bucket . '.is3.cloudhost.id/' . $path;
+    }
+
+    public function UploadFileR2($fileData, $folder)
+    {
+        $extension = $fileData->getClientOriginalExtension();
+        $fileName = $fileData->getClientOriginalName();
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
+
+        $s3 = Storage::disk('r2')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.r2.bucket');
+
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->path(),
+            'ACL' => 'public-read',
+            'ContentType' => $fileData->getMimeType(),
+            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+        
+        return 'https://finna.yntkts.my.id/' . $path;
     }
 }

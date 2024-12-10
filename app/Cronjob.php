@@ -1596,7 +1596,6 @@ class Cronjob extends Model
             td.ID_PC
         ORDER BY
             mr.ID_REGIONAL ASC, ms.ID_SHOP ASC
-        LIMIT 100
         ");
 
         return $rOs;

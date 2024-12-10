@@ -41,14 +41,14 @@ class ProductController extends Controller
         if ($cek == true) {
             return redirect('master/product')->with('err_msg', 'Kode produk sudah ada!');
         }else{
-            $path = $req->file('image')->store('images', 's3');
+            $path = $req->file('image')->store('images', 'r2');
 
             $product                        = new Product();
             $product->NAME_PRODUCT          = $req->input('name_product');
             $product->CODE_PRODUCT          = $req->input('code_product');
             $product->ID_PC                 = $req->input('category_product');
             $product->ORDER_GROUPING         = $req->input('order_product');
-            $product->IMAGE_PRODUCT         = Storage::disk('s3')->url($path);
+            $product->IMAGE_PRODUCT         = Storage::disk('r2')->url($path);
             $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
             $product->save();
 
@@ -71,7 +71,7 @@ class ProductController extends Controller
         }
 
         if (!empty($req->file('image'))) {
-            $path = $req->file('image')->store('images', 's3');
+            $path = $req->file('image')->store('images', 'r2');
         }
         $product = Product::find($req->input('id'));
 
@@ -84,7 +84,7 @@ class ProductController extends Controller
             $product->ID_PC                 = $req->input('category_product');
             $product->ORDER_GROUPING         = $req->input('order_product');
             if (!empty($req->file('image'))) {
-                $product->IMAGE_PRODUCT     = Storage::disk('s3')->url($path);
+                $product->IMAGE_PRODUCT     = Storage::disk('r2')->url($path);
             }
             $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
 
@@ -119,7 +119,7 @@ class ProductController extends Controller
                 $product->ID_PC                 = $req->input('category_product');
                 $product->ORDER_GROUPING         = $req->input('order_product');
                 if (!empty($req->file('image'))) {
-                    $product->IMAGE_PRODUCT     = Storage::disk('s3')->url($path);
+                    $product->IMAGE_PRODUCT     = Storage::disk('r2')->url($path);
                 }
                 $product->deleted_at            = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
                 $product->save();
@@ -151,5 +151,34 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect('master/product')->with('succ_msg', 'Berhasil menghapus data produk!');
+    }
+
+    public function UploadFileR2($fileData, $folder)
+    {
+        $extension = $fileData->getClientOriginalExtension();
+        $fileName = $fileData->getClientOriginalName();
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
+
+        $s3 = Storage::disk('r2')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.r2.bucket');
+
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->path(),
+            'ACL' => 'public-read',
+            'ContentType' => $fileData->getMimeType(),
+            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+        
+        return 'https://finna.yntkts.my.id/' . $path;
     }
 }

@@ -32,8 +32,8 @@ class TransactionImageApi extends Controller
             }
 
             $transactionImage       = new TransactionImage();
-            $url_display            = $this->UploadFile($req->file('image_display'), 'images');
-            $url_lapak              = $this->UploadFile($req->file('image_lapak'), 'images');
+            $url_display            = $this->UploadFileR2($req->file('image_display'), 'images');
+            $url_lapak              = $this->UploadFileR2($req->file('image_lapak'), 'images');
             $url_arr                = array();
 
             array_push($url_arr, $url_display);
@@ -84,10 +84,10 @@ class TransactionImageApi extends Controller
 
             $transactionImage        = new TransactionImage();
 
-            $url_booth = $this->UploadFile($req->file('image_booth'), 'images');
-            $url_masak   = $this->UploadFile($req->file('image_masak'), 'images');
-            $url_icip = $this->UploadFile($req->file('image_icip'), 'images');
-            $url_selling   = $this->UploadFile($req->file('image_selling'), 'images');
+            $url_booth = $this->UploadFileR2($req->file('image_booth'), 'images');
+            $url_masak   = $this->UploadFileR2($req->file('image_masak'), 'images');
+            $url_icip = $this->UploadFileR2($req->file('image_icip'), 'images');
+            $url_selling   = $this->UploadFileR2($req->file('image_selling'), 'images');
 
             $url_arr         = array();
             array_push($url_arr, $url_booth);
@@ -148,10 +148,10 @@ class TransactionImageApi extends Controller
             }
 
             $transactionImage        = new TransactionImage();
-            $url_booth = $this->UploadFile($req->file('image_booth'), 'images');
-            $url_masak   = $this->UploadFile($req->file('image_masak'), 'images');
-            $url_icip = $this->UploadFile($req->file('image_icip'), 'images');
-            $url_selling   = $this->UploadFile($req->file('image_selling'), 'images');
+            $url_booth = $this->UploadFileR2($req->file('image_booth'), 'images');
+            $url_masak   = $this->UploadFileR2($req->file('image_masak'), 'images');
+            $url_icip = $this->UploadFileR2($req->file('image_icip'), 'images');
+            $url_selling   = $this->UploadFileR2($req->file('image_selling'), 'images');
 
             $url_arr         = array();
             array_push($url_arr, $url_booth);
@@ -208,7 +208,7 @@ class TransactionImageApi extends Controller
             }
 
             $transactionImage       = new TransactionImage();
-            $url                   = $this->UploadFile($req->file('image'), 'images');
+            $url                   = $this->UploadFileR2($req->file('image'), 'images');
 
             $cekData    = TransactionImage::select('ID_TI', 'ID_TRANS', 'PHOTO_TI', 'DESCRIPTION_TI')->where([
                 ['ID_TRANS', '=', $req->input('id_trans')],
@@ -272,5 +272,34 @@ class TransactionImageApi extends Controller
         ]);
 
         return 'https://' . $bucket . '.is3.cloudhost.id/' . $path;
+    }
+
+    public function UploadFileR2($fileData, $folder)
+    {
+        $extension = $fileData->getClientOriginalExtension();
+        $fileName = $fileData->getClientOriginalName();
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 10; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+
+        $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
+
+        $s3 = Storage::disk('r2')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.r2.bucket');
+
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->path(),
+            'ACL' => 'public-read',
+            'ContentType' => $fileData->getMimeType(),
+            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+        
+        return 'https://finna.yntkts.my.id/' . $path;
     }
 }

@@ -24,14 +24,18 @@ class ReportOmsetController extends Controller
 
         if ($id_role == 3) {
             $data['data_regional']  = DB::table('md_regional')
+                ->whereNull('md_regional.deleted_at')
                 ->where('md_regional.ID_LOCATION', '=', $id_location)
                 ->get();
         } else if ($id_role == 4) {
             $data['data_regional']  = DB::table('md_regional')
+                ->whereNull('md_regional.deleted_at')
                 ->where('md_regional.ID_REGIONAL', '=', $id_regional)
                 ->get();
         } else {
-            $data['data_regional']  = DB::table('md_regional')->get();
+            $data['data_regional']  = DB::table('md_regional')
+                ->whereNull('md_regional.deleted_at')
+                ->get();
         }
 
         // dd($data);
