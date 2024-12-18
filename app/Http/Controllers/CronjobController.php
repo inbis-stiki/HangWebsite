@@ -31,6 +31,7 @@ use App\Shop;
 use App\Route;
 use App\ReportShopHead;
 use App\ReportShopDet;
+use App\ReportRcatExcel;
 use App\ReportRcatHead;
 use App\ReportRcatDetail;
 use App\SplitRoute;
@@ -45,6 +46,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 
 class CronjobController extends Controller
 {
@@ -1215,22 +1217,21 @@ class CronjobController extends Controller
             return 0;
         }
     }
-    public function genROCATShopRange(Request $req)
+    public function genROCATShopRange($idRegional, $yearMonth)
     {
-        if (empty($_GET['dateStart']) || empty($_GET['dateEnd'])) {
-            return redirect('laporan/lpr-repeat')->with('err_msg', 'Inputan tanggal awal atau tanggal akhir tidak boleh kosong');
-        } else {
-            $dateStart = explode('-', $_GET['dateStart']);
-            $startY = ltrim($dateStart[0], '0');
-            $startM = ltrim($dateStart[1], '0');
+        set_time_limit(3600);
+        // $year = date_format(date_create($yearMonth), 'Y');
+        // $month = date_format(date_create($yearMonth), 'n');
 
-            $dateEnd = explode('-', $_GET['dateEnd']);
-            $endY = ltrim($dateEnd[0], '0');
-            $endM = ltrim($dateEnd[1], '0');
+        $dateStart = explode('-', $yearMonth);
+        $startY = ltrim($dateStart[0], '0');
+        $startM = ltrim($dateStart[1], '0');
 
-            $idRegional =  $req->input('regional');
+        $dateEnd = explode('-', $yearMonth);
+        $endY = ltrim($dateEnd[0], '0');
+        $endM = ltrim($dateEnd[1], '0');
 
-            $totalMonth = 0;
+        $totalMonth = 0;
             for ($y = $startY; $y <= $endY; $y++) {
                 for ($m = 1; $m <= 12; $m++) {
                     if ($y == $startY && $m < $startM) {
@@ -1243,16 +1244,97 @@ class CronjobController extends Controller
                 }
             }
 
-            if ($idRegional === "null" || empty($idRegional)) {
-                return redirect('laporan/lpr-repeat')->with('err_msg', 'Regional tidak boleh kosong');
-            } elseif ($totalMonth > 12) {
-                return redirect('laporan/lpr-repeat')->with('err_msg', 'Range bulanan tidak boleh lebih dari 12 bulan');
-            } else {
-                $rOs = Cronjob::queryGetShopCatByRange($startM, $startY, $endM, $endY, $idRegional);
-                app(ReportRepeatOrder::class)->gen_ro_shop_range_by_cat($rOs, $totalMonth);
-            }
+        if ($idRegional === "null" || empty($idRegional)) {
+            return redirect('laporan/lpr-repeat')->with('err_msg', 'Regional tidak boleh kosong');
+        } elseif ($totalMonth > 12) {
+            return redirect('laporan/lpr-repeat')->with('err_msg', 'Range bulanan tidak boleh lebih dari 12 bulan');
+        } else {
+            $rOs = Cronjob::queryGetShopCatByRange($startM, $startY, $endM, $endY, $idRegional);
+            $tempFilePath = app(ReportRepeatOrder::class)->gen_ro_shop_range_by_cat($rOs, $totalMonth);
+    
+            // Create a file object for uploading
+            $fileData = new \Illuminate\Http\File($tempFilePath);
+    
+            ReportRcatExcel::updateOrCreate(
+                [
+                    'ID_REGIONAL' => $idRegional,
+                    'BULAN' => $startM,
+                    'TAHUN' => $startY,
+                ],
+                [
+                    'EXCEL' => $this->UploadFileExcelR2($fileData, 'repeat_orders_cat'),
+                ]
+            );
+    
+            // Clean up the temporary file
+            unlink($tempFilePath);
+    
+            // Return the file URL or further logic
+            return redirect('laporan/lpr-repeat')->with('success_msg', 'File berhasil diunggah');
         }
     }
+    
+    public function genROCATShopDownload($idRegional, $yearMonth)
+    {
+        $date = explode('-', $yearMonth);
+        $year = ltrim($date[0], '0');
+        $month = ltrim($date[1], '0');
+
+        $rawQuery = "
+            SELECT
+                rre.EXCEL
+            FROM
+                report_recat_excel rre
+            WHERE
+                rre.ID_REGIONAL = '$idRegional'
+                AND
+                rre.BULAN = '$month'
+                AND
+                rre.TAHUN = '$year'
+        ";
+        $result = DB::selectOne($rawQuery);
+
+        $disk = Storage::disk('r2');
+        $filePath = str_replace('https://finna.yntkts.my.id/', '', $result->EXCEL);
+
+        if (!$disk->exists($filePath)) {
+            abort(404, 'File not found on the storage');
+        }
+        $fileContent = $disk->get($filePath);
+        $mimeType = $disk->mimeType($filePath);
+        return response($fileContent, 200)
+            ->header('Content-Type', $mimeType)
+            ->header('Content-Disposition', 'attachment; filename="' . basename($filePath) . '"')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate');
+    }
+
+    public function UploadFileExcelR2($fileData, $folder)
+    {
+        // Extract the file extension from the temporary file path
+        $extension = pathinfo($fileData->getPathname(), PATHINFO_EXTENSION);
+
+        $hashedFileName = 'Repeat_Order_Kategori_' . uniqid() .'.'. $extension;
+
+        // Full path within the folder
+        $path = $folder . '/' . $hashedFileName;
+
+        // Configure the S3 client for Cloudflare R2
+        $s3 = Storage::disk('r2')->getDriver()->getAdapter()->getClient();
+        $bucket = config('filesystems.disks.r2.bucket');
+
+        $s3->putObject([
+            'Bucket' => $bucket,
+            'Key' => $path,
+            'SourceFile' => $fileData->getPathname(),
+            'ACL' => 'public-read',
+            'ContentType' => mime_content_type($fileData->getPathname()),
+            'ContentDisposition' => 'inline; filename="' . $hashedFileName . '"',
+        ]);
+
+        // Return the public URL for the uploaded file
+        return 'https://finna.yntkts.my.id/' . $path;
+    }
+
     public function genRTPerShop($yearReq)
     {
 

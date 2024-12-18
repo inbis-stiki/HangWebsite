@@ -666,13 +666,19 @@ class ReportRepeatOrder
 
         $spreadsheet->removeSheetByIndex(0);
 
-        $fileName = 'Repeat Order Toko By Category ' . $regional;
-        $writer = new Xlsx($spreadsheet);
+        $fileName = 'Repeat_Order_kategori_' . uniqid() . '.xlsx';
+        $tempPath = storage_path('app/temp/' . $fileName);
 
-        header('Content-Type: application/vnd.ms-excel'); // generate excel file
-        header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output');
+        // Ensure the temp directory exists
+        if (!file_exists(dirname($tempPath))) {
+            mkdir(dirname($tempPath), 0777, true);
+        }
+
+        // Save the spreadsheet to the temporary file
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($tempPath);
+
+        return $tempPath;
     }
 
     public function gen_ro_test($rOs)

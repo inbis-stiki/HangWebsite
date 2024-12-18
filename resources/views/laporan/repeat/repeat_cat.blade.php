@@ -41,22 +41,16 @@
                             <h4 class="card-title">Cetak Master Outlet</h4>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-12">
+                            <div class="row mt-4">
+                                <div class="col-md-7">
                                     <label for="regional">Regional:</label>
                                     <select id="regional" name="regional" class="form-control" required>
                                         <option selected disabled value=''>Pilih Regional</option>@foreach ($regional as $reg)<option value='{{ $reg->ID_REGIONAL }}'>{{ $reg->NAME_REGIONAL }}</option>@endforeach
                                     </select>
                                 </div>
-                            </div>
-                            <div class="row mt-4">
-                                <div class="col-md-6" id="date-start">
-                                    <label for="start_month">Date Start:</label>
+                                <div class="col-md-5" id="date-start">
+                                    <label for="start_month">Date:</label>
                                     <input type="month" class="form-control date-picker-start" name="dateStart" required>
-                                </div>
-                                <div class="col-md-6" id="date-end">
-                                    <label for="start_month">Date End:</label>
-                                    <input type="month" class="form-control date-picker-end" name="dateEnd" required>
                                 </div>
                             </div>
                             <br></br>
@@ -98,19 +92,17 @@
 
         $('#generate_report').on('click', function() {
             var dateStart = $("input[name='dateStart']").val();
-            var dateEnd = $("input[name='dateEnd']").val();
             var regional = $("#regional").find('option:selected').val();
             var msg = ''
             if (regional.length <= 0) {
                 msg = 'Tolong memilih regional terlebih dahulu'
             } else if (dateStart.length <= 0) {
                 msg = 'Tolong memilih date start terlebih dahulu'
-            } else if (dateEnd.length <= 0) {
-                msg = 'Tolong memilih date end terlebih dahulu'
             }
 
-            if (regional.length > 0 && dateStart.length > 0 && dateEnd.length > 0) {
-                DownloadFile('{{ url("cronjob/gen-ro-shopcat-range") }}?dateStart=' + dateStart + '&dateEnd=' + dateEnd + '&regional=' + regional)
+            if (regional.length > 0 && dateStart.length > 0) {
+                let URLs = `{{ url("report/ro-shopcat") }}/${regional}/${dateStart}`
+                DownloadFile(URLs)
                 // location.href=`http://127.0.0.1:8000/cronjob/gen-ro-shopcat-range?dateEnd=${dateEnd}&dateStart=${dateStart}&regional=${regional}`
             } else {
                 showToast(msg)

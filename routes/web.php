@@ -48,7 +48,7 @@ Route::post('report/trans-daily', 'CronjobController@genTransDaily');
 Route::get('cronjob/gen-ro-rpo/{yearMonth}', 'CronjobController@genRORPO');
 Route::get('cronjob/gen-ro-shop/{yearMonth}', 'CronjobController@genROSHOP');
 Route::get('cronjob/gen-ro-shop-range', 'CronjobController@genROSHOPbyRange');
-Route::get('cronjob/gen-ro-shopcat-range', 'CronjobController@genROCATShopRange');
+Route::get('cronjob/gen-ro-shopcat-range/{idRegional}/{yearMonth}', 'CronjobController@genROCATShopRange');
 Route::get('cronjob/gen-ro-shop-rcat/{yearMonth}', 'CronjobController@genRORCAT');
 Route::get('cronjob/gen-ro-rpo-s/{yearMonth}', 'CronjobController@genRORPOS');
 Route::get('cronjob/gen-ro-s-daily/{yearMonth}', 'CronjobController@genRORPOSDaily');
@@ -56,6 +56,7 @@ Route::get('cronjob/gen-omset-data/{idRegional}/{yearMonth}', 'CronjobController
 Route::get('cronjob/gen-update-omset-data/{idRegional}/{yearMonth}', 'CronjobController@generateUpdateOmset');
 
 Route::get('cronjob/gen-data-omset', 'CronjobController@queryGetGenDataOmset');
+Route::get('report/ro-shopcat/{idRegional}/{yearMonth}', 'CronjobController@genROCATShopDownload');
 
 Route::get('cronjob/gen-performance', 'CronjobController@genPerformance');
 Route::get('cronjob/gen-performance-geprek', 'CronjobController@genPerformanceGEPREK');
