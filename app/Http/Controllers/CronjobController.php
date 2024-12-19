@@ -1254,6 +1254,14 @@ class CronjobController extends Controller
     
             // Create a file object for uploading
             $fileData = new \Illuminate\Http\File($tempFilePath);
+
+            $regional = DB::select("
+                SELECT mr.NAME_REGIONAL
+                FROM `md_regional` mr 
+                WHERE mr.ID_REGIONAL = " . $idRegional . "
+            ");
+
+            // dd($regional[0]->NAME_REGIONAL);
     
             ReportRcatExcel::updateOrCreate(
                 [
@@ -1262,7 +1270,7 @@ class CronjobController extends Controller
                     'TAHUN' => $startY,
                 ],
                 [
-                    'EXCEL' => $this->UploadFileExcelR2($fileData, 'repeat_orders_cat'),
+                    'EXCEL' => $this->UploadFileExcelR2($regional[0]->NAME_REGIONAL, $yearMonth, $fileData, 'repeat_orders_cat'),
                 ]
             );
     
@@ -1308,12 +1316,12 @@ class CronjobController extends Controller
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate');
     }
 
-    public function UploadFileExcelR2($fileData, $folder)
+    public function UploadFileExcelR2($regional, $yearMonth, $fileData, $folder)
     {
         // Extract the file extension from the temporary file path
         $extension = pathinfo($fileData->getPathname(), PATHINFO_EXTENSION);
 
-        $hashedFileName = 'Repeat_Order_Kategori_' . uniqid() .'.'. $extension;
+        $hashedFileName = 'Repeat_Order_Kategori_' . $regional .'_' . $yearMonth .'.'. $extension;
 
         // Full path within the folder
         $path = $folder . '/' . $hashedFileName;
