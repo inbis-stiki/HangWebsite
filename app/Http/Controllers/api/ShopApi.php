@@ -586,13 +586,10 @@ class ShopApi extends Controller
 
         $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
 
-        dump($path);
-        dump($folder);
-
         $s3 = Storage::disk('r2')->getDriver()->getAdapter()->getClient();
         $bucket = config('filesystems.disks.r2.bucket');
 
-        $result = $s3->putObject([
+        $s3->putObject([
             'Bucket' => $bucket,
             'Key' => $path,
             'SourceFile' => $fileData->path(),
@@ -600,8 +597,6 @@ class ShopApi extends Controller
             'ContentType' => $fileData->getMimeType(),
             'ContentDisposition' => 'inline; filename="' . $fileName . '"',
         ]);
-
-        dump($result);die;
         
         return 'https://finna.yntkts.my.id/' . $path;
     }
