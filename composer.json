@@ -17,7 +17,6 @@
         "laravel/tinker": "^2.5",
         "league/flysystem-aws-s3-v3": "^1.0",
         "maatwebsite/excel": "^3.1",
-        "mpdf/mpdf": "^8.2",
         "nesbot/carbon": "^2.59"
     },
     "require-dev": {
