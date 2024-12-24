@@ -121,6 +121,7 @@ class ShopApi extends Controller
                     $shop->LAT_SHOP             = $req->input('lat_shop');
                     $shop->ISRECOMMEND_SHOP     = "1";
                     $shop->PHOTO_SHOP           = $this->UploadFileR2($req->file('photo_shop'), 'images');
+                    // dd($shop);
                     $shop->save();
 
                     return response([
@@ -585,6 +586,9 @@ class ShopApi extends Controller
 
         $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
 
+        dump($path);
+        dump($folder);
+
         $s3 = Storage::disk('r2')->getDriver()->getAdapter()->getClient();
         $bucket = config('filesystems.disks.r2.bucket');
 
@@ -596,6 +600,8 @@ class ShopApi extends Controller
             'ContentType' => $fileData->getMimeType(),
             'ContentDisposition' => 'inline; filename="' . $fileName . '"',
         ]);
+
+        dump($s3);die;
         
         return 'https://finna.yntkts.my.id/' . $path;
     }
