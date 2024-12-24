@@ -592,19 +592,17 @@ class ShopApi extends Controller
         $s3 = Storage::disk('r2')->getDriver()->getAdapter()->getClient();
         $bucket = config('filesystems.disks.r2.bucket');
 
-        $putObjectData = [
+        $result = $s3->putObject([
             'Bucket' => $bucket,
             'Key' => $path,
             'SourceFile' => $fileData->path(),
             'ACL' => 'public-read',
             'ContentType' => $fileData->getMimeType(),
             'ContentDisposition' => 'inline; filename="' . $fileName . '"',
-        ];
+        ]);
 
-        dump($putObjectData);die;
+        dump($result);die;
         
-        $s3->putObject($putObjectData);
-
         return 'https://finna.yntkts.my.id/' . $path;
     }
 }
