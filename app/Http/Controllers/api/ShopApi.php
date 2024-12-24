@@ -108,7 +108,7 @@ class ShopApi extends Controller
                         "status_message"    => 'Data toko sudah terpakai'
                     ], 200);
                 } else {                    
-                    $path = $req->file('photo_shop')->store('images', 's3');
+                    // $path = $req->file('photo_shop')->store('images', 's3');
                     $shop = new Shop();
                     $shop->ID_DISTRICT          = $req->input('id_district');
                     $shop->NAME_SHOP            = Str::upper($req->input('name_shop'));
