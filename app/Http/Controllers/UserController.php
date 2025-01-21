@@ -137,6 +137,8 @@ class UserController extends Controller
             return redirect('master/user')->withErrors($validator);
         }
 
+        // DB::enableQueryLog();
+
         if ($req->input('role') == 1 || $req->input('role') == 2 || $req->input('role') == 3) {
             $locations      = DB::table('md_location')
                 ->where('md_location.ID_LOCATION', $req->input('area'))
@@ -165,6 +167,14 @@ class UserController extends Controller
         //     ->join('md_location', 'md_location.ID_LOCATION', '=', 'md_regional.ID_LOCATION')
         //     ->select('md_regional.ID_REGIONAL', 'md_location.ID_LOCATION', 'md_area.ID_AREA')
         //     ->get();
+
+        // dd(DB::getQueryLog());
+        
+        // dd($locations);
+
+        if (empty($locations)) {
+            return redirect('master/user')->withErrors('gagal menambah data user!');
+        }
 
         $user                   = new Users();
         $user->ID_USER          = substr(md5(time() . rand(10, 99)), 0, 8);
@@ -294,7 +304,7 @@ class UserController extends Controller
                     ->join('md_area', 'md_area.ID_REGIONAL', '=', 'md_regional.ID_REGIONAL')
                     ->select('md_regional.ID_REGIONAL', 'md_location.ID_LOCATION', 'md_area.ID_AREA')
                     ->get();
-
+                
                 $user->ID_AREA          = $locations[0]->ID_AREA;
                 $user->ID_REGIONAL      = $req->input('area');
                 $user->ID_LOCATION      = $locations[0]->ID_LOCATION;
