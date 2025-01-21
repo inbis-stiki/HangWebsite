@@ -109,6 +109,21 @@ class AreaController extends Controller
                         md_area ma 
                     WHERE 
                         ma.ID_AREA = u.ID_AREA
+                ),
+                u.ID_LOCATION = (
+                    SELECT 
+                        mr.ID_LOCATION 
+                    FROM 
+                        md_regional mr 
+                    WHERE 
+                        mr.ID_REGIONAL = (
+                            SELECT 
+                                ma.ID_REGIONAL 
+                            FROM 
+                                md_area ma 
+                            WHERE 
+                                ma.ID_AREA = u.ID_AREA
+                        )
                 )
             WHERE 
                 u.ID_AREA = " . $req->input('id') . "
