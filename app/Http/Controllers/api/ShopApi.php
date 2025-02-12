@@ -15,7 +15,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\District;
-use App\User;
+use App\Users;
 
 class ShopApi extends Controller
 {
@@ -315,7 +315,7 @@ class ShopApi extends Controller
     public function cekAllowedTrans(Request $req)
     {
         try {
-            $cekAllowed = User::where([
+            $cekAllowed = Users::where([
                 ['ID_USER', '=', $req->input('id_user')]
             ])->first();
             
