@@ -29,6 +29,7 @@ Route::middleware(['checkAuthApi'])->group(function(){
     Route::post("tes", 'api\TesApi@store');
     Route::put("tes", 'api\TesApi@update');
     Route::delete("tes", 'api\TesApi@delete');
+    Route::post("user/ban", 'api\AuthApi@ban');
 
     // API PRESENCE
     Route::get("presence", 'api\PresenceApi@index');
