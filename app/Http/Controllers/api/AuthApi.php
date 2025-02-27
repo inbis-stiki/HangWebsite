@@ -70,7 +70,7 @@ class AuthApi extends Controller
             $user->save();
 
             return response([
-                'status_code'       => 200,
+                'status_code'       => 401,
                 'status_message'    => 'Data anda terdeteksi sebagai data abnormal, silahkan menghubungi RPO anda!',
                 'data'              => []
             ], 200);
