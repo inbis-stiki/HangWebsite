@@ -1797,6 +1797,13 @@ class CronjobController extends Controller
         ");
     }
 
+    public function resetBanUser()
+    {
+        set_time_limit(3600);
+
+        Users::where('BANNED', '1')->update(['BANNED' => '0']);
+    }
+
     function splitRoutesForArea()
     {
 
