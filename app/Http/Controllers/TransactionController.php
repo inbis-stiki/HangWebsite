@@ -32,15 +32,15 @@ class TransactionController extends Controller
         $tglFilter = "";
         $searchFilter = "";
         if ($id_role == 3) {
-            $RoleJoin = "LEFT JOIN md_location ml ON ml.NAME_LOCATION = t.LOCATION_TRANS";
+            $RoleJoin = "LEFT JOIN md_location ml ON ml.NAME_LOCATION = transaksi_semua.LOCATION_TRANS";
             $showRole = "AND ml.ID_LOCATION = $location";
         }
         if ($id_role == 4 || $id_role == 5 || $id_role == 6) {
-            $RoleJoin = "LEFT JOIN md_regional mr ON mr.NAME_REGIONAL = t.REGIONAL_TRANS";
+            $RoleJoin = "LEFT JOIN md_regional mr ON mr.NAME_REGIONAL = transaksi_semua.REGIONAL_TRANS";
             $showRole = "AND mr.ID_REGIONAL = $regional";
         }
         if ($id_type != 0) {
-            $showType = "AND t.ID_TYPE = $id_type";
+            $showType = "AND transaksi_semua.ID_TYPE = $id_type";
         }
         if (!empty($tgl_trans)) {
             $tglFilter = "AND DATE(t.`DATE_TRANS`) = '" . $tgl_trans . "'";
@@ -49,9 +49,9 @@ class TransactionController extends Controller
             $searchFilter = "
                 AND
                 (
-                    t.AREA_TRANS LIKE '%$search%'
+                    transaksi_semua.AREA_TRANS LIKE '%$search%'
                     OR
-                    t.AREA_TRANS LIKE '%$search%'
+                    transaksi_semua.AREA_TRANS LIKE '%$search%'
                     OR
                     u.`NAME_USER` LIKE '%$search%'
                 )
@@ -68,28 +68,33 @@ class TransactionController extends Controller
                 FROM 
                     (
                         SELECT
-                            COUNT(t.ID_TRANS) AS Total,
-                            DATE(t.DATE_TRANS) AS CnvrtDate,
-                            t.AREA_TRANS AS NAME_AREA
+                            COUNT(transaksi_semua.ID_TRANS) AS Total,
+                            DATE(transaksi_semua.DATE_TRANS) AS CnvrtDate,
+                            transaksi_semua.AREA_TRANS AS NAME_AREA
                         FROM
-                            `transaction` t
+                            (
+                                SELECT *
+                                FROM `transaction` t
+                                WHERE
+                                    t.`ISTRANS_TRANS` = 1
+                                    $tglFilter
+                            ) AS transaksi_semua
                         LEFT JOIN `user` u ON
-                            u.ID_USER = t.ID_USER
+                            u.ID_USER = transaksi_semua.ID_USER
                         LEFT JOIN `md_shop` ms ON
-                            ms.ID_SHOP = t.ID_SHOP
+                            ms.ID_SHOP = transaksi_semua.ID_SHOP
                         LEFT JOIN `md_type` mt ON
-                            mt.ID_TYPE = t.ID_TYPE
+                            mt.ID_TYPE = transaksi_semua.ID_TYPE
                         $RoleJoin
                         WHERE
-                            t.`ISTRANS_TRANS` = 1
-                            $tglFilter
+                            transaksi_semua.`ISTRANS_TRANS` = 1
                             $showRole
-                            $showType
+                            $showType   
                             $searchFilter
                         GROUP BY
                             CnvrtDate,
-                            t.ID_USER,
-                            t.AREA_TRANS
+                            transaksi_semua.ID_USER,
+                            transaksi_semua.AREA_TRANS
                         ORDER BY
                             NAME_AREA ASC
                     ) temp
@@ -106,7 +111,7 @@ class TransactionController extends Controller
                     t.ID_TYPE ,
                     t.LOCATION_TRANS AS NAME_LOCATION,
                     t.REGIONAL_TRANS AS NAME_REGIONAL,
-                    t.AREA_TRANS AS NAME_AREA,
+                    t.AREA_TRANS AS NAME_AREA,  
                     t.KECAMATAN AS NAME_DISTRICT,   
                     u.`ID_USER`,
                     u.`NAME_USER`,
