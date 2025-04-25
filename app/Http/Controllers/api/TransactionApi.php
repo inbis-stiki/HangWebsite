@@ -146,14 +146,15 @@ class TransactionApi extends Controller
                     $transaction->ID_TYPE           = $req->input('id_type');
                     $transaction->LOCATION_TRANS    = $nameLoc;
                     $transaction->REGIONAL_TRANS    = $nameReg;
-                    $transaction->QTY_TRANS     = $req->input('qty_trans');
-                    $transaction->TOTAL_TRANS   = $req->input('total_trans');
-                    $transaction->DATE_TRANS    = $currDate;
-                    $transaction->LONG_TRANS    = $req->input('long_trans');
-                    $transaction->LAT_TRANS    = $req->input('lat_trans');
-                    $transaction->AREA_TRANS    = $nameArea;
+                    $transaction->QTY_TRANS         = $req->input('qty_trans');
+                    $transaction->TOTAL_TRANS       = $req->input('total_trans');
+                    $transaction->DATE_TRANS        = $currDate;
+                    $transaction->LONG_TRANS        = $req->input('long_trans');
+                    $transaction->LAT_TRANS         = $req->input('lat_trans');
+                    $transaction->AREA_TRANS        = $nameArea;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
                     $transaction->TYPE_ACTIVITY     = $typeAct;
+                    $transaction->IS_FAKE           = $req->input('fake_status');
                     $transaction->save();
     
                     foreach ($req->input('product') as $item) {
