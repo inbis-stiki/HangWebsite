@@ -339,6 +339,7 @@ class TransactionApi extends Controller
                     $transaction->DETAIL_LOCATION   = $req->input('detail_loc');
                     $transaction->TYPE_ACTIVITY     = $typeAct;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
+                    $transaction->IS_FAKE           = $req->input('fake_status');
                     $transaction->save();
 
                     foreach ($req->input('product') as $item) {
@@ -520,6 +521,7 @@ class TransactionApi extends Controller
                     $transaction->LONG_TRANS        = $req->input('long_trans');
                     $transaction->TYPE_ACTIVITY     = $typeAct;
                     $transaction->ISTRANS_TRANS     = $req->input('is_trans');
+                    $transaction->IS_FAKE           = $req->input('fake_status');
                     $transaction->save();
     
                     foreach ($req->input('product') as $item) {
