@@ -169,8 +169,8 @@
                         <div class="col-md-6">
                             <label for="">User dapat menambah toko.</label>
                             <div class="form-group mb-0">
-                                <label class="radio-inline mr-3"><input type="radio" name="status_toko" value="1" required> Enable</label>
-                                <label class="radio-inline mr-3"><input type="radio" name="status_toko" value="0" required> Disable</label>
+                                <label class="radio-inline mr-3"><input type="radio" name="status_toko" value="0" required> Enable</label>
+                                <label class="radio-inline mr-3"><input type="radio" name="status_toko" value="1" required> Disable</label>
                             </div>
                         </div>
                     </div>
@@ -257,8 +257,8 @@
                         <div class="col-md-6">
                             <label for="">User dapat menambah toko.</label>
                             <div class="form-group mb-0">
-                                <label class="radio-inline mr-3"><input type="radio" id="statustoko_enable" name="status_toko" value="1" required> Enable</label>
-                                <label class="radio-inline mr-3"><input type="radio" id="statustoko_disable" name="status_toko" value="0" required> Disable</label>
+                                <label class="radio-inline mr-3"><input type="radio" id="statustoko_enable" name="status_toko" value="0" required> Enable</label>
+                                <label class="radio-inline mr-3"><input type="radio" id="statustoko_disable" name="status_toko" value="1" required> Disable</label>
                             </div>
                         </div>
                     </div>

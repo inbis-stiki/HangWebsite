@@ -201,7 +201,7 @@ class UserController extends Controller
         $user->TELP_USER        = $req->input('phone');
         $user->PASS_USER        = hash('sha256', md5($req->input('password')));
         $user->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
-        $user->ALLOWED_TRANS    = $req->input('allowed_trans') == '0' ? '0' : '1';
+        $user->ALLOWED_TRANS    = $req->input('status_toko');
 
         if ($user->ID_ROLE > 4) {
             $this->generateUserTarget($user->ID_USER, $user->ID_REGIONAL);
@@ -334,6 +334,7 @@ class UserController extends Controller
         // $user->ID_AREA          = $req->input('area');
         $user->ID_ROLE          = $req->input('role');
         $user->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
+        $user->ALLOWED_TRANS    = $req->input('status_toko');
 
         $changedFields = array_keys($user->getDirty());
         $user->save();

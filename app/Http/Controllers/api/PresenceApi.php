@@ -122,7 +122,7 @@ class PresenceApi extends Controller
                     $presence->LAT_PRESENCE         = $req->input('latitude');
                     $presence->PHOTO_PRESENCE       = $this->UploadFileR2($req->file('image'), 'images');
                     $presence->DATE_PRESENCE        = $currDate;
-                    $presence->IS_FAKE              = $req->input('fake_status');
+                    $presence->IS_FAKE              = $req->filled('fake_status') ? $req->input('fake_status') : '0';
                     $presence->save();
 
                     $detLoc = DB::select("
