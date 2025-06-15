@@ -34,31 +34,6 @@
                 </a>
             </li>
             <li class="active">
-                <a href="{{ url('faktur') }}" class="ai-icon" aria-expanded="false">
-                    <div class="{{ request()->is('faktur','detail/faktur') ? '' : 'img-grey' }}">
-                        <img src="{{ asset('images/icon/faktur.svg') }}" alt="">&nbsp;
-                        <span class="nav-text">Faktur</span>
-                    </div>
-                </a>
-            </li>
-            <li><a class="has-arrow" href="javascript:void()">
-                    <div class="{{ request()->is('laporan/*') ? '' : 'img-grey' }} || ">
-                        <img src="{{ asset('images/icon/laporan.svg') }}" alt="">&nbsp;
-                        <span class="nav-text">Laporan</span>
-                    </div>
-                </a>
-                <ul class="" aria-expanded="false">
-                    <li><a href="{{ url('laporan/lpr-shop') }}">Toko</a></li>
-                    <li><a href="{{ url('laporan/lpr-ranking') }}">Ranking</a></li>
-                    <li><a href="{{ url('laporan/lpr-trend') }}">Trend</a></li>
-                    <li><a href="{{ url('laporan/lpr-repeat') }}">Repeat Order</a></li>
-                    <li><a href="{{ url('laporan/lpr-repeat-cat') }}">Repeat Order Kategori</a></li>
-                    <li><a href="{{ url('laporan/lpr-performance') }}">Performance</a></li>
-                    <li><a href="{{ url('laporan/lpr-transaction') }}">Transaksi Harian</a></li>
-                    <li><a href="{{ url('laporan/lpr-omset') }}">Omset</a></li>
-                </ul>
-            </li>
-            <li class="active">
                 <a href="{{ url('presence') }}" class="ai-icon" aria-expanded="false">
                     <div class="{{ request()->is('presence') ? '' : 'img-grey' }}">
                         <img src="{{ asset('images/icon/presensi.svg') }}" alt="">&nbsp;

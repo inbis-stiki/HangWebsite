@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>{{ $title }} - FINNA</title>
+    <title>{{ $title }} - ACARA</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.png') }}">
     <link rel="stylesheet" href="{{ asset('vendor/chartist/css/chartist.min.css') }}">
@@ -81,7 +81,7 @@
         ***********************************-->
         <div class="nav-header">
             <a href="{{ url('') }}" class="brand-logo">
-                <img src="{{ asset('images/logo-full.svg') }}" style="max-width: 150px;" alt="">
+                <img src="{{ asset('images/logo-text.png') }}" style="max-width: 150px;" alt="">
                 {{-- <img class="logo-abbr" src="{{ asset('images/logo.png') }}" alt=""> --}}
                 {{-- <img class="logo-compact" src="{{ asset('images/logo-text.png') }}" alt=""> --}}
                 {{-- <img class="brand-title" src="{{ asset('images/logo-text.png') }}" alt=""> --}}

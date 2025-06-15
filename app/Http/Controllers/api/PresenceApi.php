@@ -68,7 +68,6 @@ class PresenceApi extends Controller
                 'kecamatan'        => 'required|string|exists:md_district,NAME_DISTRICT',
                 'longitude'        => 'required|string',
                 'latitude'         => 'required|string',
-                // 'id_type'          => 'required|numeric|exists:md_type,ID_TYPE',
                 'image'            => 'required|image'
             ], [
                 'required'  => 'Parameter :attribute tidak boleh kosong!',
@@ -85,7 +84,6 @@ class PresenceApi extends Controller
             }
 
             $cek = Presence::where('ID_USER', '=', '' . $req->input('id_user') . '')
-                // ->where('ID_TYPE', '=', $req->input('id_type'))
                 ->whereDate('DATE_PRESENCE', '=', date('Y-m-d'))
                 ->exists();
 
@@ -116,7 +114,6 @@ class PresenceApi extends Controller
 
                     $presence = new Presence();
                     $presence->ID_USER              = $req->input('id_user');
-                    // $presence->ID_TYPE              = $req->input('id_type');
                     $presence->ID_DISTRICT          = $district->ID_DISTRICT;
                     $presence->LONG_PRESENCE        = $req->input('longitude');
                     $presence->LAT_PRESENCE         = $req->input('latitude');
@@ -124,25 +121,6 @@ class PresenceApi extends Controller
                     $presence->DATE_PRESENCE        = $currDate;
                     $presence->IS_FAKE              = $req->filled('fake_status') ? $req->input('fake_status') : '0';
                     $presence->save();
-
-                    $detLoc = DB::select("
-                        SELECT ma.NAME_AREA , mr.NAME_REGIONAL , ml.NAME_LOCATION 
-                        FROM md_district md 
-                        INNER JOIN md_area ma
-                            ON md.ID_DISTRICT = " . $district->ID_DISTRICT . " AND ma.ID_AREA = md.ID_AREA 
-                        INNER JOIN md_regional mr 
-                            ON mr.ID_REGIONAL = ma.ID_REGIONAL 
-                        INNER JOIN md_location ml 
-                            ON ml.ID_LOCATION = mr.ID_LOCATION
-                    ");
-
-                    $transDaily = new TransactionDaily();
-                    $transDaily->ID_USER     = $req->input('id_user');
-                    $transDaily->DATE_TD     = $currDate;
-                    $transDaily->AREA_TD     = $detLoc[0]->NAME_AREA;
-                    $transDaily->REGIONAL_TD = $detLoc[0]->NAME_REGIONAL;
-                    $transDaily->LOCATION_TD = $detLoc[0]->NAME_LOCATION;
-                    $transDaily->save();
 
                     return response([
                         "status_code"       => 200,
@@ -162,33 +140,6 @@ class PresenceApi extends Controller
                 'status_message'    => $exp->getMessage(),
             ], 200);
         }
-    }
-
-    public function UploadFile($fileData, $folder)
-    {
-        $extension = $fileData->getClientOriginalExtension();
-        $fileName = $fileData->getClientOriginalName();
-        $s3 = Storage::disk('s3')->getDriver()->getAdapter()->getClient();
-        $bucket = config('filesystems.disks.s3.bucket');
-
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < 10; $i++) {
-            $randomString .= $characters[random_int(0, $charactersLength - 1)];
-        }
-
-        $path = $folder . '/' . hash('sha256', $fileName) . $randomString . '.' . $extension;
-        $s3->putObject([
-            'Bucket' => $bucket,
-            'Key' => $path,
-            'SourceFile' => $fileData->path(),
-            'ACL' => 'public-read',
-            'ContentType' => $fileData->getMimeType(),
-            'ContentDisposition' => 'inline; filename="' . $fileName . '"',
-        ]);
-
-        return 'https://' . $bucket . '.is3.cloudhost.id/' . $path;
     }
 
     public function UploadFileR2($fileData, $folder)
