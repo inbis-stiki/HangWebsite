@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Login- FINNA</title>
+    <title>Login- Acara</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.png') }}">
     <link rel="stylesheet" href="{{ asset('vendor/chartist/css/chartist.min.css') }}">
@@ -22,11 +22,11 @@
 <body style="margin: 0; height: 100%; overflow: hidden" class="bg-white">
     <div class="row">
         <div class="col-8">
-            <img src="{{ asset('images/img-login.jpg') }}" alt="Image Sidebar" height="100%" width="100%" class="m-0" />
+            <img src="{{ asset('images/img-login2.jpeg') }}" alt="Image Sidebar" height="100%" width="100%" class="m-0" />
         </div>
         <div class="col-sm ">
             <div class="text-center mb-3 mt-5">
-                <img src="{{ asset('images/logo-full.svg') }}" style="max-width: 150px;" alt="">
+                <img src="{{ asset('images/logo-text.png') }}" style="max-width: 150px;" alt="">
             </div>
             <div class="ml-5">
                 <br>

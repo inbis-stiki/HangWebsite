@@ -45,15 +45,6 @@ Route::get('report/rank-asmen/{yearMonth}', 'CronjobController@genRankAsmen');
 Route::get('report/trend-rpo/{year}', 'CronjobController@genTrendRPO');
 Route::get('report/trend-asmen/{year}', 'CronjobController@genTrendAsmen');
 Route::post('report/trans-daily', 'CronjobController@genTransDaily');
-Route::get('cronjob/gen-ro-rpo/{yearMonth}', 'CronjobController@genRORPO');
-Route::get('cronjob/gen-ro-shop/{yearMonth}', 'CronjobController@genROSHOP');
-Route::get('cronjob/gen-ro-shop-range', 'CronjobController@genROSHOPbyRange');
-Route::get('cronjob/gen-ro-shopcat-range/{idRegional}/{yearMonth}', 'CronjobController@genROCATShopRange');
-Route::get('cronjob/gen-ro-shop-rcat/{yearMonth}', 'CronjobController@genRORCAT');
-Route::get('cronjob/gen-ro-rpo-s/{yearMonth}', 'CronjobController@genRORPOS');
-Route::get('cronjob/gen-ro-s-daily/{yearMonth}', 'CronjobController@genRORPOSDaily');
-Route::get('cronjob/gen-omset-data/{idRegional}/{yearMonth}', 'CronjobController@generateOmsetReport');
-Route::get('cronjob/gen-update-omset-data/{idRegional}/{yearMonth}', 'CronjobController@generateUpdateOmset');
 
 Route::get('cronjob/gen-data-omset', 'CronjobController@queryGetGenDataOmset');
 Route::get('report/ro-shopcat/{idRegional}/{yearMonth}', 'CronjobController@genROCATShopDownload');
@@ -68,15 +59,6 @@ Route::get('cronjob/aktivitasrpodapul', 'CronjobController@AktivitasRPODapul');
 Route::get('cronjob/aktivitasrpolapul', 'CronjobController@AktivitasRPOLapul');
 Route::get('cronjob/aktivitasasmen', 'CronjobController@AktivitasAsmen');
 Route::get('cronjob/pencapaianasmen', 'CronjobController@PencapaianAsmen');
-Route::get('cronjob/tesQuery', 'CronjobController@Testing');
-
-Route::get('cronjob/gen-ro-test', 'CronjobController@genROTEST');
-Route::get('cronjob/gen-ro-vs-test', 'CronjobController@genROVSTEST');
-Route::get('cronjob/gen-ro-vs-test/{year}', 'CronjobController@genROVSCALLIN');
-Route::get('cronjob/gen-akt-trx-apo/{year}', 'CronjobController@genAktTRXAPO');
-Route::get('cronjob/gen-rt-per-shop/{year}', 'CronjobController@genRTPerShop');
-Route::get('cronjob/gen-ro-trans-shop', 'CronjobController@genROTransToko');
-Route::get('cronjob/gen-ro-rutin-shop', 'CronjobController@genRORutinToko');
 
 Route::get('cronjob/split', 'CronjobController@splitRoutesForArea');
 
@@ -190,10 +172,6 @@ Route::group(['middleware' => ['checkLogin']], function () {
 
     // MASTER MONITORING
     Route::get('monitoring', 'MonitoringController@index');
-    Route::get('monitoring/download-presence-daily-pdf', 'MonitoringController@downloadPresenceDaily_pdf');
-    Route::get('monitoring/download-presence-daily-xlsx', 'MonitoringController@downloadPresenceDaily_xlsx');
-    Route::get('monitoring/download-presence-monthly-pdf', 'MonitoringController@downloadPresenceMonthly_pdf');
-    Route::get('monitoring/download-presence-monthly-xlsx', 'MonitoringController@downloadPresenceMonthly_xlsx');
     Route::post('monitoring/monitoring-data', 'MonitoringController@monitoring_data');
 
     // PRESENCE
@@ -219,15 +197,4 @@ Route::group(['middleware' => ['checkLogin']], function () {
     // OMSET
     Route::post('master/all-omset-data', 'ReportOmsetController@pipeline_datatable');
     
-    //LAPORAN
-    Route::get('laporan/lpr-shop', 'ReportShopController@index');
-    Route::post('laporan/lpr-shop/download', 'ReportShopController@download');
-    Route::get('laporan/lpr-shop/{any}', 'ReportShopController@get');
-    Route::get('laporan/lpr-ranking', 'ReportRankingController@index');
-    Route::get('laporan/lpr-trend', 'ReportTrendController@index');
-    Route::get('laporan/lpr-repeat', 'ReportRepeatController@index');
-    Route::get('laporan/lpr-repeat-cat', 'ReportRepeatController@index_repeat_cat');
-    Route::get('laporan/lpr-transaction', 'ReportTransactionController@index');
-    Route::get('laporan/lpr-performance', 'ReportPerformanceController@index');
-    Route::get('laporan/lpr-omset', 'ReportOmsetController@index');
 });
