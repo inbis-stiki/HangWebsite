@@ -1,0 +1,21 @@
+name : Deploy to testing finna
+on:
+  push:
+    branches: [ testing ]
+
+jobs:
+  first:
+    name: Pull from github
+    runs-on: ubuntu-latest
+    steps:
+    - name: deploy uleg
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.MY_KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd ${{ secrets.DIR_TESTING }}
+          git pull origin testing && /usr/bin/php7.4 /usr/local/bin/composer update && /usr/bin/php7.4 artisan optimize
+          /usr/bin/php7.4 artisan config:clear

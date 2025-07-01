@@ -1,7 +1,7 @@
-name : Deploy to testing finna
+name : Deploy to prod finna
 on:
   push:
-    branches: [ main ]
+    branches: [ development ]
 
 jobs:
   first:
@@ -17,4 +17,5 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd ${{ secrets.DIR }}
-          composer install && git pull origin main && php artisan optimize
+          git pull origin development && php7.4 /usr/local/bin/composer install && php7.4 /usr/local/bin/composer update && php7.4 artisan optimize
+          php7.4 artisan config:clear
