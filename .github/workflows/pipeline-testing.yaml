@@ -1,4 +1,4 @@
-name : Deploy to testing abilskom
+name : Deploy to abilskom
 on:
   push:
     branches: [ main ]
