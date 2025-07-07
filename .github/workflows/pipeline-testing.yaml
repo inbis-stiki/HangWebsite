@@ -1,14 +1,14 @@
-name : Deploy to testing finna
+name : Deploy to testing abilskom
 on:
   push:
-    branches: [ testing ]
+    branches: [ main ]
 
 jobs:
   first:
     name: Pull from github
     runs-on: ubuntu-latest
     steps:
-    - name: deploy uleg
+    - name: deploy abilskom
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -16,6 +16,6 @@ jobs:
         key: ${{ secrets.MY_KEY }}
         port: ${{ secrets.PORT }}
         script: |
-          cd ${{ secrets.DIR_TESTING }}
+          cd ${{ secrets.DIR }}
           git pull origin testing && /usr/bin/php7.4 /usr/local/bin/composer update && /usr/bin/php7.4 artisan optimize
           /usr/bin/php7.4 artisan config:clear
