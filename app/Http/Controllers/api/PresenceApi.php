@@ -141,6 +141,7 @@ class PresenceApi extends Controller
                     $transDaily->LOCATION_TD = $detLoc[0]->NAME_LOCATION;
                     $transDaily->save();
 
+                    
                     return response([
                         "status_code"       => 200,
                         "status_message"    => 'Data berhasil disimpan!',
