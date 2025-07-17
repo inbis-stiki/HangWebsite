@@ -37,7 +37,7 @@
 				barWidth: "4",
 				resize: !0,
 				barSpacing: "5",
-				barColor: "#F26F21"
+				barColor: "#017025"
 			});
 		}
 	}
@@ -48,12 +48,12 @@
 				//width: "100%",
 				width: getSparkLineGraphBlockSize('#sparkline8'),
 				height: "50",
-				lineColor: "#F26F21",
+				lineColor: "#017025",
 				fillColor: "rgba(254, 99, 78, .5)",
-				minSpotColor: "#F26F21",
-				maxSpotColor: "#F26F21",
-				highlightLineColor: "#F26F21",
-				highlightSpotColor: "#F26F21",
+				minSpotColor: "#017025",
+				maxSpotColor: "#017025",
+				highlightLineColor: "#017025",
+				highlightSpotColor: "#017025",
 				
 			});
 		}
@@ -112,7 +112,7 @@
 					height: "200",
 					barWidth: 10,
 					barSpacing: 7, 
-					stackedBarColor: ['#F26F21', '#1bd084', '#ff6746']
+					stackedBarColor: ['#017025', '#1bd084', '#ff6746']
 				});
 		}
 	}
@@ -124,7 +124,7 @@
 				height: "200",
 				barWidth: 10,
 				barSpacing: 7, 
-				colorMap: ['#F26F21', '#1bd084', '#ff6746'], 
+				colorMap: ['#017025', '#1bd084', '#ff6746'], 
 				negBarColor: '#ff6746'
 			});
 		}
@@ -138,7 +138,7 @@
 				barWidth: "10",
 				resize: true,
 				// barSpacing: "7",
-				barColor: "#F26F21", 
+				barColor: "#017025", 
 				width: '100%',
 				
 			});

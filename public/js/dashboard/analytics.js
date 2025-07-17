@@ -48,7 +48,7 @@
 				},
 				
 			},
-			colors:[ '#707070', '#F26F21'],
+			colors:[ '#707070', '#017025'],
 			xaxis: {
 				show: true,
 				axisBorder: {
@@ -146,7 +146,7 @@
 		stroke:{
 			lineCap: 'round'
 		},
-		colors:['#F26F21','#707070', '#BFBFBF'],
+		colors:['#017025','#707070', '#BFBFBF'],
 		series: [65, 55, 45],
 		labels: ['Ticket A', 'Ticket B', 'Ticket C'],
 			
@@ -182,7 +182,7 @@
 			labels: ['VIP', 'Reguler', 'Exclusive', 'Economic'],
 			fill: {
 				opacity: 1,
-				colors: ['#707070', '#BFBFBF', '#F3F3F3', '#F26F21']
+				colors: ['#707070', '#BFBFBF', '#F3F3F3', '#017025']
 			},
 			stroke: {
 				width: 0,
@@ -233,7 +233,7 @@
 						{
 							label: "My First dataset",
 							data: [80, 50, 70, 40, 60, 30, 50],
-							borderColor: "#F26F21",
+							borderColor: "#017025",
 							borderWidth: "4",
 							backgroundColor: areaChart_2gradientStroke
 						}

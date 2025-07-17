@@ -31,8 +31,6 @@ class CategoryProductController extends Controller
         if($validator->fails()){
             return redirect('master/category-product')->withErrors($validator);
         }
-    
-        // Check total percentage for the selected group
         
         $category_product = new CategoryProduct();
         $category_product->NAME_PC = $req->input('category_product');

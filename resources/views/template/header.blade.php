@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>{{ $title }} - ACARA</title>
+    <title>{{ $title }} - HANG</title>
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/logo2.png') }}">
     <link rel="stylesheet" href="{{ asset('vendor/chartist/css/chartist.min.css') }}">
     <link href="{{ asset('vendor/owl-carousel/owl.carousel.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -81,10 +81,10 @@
         ***********************************-->
         <div class="nav-header">
             <a href="{{ url('') }}" class="brand-logo">
-                <img src="{{ asset('images/logo-text.png') }}" style="max-width: 150px;" alt="">
-                {{-- <img class="logo-abbr" src="{{ asset('images/logo.png') }}" alt=""> --}}
-                {{-- <img class="logo-compact" src="{{ asset('images/logo-text.png') }}" alt=""> --}}
-                {{-- <img class="brand-title" src="{{ asset('images/logo-text.png') }}" alt=""> --}}
+                <img src="{{ asset('images/logo-text2.png') }}" style="max-width: 150px;" alt="">
+                {{-- <img class="logo-abbr" src="{{ asset('images/logo2.png') }}" alt=""> --}}
+                {{-- <img class="logo-compact" src="{{ asset('images/logo-text2.png') }}" alt=""> --}}
+                {{-- <img class="brand-title" src="{{ asset('images/logo-text2.png') }}" alt=""> --}}
             </a>
 
             {{-- <div class="nav-control">
@@ -112,7 +112,7 @@
                         <ul class="navbar-nav header-right">
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="javascript:void(0)" role="button" data-toggle="dropdown" aria-expanded="false">
-                                    <img src="{{ asset('images/user.png') }}" width="20" alt="">
+                                    <img src="{{ asset('images/user2.png') }}" width="20" alt="">
                                     <div class="header-info">
                                         <span class="text-black"><strong>{{ session('nama') }}</strong></span>
                                         <p class="fs-12 mb-0">{{ session('nama_role') }}</p>

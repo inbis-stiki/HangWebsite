@@ -293,7 +293,7 @@
                             color: #fff;
                             text-transform: uppercase;
                             cursor: pointer;
-                            background-color: #f26f21;
+                            background-color: #017025;
                             border-radius: 3px;
                             box-shadow: 0 0 2px rgba(255, 205, 56, 0.5);
                         }
