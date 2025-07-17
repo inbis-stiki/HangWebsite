@@ -206,8 +206,8 @@
         labels: ["S", "S", "R", "K", "J", "S", "M"],
         datasets: [{
             data: [65, 59, 80, 81, 56, 55, 40],
-            backgroundColor: '#F26F21',
-            borderColor: '#F26F21',
+            backgroundColor: '#017025',
+            borderColor: '#017025',
             borderWidth: 0,
             borderRadius: 5.7,
             borderSkipped: false

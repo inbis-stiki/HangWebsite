@@ -22,11 +22,11 @@
 <body style="margin: 0; height: 100%; overflow: hidden" class="bg-white">
     <div class="row">
         <div class="col-8">
-            <img src="{{ asset('images/img-login2.jpeg') }}" alt="Image Sidebar" height="100%" width="100%" class="m-0" />
+            <img src="{{ asset('images/img-login2.png') }}" alt="Image Sidebar" height="100%" width="100%" class="m-0" />
         </div>
         <div class="col-sm ">
             <div class="text-center mb-3 mt-5">
-                <img src="{{ asset('images/logo-text.png') }}" style="max-width: 150px;" alt="">
+                <img src="{{ asset('images/logo-text2.png') }}" style="max-width: 150px;" alt="">
             </div>
             <div class="ml-5">
                 <br>
@@ -36,39 +36,36 @@
                     <div class="form-row">
                         <div class="col-md-9 mb-4">
                             <label class="mb-1 ">Username</label>
-                            <input type="text" onkeypress="return preventSpace(event)" name="username" id="input_username" class="form-control border border-primary" placeholder="Username" required>
+                            {{-- Change is here --}}
+                            <input type="text" onkeypress="return preventSpace(event)" name="username" id="input_username" class="form-control" placeholder="Username" required style="border: 1px solid #017025;">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col-md-9 mb-4">
                             <label class="mb-1">Password</label>
-                            <input type="password" name="password" id="input_password" class="form-control border border-primary" placeholder="Password" required>
+                            {{-- Change is here --}}
+                            <input type="password" name="password" id="input_password" class="form-control" placeholder="Password" required style="border: 1px solid #017025;">
                         </div>
                     </div>
-                    {{-- <div class="text-left mt-3">
-                        <a href="{{ url('login') }}" type="submit" class="btn btn-md btn-primary">Masuk</a>
-                    </div> --}}
+                    
                     @if (session('err_msg'))
                     <br>
                     <div class="alert alert-danger mr-5">{!! session('err_msg') !!}</div>
                     @endif
-                    <button type="submit" class="btn btn-md btn-primary mt-4">Masuk</button>
+                    
+                    {{-- Change is here --}}
+                    <button type="submit" class="btn btn-md mt-4" style="background-color: #017025; border-color: #017025; color: white;">Masuk</button>
                 </form>
             </div>
         </div>
-
     </div>
 
-    <!--**********************************
-            Footer start
-        ***********************************-->
     <div class="footer">
         <div class="copyright">
             {{-- <p>Copyright © Designed &amp; Developed by <a href="http://dexignzone.com/" target="_blank">DexignZone</a> 2021</p> --}}
         </div>
     </div>
 
-    <!-- Required vendors -->
     <script src="{{ asset('vendor/global/global.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
     <script src="{{ asset('vendor/chart.js/Chart.bundle.min.js') }}"></script>
@@ -76,19 +73,13 @@
     <script src="{{ asset('js/deznav-init.js') }}"></script>
     <script src="{{ asset('vendor/owl-carousel/owl.carousel.js') }}"></script>
 
-    <!-- Chart piety plugin files -->
     <script src="{{ asset('vendor/peity/jquery.peity.min.js') }}"></script>
 
-    <!-- Apex Chart -->
-    {{-- <script src="{{ asset('vendor/apexchart/apexchart.js') }}"></script> --}}
-
-    <!-- Dashboard 1 -->
-    {{-- <script src="{{ asset('js/dashboard/dashboard-1.js') }}"></script> --}}
     <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
 
     <script>
         function carouselReview() {
-            /*  event-bx one function by = owl.carousel.js */
+            /*  event-bx one function by = owl.carousel.js */
             jQuery('.event-bx').owlCarousel({
                 loop: true,
                 margin: 30,
