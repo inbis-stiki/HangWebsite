@@ -202,49 +202,9 @@ class UserController extends Controller
         $user->PASS_USER        = hash('sha256', md5($req->input('password')));
         $user->deleted_at       = $req->input('status') == '1' ? NULL : date('Y-m-d H:i:s');
         $user->ALLOWED_TRANS    = $req->input('status_toko');
-
-        if ($user->ID_ROLE > 4) {
-            $this->generateUserTarget($user->ID_USER, $user->ID_REGIONAL);
-        }
         $user->save();
 
         return redirect('master/user')->with('succ_msg', 'Berhasil menambah data user!');
-    }
-
-    public function generateUserTarget($id, $region)
-    {
-        $now = date('Y-m-d');
-        // $getDataTargetSale      = DB::table('target_sale')
-        // ->where('ID_REGIONAL', $region)
-        // ->whereDate('START_PP', '<', $now)
-        // ->whereDate('END_PP', '>', $now)
-        // ->sum('QUANTITY');
-
-        $getDataTargetActivity  = DB::table('target_activity')
-            ->where('ID_REGIONAL', $region)
-            ->whereDate('START_PP', '<', $now)
-            ->whereDate('END_PP', '>', $now)
-            ->sum('QUANTITY');
-
-
-        $getArea = DB::table('md_area')
-            ->where('ID_REGIONAL', '=', $region)
-            ->get();
-
-        $getTargetSaleCategory = UserTarget::queryGetTargetSaleCategory(count($getArea), $region);
-        $totUst         = round($getTargetSaleCategory[0]->TOTAL, PHP_ROUND_HALF_UP);
-        $totNonUst      = round($getTargetSaleCategory[1]->TOTAL, PHP_ROUND_HALF_UP);
-        $totSeleraku    = round($getTargetSaleCategory[2]->TOTAL, PHP_ROUND_HALF_UP);;
-
-        $newUT                      = new UserTarget();
-        $newUT->ID_USER             = $id;
-        $newUT->TOTALACTIVITY_UT    = round($getDataTargetActivity / (count($getArea) * 3) / 25, PHP_ROUND_HALF_UP);
-        $newUT->SALESUST_UT         = $totUst;
-        $newUT->SALESNONUST_UT      = $totNonUst;
-        $newUT->SALESSELERAKU_UT    = $totSeleraku;
-        $newUT->TOTALSALES_UT       = $totUst + $totNonUst + $totSeleraku;
-
-        $newUT->save();
     }
 
     public function update(Request $req)
